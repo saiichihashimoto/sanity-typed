@@ -1,0 +1,13 @@
+# https://github.com/repository-settings/app
+_extends: .github
+repository:
+  name: sanity-typed
+  private: false
+branches:
+  - name: main
+    protection:
+      required_status_checks:
+        contexts:
+          - Build
+          - Lint
+          - Test

@@ -1,0 +1,5 @@
+*.ico -diff
+*.svg -diff
+*.ttf -diff
+package-lock.json -diff
+yarn.lock -diff
