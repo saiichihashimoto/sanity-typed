@@ -1,0 +1,39 @@
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+name: "Release"
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency: release
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - uses: actions/setup-node@v3.6.0
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+      - run: npm ci
+
+      - run: npm run build
+
+      - run: npm config set workspaces-update false
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx multi-semantic-release --ignore-private-packages
