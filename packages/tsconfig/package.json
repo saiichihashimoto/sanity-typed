@@ -1,4 +1,5 @@
 {
   "name": "@sanity-typed/tsconfig",
-  "version": "0.0.0-development"
+  "version": "0.0.0-development",
+  "private": true
 }
