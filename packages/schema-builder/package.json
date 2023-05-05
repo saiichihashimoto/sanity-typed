@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@sanity-typed/schema-builder",
+  "version": "0.0.0-development",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "npm run build -- --no-dts"
+  },
+  "dependencies": {
+    "@portabletext/types": "2.0.2",
+    "@types/lodash": "4.14.194",
+    "lodash": "4.17.21",
+    "type-fest": "2.19.0",
+    "zod": "3.21.4"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "7.6.0",
+    "@jest/globals": "29.5.0",
+    "@sanity-typed/tsconfig": "0.0.0-development",
+    "sanity": "3.9.1"
+  },
+  "peerDependencies": {
+    "sanity": "^3.2.0"
+  }
+}
