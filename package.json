@@ -15,6 +15,7 @@
     "test": "jest --color"
   },
   "dependencies": {
+    "@jest/types": "29.5.0",
     "@manypkg/cli": "0.20.0",
     "@standard-configs/prettier-plugin": "1.0.11",
     "@total-typescript/ts-reset": "0.4.2",

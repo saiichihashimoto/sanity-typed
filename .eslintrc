@@ -130,7 +130,6 @@
     ],
     "import/no-mutable-exports": "error",
     "import/no-relative-packages": "error",
-    "import/no-relative-parent-imports": "error",
     "import/no-self-import": "error",
     "import/no-useless-path-segments": "error",
     "import/no-webpack-loader-syntax": "error",
@@ -252,7 +251,7 @@
         "@typescript-eslint/method-signature-style": "error",
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-explicit-any": [
-          "error",
+          "off",
           {
             "fixToUnknown": true,
             "ignoreRestArgs": true
@@ -299,6 +298,7 @@
       },
       "rules": {
         "id-length": "off",
+        "@typescript-eslint/no-unused-vars": "off",
         "fp/no-unused-expression": "off",
         "import/no-extraneous-dependencies": [
           "error",
