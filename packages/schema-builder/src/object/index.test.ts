@@ -1,11 +1,13 @@
 import { faker } from "@faker-js/faker";
 import { describe, expect, it } from "@jest/globals";
 
+import { expectType } from "@sanity-typed/test-utils";
+
 import { object } from ".";
 import { boolean } from "../boolean";
 import { sharedFields } from "../field";
 import { string } from "../string";
-import { expectType, mockRule } from "../test-utils";
+import { mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("object", () => {

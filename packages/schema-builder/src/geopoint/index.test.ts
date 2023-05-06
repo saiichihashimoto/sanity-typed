@@ -2,8 +2,10 @@ import { faker } from "@faker-js/faker";
 import { describe, expect, it } from "@jest/globals";
 import type { GeopointValue } from "sanity";
 
+import { expectType } from "@sanity-typed/test-utils";
+
 import { geopoint } from ".";
-import { expectType, mockRule } from "../test-utils";
+import { mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("geopoint", () => {

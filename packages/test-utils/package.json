@@ -1,0 +1,7 @@
+{
+  "name": "@sanity-typed/test-utils",
+  "version": "0.0.0-development",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts"
+}

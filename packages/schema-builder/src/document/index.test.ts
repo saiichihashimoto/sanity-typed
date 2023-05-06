@@ -4,12 +4,14 @@ import { isFunction } from "lodash/fp";
 import type { Merge } from "type-fest";
 import { z } from "zod";
 
+import { expectType } from "@sanity-typed/test-utils";
+
 import { document } from ".";
 import type { ParsedSanityDocument, SanityDocument } from ".";
 import { boolean } from "../boolean";
 import { sharedFields } from "../field";
 import { string } from "../string";
-import { expectType, mockRule } from "../test-utils";
+import { mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("document", () => {

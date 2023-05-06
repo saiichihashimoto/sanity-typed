@@ -2,8 +2,10 @@ import { faker } from "@faker-js/faker";
 import { describe, expect, it } from "@jest/globals";
 import { z } from "zod";
 
+import { expectType } from "@sanity-typed/test-utils";
+
 import { url } from ".";
-import { expectType, mockRule } from "../test-utils";
+import { mockRule } from "../test-utils";
 
 describe("url", () => {
   it("builds a sanity config", () =>

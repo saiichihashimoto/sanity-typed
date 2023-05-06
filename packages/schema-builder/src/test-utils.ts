@@ -21,17 +21,6 @@ import type {
 
 import type { GetRule } from "./types";
 
-// https://twitter.com/mattpocockuk/status/1646452585006604291
-type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y
-  ? 1
-  : 2
-  ? X
-  : Exclude<X, Y>;
-
-export const expectType = <T>() => ({
-  toStrictEqual: <U extends Equal<T, U>>() => {},
-});
-
 export const mockRule = () => {
   const rule: GetRule<ArrayDefinition> &
     GetRule<BlockDefinition> &
