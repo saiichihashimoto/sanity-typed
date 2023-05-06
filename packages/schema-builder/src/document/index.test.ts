@@ -9,8 +9,7 @@ import type { ParsedSanityDocument, SanityDocument } from ".";
 import { boolean } from "../boolean";
 import { sharedFields } from "../field";
 import { string } from "../string";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("document", () => {
@@ -73,17 +72,12 @@ describe("document", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<
-        Equal<typeof value, Merge<SanityDocument<"foo">, { foo: boolean }>>
-      >,
-      Expect<
-        Equal<
-          typeof parsedValue,
-          Merge<ParsedSanityDocument<"foo">, { foo: boolean }>
-        >
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<
+      Merge<SanityDocument<"foo">, { foo: boolean }>
+    >();
+    expectType<typeof parsedValue>().toStrictEqual<
+      Merge<ParsedSanityDocument<"foo">, { foo: boolean }>
+    >();
 
     expect(parsedValue).toStrictEqual({
       ...value,
@@ -115,17 +109,12 @@ describe("document", () => {
     } as InferValue<typeof type>;
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<
-        Equal<typeof value, Merge<SanityDocument<"foo">, { foo: boolean }>>
-      >,
-      Expect<
-        Equal<
-          typeof resolvedValue,
-          Merge<ParsedSanityDocument<"foo">, { foo: string }>
-        >
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<
+      Merge<SanityDocument<"foo">, { foo: boolean }>
+    >();
+    expectType<typeof resolvedValue>().toStrictEqual<
+      Merge<ParsedSanityDocument<"foo">, { foo: string }>
+    >();
 
     expect(resolvedValue).toStrictEqual({
       ...value,
@@ -190,26 +179,15 @@ describe("document", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<
-        Equal<
-          typeof value,
-          Merge<
-            SanityDocument<"foo">,
-            { bar?: string | undefined; foo: boolean }
-          >
-        >
-      >,
-      Expect<
-        Equal<
-          typeof parsedValue,
-          Merge<
-            ParsedSanityDocument<"foo">,
-            { bar?: string | undefined; foo: boolean }
-          >
-        >
+    expectType<typeof value>().toStrictEqual<
+      Merge<SanityDocument<"foo">, { bar?: string | undefined; foo: boolean }>
+    >();
+    expectType<typeof parsedValue>().toStrictEqual<
+      Merge<
+        ParsedSanityDocument<"foo">,
+        { bar?: string | undefined; foo: boolean }
       >
-    ];
+    >();
 
     expect(parsedValue).toStrictEqual({
       ...value,
@@ -384,17 +362,12 @@ describe("document", () => {
           bleh: "foo",
         },
         prepare: (selection) => {
-          type Assertions = [
-            Expect<
-              Equal<
-                typeof selection,
-                Merge<
-                  SanityDocument<"foo">,
-                  { bar?: string; bleh: unknown; foo: string }
-                >
-              >
+          expectType<typeof selection>().toStrictEqual<
+            Merge<
+              SanityDocument<"foo">,
+              { bar?: string; bleh: unknown; foo: string }
             >
-          ];
+          >();
 
           const { foo, bar } = selection;
 
@@ -448,9 +421,9 @@ describe("document", () => {
     };
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof parsedValue, [string, Date | string | 0 | 1][]>>
-    ];
+    expectType<typeof parsedValue>().toStrictEqual<
+      [string, Date | string | 0 | 1][]
+    >();
 
     expect(parsedValue).toStrictEqual(
       expect.arrayContaining([
@@ -480,23 +453,18 @@ describe("document", () => {
       ],
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [
-            Expect<
-              Equal<
-                typeof value,
-                | {
-                    _createdAt: string;
-                    _id: string;
-                    _rev: string;
-                    _type: "foo";
-                    _updatedAt: string;
-                    bar: string;
-                    foo?: boolean | undefined;
-                  }
-                | undefined
-              >
-            >
-          ];
+          expectType<typeof value>().toStrictEqual<
+            | {
+                _createdAt: string;
+                _id: string;
+                _rev: string;
+                _type: "foo";
+                _updatedAt: string;
+                bar: string;
+                foo?: boolean | undefined;
+              }
+            | undefined
+          >();
 
           return !value?.bar || "Needs an empty bar";
         }),

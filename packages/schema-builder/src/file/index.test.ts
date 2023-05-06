@@ -8,8 +8,7 @@ import { boolean } from "../boolean";
 import { sharedFields } from "../field";
 import type { SanityReference } from "../reference";
 import { string } from "../string";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("file", () => {
@@ -33,10 +32,8 @@ describe("file", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, SanityFile>>,
-      Expect<Equal<typeof parsedValue, SanityFile>>
-    ];
+    expectType<typeof value>().toStrictEqual<SanityFile>();
+    expectType<typeof parsedValue>().toStrictEqual<SanityFile>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -53,10 +50,8 @@ describe("file", () => {
     } as InferValue<typeof type>;
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, SanityFile>>,
-      Expect<Equal<typeof resolvedValue, SanityFile>>
-    ];
+    expectType<typeof value>().toStrictEqual<SanityFile>();
+    expectType<typeof resolvedValue>().toStrictEqual<SanityFile>();
 
     expect(resolvedValue).toStrictEqual(value);
   });
@@ -101,17 +96,12 @@ describe("file", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<
-        Equal<typeof value, Merge<SanityFile, { bar?: boolean; foo: boolean }>>
-      >,
-      Expect<
-        Equal<
-          typeof parsedValue,
-          Merge<SanityFile, { bar?: boolean; foo: boolean }>
-        >
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<
+      Merge<SanityFile, { bar?: boolean; foo: boolean }>
+    >();
+    expectType<typeof parsedValue>().toStrictEqual<
+      Merge<SanityFile, { bar?: boolean; foo: boolean }>
+    >();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -160,17 +150,12 @@ describe("file", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<
-        Equal<typeof value, Merge<SanityFile, { bar?: boolean; foo: boolean }>>
-      >,
-      Expect<
-        Equal<
-          typeof parsedValue,
-          Merge<SanityFile, { bar?: boolean; foo: boolean }>
-        >
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<
+      Merge<SanityFile, { bar?: boolean; foo: boolean }>
+    >();
+    expectType<typeof parsedValue>().toStrictEqual<
+      Merge<SanityFile, { bar?: boolean; foo: boolean }>
+    >();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -279,9 +264,9 @@ describe("file", () => {
     };
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof parsedValue, [string, SanityReference | "file"][]>>
-    ];
+    expectType<typeof parsedValue>().toStrictEqual<
+      [string, SanityReference | "file"][]
+    >();
 
     expect(parsedValue).toStrictEqual(
       expect.arrayContaining([
@@ -312,14 +297,9 @@ describe("file", () => {
       ],
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [
-            Expect<
-              Equal<
-                typeof value,
-                Merge<SanityFile, { bar: string; foo?: boolean }> | undefined
-              >
-            >
-          ];
+          expectType<typeof value>().toStrictEqual<
+            Merge<SanityFile, { bar: string; foo?: boolean }> | undefined
+          >();
 
           return !value?.bar || "Needs an empty bar";
         }),

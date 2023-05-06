@@ -3,8 +3,7 @@ import { describe, expect, it } from "@jest/globals";
 import { z } from "zod";
 
 import { url } from ".";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 
 describe("url", () => {
   it("builds a sanity config", () =>
@@ -21,7 +20,7 @@ describe("url", () => {
     const value = "https://example.com/img.jpg";
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, string>>];
+    expectType<typeof parsedValue>().toStrictEqual<string>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -32,7 +31,7 @@ describe("url", () => {
     const value = "https://example.com/img.jpg";
     const resolvedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof resolvedValue, string>>];
+    expectType<typeof resolvedValue>().toStrictEqual<string>();
 
     expect(resolvedValue).toStrictEqual(value);
   });
@@ -77,7 +76,7 @@ describe("url", () => {
     const value = "https://google.com";
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, number>>];
+    expectType<typeof parsedValue>().toStrictEqual<number>();
 
     expect(parsedValue).toBe(18);
   });
@@ -86,7 +85,7 @@ describe("url", () => {
     const type = url({
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [Expect<Equal<typeof value, string | undefined>>];
+          expectType<typeof value>().toStrictEqual<string | undefined>();
 
           return (value?.length ?? 0) > 50 || "Needs to be 50 characters";
         }),

@@ -6,8 +6,7 @@ import { boolean } from "../boolean";
 import { object } from "../object";
 import { objectNamed } from "../objectNamed";
 import { string } from "../string";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("array", () => {
@@ -39,11 +38,9 @@ describe("array", () => {
     const parsedValue = type.parse(value);
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, boolean[]>>,
-      Expect<Equal<typeof parsedValue, string[]>>,
-      Expect<Equal<typeof resolvedValue, number[]>>
-    ];
+    expectType<typeof value>().toStrictEqual<boolean[]>();
+    expectType<typeof parsedValue>().toStrictEqual<string[]>();
+    expectType<typeof resolvedValue>().toStrictEqual<number[]>();
 
     expect(parsedValue).toStrictEqual(["true"]);
     expect(resolvedValue).toStrictEqual([4]);
@@ -89,11 +86,15 @@ describe("array", () => {
     const parsedValue = type.parse(value);
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, { _key: string; foo: boolean }[]>>,
-      Expect<Equal<typeof parsedValue, { _key: string; foo: string }[]>>,
-      Expect<Equal<typeof resolvedValue, { _key: string; foo: number }[]>>
-    ];
+    expectType<typeof value>().toStrictEqual<
+      { _key: string; foo: boolean }[]
+    >();
+    expectType<typeof parsedValue>().toStrictEqual<
+      { _key: string; foo: string }[]
+    >();
+    expectType<typeof resolvedValue>().toStrictEqual<
+      { _key: string; foo: number }[]
+    >();
 
     expect(parsedValue).toStrictEqual([
       { _key: "a", foo: "true" },
@@ -125,10 +126,8 @@ describe("array", () => {
     const value = [true, "a"] as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, (boolean | string)[]>>,
-      Expect<Equal<typeof parsedValue, (boolean | string)[]>>
-    ];
+    expectType<typeof value>().toStrictEqual<(boolean | string)[]>();
+    expectType<typeof parsedValue>().toStrictEqual<(boolean | string)[]>();
 
     expect(parsedValue).toStrictEqual(value);
 
@@ -222,26 +221,18 @@ describe("array", () => {
     ] as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<
-        Equal<
-          typeof value,
-          (
-            | { _key: string; _type: "a"; foo: boolean }
-            | { _key: string; _type: "b"; foo: string }
-          )[]
-        >
-      >,
-      Expect<
-        Equal<
-          typeof parsedValue,
-          (
-            | { _key: string; _type: "a"; foo: boolean }
-            | { _key: string; _type: "b"; foo: string }
-          )[]
-        >
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<
+      (
+        | { _key: string; _type: "a"; foo: boolean }
+        | { _key: string; _type: "b"; foo: string }
+      )[]
+    >();
+    expectType<typeof parsedValue>().toStrictEqual<
+      (
+        | { _key: string; _type: "a"; foo: boolean }
+        | { _key: string; _type: "b"; foo: string }
+      )[]
+    >();
 
     expect(parsedValue).toStrictEqual(value);
 
@@ -307,10 +298,12 @@ describe("array", () => {
     const value = [true, false] as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, [boolean, boolean, ...boolean[]]>>,
-      Expect<Equal<typeof parsedValue, [boolean, boolean, ...boolean[]]>>
-    ];
+    expectType<typeof value>().toStrictEqual<
+      [boolean, boolean, ...boolean[]]
+    >();
+    expectType<typeof parsedValue>().toStrictEqual<
+      [boolean, boolean, ...boolean[]]
+    >();
 
     expect(parsedValue).toStrictEqual(value);
 
@@ -331,20 +324,12 @@ describe("array", () => {
     const value = [true, false, true] as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<
-        Equal<
-          typeof value,
-          [] | [boolean, boolean, boolean] | [boolean, boolean] | [boolean]
-        >
-      >,
-      Expect<
-        Equal<
-          typeof parsedValue,
-          [] | [boolean, boolean, boolean] | [boolean, boolean] | [boolean]
-        >
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<
+      [] | [boolean, boolean, boolean] | [boolean, boolean] | [boolean]
+    >();
+    expectType<typeof parsedValue>().toStrictEqual<
+      [] | [boolean, boolean, boolean] | [boolean, boolean] | [boolean]
+    >();
 
     expect(parsedValue).toStrictEqual(value);
 
@@ -365,10 +350,8 @@ describe("array", () => {
     const value = [true, false] as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, [boolean, boolean]>>,
-      Expect<Equal<typeof parsedValue, [boolean, boolean]>>
-    ];
+    expectType<typeof value>().toStrictEqual<[boolean, boolean]>();
+    expectType<typeof parsedValue>().toStrictEqual<[boolean, boolean]>();
 
     expect(parsedValue).toStrictEqual(value);
 
@@ -394,7 +377,7 @@ describe("array", () => {
 
     const parsedValue = type.parse([true, false]);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, number>>];
+    expectType<typeof parsedValue>().toStrictEqual<number>();
 
     expect(parsedValue).toBe(1);
   });
@@ -421,18 +404,13 @@ describe("array", () => {
       ],
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [
-            Expect<
-              Equal<
-                typeof value,
-                | (
-                    | { _key: string; bar: boolean }
-                    | { _key: string; foo: boolean }
-                  )[]
-                | undefined
-              >
-            >
-          ];
+          expectType<typeof value>().toStrictEqual<
+            | (
+                | { _key: string; bar: boolean }
+                | { _key: string; foo: boolean }
+              )[]
+            | undefined
+          >();
 
           return (value?.length ?? 0) > 50 || "Needs to be 50 characters";
         }),

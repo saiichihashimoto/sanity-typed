@@ -3,8 +3,7 @@ import { describe, expect, it } from "@jest/globals";
 import type { GeopointValue } from "sanity";
 
 import { geopoint } from ".";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("geopoint", () => {
@@ -30,10 +29,8 @@ describe("geopoint", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, GeopointValue>>,
-      Expect<Equal<typeof parsedValue, GeopointValue>>
-    ];
+    expectType<typeof value>().toStrictEqual<GeopointValue>();
+    expectType<typeof parsedValue>().toStrictEqual<GeopointValue>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -49,10 +46,8 @@ describe("geopoint", () => {
     } as InferValue<typeof type>;
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, GeopointValue>>,
-      Expect<Equal<typeof resolvedValue, GeopointValue>>
-    ];
+    expectType<typeof value>().toStrictEqual<GeopointValue>();
+    expectType<typeof resolvedValue>().toStrictEqual<GeopointValue>();
 
     expect(resolvedValue).toStrictEqual(value);
   });
@@ -125,7 +120,7 @@ describe("geopoint", () => {
       alt: 13.37,
     });
 
-    type Assertions = [Expect<Equal<typeof parsedValue, number>>];
+    expectType<typeof parsedValue>().toStrictEqual<number>();
 
     expect(parsedValue).toBe(58.63169011423141);
   });
@@ -134,9 +129,7 @@ describe("geopoint", () => {
     const type = geopoint({
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [
-            Expect<Equal<typeof value, GeopointValue | undefined>>
-          ];
+          expectType<typeof value>().toStrictEqual<GeopointValue | undefined>();
 
           return (value?.lat ?? 0) > 50 || "Needs to be greater than 50";
         }),

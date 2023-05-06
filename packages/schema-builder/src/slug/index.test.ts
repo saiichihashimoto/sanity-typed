@@ -3,8 +3,7 @@ import { describe, expect, it } from "@jest/globals";
 import type { SlugValue } from "sanity";
 
 import { slug } from ".";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("slug", () => {
@@ -25,10 +24,8 @@ describe("slug", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, SlugValue>>,
-      Expect<Equal<typeof parsedValue, string>>
-    ];
+    expectType<typeof value>().toStrictEqual<SlugValue>();
+    expectType<typeof parsedValue>().toStrictEqual<string>();
 
     expect(parsedValue).toBe("foo");
   });
@@ -42,10 +39,8 @@ describe("slug", () => {
     } as InferValue<typeof type>;
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, SlugValue>>,
-      Expect<Equal<typeof resolvedValue, string>>
-    ];
+    expectType<typeof value>().toStrictEqual<SlugValue>();
+    expectType<typeof resolvedValue>().toStrictEqual<string>();
 
     expect(resolvedValue).toBe("foo");
   });
@@ -88,7 +83,7 @@ describe("slug", () => {
     const value = { _type: "slug", current: "a-slug" };
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, "slug">>];
+    expectType<typeof parsedValue>().toStrictEqual<"slug">();
 
     expect(parsedValue).toBe("slug");
   });
@@ -97,9 +92,7 @@ describe("slug", () => {
     const type = slug({
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [
-            Expect<Equal<typeof value, SlugValue | undefined>>
-          ];
+          expectType<typeof value>().toStrictEqual<SlugValue | undefined>();
 
           return (
             (value?.current?.length ?? 0) > 50 || "Needs to be 50 characters"

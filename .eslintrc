@@ -125,7 +125,8 @@
     "import/no-extraneous-dependencies": [
       "error",
       {
-        "devDependencies": false
+        "devDependencies": false,
+        "peerDependencies": true
       }
     ],
     "import/no-mutable-exports": "error",
@@ -298,12 +299,12 @@
       },
       "rules": {
         "id-length": "off",
-        "@typescript-eslint/no-unused-vars": "off",
         "fp/no-unused-expression": "off",
         "import/no-extraneous-dependencies": [
           "error",
           {
-            "devDependencies": true
+            "devDependencies": true,
+            "peerDependencies": true
           }
         ],
         "jest/consistent-test-it": [
