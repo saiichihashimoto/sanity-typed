@@ -5,8 +5,7 @@ import { objectNamed } from ".";
 import { boolean } from "../boolean";
 import { sharedFields } from "../field";
 import { string } from "../string";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("object", () => {
@@ -62,10 +61,11 @@ describe("object", () => {
     const value = { _type: "foo", foo: true } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, { _type: "foo"; foo: boolean }>>,
-      Expect<Equal<typeof parsedValue, { _type: "foo"; foo: boolean }>>
-    ];
+    expectType<typeof value>().toStrictEqual<{ _type: "foo"; foo: boolean }>();
+    expectType<typeof parsedValue>().toStrictEqual<{
+      _type: "foo";
+      foo: boolean;
+    }>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -86,10 +86,11 @@ describe("object", () => {
     const value = { _type: "foo", foo: true } as InferValue<typeof type>;
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, { _type: "foo"; foo: boolean }>>,
-      Expect<Equal<typeof resolvedValue, { _type: "foo"; foo: string }>>
-    ];
+    expectType<typeof value>().toStrictEqual<{ _type: "foo"; foo: boolean }>();
+    expectType<typeof resolvedValue>().toStrictEqual<{
+      _type: "foo";
+      foo: string;
+    }>();
 
     expect(resolvedValue).toStrictEqual({ _type: "foo", foo: "foo" });
   });
@@ -140,20 +141,16 @@ describe("object", () => {
     const value = { _type: "foo", foo: true } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<
-        Equal<
-          typeof value,
-          { _type: "foo"; bar?: string | undefined; foo: boolean }
-        >
-      >,
-      Expect<
-        Equal<
-          typeof parsedValue,
-          { _type: "foo"; bar?: string | undefined; foo: boolean }
-        >
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<{
+      _type: "foo";
+      bar?: string | undefined;
+      foo: boolean;
+    }>();
+    expectType<typeof parsedValue>().toStrictEqual<{
+      _type: "foo";
+      bar?: string | undefined;
+      foo: boolean;
+    }>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -186,20 +183,14 @@ describe("object", () => {
     } as InferValue<typeof type2>;
     const parsedValue = type2.parse(value);
 
-    type Assertions = [
-      Expect<
-        Equal<
-          typeof value,
-          { _type: "bar"; foo: { _type: "foo"; hello: string } }
-        >
-      >,
-      Expect<
-        Equal<
-          typeof parsedValue,
-          { _type: "bar"; foo: { _type: "foo"; hello: string } }
-        >
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<{
+      _type: "bar";
+      foo: { _type: "foo"; hello: string };
+    }>();
+    expectType<typeof parsedValue>().toStrictEqual<{
+      _type: "bar";
+      foo: { _type: "foo"; hello: string };
+    }>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -254,20 +245,16 @@ describe("object", () => {
     const value = { _type: "foo", foo: true } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<
-        Equal<
-          typeof value,
-          { _type: "foo"; bar?: string | undefined; foo: boolean }
-        >
-      >,
-      Expect<
-        Equal<
-          typeof parsedValue,
-          { _type: "foo"; bar?: string | undefined; foo: boolean }
-        >
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<{
+      _type: "foo";
+      bar?: string | undefined;
+      foo: boolean;
+    }>();
+    expectType<typeof parsedValue>().toStrictEqual<{
+      _type: "foo";
+      bar?: string | undefined;
+      foo: boolean;
+    }>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -388,14 +375,12 @@ describe("object", () => {
           bleh: "foo",
         },
         prepare: (selection) => {
-          type Assertions = [
-            Expect<
-              Equal<
-                typeof selection,
-                { _type: "foo"; bar?: string; bleh: unknown; foo: string }
-              >
-            >
-          ];
+          expectType<typeof selection>().toStrictEqual<{
+            _type: "foo";
+            bar?: string;
+            bleh: unknown;
+            foo: string;
+          }>();
 
           const { foo, bar } = selection;
 
@@ -439,9 +424,7 @@ describe("object", () => {
 
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof parsedValue, [string, "foo" | 0 | 1][]>>
-    ];
+    expectType<typeof parsedValue>().toStrictEqual<[string, "foo" | 0 | 1][]>();
 
     expect(parsedValue).toStrictEqual(
       expect.arrayContaining([
@@ -467,14 +450,9 @@ describe("object", () => {
       ],
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [
-            Expect<
-              Equal<
-                typeof value,
-                { _type: "foo"; bar: string; foo?: boolean } | undefined
-              >
-            >
-          ];
+          expectType<typeof value>().toStrictEqual<
+            { _type: "foo"; bar: string; foo?: boolean } | undefined
+          >();
 
           return !value?.bar || "Needs an empty bar";
         }),
@@ -539,26 +517,17 @@ describe("object", () => {
       referencingValue,
     } as InferValue<typeof deepReferencingType>;
 
-    type Assertions = [
-      Expect<
-        Equal<
-          typeof referencingValue,
-          { _type: "referencingType"; value: { _type: "type"; value: string } }
-        >
-      >,
-      Expect<
-        Equal<
-          typeof deepReferencingValue,
-          {
-            _type: "deepReferencingType";
-            referencingValue: {
-              _type: "referencingType";
-              value: { _type: "type"; value: string };
-            };
-          }
-        >
-      >
-    ];
+    expectType<typeof referencingValue>().toStrictEqual<{
+      _type: "referencingType";
+      value: { _type: "type"; value: string };
+    }>();
+    expectType<typeof deepReferencingValue>().toStrictEqual<{
+      _type: "deepReferencingType";
+      referencingValue: {
+        _type: "referencingType";
+        value: { _type: "type"; value: string };
+      };
+    }>();
 
     expect(deepReferencingValue).toStrictEqual(
       deepReferencingType.parse(deepReferencingValue)

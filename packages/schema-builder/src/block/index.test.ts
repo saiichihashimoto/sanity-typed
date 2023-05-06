@@ -4,8 +4,7 @@ import type { PortableTextBlock } from "@portabletext/types";
 
 import { block } from ".";
 import type { SanityBlock } from ".";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("block", () => {
@@ -32,10 +31,8 @@ describe("block", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, PortableTextBlock>>,
-      Expect<Equal<typeof parsedValue, PortableTextBlock>>
-    ];
+    expectType<typeof value>().toStrictEqual<PortableTextBlock>();
+    expectType<typeof parsedValue>().toStrictEqual<PortableTextBlock>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -57,10 +54,8 @@ describe("block", () => {
     } as InferValue<typeof type>;
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, PortableTextBlock>>,
-      Expect<Equal<typeof resolvedValue, PortableTextBlock>>
-    ];
+    expectType<typeof value>().toStrictEqual<PortableTextBlock>();
+    expectType<typeof resolvedValue>().toStrictEqual<PortableTextBlock>();
 
     expect(resolvedValue).toStrictEqual(value);
   });
@@ -185,7 +180,7 @@ describe("block", () => {
       ],
     });
 
-    type Assertions = [Expect<Equal<typeof parsedValue, string>>];
+    expectType<typeof parsedValue>().toStrictEqual<string>();
 
     expect(parsedValue).toBe("block");
   });
@@ -194,9 +189,7 @@ describe("block", () => {
     const type = block({
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [
-            Expect<Equal<typeof value, SanityBlock | undefined>>
-          ];
+          expectType<typeof value>().toStrictEqual<SanityBlock | undefined>();
 
           return (value?.children.length ?? 0) > 0 || "Needs to have children";
         }),

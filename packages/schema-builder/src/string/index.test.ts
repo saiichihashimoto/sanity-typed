@@ -3,8 +3,7 @@ import { describe, expect, it } from "@jest/globals";
 import { z } from "zod";
 
 import { string } from ".";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("string", () => {
@@ -24,7 +23,7 @@ describe("string", () => {
     const value = "foo";
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, string>>];
+    expectType<typeof parsedValue>().toStrictEqual<string>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -35,7 +34,7 @@ describe("string", () => {
     const value = "foo";
     const resolvedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof resolvedValue, string>>];
+    expectType<typeof resolvedValue>().toStrictEqual<string>();
 
     expect(resolvedValue).toStrictEqual(value);
   });
@@ -148,7 +147,7 @@ describe("string", () => {
     const value = "Test String";
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, number>>];
+    expectType<typeof parsedValue>().toStrictEqual<number>();
 
     expect(parsedValue).toBe(11);
   });
@@ -157,7 +156,7 @@ describe("string", () => {
     const type = string({
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [Expect<Equal<typeof value, string | undefined>>];
+          expectType<typeof value>().toStrictEqual<string | undefined>();
 
           return (value?.length ?? 0) > 50 || "Needs to be 50 characters";
         }),
@@ -181,11 +180,9 @@ describe("string", () => {
     const parsedValue = type.parse(value);
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, "bar" | "foo">>,
-      Expect<Equal<typeof parsedValue, "bar" | "foo">>,
-      Expect<Equal<typeof resolvedValue, "bar" | "foo">>
-    ];
+    expectType<typeof value>().toStrictEqual<"bar" | "foo">();
+    expectType<typeof parsedValue>().toStrictEqual<"bar" | "foo">();
+    expectType<typeof resolvedValue>().toStrictEqual<"bar" | "foo">();
 
     expect(parsedValue).toStrictEqual(value);
     expect(["foo", "bar"]).toContain(type.mock(faker));

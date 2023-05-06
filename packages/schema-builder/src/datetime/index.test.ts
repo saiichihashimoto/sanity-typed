@@ -2,8 +2,7 @@ import { faker } from "@faker-js/faker";
 import { describe, expect, it } from "@jest/globals";
 
 import { datetime } from ".";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 
 describe("datetime", () => {
   it("builds a sanity config", () =>
@@ -24,7 +23,7 @@ describe("datetime", () => {
     const value = "2022-06-03T03:24:55.395Z";
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, Date>>];
+    expectType<typeof parsedValue>().toStrictEqual<Date>();
 
     expect(parsedValue).toStrictEqual(new Date(value));
   });
@@ -35,7 +34,7 @@ describe("datetime", () => {
     const value = "2022-06-03T03:24:55.395Z";
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [Expect<Equal<typeof resolvedValue, Date>>];
+    expectType<typeof resolvedValue>().toStrictEqual<Date>();
 
     expect(resolvedValue).toStrictEqual(new Date(value));
   });
@@ -147,7 +146,7 @@ describe("datetime", () => {
     const value = "2022-06-03T03:24:55.395Z";
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, number>>];
+    expectType<typeof parsedValue>().toStrictEqual<number>();
 
     expect(parsedValue).toBe(24);
   });
@@ -156,7 +155,7 @@ describe("datetime", () => {
     const type = datetime({
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [Expect<Equal<typeof value, string | undefined>>];
+          expectType<typeof value>().toStrictEqual<string | undefined>();
 
           return (value?.length ?? 0) > 50 || "Needs to be 50 characters";
         }),

@@ -3,8 +3,7 @@ import { describe, expect, it } from "@jest/globals";
 import { z } from "zod";
 
 import { number } from ".";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("number", () => {
@@ -24,7 +23,7 @@ describe("number", () => {
     const value = 5;
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, number>>];
+    expectType<typeof parsedValue>().toStrictEqual<number>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -35,7 +34,7 @@ describe("number", () => {
     const value = 5;
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [Expect<Equal<typeof resolvedValue, number>>];
+    expectType<typeof resolvedValue>().toStrictEqual<number>();
 
     expect(resolvedValue).toStrictEqual(value);
   });
@@ -220,7 +219,7 @@ describe("number", () => {
     const value = 5;
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, string>>];
+    expectType<typeof parsedValue>().toStrictEqual<string>();
 
     expect(parsedValue).toBe("5");
   });
@@ -229,7 +228,7 @@ describe("number", () => {
     const type = number({
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [Expect<Equal<typeof value, number | undefined>>];
+          expectType<typeof value>().toStrictEqual<number | undefined>();
 
           return (value ?? 0) > 50 || "Needs to be more than 50";
         }),
@@ -253,11 +252,9 @@ describe("number", () => {
     const parsedValue = type.parse(value);
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, 3 | 4>>,
-      Expect<Equal<typeof parsedValue, 3 | 4>>,
-      Expect<Equal<typeof resolvedValue, 3 | 4>>
-    ];
+    expectType<typeof value>().toStrictEqual<3 | 4>();
+    expectType<typeof parsedValue>().toStrictEqual<3 | 4>();
+    expectType<typeof resolvedValue>().toStrictEqual<3 | 4>();
 
     expect(parsedValue).toStrictEqual(value);
     expect([3, 4]).toContain(type.mock(faker));

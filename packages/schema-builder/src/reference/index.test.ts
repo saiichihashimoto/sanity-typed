@@ -5,8 +5,7 @@ import { reference } from ".";
 import type { SanityReference } from ".";
 import { boolean } from "../boolean";
 import { document } from "../document";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferResolvedValue, InferValue } from "../types";
 
 describe("reference", () => {
@@ -69,10 +68,8 @@ describe("reference", () => {
     >;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, SanityReference>>,
-      Expect<Equal<typeof parsedValue, SanityReference>>
-    ];
+    expectType<typeof value>().toStrictEqual<SanityReference>();
+    expectType<typeof parsedValue>().toStrictEqual<SanityReference>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -102,10 +99,10 @@ describe("reference", () => {
     >;
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, SanityReference>>,
-      Expect<Equal<typeof resolvedValue, InferResolvedValue<typeof docType>>>
-    ];
+    expectType<typeof value>().toStrictEqual<SanityReference>();
+    expectType<typeof resolvedValue>().toStrictEqual<
+      InferResolvedValue<typeof docType>
+    >();
 
     expect(resolvedValue).toStrictEqual(docMock);
   });
@@ -156,13 +153,11 @@ describe("reference", () => {
 
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, SanityReference<true>>>,
-      Expect<Equal<typeof parsedValue, SanityReference<true>>>,
-      Expect<
-        Equal<typeof resolvedValue, InferResolvedValue<typeof docType> | null>
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<SanityReference<true>>();
+    expectType<typeof parsedValue>().toStrictEqual<SanityReference<true>>();
+    expectType<typeof resolvedValue>().toStrictEqual<InferResolvedValue<
+      typeof docType
+    > | null>();
 
     const docMock = docType.resolve(docType.mock(faker));
 
@@ -228,7 +223,7 @@ describe("reference", () => {
     };
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, string>>];
+    expectType<typeof parsedValue>().toStrictEqual<string>();
 
     expect(parsedValue).toBe("ffda9bed-b959-4100-abeb-9f1e241e9445");
   });
@@ -248,9 +243,9 @@ describe("reference", () => {
       ],
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [
-            Expect<Equal<typeof value, SanityReference | undefined>>
-          ];
+          expectType<typeof value>().toStrictEqual<
+            SanityReference | undefined
+          >();
 
           return (
             // eslint-disable-next-line no-underscore-dangle -- Need _ref

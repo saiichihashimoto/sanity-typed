@@ -8,8 +8,7 @@ import { boolean } from "../boolean";
 import { sharedFields } from "../field";
 import type { SanityReference } from "../reference";
 import { string } from "../string";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("image", () => {
@@ -36,10 +35,8 @@ describe("image", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, SanityImage<false>>>,
-      Expect<Equal<typeof parsedValue, SanityImage<false>>>
-    ];
+    expectType<typeof value>().toStrictEqual<SanityImage<false>>();
+    expectType<typeof parsedValue>().toStrictEqual<SanityImage<false>>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -56,10 +53,8 @@ describe("image", () => {
     } as InferValue<typeof type>;
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, SanityImage<false>>>,
-      Expect<Equal<typeof resolvedValue, SanityImage<false>>>
-    ];
+    expectType<typeof value>().toStrictEqual<SanityImage<false>>();
+    expectType<typeof resolvedValue>().toStrictEqual<SanityImage<false>>();
 
     expect(resolvedValue).toStrictEqual(value);
   });
@@ -88,10 +83,8 @@ describe("image", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, SanityImage<true>>>,
-      Expect<Equal<typeof parsedValue, SanityImage<true>>>
-    ];
+    expectType<typeof value>().toStrictEqual<SanityImage<true>>();
+    expectType<typeof parsedValue>().toStrictEqual<SanityImage<true>>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -158,20 +151,12 @@ describe("image", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<
-        Equal<
-          typeof value,
-          Merge<SanityImage<false>, { bar?: boolean; foo: boolean }>
-        >
-      >,
-      Expect<
-        Equal<
-          typeof parsedValue,
-          Merge<SanityImage<false>, { bar?: boolean; foo: boolean }>
-        >
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<
+      Merge<SanityImage<false>, { bar?: boolean; foo: boolean }>
+    >();
+    expectType<typeof parsedValue>().toStrictEqual<
+      Merge<SanityImage<false>, { bar?: boolean; foo: boolean }>
+    >();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -220,20 +205,12 @@ describe("image", () => {
     } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<
-        Equal<
-          typeof value,
-          Merge<SanityImage<false>, { bar?: boolean; foo: boolean }>
-        >
-      >,
-      Expect<
-        Equal<
-          typeof parsedValue,
-          Merge<SanityImage<false>, { bar?: boolean; foo: boolean }>
-        >
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<
+      Merge<SanityImage<false>, { bar?: boolean; foo: boolean }>
+    >();
+    expectType<typeof parsedValue>().toStrictEqual<
+      Merge<SanityImage<false>, { bar?: boolean; foo: boolean }>
+    >();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -342,9 +319,9 @@ describe("image", () => {
     };
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof parsedValue, [string, SanityReference | "image"][]>>
-    ];
+    expectType<typeof parsedValue>().toStrictEqual<
+      [string, SanityReference | "image"][]
+    >();
 
     expect(parsedValue).toStrictEqual(
       expect.arrayContaining([
@@ -375,15 +352,10 @@ describe("image", () => {
       ],
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [
-            Expect<
-              Equal<
-                typeof value,
-                | Merge<SanityImage<false>, { bar: string; foo?: boolean }>
-                | undefined
-              >
-            >
-          ];
+          expectType<typeof value>().toStrictEqual<
+            | Merge<SanityImage<false>, { bar: string; foo?: boolean }>
+            | undefined
+          >();
 
           return !value?.bar || "Needs an empty bar";
         }),

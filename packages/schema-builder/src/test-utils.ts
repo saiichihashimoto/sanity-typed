@@ -22,13 +22,15 @@ import type {
 import type { GetRule } from "./types";
 
 // https://twitter.com/mattpocockuk/status/1646452585006604291
-export type Expect<T extends true> = T;
+type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y
+  ? 1
+  : 2
+  ? X
+  : Exclude<X, Y>;
 
-export type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <
-  T
->() => T extends Y ? 1 : 2
-  ? true
-  : false;
+export const expectType = <T>() => ({
+  toStrictEqual: <U extends Equal<T, U>>() => {},
+});
 
 export const mockRule = () => {
   const rule: GetRule<ArrayDefinition> &

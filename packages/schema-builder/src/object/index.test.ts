@@ -5,8 +5,7 @@ import { object } from ".";
 import { boolean } from "../boolean";
 import { sharedFields } from "../field";
 import { string } from "../string";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("object", () => {
@@ -58,10 +57,8 @@ describe("object", () => {
     const value = { foo: true } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, { foo: boolean }>>,
-      Expect<Equal<typeof parsedValue, { foo: boolean }>>
-    ];
+    expectType<typeof value>().toStrictEqual<{ foo: boolean }>();
+    expectType<typeof parsedValue>().toStrictEqual<{ foo: boolean }>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -81,10 +78,8 @@ describe("object", () => {
     const value = { foo: true } as InferValue<typeof type>;
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, { foo: boolean }>>,
-      Expect<Equal<typeof resolvedValue, { foo: string }>>
-    ];
+    expectType<typeof value>().toStrictEqual<{ foo: boolean }>();
+    expectType<typeof resolvedValue>().toStrictEqual<{ foo: string }>();
 
     expect(resolvedValue).toStrictEqual({ foo: "foo" });
   });
@@ -134,12 +129,14 @@ describe("object", () => {
     const value = { foo: true } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, { bar?: string | undefined; foo: boolean }>>,
-      Expect<
-        Equal<typeof parsedValue, { bar?: string | undefined; foo: boolean }>
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<{
+      bar?: string | undefined;
+      foo: boolean;
+    }>();
+    expectType<typeof parsedValue>().toStrictEqual<{
+      bar?: string | undefined;
+      foo: boolean;
+    }>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -193,12 +190,14 @@ describe("object", () => {
     const value = { foo: true } as InferValue<typeof type>;
     const parsedValue = type.parse(value);
 
-    type Assertions = [
-      Expect<Equal<typeof value, { bar?: string | undefined; foo: boolean }>>,
-      Expect<
-        Equal<typeof parsedValue, { bar?: string | undefined; foo: boolean }>
-      >
-    ];
+    expectType<typeof value>().toStrictEqual<{
+      bar?: string | undefined;
+      foo: boolean;
+    }>();
+    expectType<typeof parsedValue>().toStrictEqual<{
+      bar?: string | undefined;
+      foo: boolean;
+    }>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -314,14 +313,11 @@ describe("object", () => {
           bleh: "foo",
         },
         prepare: (selection) => {
-          type Assertions = [
-            Expect<
-              Equal<
-                typeof selection,
-                { bar?: string; bleh: unknown; foo: string }
-              >
-            >
-          ];
+          expectType<typeof selection>().toStrictEqual<{
+            bar?: string;
+            bleh: unknown;
+            foo: string;
+          }>();
 
           const { foo, bar } = selection;
 
@@ -362,7 +358,7 @@ describe("object", () => {
     const value = { foo: true };
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, [string, 0 | 1][]>>];
+    expectType<typeof parsedValue>().toStrictEqual<[string, 0 | 1][]>();
 
     expect(parsedValue).toStrictEqual([["foo", 1]]);
   });
@@ -382,11 +378,9 @@ describe("object", () => {
       ],
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [
-            Expect<
-              Equal<typeof value, { bar: string; foo?: boolean } | undefined>
-            >
-          ];
+          expectType<typeof value>().toStrictEqual<
+            { bar: string; foo?: boolean } | undefined
+          >();
 
           return !value?.bar || "Needs an empty bar";
         }),

@@ -2,8 +2,7 @@ import { faker } from "@faker-js/faker";
 import { describe, expect, it } from "@jest/globals";
 
 import { boolean } from ".";
-import { mockRule } from "../test-utils";
-import type { Equal, Expect } from "../test-utils";
+import { expectType, mockRule } from "../test-utils";
 
 describe("boolean", () => {
   it("builds a sanity config", () =>
@@ -23,7 +22,7 @@ describe("boolean", () => {
     const value = true;
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, boolean>>];
+    expectType<typeof parsedValue>().toStrictEqual<boolean>();
 
     expect(parsedValue).toStrictEqual(value);
   });
@@ -34,7 +33,7 @@ describe("boolean", () => {
     const value = true;
     const resolvedValue = type.resolve(value);
 
-    type Assertions = [Expect<Equal<typeof resolvedValue, boolean>>];
+    expectType<typeof resolvedValue>().toStrictEqual<boolean>();
 
     expect(resolvedValue).toStrictEqual(value);
   });
@@ -71,7 +70,7 @@ describe("boolean", () => {
     const value = true;
     const parsedValue = type.parse(value);
 
-    type Assertions = [Expect<Equal<typeof parsedValue, string>>];
+    expectType<typeof parsedValue>().toStrictEqual<string>();
 
     expect(parsedValue).toBe("true");
   });
@@ -80,7 +79,7 @@ describe("boolean", () => {
     const type = boolean({
       validation: (Rule) =>
         Rule.custom((value) => {
-          type Assertions = [Expect<Equal<typeof value, boolean | undefined>>];
+          expectType<typeof value>().toStrictEqual<boolean | undefined>();
 
           return value || "Needs to be true";
         }),
