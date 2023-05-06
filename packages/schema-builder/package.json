@@ -5,6 +5,7 @@
   "description": "Build Sanity schemas declaratively and get typescript types of schema values for free!",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "dev": "npm run build -- --no-dts"
