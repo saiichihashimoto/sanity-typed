@@ -1,8 +1,10 @@
 import { faker } from "@faker-js/faker";
 import { describe, expect, it } from "@jest/globals";
 
+import { expectType } from "@sanity-typed/test-utils";
+
 import { datetime } from ".";
-import { expectType, mockRule } from "../test-utils";
+import { mockRule } from "../test-utils";
 
 describe("datetime", () => {
   it("builds a sanity config", () =>

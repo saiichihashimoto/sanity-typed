@@ -1,12 +1,14 @@
 import { describe, expect, it } from "@jest/globals";
 import { z } from "zod";
 
+import { expectType } from "@sanity-typed/test-utils";
+
 import { array } from ".";
 import { boolean } from "../boolean";
 import { object } from "../object";
 import { objectNamed } from "../objectNamed";
 import { string } from "../string";
-import { expectType, mockRule } from "../test-utils";
+import { mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("array", () => {

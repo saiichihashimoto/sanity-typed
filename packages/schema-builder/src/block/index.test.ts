@@ -2,9 +2,11 @@ import { faker } from "@faker-js/faker";
 import { describe, expect, it } from "@jest/globals";
 import type { PortableTextBlock } from "@portabletext/types";
 
+import { expectType } from "@sanity-typed/test-utils";
+
 import { block } from ".";
 import type { SanityBlock } from ".";
-import { expectType, mockRule } from "../test-utils";
+import { mockRule } from "../test-utils";
 import type { InferValue } from "../types";
 
 describe("block", () => {
