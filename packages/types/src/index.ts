@@ -187,3 +187,15 @@ export const defineField = <
     { type: TType }
   >
 ) => schemaField;
+
+export const defineType = <
+  TType extends Definition<any, any, any>["type"],
+  Name extends string,
+  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
+>(
+  schemaDefinition: Extract<
+    Definition<Name, FieldDefinitions, MemberDefinitions>,
+    { type: TType }
+  >
+) => schemaDefinition;
