@@ -32,14 +32,14 @@ import type { TupleOfLength } from "./utils";
 type TypedValueRule<Value> = RuleDef<TypedValueRule<Value>, Value>;
 
 type DefinitionWithValue<
-  TValue,
-  Rule extends RuleDef<Rule, TValue> = TypedValueRule<TValue>
+  Value,
+  Rule extends RuleDef<Rule, Value> = TypedValueRule<Value>
 > = {
-  initialValue?: InitialValueProperty<any, TValue>;
-  validation?: ValidationBuilder<Rule, TValue>;
+  initialValue?: InitialValueProperty<any, Value>;
+  validation?: ValidationBuilder<Rule, Value>;
 };
 
-export type InferValue<T> = T extends DefinitionWithValue<infer Value, any>
+export type InferValue<Def> = Def extends DefinitionWithValue<infer Value, any>
   ? Value
   : unknown;
 
@@ -50,7 +50,7 @@ type BlockDefinition = Merge<
   DefinitionWithValue<PortableTextBlock, BlockRule>
 >;
 
-type ArrayRule<TArrayValue> = RuleDef<ArrayRule<TArrayValue>, TArrayValue>;
+type ArrayRule<ArrayValue> = RuleDef<ArrayRule<ArrayValue>, ArrayValue>;
 
 type ArrayDefinition<
   MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>,
@@ -62,7 +62,7 @@ type ArrayDefinition<
   }
 >;
 
-type ObjectRule<TObjectValue> = RuleDef<ObjectRule<TObjectValue>, TObjectValue>;
+type ObjectRule<ObjectValue> = RuleDef<ObjectRule<ObjectValue>, ObjectValue>;
 
 type ObjectDefinition<
   FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
