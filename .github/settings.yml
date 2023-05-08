@@ -5,6 +5,7 @@ repository:
   private: false
 labels:
   - name: schema-builder
+  - name: types
 branches:
   - name: main
     protection:
