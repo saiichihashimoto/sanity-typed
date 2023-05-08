@@ -67,7 +67,11 @@ type ArrayRule<ArrayValue> = RuleDef<ArrayRule<ArrayValue>, ArrayValue>;
 
 type ArrayDefinition<
   TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>,
-  ArrayValue = InferValue<TMemberDefinitions[number]>[]
+  ArrayValue = Simplify<
+    InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
+      ? Simplify<InferValue<TMemberDefinitions[number]> & { _key: string }>
+      : InferValue<TMemberDefinitions[number]>
+  >[]
 > = Merge<
   ArrayDefinitionNative,
   DefinitionWithValue<ArrayValue, ArrayRule<ArrayValue>> & {
