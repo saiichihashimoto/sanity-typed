@@ -8,7 +8,9 @@ import type {
   DateDefinition,
   DatetimeDefinition,
   DocumentDefinition as DocumentDefinitionNative,
-  FileDefinition,
+  FileDefinition as FileDefinitionNative,
+  FileRule,
+  FileValue,
   GeopointDefinition,
   ImageDefinition,
   InitialValueProperty,
@@ -95,6 +97,11 @@ type DocumentDefinition<
   DefinitionWithValue<DocumentValue, DocumentRule<DocumentValue>> & {
     fields: FieldDefinitions;
   }
+>;
+
+type FileDefinition = Merge<
+  FileDefinitionNative,
+  DefinitionWithValue<FileValue, FileRule>
 >;
 
 type Definition<

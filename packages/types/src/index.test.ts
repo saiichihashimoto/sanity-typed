@@ -202,7 +202,6 @@ describe("defineArrayMember", () => {
         type: "file",
       });
 
-      // @ts-expect-error -- FIXME
       expectType<InferValue<typeof field>>().toStrictEqual<FileValue>();
     });
   });
@@ -681,7 +680,6 @@ describe("defineField", () => {
         type: "file",
       });
 
-      // @ts-expect-error -- FIXME
       expectType<InferValue<typeof field>>().toStrictEqual<FileValue>();
     });
   });
