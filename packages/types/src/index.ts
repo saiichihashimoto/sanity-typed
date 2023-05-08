@@ -7,24 +7,25 @@ import type {
   CrossDatasetReferenceDefinition,
   DateDefinition,
   DatetimeDefinition,
-  DocumentDefinition,
+  DocumentDefinition as DocumentDefinitionNative,
   FileDefinition,
   GeopointDefinition,
   ImageDefinition,
   InitialValueProperty,
   NumberDefinition,
-  ObjectDefinition,
+  ObjectDefinition as ObjectDefinitionNative,
   ReferenceDefinition,
   RuleDef,
+  SanityDocument,
   SlugDefinition,
   StringDefinition,
   TextDefinition,
   UrlDefinition,
   ValidationBuilder,
 } from "@sanity/types";
-import type { Merge } from "type-fest";
+import type { Merge, RemoveIndexSignature, Simplify } from "type-fest";
 
-import type {TupleOfLength} from "./utils";
+import type { TupleOfLength } from "./utils";
 
 type TypedValueRule<Value> = RuleDef<TypedValueRule<Value>, Value>;
 
@@ -47,55 +48,104 @@ type BlockDefinition = Merge<
   DefinitionWithValue<PortableTextBlock, BlockRule>
 >;
 
-type ArrayRule<TArrayValue extends any[]> = RuleDef<
-  ArrayRule<TArrayValue>,
-  TArrayValue
->;
+type ArrayRule<TArrayValue> = RuleDef<ArrayRule<TArrayValue>, TArrayValue>;
 
 type ArrayDefinition<
   MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>,
-  ArrayValue = InferValue<MemberDefinitions[number]>
+  ArrayValue = InferValue<MemberDefinitions[number]>[]
 > = Merge<
   ArrayDefinitionNative,
-  DefinitionWithValue<ArrayValue[], ArrayRule<ArrayValue[]>> & {
+  DefinitionWithValue<ArrayValue, ArrayRule<ArrayValue>> & {
     of: MemberDefinitions;
   }
 >;
 
+type ObjectRule<TObjectValue> = RuleDef<ObjectRule<TObjectValue>, TObjectValue>;
+
+type ObjectDefinition<
+  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  ObjectValue = {
+    [Name in FieldDefinitions[number]["name"]]: InferValue<
+      Extract<FieldDefinitions[number], { name: Name }>
+    >;
+  }
+> = Merge<
+  ObjectDefinitionNative,
+  DefinitionWithValue<ObjectValue, ObjectRule<ObjectValue>> & {
+    fields: FieldDefinitions;
+  }
+>;
+
+type DocumentRule<TDocumentValue> = RuleDef<
+  DocumentRule<TDocumentValue>,
+  TDocumentValue
+>;
+
+type DocumentDefinition<
+  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  DocumentValue = Simplify<
+    RemoveIndexSignature<SanityDocument> & {
+      [Name in FieldDefinitions[number]["name"]]: InferValue<
+        Extract<FieldDefinitions[number], { name: Name }>
+      >;
+    }
+  >
+> = Merge<
+  DocumentDefinitionNative,
+  DefinitionWithValue<DocumentValue, DocumentRule<DocumentValue>> & {
+    fields: FieldDefinitions;
+  }
+>;
+
 type Definition<
+  Name extends string,
+  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
 > =
-  | ArrayDefinition<MemberDefinitions>
-  | BlockDefinition
-  | BooleanDefinition
-  | CrossDatasetReferenceDefinition
-  | DateDefinition
-  | DatetimeDefinition
-  | DocumentDefinition
-  | FileDefinition
-  | GeopointDefinition
-  | ImageDefinition
-  | NumberDefinition
-  | ObjectDefinition
-  | ReferenceDefinition
-  | SlugDefinition
-  | StringDefinition
-  | TextDefinition
-  | UrlDefinition;
+  | (ArrayDefinition<MemberDefinitions> & { name: Name })
+  | (BlockDefinition & { name: Name })
+  | (BooleanDefinition & { name: Name })
+  | (CrossDatasetReferenceDefinition & { name: Name })
+  | (DateDefinition & { name: Name })
+  | (DatetimeDefinition & { name: Name })
+  | (DocumentDefinition<FieldDefinitions> & { name: Name })
+  | (FileDefinition & { name: Name })
+  | (GeopointDefinition & { name: Name })
+  | (ImageDefinition & { name: Name })
+  | (NumberDefinition & { name: Name })
+  | (ObjectDefinition<FieldDefinitions> & { name: Name })
+  | (ReferenceDefinition & { name: Name })
+  | (SlugDefinition & { name: Name })
+  | (StringDefinition & { name: Name })
+  | (TextDefinition & { name: Name })
+  | (UrlDefinition & { name: Name });
 
-type ArrayMemberDefinition = {
-  [TType in Definition<any>["type"]]: ArrayOfEntry<
-    Extract<Definition<any>, { type: TType }>
+type ArrayMemberDefinition<
+  FieldDefinitions extends TupleOfLength<{ name: string }, 1>
+> = {
+  [TType in Definition<any, FieldDefinitions, any>["type"]]: ArrayOfEntry<
+    Extract<Definition<any, FieldDefinitions, any>, { type: TType }>
   >;
-}[Exclude<Definition<any>["type"], "array">];
+}[Exclude<Definition<any, FieldDefinitions, any>["type"], "array">];
 
-export const defineArrayMember = <TType extends ArrayMemberDefinition["type"]>(
-  arrayOfSchema: Extract<ArrayMemberDefinition, { type: TType }>
+export const defineArrayMember = <
+  TType extends ArrayMemberDefinition<any>["type"],
+  FieldDefinitions extends TupleOfLength<{ name: string }, 1>
+>(
+  arrayOfSchema: Extract<
+    ArrayMemberDefinition<FieldDefinitions>,
+    { type: TType }
+  >
 ) => arrayOfSchema;
 
 export const defineField = <
-  TType extends Definition<any>["type"],
+  TType extends Definition<any, any, any>["type"],
+  Name extends string,
+  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
 >(
-  arrayOfSchema: Extract<Definition<MemberDefinitions>, { type: TType }>
-) => arrayOfSchema;
+  schemaField: Extract<
+    Definition<Name, FieldDefinitions, MemberDefinitions>,
+    { type: TType }
+  >
+) => schemaField;

@@ -137,23 +137,50 @@ describe("defineArrayMember", () => {
       expect(
         defineArrayMember({
           type: "document",
-          fields: [],
+          fields: [
+            defineField({
+              name: "bar",
+              type: "boolean",
+            }),
+          ],
         })
       ).toStrictEqual(
         defineArrayMemberNative({
           type: "document",
-          fields: [],
+          fields: [
+            defineFieldNative({
+              name: "bar",
+              type: "boolean",
+            }),
+          ],
         })
       ));
 
-    it("infers unknown object", () => {
+    it("infers SanityDocument with fields", () => {
       const field = defineArrayMember({
         type: "document",
-        fields: [],
+        fields: [
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "bar" as const,
+            type: "boolean",
+          }),
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "tar" as const,
+            type: "number",
+          }),
+        ],
       });
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
-        [key: string]: unknown;
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: string;
+        _updatedAt: string;
+        bar: boolean;
+        tar: number;
       }>();
     });
   });
@@ -175,6 +202,7 @@ describe("defineArrayMember", () => {
         type: "file",
       });
 
+      // @ts-expect-error -- FIXME
       expectType<InferValue<typeof field>>().toStrictEqual<FileValue>();
     });
   });
@@ -249,23 +277,45 @@ describe("defineArrayMember", () => {
       expect(
         defineArrayMember({
           type: "object",
-          fields: [],
+          fields: [
+            defineField({
+              name: "bar",
+              type: "boolean",
+            }),
+          ],
         })
       ).toStrictEqual(
         defineArrayMemberNative({
           type: "object",
-          fields: [],
+          fields: [
+            defineFieldNative({
+              name: "bar",
+              type: "boolean",
+            }),
+          ],
         })
       ));
 
-    it("infers unknown object", () => {
+    it("infers object with fields", () => {
       const field = defineArrayMember({
         type: "object",
-        fields: [],
+        fields: [
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "bar" as const,
+            type: "boolean",
+          }),
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "tar" as const,
+            type: "number",
+          }),
+        ],
       });
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
-        [key: string]: unknown;
+        bar: boolean;
+        tar: number;
       }>();
     });
   });
@@ -503,9 +553,7 @@ describe("defineField", () => {
         projectId: "bar",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<
-        NonNullable<unknown>
-      >();
+      expectType<InferValue<typeof field>>().toStrictEqual<unknown>();
     });
   });
 
@@ -563,25 +611,52 @@ describe("defineField", () => {
         defineField({
           name: "foo",
           type: "document",
-          fields: [],
+          fields: [
+            defineField({
+              name: "bar",
+              type: "boolean",
+            }),
+          ],
         })
       ).toStrictEqual(
         defineFieldNative({
           name: "foo",
           type: "document",
-          fields: [],
+          fields: [
+            defineFieldNative({
+              name: "bar",
+              type: "boolean",
+            }),
+          ],
         })
       ));
 
-    it("infers unknown object", () => {
+    it("infers SanityDocument with fields", () => {
       const field = defineField({
         name: "foo",
         type: "document",
-        fields: [],
+        fields: [
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "bar" as const,
+            type: "boolean",
+          }),
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "tar" as const,
+            type: "number",
+          }),
+        ],
       });
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
-        [key: string]: unknown;
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: string;
+        _updatedAt: string;
+        bar: boolean;
+        tar: number;
       }>();
     });
   });
@@ -606,6 +681,7 @@ describe("defineField", () => {
         type: "file",
       });
 
+      // @ts-expect-error -- FIXME
       expectType<InferValue<typeof field>>().toStrictEqual<FileValue>();
     });
   });
@@ -690,25 +766,47 @@ describe("defineField", () => {
         defineField({
           name: "foo",
           type: "object",
-          fields: [],
+          fields: [
+            defineField({
+              name: "bar",
+              type: "boolean",
+            }),
+          ],
         })
       ).toStrictEqual(
         defineFieldNative({
           name: "foo",
           type: "object",
-          fields: [],
+          fields: [
+            defineFieldNative({
+              name: "bar",
+              type: "boolean",
+            }),
+          ],
         })
       ));
 
-    it("infers unknown object", () => {
+    it("infers object with fields", () => {
       const field = defineField({
         name: "foo",
         type: "object",
-        fields: [],
+        fields: [
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "bar" as const,
+            type: "boolean",
+          }),
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "tar" as const,
+            type: "number",
+          }),
+        ],
       });
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
-        [key: string]: unknown;
+        bar: boolean;
+        tar: number;
       }>();
     });
   });
