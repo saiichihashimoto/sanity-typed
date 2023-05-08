@@ -7,23 +7,36 @@ import type {
   CrossDatasetReferenceDefinition,
   DateDefinition,
   DatetimeDefinition,
+  DefineSchemaOptions,
   DocumentDefinition as DocumentDefinitionNative,
+  EmailDefinition,
+  FieldDefinitionBase,
   FileDefinition as FileDefinitionNative,
   FileValue as FileValueNative,
   GeopointDefinition,
   ImageDefinition as ImageDefinitionNative,
   ImageValue as ImageValueNative,
   InitialValueProperty,
+  IntrinsicTypeName,
+  MaybeAllowUnknownProps,
+  NarrowPreview,
   NumberDefinition,
   ObjectDefinition as ObjectDefinitionNative,
   ReferenceDefinition,
   RuleDef,
   SanityDocument,
   SlugDefinition,
+  StrictDefinition,
   StringDefinition,
   TextDefinition,
+  TypeAliasDefinition,
   UrlDefinition,
   ValidationBuilder,
+} from "@sanity/types";
+import {
+  defineArrayMember as defineArrayMemberNative,
+  defineField as defineFieldNative,
+  defineType as defineTypeNative,
 } from "@sanity/types";
 import type { Merge, RemoveIndexSignature, Simplify } from "type-fest";
 
@@ -53,28 +66,28 @@ type BlockDefinition = Merge<
 type ArrayRule<ArrayValue> = RuleDef<ArrayRule<ArrayValue>, ArrayValue>;
 
 type ArrayDefinition<
-  MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>,
-  ArrayValue = InferValue<MemberDefinitions[number]>[]
+  TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>,
+  ArrayValue = InferValue<TMemberDefinitions[number]>[]
 > = Merge<
   ArrayDefinitionNative,
   DefinitionWithValue<ArrayValue, ArrayRule<ArrayValue>> & {
-    of: MemberDefinitions;
+    of: TMemberDefinitions;
   }
 >;
 
 type ObjectRule<ObjectValue> = RuleDef<ObjectRule<ObjectValue>, ObjectValue>;
 
 type ObjectDefinition<
-  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   ObjectValue = {
-    [Name in FieldDefinitions[number]["name"]]: InferValue<
-      Extract<FieldDefinitions[number], { name: Name }>
+    [Name in TFieldDefinitions[number]["name"]]: InferValue<
+      Extract<TFieldDefinitions[number], { name: Name }>
     >;
   }
 > = Merge<
   ObjectDefinitionNative,
   DefinitionWithValue<ObjectValue, ObjectRule<ObjectValue>> & {
-    fields: FieldDefinitions;
+    fields: TFieldDefinitions;
   }
 >;
 
@@ -84,118 +97,200 @@ type DocumentRule<DocumentValue> = RuleDef<
 >;
 
 type DocumentDefinition<
-  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   DocumentValue = Simplify<
     RemoveIndexSignature<SanityDocument> & {
-      [Name in FieldDefinitions[number]["name"]]: InferValue<
-        Extract<FieldDefinitions[number], { name: Name }>
+      [Name in TFieldDefinitions[number]["name"]]: InferValue<
+        Extract<TFieldDefinitions[number], { name: Name }>
       >;
     }
   >
 > = Merge<
   DocumentDefinitionNative,
   DefinitionWithValue<DocumentValue, DocumentRule<DocumentValue>> & {
-    fields: FieldDefinitions;
+    fields: TFieldDefinitions;
   }
 >;
 
 type FileRule<FileValue> = RuleDef<FileRule<FileValue>, FileValue>;
 
 type FileDefinition<
-  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   FileValue = Simplify<
     RemoveIndexSignature<FileValueNative> & {
-      [Name in FieldDefinitions[number]["name"]]: InferValue<
-        Extract<FieldDefinitions[number], { name: Name }>
+      [Name in TFieldDefinitions[number]["name"]]: InferValue<
+        Extract<TFieldDefinitions[number], { name: Name }>
       >;
     }
   >
 > = Merge<
   FileDefinitionNative,
   DefinitionWithValue<FileValue, FileRule<FileValue>> & {
-    fields?: FieldDefinitions;
+    fields?: TFieldDefinitions;
   }
 >;
 
 type ImageRule<ImageValue> = RuleDef<ImageRule<ImageValue>, ImageValue>;
 
 type ImageDefinition<
-  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   ImageValue = Simplify<
     RemoveIndexSignature<ImageValueNative> & {
-      [Name in FieldDefinitions[number]["name"]]: InferValue<
-        Extract<FieldDefinitions[number], { name: Name }>
+      [Name in TFieldDefinitions[number]["name"]]: InferValue<
+        Extract<TFieldDefinitions[number], { name: Name }>
       >;
     }
   >
 > = Merge<
   ImageDefinitionNative,
   DefinitionWithValue<ImageValue, ImageRule<ImageValue>> & {
-    fields?: FieldDefinitions;
+    fields?: TFieldDefinitions;
   }
 >;
 
-type Definition<
-  Name extends string,
-  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
-> =
-  | (ArrayDefinition<MemberDefinitions> & { name: Name })
-  | (BlockDefinition & { name: Name })
-  | (BooleanDefinition & { name: Name })
-  | (CrossDatasetReferenceDefinition & { name: Name })
-  | (DateDefinition & { name: Name })
-  | (DatetimeDefinition & { name: Name })
-  | (DocumentDefinition<FieldDefinitions> & { name: Name })
-  | (FileDefinition<FieldDefinitions> & { name: Name })
-  | (GeopointDefinition & { name: Name })
-  | (ImageDefinition<FieldDefinitions> & { name: Name })
-  | (NumberDefinition & { name: Name })
-  | (ObjectDefinition<FieldDefinitions> & { name: Name })
-  | (ReferenceDefinition & { name: Name })
-  | (SlugDefinition & { name: Name })
-  | (StringDefinition & { name: Name })
-  | (TextDefinition & { name: Name })
-  | (UrlDefinition & { name: Name });
-
-type ArrayMemberDefinition<
-  FieldDefinitions extends TupleOfLength<{ name: string }, 1>
+type IntrinsicDefinitions<
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
 > = {
-  [TType in Definition<any, FieldDefinitions, any>["type"]]: ArrayOfEntry<
-    Extract<Definition<any, FieldDefinitions, any>, { type: TType }>
-  >;
-}[Exclude<Definition<any, FieldDefinitions, any>["type"], "array">];
+  array: ArrayDefinition<TMemberDefinitions>;
+  block: BlockDefinition;
+  boolean: BooleanDefinition;
+  crossDatasetReference: CrossDatasetReferenceDefinition;
+  date: DateDefinition;
+  datetime: DatetimeDefinition;
+  document: DocumentDefinition<TFieldDefinitions>;
+  email: EmailDefinition;
+  file: FileDefinition<TFieldDefinitions>;
+  geopoint: GeopointDefinition;
+  image: ImageDefinition<TFieldDefinitions>;
+  number: NumberDefinition;
+  object: ObjectDefinition<TFieldDefinitions>;
+  reference: ReferenceDefinition;
+  slug: SlugDefinition;
+  string: StringDefinition;
+  text: TextDefinition;
+  url: UrlDefinition;
+};
 
-export const defineArrayMember = <
-  TType extends ArrayMemberDefinition<any>["type"],
-  FieldDefinitions extends TupleOfLength<{ name: string }, 1>
->(
-  arrayOfSchema: Extract<
-    ArrayMemberDefinition<FieldDefinitions>,
-    { type: TType }
-  >
-) => arrayOfSchema;
+type IntrinsicBase<
+  TName extends string,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
+> = {
+  [K in keyof IntrinsicDefinitions<
+    TFieldDefinitions,
+    TMemberDefinitions
+  >]: Omit<
+    IntrinsicDefinitions<TFieldDefinitions, TMemberDefinitions>[K] & {
+      name: TName;
+    },
+    "preview"
+  >;
+}[keyof IntrinsicDefinitions<TFieldDefinitions, TMemberDefinitions>];
+
+type DefineSchemaBase<
+  TType extends IntrinsicTypeName,
+  TName extends string,
+  TAlias extends IntrinsicTypeName | undefined,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
+> = TType extends IntrinsicTypeName
+  ? Extract<
+      IntrinsicBase<TName, TFieldDefinitions, TMemberDefinitions>,
+      { type: TType }
+    >
+  : TypeAliasDefinition<TType, TAlias>;
 
 export const defineField = <
-  TType extends Definition<any, any, any>["type"],
-  Name extends string,
-  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
+  TType extends IntrinsicTypeName,
+  TName extends string,
+  TSelect extends { [key: string]: string } | undefined,
+  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
 >(
-  schemaField: Extract<
-    Definition<Name, FieldDefinitions, MemberDefinitions>,
-    { type: TType }
-  >
-) => schemaField;
+  schemaField: DefineSchemaBase<
+    TType,
+    TName,
+    TAlias,
+    TFieldDefinitions,
+    TMemberDefinitions
+  > &
+    FieldDefinitionBase &
+    MaybeAllowUnknownProps<TStrict> &
+    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> & {
+      name: TName;
+      type: TType;
+    },
+  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
+) => defineFieldNative(schemaField as any, defineOptions) as typeof schemaField;
 
 export const defineType = <
-  TType extends Definition<any, any, any>["type"],
-  Name extends string,
-  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
+  TType extends IntrinsicTypeName,
+  TName extends string,
+  TSelect extends { [key: string]: string } | undefined,
+  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
 >(
-  schemaDefinition: Extract<
-    Definition<Name, FieldDefinitions, MemberDefinitions>,
-    { type: TType }
-  >
-) => schemaDefinition;
+  schemaDefinition: DefineSchemaBase<
+    TType,
+    TName,
+    TAlias,
+    TFieldDefinitions,
+    TMemberDefinitions
+  > &
+    MaybeAllowUnknownProps<TStrict> &
+    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> & {
+      name: TName;
+      type: TType;
+    },
+  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
+) =>
+  defineTypeNative(
+    schemaDefinition as any,
+    defineOptions
+  ) as typeof schemaDefinition;
+
+type IntrinsicArrayOfBase<
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+> = {
+  [K in keyof IntrinsicDefinitions<TFieldDefinitions, any>]: Omit<
+    ArrayOfEntry<IntrinsicDefinitions<TFieldDefinitions, any>[K]>,
+    "preview"
+  >;
+}[keyof IntrinsicDefinitions<TFieldDefinitions, any>];
+
+type DefineArrayMemberBase<
+  TType extends IntrinsicTypeName,
+  TAlias extends IntrinsicTypeName | undefined,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+> = TType extends IntrinsicTypeName
+  ? Extract<IntrinsicArrayOfBase<TFieldDefinitions>, { type: TType }>
+  : ArrayOfEntry<TypeAliasDefinition<string, TAlias>>;
+
+export const defineArrayMember = <
+  TType extends IntrinsicTypeName,
+  TName extends string,
+  TSelect extends { [key: string]: string } | undefined,
+  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+>(
+  arrayOfSchema: DefineArrayMemberBase<TType, TAlias, TFieldDefinitions> &
+    MaybeAllowUnknownProps<TStrict> &
+    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> & {
+      name?: TName;
+      type: TType;
+    },
+  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
+) =>
+  defineArrayMemberNative(
+    arrayOfSchema as any,
+    defineOptions
+  ) as typeof arrayOfSchema;
