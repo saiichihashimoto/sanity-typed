@@ -24,6 +24,8 @@ import type {
 } from "@sanity/types";
 import type { Merge } from "type-fest";
 
+import type {TupleOfLength} from "./utils";
+
 type TypedValueRule<Value> = RuleDef<TypedValueRule<Value>, Value>;
 
 type DefinitionWithValue<
@@ -51,10 +53,7 @@ type ArrayRule<TArrayValue extends any[]> = RuleDef<
 >;
 
 type ArrayDefinition<
-  MemberDefinitions extends [
-    DefinitionWithValue<any, any>,
-    ...DefinitionWithValue<any, any>[]
-  ],
+  MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>,
   ArrayValue = InferValue<MemberDefinitions[number]>
 > = Merge<
   ArrayDefinitionNative,
@@ -64,10 +63,7 @@ type ArrayDefinition<
 >;
 
 type Definition<
-  MemberDefinitions extends [
-    DefinitionWithValue<any, any>,
-    ...DefinitionWithValue<any, any>[]
-  ]
+  MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
 > =
   | ArrayDefinition<MemberDefinitions>
   | BlockDefinition
@@ -99,10 +95,7 @@ export const defineArrayMember = <TType extends ArrayMemberDefinition["type"]>(
 
 export const defineField = <
   TType extends Definition<any>["type"],
-  MemberDefinitions extends [
-    DefinitionWithValue<any, any>,
-    ...DefinitionWithValue<any, any>[]
-  ]
+  MemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
 >(
   arrayOfSchema: Extract<Definition<MemberDefinitions>, { type: TType }>
 ) => arrayOfSchema;
