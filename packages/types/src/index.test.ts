@@ -402,16 +402,6 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a never[]", () => {
-      const field = defineField({
-        name: "foo",
-        type: "array",
-        of: [],
-      });
-
-      expectType<InferValue<typeof field>>().toStrictEqual<never[]>();
-    });
-
     it("infers an array of the member", () => {
       const field = defineField({
         name: "foo",

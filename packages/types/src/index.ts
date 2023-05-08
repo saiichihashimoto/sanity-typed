@@ -51,7 +51,10 @@ type ArrayRule<TArrayValue extends any[]> = RuleDef<
 >;
 
 type ArrayDefinition<
-  MemberDefinitions extends DefinitionWithValue<any, any>[],
+  MemberDefinitions extends [
+    DefinitionWithValue<any, any>,
+    ...DefinitionWithValue<any, any>[]
+  ],
   ArrayValue = InferValue<MemberDefinitions[number]>
 > = Merge<
   ArrayDefinitionNative,
@@ -60,7 +63,12 @@ type ArrayDefinition<
   }
 >;
 
-type Definition<MemberDefinitions extends DefinitionWithValue<any, any>[]> =
+type Definition<
+  MemberDefinitions extends [
+    DefinitionWithValue<any, any>,
+    ...DefinitionWithValue<any, any>[]
+  ]
+> =
   | ArrayDefinition<MemberDefinitions>
   | BlockDefinition
   | BooleanDefinition
@@ -91,7 +99,10 @@ export const defineArrayMember = <TType extends ArrayMemberDefinition["type"]>(
 
 export const defineField = <
   TType extends Definition<any>["type"],
-  MemberDefinitions extends DefinitionWithValue<any, any>[]
+  MemberDefinitions extends [
+    DefinitionWithValue<any, any>,
+    ...DefinitionWithValue<any, any>[]
+  ]
 >(
   arrayOfSchema: Extract<Definition<MemberDefinitions>, { type: TType }>
 ) => arrayOfSchema;
