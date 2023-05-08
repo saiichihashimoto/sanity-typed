@@ -17,7 +17,7 @@
     "@portabletext/types": "2.0.2",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@sanity/types": "3.9.1"
+    "@sanity/types": "3.10.0"
   },
   "peerDependencies": {
     "@portabletext/types": "^2.0.2",

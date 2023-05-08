@@ -22,7 +22,7 @@
     "@jest/globals": "29.5.0",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "sanity": "3.9.1"
+    "sanity": "3.10.0"
   },
   "peerDependencies": {
     "sanity": "^3.2.0"
