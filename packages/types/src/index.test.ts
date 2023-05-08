@@ -526,6 +526,31 @@ describe("defineField", () => {
         (boolean | string)[]
       >();
     });
+
+    it('adds "_key" to objects', () => {
+      const field = defineField({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            type: "object",
+            fields: [
+              defineField({
+                name: "bar" as const,
+                type: "boolean",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<
+        {
+          _key: string;
+          bar: boolean;
+        }[]
+      >();
+    });
   });
 
   describe("block", () => {
