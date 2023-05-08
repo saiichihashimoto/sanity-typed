@@ -30,7 +30,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a block", () => {
+    it("infers PortableTextBlock", () => {
       const field = defineArrayMember({
         type: "block",
       });
@@ -51,7 +51,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a boolean", () => {
+    it("infers boolean", () => {
       const field = defineArrayMember({
         type: "boolean",
       });
@@ -78,7 +78,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers something strange", () => {
+    it("infers unknown", () => {
       const field = defineArrayMember({
         type: "crossDatasetReference",
         to: [],
@@ -86,9 +86,7 @@ describe("defineArrayMember", () => {
         projectId: "bar",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<
-        NonNullable<unknown>
-      >();
+      expectType<InferValue<typeof field>>().toStrictEqual<unknown>();
     });
   });
 
@@ -104,7 +102,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a string", () => {
+    it("infers string", () => {
       const field = defineArrayMember({
         type: "date",
       });
@@ -125,7 +123,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a string", () => {
+    it("infers string", () => {
       const field = defineArrayMember({
         type: "datetime",
       });
@@ -148,7 +146,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers an unknown object", () => {
+    it("infers unknown object", () => {
       const field = defineArrayMember({
         type: "document",
         fields: [],
@@ -172,7 +170,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a FileValue", () => {
+    it("infers FileValue", () => {
       const field = defineArrayMember({
         type: "file",
       });
@@ -193,7 +191,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a GeopointValue", () => {
+    it("infers GeopointValue", () => {
       const field = defineArrayMember({
         type: "geopoint",
       });
@@ -216,7 +214,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers an ImageValue", () => {
+    it("infers ImageValue", () => {
       const field = defineArrayMember({
         type: "image",
       });
@@ -237,7 +235,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a number", () => {
+    it("infers number", () => {
       const field = defineArrayMember({
         type: "number",
       });
@@ -260,7 +258,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers an unknown object", () => {
+    it("infers unknown object", () => {
       const field = defineArrayMember({
         type: "object",
         fields: [],
@@ -286,7 +284,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a Reference", () => {
+    it("infers Reference", () => {
       const field = defineArrayMember({
         type: "reference",
         to: [],
@@ -310,7 +308,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a SlugValue", () => {
+    it("infers SlugValue", () => {
       const field = defineArrayMember({
         type: "slug",
       });
@@ -333,7 +331,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a string", () => {
+    it("infers string", () => {
       const field = defineArrayMember({
         type: "string",
       });
@@ -354,7 +352,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a string", () => {
+    it("infers string", () => {
       const field = defineArrayMember({
         type: "text",
       });
@@ -375,7 +373,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers a string", () => {
+    it("infers string", () => {
       const field = defineArrayMember({
         type: "url",
       });
@@ -402,7 +400,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers an array of the member", () => {
+    it("infers array of the member", () => {
       const field = defineField({
         name: "foo",
         type: "array",
@@ -442,7 +440,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a block", () => {
+    it("infers PortableTextBlock", () => {
       const field = defineField({
         name: "foo",
         type: "block",
@@ -466,7 +464,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a boolean", () => {
+    it("infers boolean", () => {
       const field = defineField({
         name: "foo",
         type: "boolean",
@@ -525,7 +523,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a string", () => {
+    it("infers string", () => {
       const field = defineField({
         name: "foo",
         type: "date",
@@ -549,7 +547,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a string", () => {
+    it("infers string", () => {
       const field = defineField({
         name: "foo",
         type: "datetime",
@@ -575,7 +573,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers an unknown object", () => {
+    it("infers unknown object", () => {
       const field = defineField({
         name: "foo",
         type: "document",
@@ -602,7 +600,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a FileValue", () => {
+    it("infers FileValue", () => {
       const field = defineField({
         name: "foo",
         type: "file",
@@ -626,7 +624,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a GeopointValue", () => {
+    it("infers GeopointValue", () => {
       const field = defineField({
         name: "foo",
         type: "geopoint",
@@ -652,7 +650,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers an ImageValue", () => {
+    it("infers ImageValue", () => {
       const field = defineField({
         name: "foo",
         type: "image",
@@ -676,7 +674,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a number", () => {
+    it("infers number", () => {
       const field = defineField({
         name: "foo",
         type: "number",
@@ -702,7 +700,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers an unknown object", () => {
+    it("infers unknown object", () => {
       const field = defineField({
         name: "foo",
         type: "object",
@@ -731,7 +729,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a Reference", () => {
+    it("infers Reference", () => {
       const field = defineField({
         name: "foo",
         type: "reference",
@@ -758,7 +756,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a SlugValue", () => {
+    it("infers SlugValue", () => {
       const field = defineField({
         name: "foo",
         type: "slug",
@@ -784,7 +782,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a string", () => {
+    it("infers string", () => {
       const field = defineField({
         name: "foo",
         type: "string",
@@ -808,7 +806,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a string", () => {
+    it("infers string", () => {
       const field = defineField({
         name: "foo",
         type: "text",
@@ -832,7 +830,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers a string", () => {
+    it("infers string", () => {
       const field = defineField({
         name: "foo",
         type: "url",
