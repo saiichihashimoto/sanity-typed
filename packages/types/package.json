@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@sanity-typed/types",
+  "version": "0.0.0-development",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "npm run build -- --no-dts"
+  },
+  "dependencies": {
+    "type-fest": "2.19.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "29.5.0",
+    "@portabletext/types": "2.0.2",
+    "@sanity-typed/test-utils": "0.0.0-development",
+    "@sanity-typed/tsconfig": "0.0.0-development",
+    "@sanity/types": "3.9.1"
+  },
+  "peerDependencies": {
+    "@portabletext/types": "^2.0.2",
+    "@sanity/types": "^3.9.1"
+  }
+}

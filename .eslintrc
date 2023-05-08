@@ -251,6 +251,7 @@
         ],
         "@typescript-eslint/method-signature-style": "error",
         "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/no-explicit-any": [
           "off",
           {
@@ -317,7 +318,7 @@
         "jest/expect-expect": [
           "error",
           {
-            "assertFunctionNames": ["expect", "expectExample"]
+            "assertFunctionNames": ["expect", "expectType"]
           }
         ],
         "jest/no-alias-methods": "error",
