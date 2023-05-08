@@ -7,6 +7,8 @@ import {
 import type {
   FileValue,
   GeopointValue,
+  ImageCrop,
+  ImageHotspot,
   ImageValue,
   Reference,
   SlugValue,
@@ -204,6 +206,30 @@ describe("defineArrayMember", () => {
 
       expectType<InferValue<typeof field>>().toStrictEqual<FileValue>();
     });
+
+    it("infers FileValue with fields", () => {
+      const field = defineArrayMember({
+        type: "file",
+        fields: [
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "bar" as const,
+            type: "boolean",
+          }),
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "tar" as const,
+            type: "number",
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar: boolean;
+        tar: number;
+      }>();
+    });
   });
 
   describe("geopoint", () => {
@@ -247,6 +273,32 @@ describe("defineArrayMember", () => {
       });
 
       expectType<InferValue<typeof field>>().toStrictEqual<ImageValue>();
+    });
+
+    it("infers ImageValue with fields", () => {
+      const field = defineArrayMember({
+        type: "image",
+        fields: [
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "bar" as const,
+            type: "boolean",
+          }),
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "tar" as const,
+            type: "number",
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar: boolean;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+        tar: number;
+      }>();
     });
   });
 
@@ -682,6 +734,31 @@ describe("defineField", () => {
 
       expectType<InferValue<typeof field>>().toStrictEqual<FileValue>();
     });
+
+    it("infers FileValue with fields", () => {
+      const field = defineField({
+        name: "foo",
+        type: "file",
+        fields: [
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "bar" as const,
+            type: "boolean",
+          }),
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "tar" as const,
+            type: "number",
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar: boolean;
+        tar: number;
+      }>();
+    });
   });
 
   describe("geopoint", () => {
@@ -731,6 +808,33 @@ describe("defineField", () => {
       });
 
       expectType<InferValue<typeof field>>().toStrictEqual<ImageValue>();
+    });
+
+    it("infers ImageValue with fields", () => {
+      const field = defineField({
+        name: "foo",
+        type: "image",
+        fields: [
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "bar" as const,
+            type: "boolean",
+          }),
+          defineField({
+            // FIXME Why do we need "as const?"
+            name: "tar" as const,
+            type: "number",
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar: boolean;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+        tar: number;
+      }>();
     });
   });
 

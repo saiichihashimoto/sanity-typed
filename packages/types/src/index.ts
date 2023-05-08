@@ -9,10 +9,10 @@ import type {
   DatetimeDefinition,
   DocumentDefinition as DocumentDefinitionNative,
   FileDefinition as FileDefinitionNative,
-  FileRule,
-  FileValue,
+  FileValue as FileValueNative,
   GeopointDefinition,
-  ImageDefinition,
+  ImageDefinition as ImageDefinitionNative,
+  ImageValue as ImageValueNative,
   InitialValueProperty,
   NumberDefinition,
   ObjectDefinition as ObjectDefinitionNative,
@@ -78,9 +78,9 @@ type ObjectDefinition<
   }
 >;
 
-type DocumentRule<TDocumentValue> = RuleDef<
-  DocumentRule<TDocumentValue>,
-  TDocumentValue
+type DocumentRule<DocumentValue> = RuleDef<
+  DocumentRule<DocumentValue>,
+  DocumentValue
 >;
 
 type DocumentDefinition<
@@ -99,9 +99,40 @@ type DocumentDefinition<
   }
 >;
 
-type FileDefinition = Merge<
+type FileRule<FileValue> = RuleDef<FileRule<FileValue>, FileValue>;
+
+type FileDefinition<
+  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  FileValue = Simplify<
+    RemoveIndexSignature<FileValueNative> & {
+      [Name in FieldDefinitions[number]["name"]]: InferValue<
+        Extract<FieldDefinitions[number], { name: Name }>
+      >;
+    }
+  >
+> = Merge<
   FileDefinitionNative,
-  DefinitionWithValue<FileValue, FileRule>
+  DefinitionWithValue<FileValue, FileRule<FileValue>> & {
+    fields?: FieldDefinitions;
+  }
+>;
+
+type ImageRule<ImageValue> = RuleDef<ImageRule<ImageValue>, ImageValue>;
+
+type ImageDefinition<
+  FieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  ImageValue = Simplify<
+    RemoveIndexSignature<ImageValueNative> & {
+      [Name in FieldDefinitions[number]["name"]]: InferValue<
+        Extract<FieldDefinitions[number], { name: Name }>
+      >;
+    }
+  >
+> = Merge<
+  ImageDefinitionNative,
+  DefinitionWithValue<ImageValue, ImageRule<ImageValue>> & {
+    fields?: FieldDefinitions;
+  }
 >;
 
 type Definition<
@@ -116,9 +147,9 @@ type Definition<
   | (DateDefinition & { name: Name })
   | (DatetimeDefinition & { name: Name })
   | (DocumentDefinition<FieldDefinitions> & { name: Name })
-  | (FileDefinition & { name: Name })
+  | (FileDefinition<FieldDefinitions> & { name: Name })
   | (GeopointDefinition & { name: Name })
-  | (ImageDefinition & { name: Name })
+  | (ImageDefinition<FieldDefinitions> & { name: Name })
   | (NumberDefinition & { name: Name })
   | (ObjectDefinition<FieldDefinitions> & { name: Name })
   | (ReferenceDefinition & { name: Name })
