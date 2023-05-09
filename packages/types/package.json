@@ -1,8 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@sanity-typed/schema-builder",
+  "name": "@sanity-typed/types",
   "version": "0.0.0-development",
-  "description": "Build Sanity schemas declaratively and get typescript types of schema values for free!",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],
@@ -11,20 +10,17 @@
     "dev": "npm run build -- --no-dts"
   },
   "dependencies": {
-    "@portabletext/types": "2.0.2",
-    "@types/lodash": "4.14.194",
-    "lodash": "4.17.21",
-    "type-fest": "2.19.0",
-    "zod": "3.21.4"
+    "type-fest": "2.19.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "7.6.0",
     "@jest/globals": "29.5.0",
+    "@portabletext/types": "2.0.2",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "sanity": "3.10.0"
+    "@sanity/types": "3.10.0"
   },
   "peerDependencies": {
-    "sanity": "^3.2.0"
+    "@portabletext/types": "^2.0.2",
+    "@sanity/types": "^3.9.1"
   }
 }

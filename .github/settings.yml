@@ -3,6 +3,9 @@ _extends: .github
 repository:
   name: sanity-typed
   private: false
+labels:
+  - name: schema-builder
+  - name: types
 branches:
   - name: main
     protection:
