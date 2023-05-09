@@ -63,7 +63,7 @@ export default createSchema({
 
 Your sanity client's return values can be typed with `s.infer`:
 
-```typescript
+```typescript 
 import { createClient } from "@sanity/client";
 
 const client = createClient(/* ... */);
