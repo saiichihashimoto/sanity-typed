@@ -64,9 +64,9 @@ export default createSchema({
 Your sanity client's return values can be typed with `s.infer`:
 
 ```typescript
-import sanityClient from "@sanity/client";
+import { createClient } from "@sanity/client";
 
-const client = sanityClient(/* ... */);
+const client = createClient(/* ... */);
 
 // results are automatically typed from the schema!
 const result: s.infer<typeof foo> = await client.fetch(`* [_type == "foo"][0]`);
