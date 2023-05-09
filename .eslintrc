@@ -290,6 +290,16 @@
         "ecmaFeatures": {
           "jsx": true
         }
+      },
+      "rules": {
+        "react/jsx-filename-extension": [
+          "warn",
+          {
+            "allow": "as-needed",
+            "extensions": [".jsx", ".tsx"]
+          }
+        ],
+        "react/react-in-jsx-scope": "off"
       }
     },
     {

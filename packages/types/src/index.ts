@@ -58,14 +58,14 @@ export type InferValue<Def> = Def extends DefinitionWithValue<infer Value, any>
 
 type BlockRule = RuleDef<BlockRule, PortableTextBlock>;
 
-type BlockDefinition = Merge<
+export type BlockDefinition = Merge<
   BlockDefinitionNative,
   DefinitionWithValue<PortableTextBlock, BlockRule>
 >;
 
 type ArrayRule<ArrayValue> = RuleDef<ArrayRule<ArrayValue>, ArrayValue>;
 
-type ArrayDefinition<
+export type ArrayDefinition<
   TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>,
   ArrayValue = Simplify<
     InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
