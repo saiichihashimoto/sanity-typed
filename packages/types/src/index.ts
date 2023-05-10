@@ -86,7 +86,7 @@ export type ObjectDefinition<
   // TODO Type TFieldDefinitions to fit defineField exactly
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   ObjectValue = {
-    [Name in TFieldDefinitions[number]["name"]]: InferValue<
+    [Name in TFieldDefinitions[number]["name"]]?: InferValue<
       Extract<TFieldDefinitions[number], { name: Name }>
     >;
   }
@@ -106,7 +106,7 @@ export type DocumentDefinition<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   DocumentValue = Simplify<
     RemoveIndexSignature<SanityDocument> & {
-      [Name in TFieldDefinitions[number]["name"]]: InferValue<
+      [Name in TFieldDefinitions[number]["name"]]?: InferValue<
         Extract<TFieldDefinitions[number], { name: Name }>
       >;
     }
@@ -124,7 +124,7 @@ type FileDefinition<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   FileValue = Simplify<
     RemoveIndexSignature<FileValueNative> & {
-      [Name in TFieldDefinitions[number]["name"]]: InferValue<
+      [Name in TFieldDefinitions[number]["name"]]?: InferValue<
         Extract<TFieldDefinitions[number], { name: Name }>
       >;
     }
@@ -142,7 +142,7 @@ type ImageDefinition<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   ImageValue = Simplify<
     RemoveIndexSignature<ImageValueNative> & {
-      [Name in TFieldDefinitions[number]["name"]]: InferValue<
+      [Name in TFieldDefinitions[number]["name"]]?: InferValue<
         Extract<TFieldDefinitions[number], { name: Name }>
       >;
     }

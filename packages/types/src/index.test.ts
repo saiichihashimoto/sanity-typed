@@ -180,8 +180,8 @@ describe("defineArrayMember", () => {
         _rev: string;
         _type: string;
         _updatedAt: string;
-        bar: boolean;
-        tar: number;
+        bar?: boolean;
+        tar?: number;
       }>();
     });
   });
@@ -244,8 +244,8 @@ describe("defineArrayMember", () => {
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
         asset?: Reference;
-        bar: boolean;
-        tar: number;
+        bar?: boolean;
+        tar?: number;
       }>();
     });
   });
@@ -310,10 +310,10 @@ describe("defineArrayMember", () => {
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
         asset?: Reference;
-        bar: boolean;
+        bar?: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
-        tar: number;
+        tar?: number;
       }>();
     });
   });
@@ -379,8 +379,8 @@ describe("defineArrayMember", () => {
       });
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
-        bar: boolean;
-        tar: number;
+        bar?: boolean;
+        tar?: number;
       }>();
     });
   });
@@ -560,7 +560,7 @@ describe("defineField", () => {
       expectType<InferValue<typeof field>>().toStrictEqual<
         {
           _key: string;
-          bar: boolean;
+          bar?: boolean;
         }[]
       >();
     });
@@ -743,8 +743,8 @@ describe("defineField", () => {
         _rev: string;
         _type: string;
         _updatedAt: string;
-        bar: boolean;
-        tar: number;
+        bar?: boolean;
+        tar?: number;
       }>();
     });
   });
@@ -814,8 +814,8 @@ describe("defineField", () => {
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
         asset?: Reference;
-        bar: boolean;
-        tar: number;
+        bar?: boolean;
+        tar?: number;
       }>();
     });
   });
@@ -887,10 +887,10 @@ describe("defineField", () => {
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
         asset?: Reference;
-        bar: boolean;
+        bar?: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
-        tar: number;
+        tar?: number;
       }>();
     });
   });
@@ -962,8 +962,8 @@ describe("defineField", () => {
       });
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
-        bar: boolean;
-        tar: number;
+        bar?: boolean;
+        tar?: number;
       }>();
     });
   });
@@ -1316,8 +1316,8 @@ describe("defineType", () => {
         _rev: string;
         _type: string;
         _updatedAt: string;
-        bar: boolean;
-        tar: number;
+        bar?: boolean;
+        tar?: number;
       }>();
     });
   });
@@ -1387,8 +1387,8 @@ describe("defineType", () => {
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
         asset?: Reference;
-        bar: boolean;
-        tar: number;
+        bar?: boolean;
+        tar?: number;
       }>();
     });
   });
@@ -1460,10 +1460,10 @@ describe("defineType", () => {
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
         asset?: Reference;
-        bar: boolean;
+        bar?: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
-        tar: number;
+        tar?: number;
       }>();
     });
   });
@@ -1535,8 +1535,8 @@ describe("defineType", () => {
       });
 
       expectType<InferValue<typeof field>>().toStrictEqual<{
-        bar: boolean;
-        tar: number;
+        bar?: boolean;
+        tar?: number;
       }>();
     });
   });
