@@ -164,13 +164,11 @@ describe("defineArrayMember", () => {
         type: "document",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
@@ -234,13 +232,11 @@ describe("defineArrayMember", () => {
         type: "file",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
@@ -302,13 +298,11 @@ describe("defineArrayMember", () => {
         type: "image",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
@@ -374,13 +368,11 @@ describe("defineArrayMember", () => {
         type: "object",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
@@ -557,7 +549,7 @@ describe("defineField", () => {
             type: "object",
             fields: [
               defineField({
-                name: "bar" as const,
+                name: "bar",
                 type: "boolean",
               }),
             ],
@@ -735,13 +727,11 @@ describe("defineField", () => {
         type: "document",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
@@ -812,13 +802,11 @@ describe("defineField", () => {
         type: "file",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
@@ -887,13 +875,11 @@ describe("defineField", () => {
         type: "image",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
@@ -965,13 +951,11 @@ describe("defineField", () => {
         type: "object",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
@@ -1316,13 +1300,11 @@ describe("defineType", () => {
         type: "document",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
@@ -1393,13 +1375,11 @@ describe("defineType", () => {
         type: "file",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
@@ -1468,13 +1448,11 @@ describe("defineType", () => {
         type: "image",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
@@ -1546,13 +1524,11 @@ describe("defineType", () => {
         type: "object",
         fields: [
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "bar" as const,
+            name: "bar",
             type: "boolean",
           }),
           defineField({
-            // FIXME Why do we need "as const?"
-            name: "tar" as const,
+            name: "tar",
             type: "number",
           }),
         ],
