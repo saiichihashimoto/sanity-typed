@@ -44,13 +44,13 @@ import type { TupleOfLength } from "./utils";
 
 type TypedValueRule<Value> = RuleDef<TypedValueRule<Value>, Value>;
 
-type DefinitionWithValue<
+interface DefinitionWithValue<
   Value,
   Rule extends RuleDef<Rule, Value> = TypedValueRule<Value>
-> = {
+> {
   initialValue?: InitialValueProperty<any, Value>;
   validation?: ValidationBuilder<Rule, Value>;
-};
+}
 
 export type InferValue<Def> = Def extends DefinitionWithValue<infer Value, any>
   ? Value
@@ -66,6 +66,7 @@ export type BlockDefinition = Merge<
 type ArrayRule<ArrayValue> = RuleDef<ArrayRule<ArrayValue>, ArrayValue>;
 
 export type ArrayDefinition<
+  // TODO Type TMemberDefinitions to fit defineArrayMember exactly
   TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>,
   ArrayValue = Simplify<
     InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
@@ -81,19 +82,20 @@ export type ArrayDefinition<
 
 type ObjectRule<ObjectValue> = RuleDef<ObjectRule<ObjectValue>, ObjectValue>;
 
-type ObjectDefinition<
+export interface ObjectDefinition<
+  // TODO Type TFieldDefinitions to fit defineField exactly
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   ObjectValue = {
     [Name in TFieldDefinitions[number]["name"]]: InferValue<
       Extract<TFieldDefinitions[number], { name: Name }>
     >;
   }
-> = Merge<
-  ObjectDefinitionNative,
-  DefinitionWithValue<ObjectValue, ObjectRule<ObjectValue>> & {
-    fields: TFieldDefinitions;
-  }
->;
+> extends Merge<
+    ObjectDefinitionNative,
+    DefinitionWithValue<ObjectValue, ObjectRule<ObjectValue>> & {
+      fields: TFieldDefinitions;
+    }
+  > {}
 
 type DocumentRule<DocumentValue> = RuleDef<
   DocumentRule<DocumentValue>,
@@ -152,10 +154,10 @@ type ImageDefinition<
   }
 >;
 
-type IntrinsicDefinitions<
+interface IntrinsicDefinitions<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
-> = {
+> {
   array: ArrayDefinition<TMemberDefinitions>;
   block: BlockDefinition;
   boolean: BooleanDefinition;
@@ -174,7 +176,7 @@ type IntrinsicDefinitions<
   string: StringDefinition;
   text: TextDefinition;
   url: UrlDefinition;
-};
+}
 
 type IntrinsicBase<
   TName extends string,

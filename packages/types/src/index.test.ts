@@ -32,7 +32,12 @@ import type {
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineField, defineType } from ".";
-import type { ArrayDefinition, BlockDefinition, InferValue } from ".";
+import type {
+  ArrayDefinition,
+  BlockDefinition,
+  InferValue,
+  ObjectDefinition,
+} from ".";
 
 describe("defineArrayMember", () => {
   describe("block", () => {
@@ -2296,6 +2301,191 @@ describe("https://github.com/sanity-io/sanity/blob/v3.10.0/packages/%40sanity/ty
     it.todo(
       "https://github.com/sanity-io/sanity/blob/v3.10.0/packages/%40sanity/types/src/schema/test/object.test.ts"
     );
+    it("should define object schema", () => {
+      const objectDef = defineType({
+        type: "object",
+        name: "custom-object",
+        title: "Custom",
+        icon: () => null,
+        description: "Description",
+        initialValue: async () => ({ title: "some title" }),
+        validation: (Rule) => [
+          Rule.required()
+            .required()
+            .custom((value) => (value?.title === "yolo" ? true : "Error"))
+            .warning(),
+          // @ts-expect-error -- greaterThan does not exist on objectRule
+          Rule.greaterThan(5).error(),
+        ],
+        hidden: () => false,
+        fieldsets: [
+          {
+            name: "fieldset",
+            title: "Fieldset",
+            description: "Fieldset description",
+            hidden: false,
+            readOnly: false,
+            options: {
+              collapsed: true,
+              collapsible: true,
+              columns: 2,
+              // TODO is this actually supported on fieldset?
+              modal: { type: "dialog", width: 1 },
+            },
+          },
+        ],
+        groups: [
+          {
+            name: "group",
+            title: "Group title",
+            icon: () => null,
+            default: true,
+          },
+        ],
+        preview: { select: { title: "title", subtitle: "title" } },
+        fields: [defineField({ type: "string", name: "title" as const })],
+      });
+
+      expectType<typeof objectDef>().toBeAssignableTo<
+        Omit<
+          ObjectDefinition<[StringDefinition & { name: "title" }]>,
+          "preview"
+        >
+      >();
+      expectType<typeof objectDef>().not.toBeAssignableTo<StringDefinition>();
+    });
+
+    it("should define document fields safely (with some compromises without defineField)", () => {
+      const type1 = defineType({
+        type: "object",
+        name: "custom-object",
+        // @ts-expect-error -- fields requires a FieldDefinition
+        fields: [],
+      });
+
+      expectType<typeof type1>().toBeAssignableTo<
+        ObjectDefinition<[any, ...any[]]>
+      >();
+
+      const type2 = defineType({
+        type: "object",
+        name: "custom-object",
+
+        fields: [
+          // @ts-expect-error -- {} not assignable to FieldDefinition
+          {},
+        ],
+      });
+
+      expectType<typeof type2>().toBeAssignableTo<
+        ObjectDefinition<[any, ...any[]]>
+      >();
+
+      const type3 = defineType({
+        type: "object",
+        name: "custom-object",
+
+        fields: [
+          {
+            // @ts-expect-error -- name is missing
+            type: "string",
+          },
+        ],
+      });
+
+      expectType<typeof type3>().toBeAssignableTo<
+        ObjectDefinition<[any, ...any[]]>
+      >();
+
+      const type4 = defineType({
+        type: "object",
+        name: "custom-object",
+
+        fields: [
+          {
+            type: "string",
+            name: "stringField" as const,
+          },
+        ],
+      });
+
+      expectType<typeof type4>().toBeAssignableTo<
+        Omit<ObjectDefinition<[any, ...any[]]>, "preview">
+      >();
+
+      const type5 = defineType({
+        type: "object",
+        name: "custom-object",
+
+        fields: [
+          {
+            type: "object",
+            name: "objectField",
+            fields: [
+              {
+                type: "object",
+                unknown: "",
+              },
+            ],
+          },
+        ],
+      });
+
+      expectType<typeof type5>().toBeAssignableTo<
+        Omit<ObjectDefinition<[any, ...any[]]>, "preview">
+      >();
+
+      const type6 = defineType({
+        type: "object",
+        name: "custom-object",
+        fields: [
+          {
+            // @ts-expect-error -- without defineField, not sure how to type this
+            type: "object",
+            name: "objectField",
+            fields: [
+              {
+                type: "string",
+                name: "stringField",
+                title: "Title",
+                initialValue: "string",
+                // validation is unfortunately broadened to the generic-rule-with-all-functions here
+                // @ts-expect-error -- without defineField, not sure how to type this
+                validation: (Rule) => Rule.greaterThan(5),
+                options: {
+                  unknownOption: "allowed",
+                  direction: "horizontal",
+                  unknown: "without-a-wrapper-unknown-options-are-allowed",
+                },
+              },
+            ],
+          },
+          defineField({
+            type: "object",
+            name: "defineFieldObject",
+            fields: [
+              defineField({
+                type: "string",
+                name: "stringField",
+                title: "Title",
+                initialValue: "string",
+                // @ts-expect-error -- now this is not allowed as greaterThan is not in StringRule
+                validation: (Rule) => Rule.greaterThan(5),
+                options: {
+                  // @ts-expect-error -- not allowed in this context
+                  unknownOption: "not-allowed",
+                  direction: "horizontal",
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<typeof type6>().toBeAssignableTo<
+        Omit<ObjectDefinition<[any, ...any[]]>, "preview">
+      >();
+    });
   });
 
   describe("reference", () => {
