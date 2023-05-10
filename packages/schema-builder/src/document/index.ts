@@ -63,13 +63,13 @@ export type ParsedSanityDocument<DocumentName extends string = string> = Merge<
   }
 >;
 
-type ExtraZodFields<DocumentName extends string> = {
+interface ExtraZodFields<DocumentName extends string> {
   _createdAt: z.ZodType<Date, any, string>;
   _id: z.ZodString;
   _rev: z.ZodString;
   _type: z.ZodLiteral<DocumentName>;
   _updatedAt: z.ZodType<Date, any, string>;
-};
+}
 
 const extraZodFields = <DocumentNames extends string>(name: DocumentNames) => ({
   _createdAt: z.string().transform((date) => new Date(date)),

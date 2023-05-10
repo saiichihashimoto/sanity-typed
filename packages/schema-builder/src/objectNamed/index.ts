@@ -17,9 +17,9 @@ import type {
 import { createType } from "../types";
 import type { SanityNamedTypeDef, TupleOfLength, TypedValues } from "../types";
 
-type ExtraZodFields<ObjectNames extends string> = {
+interface ExtraZodFields<ObjectNames extends string> {
   _type: z.ZodLiteral<ObjectNames>;
-};
+}
 
 export const objectNamed = <
   ObjectNames extends string,

@@ -102,7 +102,7 @@ type DocumentRule<DocumentValue> = RuleDef<
   DocumentValue
 >;
 
-type DocumentDefinition<
+export interface DocumentDefinition<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   DocumentValue = Simplify<
     RemoveIndexSignature<SanityDocument> & {
@@ -111,12 +111,12 @@ type DocumentDefinition<
       >;
     }
   >
-> = Merge<
-  DocumentDefinitionNative,
-  DefinitionWithValue<DocumentValue, DocumentRule<DocumentValue>> & {
-    fields: TFieldDefinitions;
-  }
->;
+> extends Merge<
+    DocumentDefinitionNative,
+    DefinitionWithValue<DocumentValue, DocumentRule<DocumentValue>> & {
+      fields: TFieldDefinitions;
+    }
+  > {}
 
 type FileRule<FileValue> = RuleDef<FileRule<FileValue>, FileValue>;
 

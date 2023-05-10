@@ -18,10 +18,10 @@ import type { SanityReference } from "../reference";
 import { createType } from "../types";
 import type { SanityTypeDef, TupleOfLength, TypedValues } from "../types";
 
-export type SanityFile = {
+export interface SanityFile {
   _type: "file";
   asset: SanityReference;
-};
+}
 
 const extraZodFields = {
   _type: z.literal("file"),
