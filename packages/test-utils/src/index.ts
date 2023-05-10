@@ -36,7 +36,7 @@ type ToStrictEqual<Expected, Received, Inverted extends boolean> = (<
 // https://twitter.com/mattpocockuk/status/1625173887590842369
 const inverted: unique symbol = Symbol("Inverted Brand");
 
-interface TypeMatchers<Expected, Inverted extends boolean = false> {
+type TypeMatchers<Expected, Inverted extends boolean = false> = {
   [inverted]: Inverted;
   /** Inverse next matcher. If you know how to test something, .not lets you test its opposite. */
   not: TypeMatchers<Expected, Inverted extends true ? false : true>;
@@ -62,7 +62,7 @@ interface TypeMatchers<Expected, Inverted extends boolean = false> {
   toStrictEqual: <
     Received extends ToStrictEqual<Expected, Received, Inverted>
   >() => void;
-}
+};
 
 export const expectType = <Expected>() => {
   const valWithoutNot: Omit<TypeMatchers<Expected>, "not"> = {

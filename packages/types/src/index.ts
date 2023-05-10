@@ -44,13 +44,13 @@ import type { TupleOfLength } from "./utils";
 
 type TypedValueRule<Value> = RuleDef<TypedValueRule<Value>, Value>;
 
-interface DefinitionWithValue<
+type DefinitionWithValue<
   Value,
   Rule extends RuleDef<Rule, Value> = TypedValueRule<Value>
-> {
+> = {
   initialValue?: InitialValueProperty<any, Value>;
   validation?: ValidationBuilder<Rule, Value>;
-}
+};
 
 export type InferValue<Def> = Def extends DefinitionWithValue<infer Value, any>
   ? Value
@@ -82,7 +82,7 @@ export type ArrayDefinition<
 
 type ObjectRule<ObjectValue> = RuleDef<ObjectRule<ObjectValue>, ObjectValue>;
 
-export interface ObjectDefinition<
+export type ObjectDefinition<
   // TODO Type TFieldDefinitions to fit defineField exactly
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   ObjectValue = {
@@ -90,19 +90,19 @@ export interface ObjectDefinition<
       Extract<TFieldDefinitions[number], { name: Name }>
     >;
   }
-> extends Merge<
-    ObjectDefinitionNative,
-    DefinitionWithValue<ObjectValue, ObjectRule<ObjectValue>> & {
-      fields: TFieldDefinitions;
-    }
-  > {}
+> = Merge<
+  ObjectDefinitionNative,
+  DefinitionWithValue<ObjectValue, ObjectRule<ObjectValue>> & {
+    fields: TFieldDefinitions;
+  }
+>;
 
 type DocumentRule<DocumentValue> = RuleDef<
   DocumentRule<DocumentValue>,
   DocumentValue
 >;
 
-export interface DocumentDefinition<
+export type DocumentDefinition<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   DocumentValue = Simplify<
     RemoveIndexSignature<SanityDocument> & {
@@ -111,12 +111,12 @@ export interface DocumentDefinition<
       >;
     }
   >
-> extends Merge<
-    DocumentDefinitionNative,
-    DefinitionWithValue<DocumentValue, DocumentRule<DocumentValue>> & {
-      fields: TFieldDefinitions;
-    }
-  > {}
+> = Merge<
+  DocumentDefinitionNative,
+  DefinitionWithValue<DocumentValue, DocumentRule<DocumentValue>> & {
+    fields: TFieldDefinitions;
+  }
+>;
 
 type FileRule<FileValue> = RuleDef<FileRule<FileValue>, FileValue>;
 
@@ -154,10 +154,10 @@ type ImageDefinition<
   }
 >;
 
-interface IntrinsicDefinitions<
+type IntrinsicDefinitions<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
-> {
+> = {
   array: ArrayDefinition<TMemberDefinitions>;
   block: BlockDefinition;
   boolean: BooleanDefinition;
@@ -176,7 +176,7 @@ interface IntrinsicDefinitions<
   string: StringDefinition;
   text: TextDefinition;
   url: UrlDefinition;
-}
+};
 
 type IntrinsicBase<
   TName extends string,

@@ -49,14 +49,14 @@ export const zodDiscriminatedUnionMaybe =
         ]) as unknown as Zods)
       : (z.union([zods[0]!, zods[1]!, ...zods.slice(2)]) as unknown as Zods);
 
-export interface SanityType<Definition, Value, ParsedValue, ResolvedValue> {
+export type SanityType<Definition, Value, ParsedValue, ResolvedValue> = {
   mock: (faker: Faker, path?: string) => Value;
   parse: (data: unknown) => ParsedValue;
   resolve: (data: unknown) => ResolvedValue;
   schema: () => Definition;
   zod: z.ZodType<ParsedValue, any, Value>;
   zodResolved: z.ZodType<ResolvedValue, any, Value>;
-}
+};
 
 export type InferValue<T extends SanityType<any, any, any, any>> =
   T extends SanityType<any, infer Value, any, any> ? Value : never;
@@ -128,13 +128,13 @@ export type GetRule<T> = T extends {
 
 export type TypedValueRule<Value> = RuleDef<TypedValueRule<Value>, Value>;
 
-export interface TypedValues<
+export type TypedValues<
   Value,
   Rule extends RuleDef<Rule, any> = TypedValueRule<Value>
-> {
+> = {
   initialValue?: InitialValueProperty<any, Value>;
   validation?: ValidationBuilder<Rule, Value>;
-}
+};
 
 export type NamedSchemaFields = "description" | "name" | "title";
 
