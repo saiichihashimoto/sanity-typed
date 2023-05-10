@@ -226,10 +226,7 @@ export const defineField = <
   > &
     FieldDefinitionBase &
     MaybeAllowUnknownProps<TStrict> &
-    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> & {
-      name: TName;
-      type: TType;
-    },
+    NarrowPreview<TType, TAlias, TSelect, TPrepareValue>,
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) => defineFieldNative(schemaField as any, defineOptions) as typeof schemaField;
 
@@ -251,10 +248,7 @@ export const defineType = <
     TMemberDefinitions
   > &
     MaybeAllowUnknownProps<TStrict> &
-    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> & {
-      name: TName;
-      type: TType;
-    },
+    NarrowPreview<TType, TAlias, TSelect, TPrepareValue>,
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) =>
   defineTypeNative(
@@ -292,7 +286,6 @@ export const defineArrayMember = <
     MaybeAllowUnknownProps<TStrict> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> & {
       name?: TName;
-      type: TType;
     },
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) =>
