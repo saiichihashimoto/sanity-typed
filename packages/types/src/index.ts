@@ -66,6 +66,7 @@ export type BlockDefinition = Merge<
 type ArrayRule<ArrayValue> = RuleDef<ArrayRule<ArrayValue>, ArrayValue>;
 
 export type ArrayDefinition<
+  // TODO Type TMemberDefinitions to fit defineArrayMember exactly
   TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>,
   ArrayValue = Simplify<
     InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
@@ -81,7 +82,8 @@ export type ArrayDefinition<
 
 type ObjectRule<ObjectValue> = RuleDef<ObjectRule<ObjectValue>, ObjectValue>;
 
-type ObjectDefinition<
+export type ObjectDefinition<
+  // TODO Type TFieldDefinitions to fit defineField exactly
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   ObjectValue = {
     [Name in TFieldDefinitions[number]["name"]]: InferValue<
@@ -100,7 +102,7 @@ type DocumentRule<DocumentValue> = RuleDef<
   DocumentValue
 >;
 
-type DocumentDefinition<
+export type DocumentDefinition<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   DocumentValue = Simplify<
     RemoveIndexSignature<SanityDocument> & {

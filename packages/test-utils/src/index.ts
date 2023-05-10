@@ -6,14 +6,14 @@ type ToBeAssignableTo<Expected, Received, Inverted extends boolean> = [
   ? Inverted extends false
     ? any
     : {
-        expected: { not: Expected };
-        received: Received;
+        __EXPECTED__: { not: Expected };
+        __RECEIVED__: Received;
       }
   : Inverted extends true
   ? any
   : {
-      expected: Expected;
-      received: Received;
+      __EXPECTED__: Expected;
+      __RECEIVED__: Received;
     };
 
 // https://twitter.com/mattpocockuk/status/1646452585006604291
@@ -23,14 +23,14 @@ type ToStrictEqual<Expected, Received, Inverted extends boolean> = (<
   ? Inverted extends false
     ? any
     : {
-        expected: { not: Expected };
-        received: Received;
+        __EXPECTED__: { not: Expected };
+        __RECEIVED__: Received;
       }
   : Inverted extends true
   ? any
   : {
-      expected: Expected;
-      received: Received;
+      __EXPECTED__: Expected;
+      __RECEIVED__: Received;
     };
 
 // https://twitter.com/mattpocockuk/status/1625173887590842369
