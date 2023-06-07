@@ -86,6 +86,12 @@ export const objectNamed = <
     ),
   };
 
+  const namedType = () =>
+    createType({
+      ...typeDef,
+      schema: () => ({ type: name }),
+    });
+
   return {
     ...createType({
       ...typeDef,
@@ -96,10 +102,10 @@ export const objectNamed = <
         type: "object",
       }),
     }),
-    ref: () =>
-      createType({
-        ...typeDef,
-        schema: () => ({ type: name }),
-      }),
+    namedType,
+    /**
+     * @deprecated in upcoming version
+     */
+    ref: namedType,
   };
 };

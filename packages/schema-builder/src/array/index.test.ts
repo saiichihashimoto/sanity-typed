@@ -195,7 +195,7 @@ describe("array", () => {
     });
 
     const type = array({
-      of: [objectNamedType1.ref(), objectNamedType2.ref()],
+      of: [objectNamedType1.namedType(), objectNamedType2.namedType()],
     });
 
     const schema = type.schema();
