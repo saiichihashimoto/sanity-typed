@@ -141,7 +141,6 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
 >;
 
 type ArrayValue<
-  // TODO Type TMemberDefinitions to fit defineArrayMember exactly
   TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
 > = Simplify<
   InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
@@ -159,10 +158,7 @@ export type ArrayDefinition<
   }
 >;
 
-type ObjectValue<
-  // TODO Type TFieldDefinitions to fit defineField exactly
-  TFieldDefinitions extends { name: string }[]
-> = Simplify<
+type ObjectValue<TFieldDefinitions extends { name: string }[]> = Simplify<
   {
     [Name in Extract<
       TFieldDefinitions[number],
@@ -187,7 +183,6 @@ export type ObjectDefinition<
 >;
 
 type DocumentValue<
-  // TODO Type TFieldDefinitions to fit defineField exactly
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = Simplify<
   ObjectValue<TFieldDefinitions> & RemoveIndexSignature<SanityDocument>
@@ -203,12 +198,10 @@ export type DocumentDefinition<
   }
 >;
 
-export type FileValue<
-  // TODO Type TFieldDefinitions to fit defineField exactly
-  TFieldDefinitions extends { name: string }[] = []
-> = Simplify<
-  ObjectValue<TFieldDefinitions> & RemoveIndexSignature<FileValueNative>
->;
+export type FileValue<TFieldDefinitions extends { name: string }[] = []> =
+  Simplify<
+    ObjectValue<TFieldDefinitions> & RemoveIndexSignature<FileValueNative>
+  >;
 
 type FileDefinition<
   TRequired extends boolean,
@@ -220,12 +213,10 @@ type FileDefinition<
   }
 >;
 
-export type ImageValue<
-  // TODO Type TFieldDefinitions to fit defineField exactly
-  TFieldDefinitions extends { name: string }[] = []
-> = Simplify<
-  ObjectValue<TFieldDefinitions> & RemoveIndexSignature<ImageValueNative>
->;
+export type ImageValue<TFieldDefinitions extends { name: string }[] = []> =
+  Simplify<
+    ObjectValue<TFieldDefinitions> & RemoveIndexSignature<ImageValueNative>
+  >;
 
 type ImageDefinition<
   TRequired extends boolean,
