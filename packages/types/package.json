@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/types",
   "version": "0.0.0-development",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],
