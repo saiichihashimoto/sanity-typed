@@ -5,6 +5,7 @@
   "description": "Typed Sanity Documents with zero schema changes for use in your application!",
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Atypes",
+  "repository": "github:saiichihashimoto/sanity-typed",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],
