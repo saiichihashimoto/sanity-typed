@@ -15,6 +15,14 @@ Build [Sanity schemas](https://www.sanity.io/docs/content-modelling) declarative
 - [Automatically generated mocks](#mocking) for testing!
 - Support for any [additional types](#additional-types)!
 
+## 🛑🛑🛑 **Deprecation Path (PLEASE READ!!!!)**
+
+> The focus will shift from this schema builder to [`@sanity-typed/types`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types). It's approach is as close as possible to sanity's native schema definitions and will ideally solve this problem in a more maintainable way. This builder was a necessity of the time but, with the introduction of the `defineType`, `defineField`, and `defineArrayMember` methods, direct inference of typed values should be possible.
+
+> We will continue to welcome bug fixes! `@sanity-typed/types` is still a work in progress and, as of now, this schema builder is widely used enough to warrant support. I encourage new users (and those interested in helping move this forward) to use [`@sanity-typed/types`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types) directly.
+
+**TLDR:** Use [`@sanity-typed/types`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types) instead, unless you're already heavily invested in this. Then maybe migrate, anyways.
+
 ## Install
 
 ```bash
