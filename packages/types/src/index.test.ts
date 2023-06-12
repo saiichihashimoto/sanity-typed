@@ -6,11 +6,9 @@ import {
   defineType as defineTypeNative,
 } from "@sanity/types";
 import type {
-  FileValue,
   GeopointValue,
   ImageCrop,
   ImageHotspot,
-  ImageValue,
   Reference,
   SlugValue,
 } from "@sanity/types";
@@ -18,7 +16,7 @@ import type {
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineField, defineType } from ".";
-import type { InferValue } from ".";
+import type { FileValue, ImageValue, InferValue } from ".";
 
 describe("defineArrayMember", () => {
   describe("block", () => {
@@ -184,6 +182,57 @@ describe("defineArrayMember", () => {
         tar?: number;
       }>();
     });
+
+    it("infers objects within documents", () => {
+      const field = defineArrayMember({
+        type: "document",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: string;
+        _updatedAt: string;
+        bar?: {
+          tar?: number;
+        };
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineArrayMember({
+        type: "document",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: string;
+        _updatedAt: string;
+        bar: boolean;
+      }>();
+    });
   });
 
   describe("email", () => {
@@ -246,6 +295,49 @@ describe("defineArrayMember", () => {
         asset?: Reference;
         bar?: boolean;
         tar?: number;
+      }>();
+    });
+
+    it("infers objects within files", () => {
+      const field = defineArrayMember({
+        type: "file",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineArrayMember({
+        type: "file",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar: boolean;
       }>();
     });
   });
@@ -316,6 +408,53 @@ describe("defineArrayMember", () => {
         tar?: number;
       }>();
     });
+
+    it("infers objects within images", () => {
+      const field = defineArrayMember({
+        type: "image",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineArrayMember({
+        type: "image",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar: boolean;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
+    });
   });
 
   describe("number", () => {
@@ -381,6 +520,47 @@ describe("defineArrayMember", () => {
       expectType<InferValue<typeof field>>().toStrictEqual<{
         bar?: boolean;
         tar?: number;
+      }>();
+    });
+
+    it("infers objects within objects", () => {
+      const field = defineArrayMember({
+        type: "object",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        bar?: {
+          tar?: number;
+        };
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineArrayMember({
+        type: "object",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        bar: boolean;
       }>();
     });
   });
@@ -747,6 +927,59 @@ describe("defineField", () => {
         tar?: number;
       }>();
     });
+
+    it("infers objects within documents", () => {
+      const field = defineField({
+        name: "foo",
+        type: "document",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: string;
+        _updatedAt: string;
+        bar?: {
+          tar?: number;
+        };
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineField({
+        name: "foo",
+        type: "document",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: string;
+        _updatedAt: string;
+        bar: boolean;
+      }>();
+    });
   });
 
   describe("email", () => {
@@ -816,6 +1049,51 @@ describe("defineField", () => {
         asset?: Reference;
         bar?: boolean;
         tar?: number;
+      }>();
+    });
+
+    it("infers objects within files", () => {
+      const field = defineField({
+        name: "foo",
+        type: "file",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineField({
+        name: "foo",
+        type: "file",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar: boolean;
       }>();
     });
   });
@@ -893,6 +1171,55 @@ describe("defineField", () => {
         tar?: number;
       }>();
     });
+
+    it("infers objects within images", () => {
+      const field = defineField({
+        name: "foo",
+        type: "image",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineField({
+        name: "foo",
+        type: "image",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar: boolean;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
+    });
   });
 
   describe("number", () => {
@@ -964,6 +1291,49 @@ describe("defineField", () => {
       expectType<InferValue<typeof field>>().toStrictEqual<{
         bar?: boolean;
         tar?: number;
+      }>();
+    });
+
+    it("infers objects within objects", () => {
+      const field = defineField({
+        name: "foo",
+        type: "object",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        bar?: {
+          tar?: number;
+        };
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineField({
+        name: "foo",
+        type: "object",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        bar: boolean;
       }>();
     });
   });
@@ -1320,6 +1690,59 @@ describe("defineType", () => {
         tar?: number;
       }>();
     });
+
+    it("infers objects within documents", () => {
+      const field = defineType({
+        name: "foo",
+        type: "document",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: string;
+        _updatedAt: string;
+        bar?: {
+          tar?: number;
+        };
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineType({
+        name: "foo",
+        type: "document",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: string;
+        _updatedAt: string;
+        bar: boolean;
+      }>();
+    });
   });
 
   describe("email", () => {
@@ -1389,6 +1812,51 @@ describe("defineType", () => {
         asset?: Reference;
         bar?: boolean;
         tar?: number;
+      }>();
+    });
+
+    it("infers objects within files", () => {
+      const field = defineType({
+        name: "foo",
+        type: "file",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineField({
+        name: "foo",
+        type: "file",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar: boolean;
       }>();
     });
   });
@@ -1466,6 +1934,55 @@ describe("defineType", () => {
         tar?: number;
       }>();
     });
+
+    it("infers objects within images", () => {
+      const field = defineType({
+        name: "foo",
+        type: "image",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineType({
+        name: "foo",
+        type: "image",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        asset?: Reference;
+        bar: boolean;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
+    });
   });
 
   describe("number", () => {
@@ -1537,6 +2054,49 @@ describe("defineType", () => {
       expectType<InferValue<typeof field>>().toStrictEqual<{
         bar?: boolean;
         tar?: number;
+      }>();
+    });
+
+    it("infers objects within objects", () => {
+      const field = defineType({
+        name: "foo",
+        type: "object",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        bar?: {
+          tar?: number;
+        };
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineType({
+        name: "foo",
+        type: "object",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<InferValue<typeof field>>().toStrictEqual<{
+        bar: boolean;
       }>();
     });
   });

@@ -3,6 +3,8 @@
   "name": "@sanity-typed/schema-builder",
   "version": "0.0.0-development",
   "description": "Build Sanity schemas declaratively and get typescript types of schema values for free!",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/schema-builder",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Aschema-builder",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],
