@@ -165,7 +165,7 @@ describe("object", () => {
 
     const type2 = objectNamed({
       name: "bar",
-      fields: [{ name: "foo", type: type.ref() }],
+      fields: [{ name: "foo", type: type.namedType() }],
     });
 
     const schema = type2.schema();
@@ -492,7 +492,7 @@ describe("object", () => {
         {
           name: "value",
           title: "Values",
-          type: type.ref(),
+          type: type.namedType(),
         },
       ],
     });
@@ -508,7 +508,7 @@ describe("object", () => {
       fields: [
         {
           name: "referencingValue",
-          type: referencingType.ref(),
+          type: referencingType.namedType(),
         },
       ],
     });

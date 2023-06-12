@@ -814,8 +814,8 @@ const schema = type.schema();
 ```
 
 ```typescript
-// Use `.ref()` to reference it in another schema.
-const someOtherType = s.array({ of: [type.ref()] });
+// Use `.namedType()` to reference it in another schema.
+const someOtherType = s.array({ of: [type.namedType()] });
 
 // The reference value is used directly.
 type SomeOtherValue = s.infer<typeof someOtherType>;
