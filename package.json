@@ -1,6 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/monorepo",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
+  "repository": "github:saiichihashimoto/sanity-typed",
   "workspaces": ["@types/*", "packages/*"],
   "scripts": {
     "build": "turbo run build --color --continue",
