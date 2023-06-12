@@ -65,34 +65,46 @@ export type BlockDefinition = Merge<
 
 type ArrayRule<ArrayValue> = RuleDef<ArrayRule<ArrayValue>, ArrayValue>;
 
-export type ArrayDefinition<
+type ArrayValue<
   // TODO Type TMemberDefinitions to fit defineArrayMember exactly
-  TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>,
-  ArrayValue = Simplify<
-    InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
-      ? Simplify<InferValue<TMemberDefinitions[number]> & { _key: string }>
-      : InferValue<TMemberDefinitions[number]>
-  >[]
+  TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
+> = Simplify<
+  InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
+    ? Simplify<InferValue<TMemberDefinitions[number]> & { _key: string }>
+    : InferValue<TMemberDefinitions[number]>
+>[];
+
+export type ArrayDefinition<
+  TMemberDefinitions extends TupleOfLength<DefinitionWithValue<any, any>, 1>
 > = Merge<
   ArrayDefinitionNative,
-  DefinitionWithValue<ArrayValue, ArrayRule<ArrayValue>> & {
+  DefinitionWithValue<
+    ArrayValue<TMemberDefinitions>,
+    ArrayRule<ArrayValue<TMemberDefinitions>>
+  > & {
     of: TMemberDefinitions;
   }
 >;
 
 type ObjectRule<ObjectValue> = RuleDef<ObjectRule<ObjectValue>, ObjectValue>;
 
-export type ObjectDefinition<
+type ObjectValue<
   // TODO Type TFieldDefinitions to fit defineField exactly
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  ObjectValue = {
-    [Name in TFieldDefinitions[number]["name"]]?: InferValue<
-      Extract<TFieldDefinitions[number], { name: Name }>
-    >;
-  }
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+> = {
+  [Name in TFieldDefinitions[number]["name"]]?: InferValue<
+    Extract<TFieldDefinitions[number], { name: Name }>
+  >;
+};
+
+export type ObjectDefinition<
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = Merge<
   ObjectDefinitionNative,
-  DefinitionWithValue<ObjectValue, ObjectRule<ObjectValue>> & {
+  DefinitionWithValue<
+    ObjectValue<TFieldDefinitions>,
+    ObjectRule<ObjectValue<TFieldDefinitions>>
+  > & {
     fields: TFieldDefinitions;
   }
 >;
@@ -102,54 +114,63 @@ type DocumentRule<DocumentValue> = RuleDef<
   DocumentValue
 >;
 
+type DocumentValue<
+  // TODO Type TFieldDefinitions to fit defineField exactly
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+> = Simplify<
+  ObjectValue<TFieldDefinitions> & RemoveIndexSignature<SanityDocument>
+>;
+
 export type DocumentDefinition<
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  DocumentValue = Simplify<
-    RemoveIndexSignature<SanityDocument> & {
-      [Name in TFieldDefinitions[number]["name"]]?: InferValue<
-        Extract<TFieldDefinitions[number], { name: Name }>
-      >;
-    }
-  >
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = Merge<
   DocumentDefinitionNative,
-  DefinitionWithValue<DocumentValue, DocumentRule<DocumentValue>> & {
+  DefinitionWithValue<
+    DocumentValue<TFieldDefinitions>,
+    DocumentRule<DocumentValue<TFieldDefinitions>>
+  > & {
     fields: TFieldDefinitions;
   }
 >;
 
 type FileRule<FileValue> = RuleDef<FileRule<FileValue>, FileValue>;
 
+type FileValue<
+  // TODO Type TFieldDefinitions to fit defineField exactly
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+> = Simplify<
+  ObjectValue<TFieldDefinitions> & RemoveIndexSignature<FileValueNative>
+>;
+
 type FileDefinition<
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  FileValue = Simplify<
-    RemoveIndexSignature<FileValueNative> & {
-      [Name in TFieldDefinitions[number]["name"]]?: InferValue<
-        Extract<TFieldDefinitions[number], { name: Name }>
-      >;
-    }
-  >
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = Merge<
   FileDefinitionNative,
-  DefinitionWithValue<FileValue, FileRule<FileValue>> & {
+  DefinitionWithValue<
+    FileValue<TFieldDefinitions>,
+    FileRule<FileValue<TFieldDefinitions>>
+  > & {
     fields?: TFieldDefinitions;
   }
 >;
 
 type ImageRule<ImageValue> = RuleDef<ImageRule<ImageValue>, ImageValue>;
 
+type ImageValue<
+  // TODO Type TFieldDefinitions to fit defineField exactly
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+> = Simplify<
+  ObjectValue<TFieldDefinitions> & RemoveIndexSignature<ImageValueNative>
+>;
+
 type ImageDefinition<
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  ImageValue = Simplify<
-    RemoveIndexSignature<ImageValueNative> & {
-      [Name in TFieldDefinitions[number]["name"]]?: InferValue<
-        Extract<TFieldDefinitions[number], { name: Name }>
-      >;
-    }
-  >
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = Merge<
   ImageDefinitionNative,
-  DefinitionWithValue<ImageValue, ImageRule<ImageValue>> & {
+  DefinitionWithValue<
+    ImageValue<TFieldDefinitions>,
+    ImageRule<ImageValue<TFieldDefinitions>>
+  > & {
     fields?: TFieldDefinitions;
   }
 >;
