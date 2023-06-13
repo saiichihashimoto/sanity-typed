@@ -4,3 +4,10 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/saiichihashimoto/sanity-typed?style=flat&logo=github)](https://github.com/saiichihashimoto/sanity-typed/stargazers)
 [![GitHub contributors](https://img.shields.io/github/contributors/saiichihashimoto/sanity-typed?style=flat&logo=github)](https://github.com/saiichihashimoto/sanity-typed/graphs/contributors)
 [![License](https://img.shields.io/github/license/saiichihashimoto/sanity-typed?style=flat)](https://github.com/saiichihashimoto/sanity-typed/blob/main/LICENSE)
+
+Monorepo for typing Sanity.io.
+
+## Packages
+
+- [`@sanity-typed/schema-builder`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/schema-builder)
+- [`@sanity-typed/types`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types)

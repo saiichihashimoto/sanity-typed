@@ -2,6 +2,7 @@
 _extends: .github
 repository:
   name: sanity-typed
+  description: Monorepo for typing Sanity.io
   private: false
 labels:
   - name: schema-builder
