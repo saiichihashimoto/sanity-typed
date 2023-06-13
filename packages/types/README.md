@@ -26,7 +26,7 @@ import { defineField, defineType } from "@sanity-typed/types";
 // This is where the magic happens
 import { InferValue } from "@sanity-typed/types";
 
-// Import this into sanity's createSchema, as usual.
+// Import this into sanity's defineConfig, as usual. https://www.sanity.io/docs/schema-types
 export const product = defineType({
   name: "product",
   type: "document",

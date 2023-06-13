@@ -62,10 +62,11 @@ const foo = s.document({
   ],
 });
 
-// Use schemas in Sanity
-export default createSchema({
-  name: "default",
-  types: [foo.schema()],
+// Use schemas in Sanity https://www.sanity.io/docs/schema-types
+export default defineConfig({
+  schema: {
+    types: [foo.schema()],
+  },
 });
 ```
 
@@ -839,9 +840,10 @@ const someOtherTypeSchema = someOtherType.schema();
  * };
  */
 
-createSchema({
-  name: "default",
-  types: [type.schema(), someOtherType.schema()],
+defineConfig({
+  schema: {
+    types: [type.schema(), someOtherType.schema()],
+  },
 });
 ```
 
