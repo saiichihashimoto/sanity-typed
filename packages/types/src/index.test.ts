@@ -133,108 +133,6 @@ describe("defineArrayMember", () => {
     });
   });
 
-  describe("document", () => {
-    it("returns the same object as sanity", () =>
-      expect(
-        defineArrayMember({
-          type: "document",
-          fields: [
-            defineField({
-              name: "bar",
-              type: "boolean",
-            }),
-          ],
-        })
-      ).toStrictEqual(
-        defineArrayMemberNative({
-          type: "document",
-          fields: [
-            defineFieldNative({
-              name: "bar",
-              type: "boolean",
-            }),
-          ],
-        })
-      ));
-
-    it("infers SanityDocument with fields", () => {
-      const field = defineArrayMember({
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-          }),
-          defineField({
-            name: "tar",
-            type: "number",
-          }),
-        ],
-      });
-
-      expectType<InferValue<typeof field>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: string;
-        _updatedAt: string;
-        bar?: boolean;
-        tar?: number;
-      }>();
-    });
-
-    it("infers objects within documents", () => {
-      const field = defineArrayMember({
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "object",
-            fields: [
-              defineField({
-                name: "tar",
-                type: "number",
-              }),
-            ],
-          }),
-        ],
-      });
-
-      expectType<InferValue<typeof field>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: string;
-        _updatedAt: string;
-        bar?: {
-          tar?: number;
-        };
-      }>();
-    });
-
-    it("infers required fields", () => {
-      const field = defineArrayMember({
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-            validation: (rule) => rule.required(),
-          }),
-        ],
-      });
-
-      expectType<InferValue<typeof field>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: string;
-        _updatedAt: string;
-        bar: boolean;
-      }>();
-    });
-  });
-
   describe("email", () => {
     it("returns the same object as sanity", () =>
       expect(
@@ -921,7 +819,7 @@ describe("defineField", () => {
         _createdAt: string;
         _id: string;
         _rev: string;
-        _type: string;
+        _type: "foo";
         _updatedAt: string;
         bar?: boolean;
         tar?: number;
@@ -950,7 +848,7 @@ describe("defineField", () => {
         _createdAt: string;
         _id: string;
         _rev: string;
-        _type: string;
+        _type: "foo";
         _updatedAt: string;
         bar?: {
           tar?: number;
@@ -975,7 +873,7 @@ describe("defineField", () => {
         _createdAt: string;
         _id: string;
         _rev: string;
-        _type: string;
+        _type: "foo";
         _updatedAt: string;
         bar: boolean;
       }>();
@@ -1684,7 +1582,7 @@ describe("defineType", () => {
         _createdAt: string;
         _id: string;
         _rev: string;
-        _type: string;
+        _type: "foo";
         _updatedAt: string;
         bar?: boolean;
         tar?: number;
@@ -1713,7 +1611,7 @@ describe("defineType", () => {
         _createdAt: string;
         _id: string;
         _rev: string;
-        _type: string;
+        _type: "foo";
         _updatedAt: string;
         bar?: {
           tar?: number;
@@ -1738,7 +1636,7 @@ describe("defineType", () => {
         _createdAt: string;
         _id: string;
         _rev: string;
-        _type: string;
+        _type: "foo";
         _updatedAt: string;
         bar: boolean;
       }>();

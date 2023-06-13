@@ -183,17 +183,20 @@ export type ObjectDefinition<
 >;
 
 type DocumentValue<
+  TType extends string,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = Simplify<
-  ObjectValue<TFieldDefinitions> & RemoveIndexSignature<SanityDocument>
+  ObjectValue<TFieldDefinitions> &
+    RemoveIndexSignature<SanityDocument> & { _type: TType }
 >;
 
 export type DocumentDefinition<
+  TName extends string,
   TRequired extends boolean,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = Merge<
   DocumentDefinitionNative,
-  DefinitionBase<TRequired, DocumentValue<TFieldDefinitions>> & {
+  DefinitionBase<TRequired, DocumentValue<TName, TFieldDefinitions>> & {
     fields: TFieldDefinitions;
   }
 >;
@@ -229,6 +232,7 @@ type ImageDefinition<
 >;
 
 type IntrinsicDefinitions<
+  TName extends string,
   TRequired extends boolean,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
@@ -239,7 +243,7 @@ type IntrinsicDefinitions<
   crossDatasetReference: CrossDatasetReferenceDefinition;
   date: DateDefinition<TRequired>;
   datetime: DatetimeDefinition<TRequired>;
-  document: DocumentDefinition<TRequired, TFieldDefinitions>;
+  document: DocumentDefinition<TName, TRequired, TFieldDefinitions>;
   email: EmailDefinition<TRequired>;
   file: FileDefinition<TRequired, TFieldDefinitions>;
   geopoint: GeopointDefinition<TRequired>;
@@ -260,11 +264,13 @@ type IntrinsicBase<
   TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
 > = {
   [K in keyof IntrinsicDefinitions<
+    TName,
     TRequired,
     TFieldDefinitions,
     TMemberDefinitions
   >]: Omit<
     IntrinsicDefinitions<
+      TName,
       TRequired,
       TFieldDefinitions,
       TMemberDefinitions
@@ -273,7 +279,12 @@ type IntrinsicBase<
     },
     "preview"
   >;
-}[keyof IntrinsicDefinitions<TRequired, TFieldDefinitions, TMemberDefinitions>];
+}[keyof IntrinsicDefinitions<
+  TName,
+  TRequired,
+  TFieldDefinitions,
+  TMemberDefinitions
+>];
 
 type DefineSchemaBase<
   TType extends IntrinsicTypeName,
@@ -347,17 +358,19 @@ export const defineType = <
 type IntrinsicArrayOfBase<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = {
-  [K in keyof IntrinsicDefinitions<any, TFieldDefinitions, any>]: Omit<
-    ArrayOfEntry<IntrinsicDefinitions<any, TFieldDefinitions, any>[K]>,
+  [K in keyof IntrinsicDefinitions<any, any, TFieldDefinitions, any>]: Omit<
+    ArrayOfEntry<IntrinsicDefinitions<any, any, TFieldDefinitions, any>[K]>,
     "preview"
   >;
-}[keyof IntrinsicDefinitions<any, TFieldDefinitions, any>];
+}[keyof IntrinsicDefinitions<any, any, TFieldDefinitions, any>];
 
 type DefineArrayMemberBase<
   TType extends IntrinsicTypeName,
   TAlias extends IntrinsicTypeName | undefined,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
-> = TType extends IntrinsicTypeName
+> = TType extends "document"
+  ? never
+  : TType extends IntrinsicTypeName
   ? Extract<IntrinsicArrayOfBase<TFieldDefinitions>, { type: TType }>
   : ArrayOfEntry<TypeAliasDefinition<string, TAlias>>;
 
