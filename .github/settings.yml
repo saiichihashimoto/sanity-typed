@@ -5,7 +5,9 @@ repository:
   private: false
 labels:
   - name: schema-builder
+    color: "#f1dd35"
   - name: types
+    color: "#3178c6"
 branches:
   - name: main
     protection:
