@@ -46,12 +46,12 @@ import type { TupleOfLength } from "./utils";
 declare const requiredSymbol: unique symbol;
 
 type WithRequired<
-  Rule extends RuleDef<Rule, any>,
-  TRequired extends boolean
+  TRequired extends boolean,
+  Rule extends RuleDef<Rule, any>
 > = Merge<
   Rule,
   {
-    required: () => WithRequired<Rule, true>;
+    required: () => WithRequired<true, Rule>;
     [requiredSymbol]: TRequired;
   }
 >;
@@ -59,85 +59,85 @@ type WithRequired<
 type WithValue<Value> = RuleDef<WithValue<Value>, Value>;
 
 type ValidationBuilder<
-  Value,
   TRequired extends boolean,
+  Value,
   Rule extends RuleDef<Rule, Value>
 > = (
-  rule: WithRequired<Rule, false>
+  rule: WithRequired<false, Rule>
 ) =>
-  | WithRequired<Rule, TRequired | false>
-  | WithRequired<Rule, TRequired | false>[];
+  | WithRequired<TRequired | false, Rule>
+  | WithRequired<TRequired | false, Rule>[];
 
 type DefinitionBase<
-  Value,
   TRequired extends boolean,
+  Value,
   Rule extends RuleDef<Rule, Value> = RuleDef<WithValue<Value>, Value>
 > = {
-  validation?: ValidationBuilder<Value, TRequired, Rule>;
+  validation?: ValidationBuilder<TRequired, Value, Rule>;
 };
 
-export type InferValue<Def> = Def extends DefinitionBase<infer Value, any, any>
+export type InferValue<Def> = Def extends DefinitionBase<any, infer Value, any>
   ? Value
   : unknown;
 
 export type BlockDefinition<TRequired extends boolean> = Merge<
   BlockDefinitionNative,
-  DefinitionBase<PortableTextBlock, TRequired>
+  DefinitionBase<TRequired, PortableTextBlock>
 >;
 
 export type BooleanDefinition<TRequired extends boolean> = Merge<
   BooleanDefinitionNative,
-  DefinitionBase<boolean, TRequired>
+  DefinitionBase<TRequired, boolean>
 >;
 
 export type DateDefinition<TRequired extends boolean> = Merge<
   DateDefinitionNative,
-  DefinitionBase<string, TRequired>
+  DefinitionBase<TRequired, string>
 >;
 
 export type DatetimeDefinition<TRequired extends boolean> = Merge<
   DatetimeDefinitionNative,
-  DefinitionBase<string, TRequired>
+  DefinitionBase<TRequired, string>
 >;
 
 export type EmailDefinition<TRequired extends boolean> = Merge<
   EmailDefinitionNative,
-  DefinitionBase<string, TRequired>
+  DefinitionBase<TRequired, string>
 >;
 
 export type GeopointDefinition<TRequired extends boolean> = Merge<
   GeopointDefinitionNative,
-  DefinitionBase<Omit<GeopointValue, "_type">, TRequired>
+  DefinitionBase<TRequired, Omit<GeopointValue, "_type">>
 >;
 
 export type NumberDefinition<TRequired extends boolean> = Merge<
   NumberDefinitionNative,
-  DefinitionBase<number, TRequired>
+  DefinitionBase<TRequired, number>
 >;
 
 export type ReferenceDefinition<TRequired extends boolean> = Merge<
   ReferenceDefinitionNative,
-  DefinitionBase<Omit<ReferenceValue, "_type">, TRequired>
+  DefinitionBase<TRequired, Omit<ReferenceValue, "_type">>
 >;
 
 export type SlugDefinition<TRequired extends boolean> = Merge<
   SlugDefinitionNative,
-  DefinitionBase<Omit<SlugValue, "_type">, TRequired>
+  DefinitionBase<TRequired, Omit<SlugValue, "_type">>
 >;
 
 export type StringDefinition<TRequired extends boolean> = Merge<
   StringDefinitionNative,
-  DefinitionBase<string, TRequired>
+  DefinitionBase<TRequired, string>
 >;
 
 export type TextDefinition<TRequired extends boolean> = Merge<
   TextDefinitionNative,
-  DefinitionBase<string, TRequired>
+  DefinitionBase<TRequired, string>
 >;
 
 export type UrlDefinition<TRequired extends boolean> = Merge<
   UrlDefinitionNative,
-  DefinitionBase<string, TRequired>
+  DefinitionBase<TRequired, string>
 >;
 
 type ArrayValue<
@@ -153,7 +153,7 @@ export type ArrayDefinition<
   TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
 > = Merge<
   ArrayDefinitionNative,
-  DefinitionBase<ArrayValue<TMemberDefinitions>, TRequired> & {
+  DefinitionBase<TRequired, ArrayValue<TMemberDefinitions>> & {
     of: TMemberDefinitions;
   }
 >;
@@ -177,7 +177,7 @@ export type ObjectDefinition<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = Merge<
   ObjectDefinitionNative,
-  DefinitionBase<ObjectValue<TFieldDefinitions>, TRequired> & {
+  DefinitionBase<TRequired, ObjectValue<TFieldDefinitions>> & {
     fields: TFieldDefinitions;
   }
 >;
@@ -193,7 +193,7 @@ export type DocumentDefinition<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = Merge<
   DocumentDefinitionNative,
-  DefinitionBase<DocumentValue<TFieldDefinitions>, TRequired> & {
+  DefinitionBase<TRequired, DocumentValue<TFieldDefinitions>> & {
     fields: TFieldDefinitions;
   }
 >;
@@ -208,7 +208,7 @@ type FileDefinition<
   TFieldDefinitions extends { name: string }[]
 > = Merge<
   FileDefinitionNative,
-  DefinitionBase<FileValue<TFieldDefinitions>, TRequired> & {
+  DefinitionBase<TRequired, FileValue<TFieldDefinitions>> & {
     fields?: TFieldDefinitions;
   }
 >;
@@ -223,15 +223,15 @@ type ImageDefinition<
   TFieldDefinitions extends { name: string }[]
 > = Merge<
   ImageDefinitionNative,
-  DefinitionBase<ImageValue<TFieldDefinitions>, TRequired> & {
+  DefinitionBase<TRequired, ImageValue<TFieldDefinitions>> & {
     fields?: TFieldDefinitions;
   }
 >;
 
 type IntrinsicDefinitions<
+  TRequired extends boolean,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
-  TRequired extends boolean
+  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
 > = {
   array: ArrayDefinition<TRequired, TMemberDefinitions>;
   block: BlockDefinition<TRequired>;
@@ -255,25 +255,25 @@ type IntrinsicDefinitions<
 
 type IntrinsicBase<
   TName extends string,
+  TRequired extends boolean,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
-  TRequired extends boolean
+  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
 > = {
   [K in keyof IntrinsicDefinitions<
+    TRequired,
     TFieldDefinitions,
-    TMemberDefinitions,
-    TRequired
+    TMemberDefinitions
   >]: Omit<
     IntrinsicDefinitions<
+      TRequired,
       TFieldDefinitions,
-      TMemberDefinitions,
-      TRequired
+      TMemberDefinitions
     >[K] & {
       name: TName;
     },
     "preview"
   >;
-}[keyof IntrinsicDefinitions<TFieldDefinitions, TMemberDefinitions, TRequired>];
+}[keyof IntrinsicDefinitions<TRequired, TFieldDefinitions, TMemberDefinitions>];
 
 type DefineSchemaBase<
   TType extends IntrinsicTypeName,
@@ -284,7 +284,7 @@ type DefineSchemaBase<
   TRequired extends boolean
 > = (TType extends IntrinsicTypeName
   ? Extract<
-      IntrinsicBase<TName, TFieldDefinitions, TMemberDefinitions, TRequired>,
+      IntrinsicBase<TName, TRequired, TFieldDefinitions, TMemberDefinitions>,
       { type: TType }
     >
   : TypeAliasDefinition<TType, TAlias>) & {
@@ -347,11 +347,11 @@ export const defineType = <
 type IntrinsicArrayOfBase<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = {
-  [K in keyof IntrinsicDefinitions<TFieldDefinitions, any, any>]: Omit<
-    ArrayOfEntry<IntrinsicDefinitions<TFieldDefinitions, any, any>[K]>,
+  [K in keyof IntrinsicDefinitions<any, TFieldDefinitions, any>]: Omit<
+    ArrayOfEntry<IntrinsicDefinitions<any, TFieldDefinitions, any>[K]>,
     "preview"
   >;
-}[keyof IntrinsicDefinitions<TFieldDefinitions, any, any>];
+}[keyof IntrinsicDefinitions<any, TFieldDefinitions, any>];
 
 type DefineArrayMemberBase<
   TType extends IntrinsicTypeName,
