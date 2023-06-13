@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/types",
   "version": "0.0.0-development",
-  "description": "Typed Sanity Documents with zero schema changes for use in your application!",
+  "description": "Typed Sanity Documents with zero schema changes!",
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Atypes",
   "repository": "github:saiichihashimoto/sanity-typed",
