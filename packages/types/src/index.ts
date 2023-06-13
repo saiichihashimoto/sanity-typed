@@ -43,7 +43,7 @@ import type { Merge, RemoveIndexSignature, Simplify } from "type-fest";
 
 import type { TupleOfLength } from "./utils";
 
-const requiredSymbol = Symbol("Required Rule");
+declare const requiredSymbol: unique symbol;
 
 type WithRequired<
   Rule extends RuleDef<Rule, any>,
