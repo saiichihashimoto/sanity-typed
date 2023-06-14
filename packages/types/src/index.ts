@@ -33,12 +33,12 @@ import type {
   TextDefinition as TextDefinitionNative,
   TypeAliasDefinition,
   UrlDefinition as UrlDefinitionNative,
-} from "@sanity/types";
+} from "sanity";
 import {
   defineArrayMember as defineArrayMemberNative,
   defineField as defineFieldNative,
   defineType as defineTypeNative,
-} from "@sanity/types";
+} from "sanity";
 import type { Merge, RemoveIndexSignature, Simplify } from "type-fest";
 
 import type { TupleOfLength } from "./utils";

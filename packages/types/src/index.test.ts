@@ -4,14 +4,14 @@ import {
   defineArrayMember as defineArrayMemberNative,
   defineField as defineFieldNative,
   defineType as defineTypeNative,
-} from "@sanity/types";
+} from "sanity";
 import type {
   GeopointValue,
   ImageCrop,
   ImageHotspot,
   Reference,
   SlugValue,
-} from "@sanity/types";
+} from "sanity";
 
 import { expectType } from "@sanity-typed/test-utils";
 
