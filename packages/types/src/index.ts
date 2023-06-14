@@ -4,6 +4,8 @@ import type {
   ArrayOfEntry,
   BlockDefinition as BlockDefinitionNative,
   BooleanDefinition as BooleanDefinitionNative,
+  ComposableOption,
+  ConfigContext,
   CrossDatasetReferenceDefinition,
   DateDefinition as DateDefinitionNative,
   DatetimeDefinition as DatetimeDefinitionNative,
@@ -26,6 +28,7 @@ import type {
   ReferenceValue,
   RuleDef,
   SanityDocument,
+  SchemaPluginOptions as SchemaPluginOptionsNative,
   SlugDefinition as SlugDefinitionNative,
   SlugValue,
   StrictDefinition,
@@ -33,9 +36,11 @@ import type {
   TextDefinition as TextDefinitionNative,
   TypeAliasDefinition,
   UrlDefinition as UrlDefinitionNative,
+  WorkspaceOptions as WorkspaceOptionsNative,
 } from "sanity";
 import {
   defineArrayMember as defineArrayMemberNative,
+  defineConfig as defineConfigNative,
   defineField as defineFieldNative,
   defineType as defineTypeNative,
 } from "sanity";
@@ -302,6 +307,28 @@ type DefineSchemaBase<
   [requiredSymbol]?: TRequired;
 };
 
+type Field<
+  TType extends IntrinsicTypeName,
+  TName extends string,
+  TSelect extends { [key: string]: string } | undefined,
+  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
+  TRequired extends boolean
+> = DefineSchemaBase<
+  TType,
+  TName,
+  TAlias,
+  TFieldDefinitions,
+  TMemberDefinitions,
+  TRequired
+> &
+  FieldDefinitionBase &
+  MaybeAllowUnknownProps<TStrict> &
+  NarrowPreview<TType, TAlias, TSelect, TPrepareValue>;
+
 export const defineField = <
   TType extends IntrinsicTypeName,
   TName extends string,
@@ -313,19 +340,40 @@ export const defineField = <
   TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
   TRequired extends boolean = false
 >(
-  schemaField: DefineSchemaBase<
+  schemaField: Field<
     TType,
     TName,
+    TSelect,
+    TPrepareValue,
     TAlias,
+    TStrict,
     TFieldDefinitions,
     TMemberDefinitions,
     TRequired
-  > &
-    FieldDefinitionBase &
-    MaybeAllowUnknownProps<TStrict> &
-    NarrowPreview<TType, TAlias, TSelect, TPrepareValue>,
+  >,
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) => defineFieldNative(schemaField as any, defineOptions) as typeof schemaField;
+
+type Type<
+  TType extends IntrinsicTypeName,
+  TName extends string,
+  TSelect extends { [key: string]: string } | undefined,
+  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
+  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
+  TRequired extends boolean
+> = DefineSchemaBase<
+  TType,
+  TName,
+  TAlias,
+  TFieldDefinitions,
+  TMemberDefinitions,
+  TRequired
+> &
+  MaybeAllowUnknownProps<TStrict> &
+  NarrowPreview<TType, TAlias, TSelect, TPrepareValue>;
 
 export const defineType = <
   TType extends IntrinsicTypeName,
@@ -338,16 +386,17 @@ export const defineType = <
   TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
   TRequired extends boolean = false
 >(
-  schemaDefinition: DefineSchemaBase<
+  schemaDefinition: Type<
     TType,
     TName,
+    TSelect,
+    TPrepareValue,
     TAlias,
+    TStrict,
     TFieldDefinitions,
     TMemberDefinitions,
     TRequired
-  > &
-    MaybeAllowUnknownProps<TStrict> &
-    NarrowPreview<TType, TAlias, TSelect, TPrepareValue>,
+  >,
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) =>
   defineTypeNative(
@@ -374,6 +423,20 @@ type DefineArrayMemberBase<
   ? Extract<IntrinsicArrayOfBase<TFieldDefinitions>, { type: TType }>
   : ArrayOfEntry<TypeAliasDefinition<string, TAlias>>;
 
+type ArrayMember<
+  TType extends IntrinsicTypeName,
+  TName extends string,
+  TSelect extends { [key: string]: string } | undefined,
+  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+> = DefineArrayMemberBase<TType, TAlias, TFieldDefinitions> &
+  MaybeAllowUnknownProps<TStrict> &
+  NarrowPreview<TType, TAlias, TSelect, TPrepareValue> & {
+    name?: TName;
+  };
+
 export const defineArrayMember = <
   TType extends IntrinsicTypeName,
   TName extends string,
@@ -383,14 +446,60 @@ export const defineArrayMember = <
   TStrict extends StrictDefinition,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 >(
-  arrayOfSchema: DefineArrayMemberBase<TType, TAlias, TFieldDefinitions> &
-    MaybeAllowUnknownProps<TStrict> &
-    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> & {
-      name?: TName;
-    },
+  arrayOfSchema: ArrayMember<
+    TType,
+    TName,
+    TSelect,
+    TPrepareValue,
+    TAlias,
+    TStrict,
+    TFieldDefinitions
+  >,
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) =>
   defineArrayMemberNative(
     arrayOfSchema as any,
     defineOptions
   ) as typeof arrayOfSchema;
+
+type WorkspaceOptions<
+  TSchemaType extends Type<any, any, any, any, any, any, any, any, any>
+> = Merge<
+  WorkspaceOptionsNative,
+  {
+    schema?: Merge<
+      SchemaPluginOptionsNative,
+      {
+        types?:
+          | ComposableOption<
+              TSchemaType[],
+              Omit<
+                ConfigContext,
+                "client" | "currentUser" | "getClient" | "schema"
+              >
+            >
+          | TSchemaType[];
+      }
+    >;
+  }
+>;
+
+type SingleWorkspace<
+  TSchemaType extends Type<any, any, any, any, any, any, any, any, any>
+> = Merge<
+  WorkspaceOptions<TSchemaType>,
+  {
+    basePath?: string;
+    name?: string;
+  }
+>;
+
+export type Config<
+  TSchemaType extends Type<any, any, any, any, any, any, any, any, any>
+> = SingleWorkspace<TSchemaType> | WorkspaceOptions<TSchemaType>[];
+
+export const defineConfig = <
+  TSchemaType extends Type<any, any, any, any, any, any, any, any, any>
+>(
+  config: Config<TSchemaType>
+) => defineConfigNative(config as any) as typeof config;

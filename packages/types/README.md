@@ -17,17 +17,22 @@ npm install @sanity-typed/types sanity
 
 ## Usage
 
-Use `defineType`, `defineField`, and `defineArrayMember` from this library exactly as you would from [sanity's own exports](https://www.sanity.io/docs/schema-field-types#e5642a3e8506). Then, you can `InferValue` to have the typescript type!
+Use `defineConfig`, `defineType`, `defineField`, and `defineArrayMember` from this library exactly as you would from [sanity's own exports](https://www.sanity.io/docs/schema-field-types#e5642a3e8506). Then, you can `InferValue` to have the typescript type!
 
 ```typescript
-// From sanity's docs: https://www.sanity.io/docs/schema-field-types#e5642a3e8506
-// import { defineField, defineType } from "sanity";
-import { defineField, defineType } from "@sanity-typed/types";
-// This is where the magic happens
-import { InferValue } from "@sanity-typed/types";
+// import { defineArrayMember, defineConfig, defineField, defineType } from "sanity";
+import {
+  defineArrayMember,
+  defineConfig,
+  defineField,
+  defineType,
+} from "@sanity-typed/types";
+// This is where the magic happens!
+import type { InferValue } from "@sanity-typed/types";
 
-// Import this into sanity's defineConfig, as usual. https://www.sanity.io/docs/schema-types
-export const product = defineType({
+// Corresponding example: https://www.sanity.io/docs/schema-field-types#e5642a3e8506
+// No changes using defineArrayMember, defineField, and defineArrayMember https://www.sanity.io/docs/schema-field-types
+const product = defineType({
   name: "product",
   type: "document",
   title: "Product",
@@ -55,15 +60,22 @@ export const product = defineType({
   ],
 });
 
-// Import this into your application!
-export type Product = InferValue<typeof product>;
+// No changes using defineConfig https://www.sanity.io/docs/config-api-reference
+export default defineConfig({
+  // ...
+  schema: {
+    types: [product],
+  },
+});
 
+// Import Product type into your application!
+export type Product = InferValue<typeof product>;
 /**
  *  Product === {
  *    _createdAt: string;
  *    _id: string;
  *    _rev: string;
- *    _type: string;
+ *    _type: "product";
  *    _updatedAt: string;
  *    productName?: string;
  *    tags?: ({

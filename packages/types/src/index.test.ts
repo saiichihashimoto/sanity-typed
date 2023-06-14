@@ -2,6 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 import type { PortableTextBlock } from "@portabletext/types";
 import {
   defineArrayMember as defineArrayMemberNative,
+  defineConfig as defineConfigNative,
   defineField as defineFieldNative,
   defineType as defineTypeNative,
 } from "sanity";
@@ -15,8 +16,8 @@ import type {
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import { defineArrayMember, defineField, defineType } from ".";
-import type { FileValue, ImageValue, InferValue } from ".";
+import { defineArrayMember, defineConfig, defineField, defineType } from ".";
+import type { Config, FileValue, ImageValue, InferValue } from ".";
 
 describe("defineArrayMember", () => {
   describe("block", () => {
@@ -32,11 +33,13 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers PortableTextBlock", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "block",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<PortableTextBlock>();
+      expectType<
+        InferValue<typeof arrayMember>
+      >().toStrictEqual<PortableTextBlock>();
     });
   });
 
@@ -53,11 +56,11 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers boolean", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "boolean",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<boolean>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<boolean>();
     });
   });
 
@@ -80,14 +83,14 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers unknown", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "crossDatasetReference",
         to: [],
         dataset: "foo",
         projectId: "bar",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<unknown>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
     });
   });
 
@@ -104,11 +107,11 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers string", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "date",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<string>();
     });
   });
 
@@ -125,11 +128,11 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers string", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "datetime",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<string>();
     });
   });
 
@@ -146,11 +149,11 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers string", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "email",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<string>();
     });
   });
 
@@ -167,15 +170,15 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers FileValue", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "file",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<FileValue>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<FileValue>();
     });
 
     it("infers FileValue with fields", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "file",
         fields: [
           defineField({
@@ -189,7 +192,7 @@ describe("defineArrayMember", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<{
         asset?: Reference;
         bar?: boolean;
         tar?: number;
@@ -197,7 +200,7 @@ describe("defineArrayMember", () => {
     });
 
     it("infers objects within files", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "file",
         fields: [
           defineField({
@@ -213,7 +216,7 @@ describe("defineArrayMember", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<{
         asset?: Reference;
         bar?: {
           tar?: number;
@@ -222,7 +225,7 @@ describe("defineArrayMember", () => {
     });
 
     it("infers required fields", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "file",
         fields: [
           defineField({
@@ -233,7 +236,7 @@ describe("defineArrayMember", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<{
         asset?: Reference;
         bar: boolean;
       }>();
@@ -253,11 +256,11 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers GeopointValue", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "geopoint",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<
         Omit<GeopointValue, "_type">
       >();
     });
@@ -276,15 +279,15 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers ImageValue", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "image",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<ImageValue>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<ImageValue>();
     });
 
     it("infers ImageValue with fields", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "image",
         fields: [
           defineField({
@@ -298,7 +301,7 @@ describe("defineArrayMember", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<{
         asset?: Reference;
         bar?: boolean;
         crop?: ImageCrop;
@@ -308,7 +311,7 @@ describe("defineArrayMember", () => {
     });
 
     it("infers objects within images", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "image",
         fields: [
           defineField({
@@ -324,7 +327,7 @@ describe("defineArrayMember", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<{
         asset?: Reference;
         bar?: {
           tar?: number;
@@ -335,7 +338,7 @@ describe("defineArrayMember", () => {
     });
 
     it("infers required fields", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "image",
         fields: [
           defineField({
@@ -346,7 +349,7 @@ describe("defineArrayMember", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<{
         asset?: Reference;
         bar: boolean;
         crop?: ImageCrop;
@@ -368,11 +371,11 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers number", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "number",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<number>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<number>();
     });
   });
 
@@ -401,7 +404,7 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers object with fields", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "object",
         fields: [
           defineField({
@@ -415,14 +418,14 @@ describe("defineArrayMember", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<{
         bar?: boolean;
         tar?: number;
       }>();
     });
 
     it("infers objects within objects", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "object",
         fields: [
           defineField({
@@ -438,7 +441,7 @@ describe("defineArrayMember", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<{
         bar?: {
           tar?: number;
         };
@@ -446,7 +449,7 @@ describe("defineArrayMember", () => {
     });
 
     it("infers required fields", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "object",
         fields: [
           defineField({
@@ -457,7 +460,7 @@ describe("defineArrayMember", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<{
         bar: boolean;
       }>();
     });
@@ -478,12 +481,12 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers Reference", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "reference",
         to: [],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<
         Omit<Reference, "_type">
       >();
     });
@@ -502,11 +505,11 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers SlugValue", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "slug",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<
         Omit<SlugValue, "_type">
       >();
     });
@@ -525,11 +528,11 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers string", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "string",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<string>();
     });
   });
 
@@ -546,11 +549,11 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers string", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "text",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<string>();
     });
   });
 
@@ -567,11 +570,11 @@ describe("defineArrayMember", () => {
       ));
 
     it("infers string", () => {
-      const field = defineArrayMember({
+      const arrayMember = defineArrayMember({
         type: "url",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<string>();
     });
   });
 });
@@ -1382,17 +1385,17 @@ describe("defineType", () => {
       ));
 
     it("infers array of the member", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "array",
         of: [defineArrayMember({ type: "boolean" })],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<boolean[]>();
+      expectType<InferValue<typeof type>>().toStrictEqual<boolean[]>();
     });
 
     it("infers unions if there are multiple members", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "array",
         of: [
@@ -1401,7 +1404,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<
+      expectType<InferValue<typeof type>>().toStrictEqual<
         (boolean | string)[]
       >();
     });
@@ -1422,12 +1425,12 @@ describe("defineType", () => {
       ));
 
     it("infers PortableTextBlock", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "block",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<PortableTextBlock>();
+      expectType<InferValue<typeof type>>().toStrictEqual<PortableTextBlock>();
     });
   });
 
@@ -1446,12 +1449,12 @@ describe("defineType", () => {
       ));
 
     it("infers boolean", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "boolean",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<boolean>();
+      expectType<InferValue<typeof type>>().toStrictEqual<boolean>();
     });
   });
 
@@ -1476,7 +1479,7 @@ describe("defineType", () => {
       ));
 
     it("infers something string", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "crossDatasetReference",
         to: [],
@@ -1484,7 +1487,7 @@ describe("defineType", () => {
         projectId: "bar",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<unknown>();
+      expectType<InferValue<typeof type>>().toStrictEqual<unknown>();
     });
   });
 
@@ -1503,12 +1506,12 @@ describe("defineType", () => {
       ));
 
     it("infers string", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "date",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof type>>().toStrictEqual<string>();
     });
   });
 
@@ -1527,12 +1530,12 @@ describe("defineType", () => {
       ));
 
     it("infers string", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "datetime",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof type>>().toStrictEqual<string>();
     });
   });
 
@@ -1563,7 +1566,7 @@ describe("defineType", () => {
       ));
 
     it("infers SanityDocument with fields", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "document",
         fields: [
@@ -1578,7 +1581,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         _createdAt: string;
         _id: string;
         _rev: string;
@@ -1590,7 +1593,7 @@ describe("defineType", () => {
     });
 
     it("infers objects within documents", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "document",
         fields: [
@@ -1607,7 +1610,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         _createdAt: string;
         _id: string;
         _rev: string;
@@ -1620,7 +1623,7 @@ describe("defineType", () => {
     });
 
     it("infers required fields", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "document",
         fields: [
@@ -1632,7 +1635,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         _createdAt: string;
         _id: string;
         _rev: string;
@@ -1658,12 +1661,12 @@ describe("defineType", () => {
       ));
 
     it("infers string", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "email",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof type>>().toStrictEqual<string>();
     });
   });
 
@@ -1682,16 +1685,16 @@ describe("defineType", () => {
       ));
 
     it("infers FileValue", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "file",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<FileValue>();
+      expectType<InferValue<typeof type>>().toStrictEqual<FileValue>();
     });
 
     it("infers FileValue with fields", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "file",
         fields: [
@@ -1706,7 +1709,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         asset?: Reference;
         bar?: boolean;
         tar?: number;
@@ -1714,7 +1717,7 @@ describe("defineType", () => {
     });
 
     it("infers objects within files", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "file",
         fields: [
@@ -1731,7 +1734,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         asset?: Reference;
         bar?: {
           tar?: number;
@@ -1740,7 +1743,7 @@ describe("defineType", () => {
     });
 
     it("infers required fields", () => {
-      const field = defineField({
+      const type = defineType({
         name: "foo",
         type: "file",
         fields: [
@@ -1752,7 +1755,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         asset?: Reference;
         bar: boolean;
       }>();
@@ -1774,12 +1777,12 @@ describe("defineType", () => {
       ));
 
     it("infers GeopointValue", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "geopoint",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<
+      expectType<InferValue<typeof type>>().toStrictEqual<
         Omit<GeopointValue, "_type">
       >();
     });
@@ -1800,16 +1803,16 @@ describe("defineType", () => {
       ));
 
     it("infers ImageValue", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "image",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<ImageValue>();
+      expectType<InferValue<typeof type>>().toStrictEqual<ImageValue>();
     });
 
     it("infers ImageValue with fields", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "image",
         fields: [
@@ -1824,7 +1827,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         asset?: Reference;
         bar?: boolean;
         crop?: ImageCrop;
@@ -1834,7 +1837,7 @@ describe("defineType", () => {
     });
 
     it("infers objects within images", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "image",
         fields: [
@@ -1851,7 +1854,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         asset?: Reference;
         bar?: {
           tar?: number;
@@ -1862,7 +1865,7 @@ describe("defineType", () => {
     });
 
     it("infers required fields", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "image",
         fields: [
@@ -1874,7 +1877,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         asset?: Reference;
         bar: boolean;
         crop?: ImageCrop;
@@ -1898,12 +1901,12 @@ describe("defineType", () => {
       ));
 
     it("infers number", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "number",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<number>();
+      expectType<InferValue<typeof type>>().toStrictEqual<number>();
     });
   });
 
@@ -1934,7 +1937,7 @@ describe("defineType", () => {
       ));
 
     it("infers object with fields", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "object",
         fields: [
@@ -1949,14 +1952,14 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         bar?: boolean;
         tar?: number;
       }>();
     });
 
     it("infers objects within objects", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "object",
         fields: [
@@ -1973,7 +1976,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         bar?: {
           tar?: number;
         };
@@ -1981,7 +1984,7 @@ describe("defineType", () => {
     });
 
     it("infers required fields", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "object",
         fields: [
@@ -1993,7 +1996,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<{
+      expectType<InferValue<typeof type>>().toStrictEqual<{
         bar: boolean;
       }>();
     });
@@ -2016,13 +2019,13 @@ describe("defineType", () => {
       ));
 
     it("infers Reference", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "reference",
         to: [],
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<
+      expectType<InferValue<typeof type>>().toStrictEqual<
         Omit<Reference, "_type">
       >();
     });
@@ -2043,12 +2046,12 @@ describe("defineType", () => {
       ));
 
     it("infers SlugValue", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "slug",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<
+      expectType<InferValue<typeof type>>().toStrictEqual<
         Omit<SlugValue, "_type">
       >();
     });
@@ -2069,12 +2072,12 @@ describe("defineType", () => {
       ));
 
     it("infers string", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "string",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof type>>().toStrictEqual<string>();
     });
   });
 
@@ -2093,12 +2096,12 @@ describe("defineType", () => {
       ));
 
     it("infers string", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "text",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof type>>().toStrictEqual<string>();
     });
   });
 
@@ -2117,12 +2120,50 @@ describe("defineType", () => {
       ));
 
     it("infers string", () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "url",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<InferValue<typeof type>>().toStrictEqual<string>();
     });
+  });
+});
+
+describe("defineConfig", () => {
+  it("returns the same object as sanity", () =>
+    expect(
+      defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+      })
+    ).toStrictEqual(
+      defineConfigNative({
+        dataset: "dataset",
+        projectId: "projectId",
+      })
+    ));
+
+  it("accepts defineType", () => {
+    const type = defineType({
+      name: "foo",
+      type: "document",
+      fields: [
+        defineField({
+          name: "bar",
+          type: "boolean",
+        }),
+      ],
+    });
+
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [type],
+      },
+    });
+
+    expectType<typeof config>().toStrictEqual<Config<typeof type>>();
   });
 });
