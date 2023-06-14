@@ -2,20 +2,30 @@ import type { PortableTextBlock } from "@portabletext/types";
 import type {
   ArrayDefinition as ArrayDefinitionNative,
   ArrayOfEntry,
+  ArrayRule,
   BlockDefinition as BlockDefinitionNative,
+  BlockRule,
   BooleanDefinition as BooleanDefinitionNative,
+  BooleanRule,
   ComposableOption,
   ConfigContext,
   CrossDatasetReferenceDefinition,
+  CustomValidator,
   DateDefinition as DateDefinitionNative,
+  DateRule,
   DatetimeDefinition as DatetimeDefinitionNative,
+  DatetimeRule,
   DefineSchemaOptions,
   DocumentDefinition as DocumentDefinitionNative,
+  DocumentRule,
   EmailDefinition as EmailDefinitionNative,
+  EmailRule,
   FieldDefinitionBase,
   FileDefinition as FileDefinitionNative,
+  FileRule,
   FileValue as FileValueNative,
   GeopointDefinition as GeopointDefinitionNative,
+  GeopointRule,
   GeopointValue,
   ImageDefinition as ImageDefinitionNative,
   ImageValue as ImageValueNative,
@@ -23,19 +33,26 @@ import type {
   MaybeAllowUnknownProps,
   NarrowPreview,
   NumberDefinition as NumberDefinitionNative,
+  NumberRule,
   ObjectDefinition as ObjectDefinitionNative,
+  ObjectRule,
   ReferenceDefinition as ReferenceDefinitionNative,
+  ReferenceRule,
   ReferenceValue,
   RuleDef,
   SanityDocument,
   SchemaPluginOptions as SchemaPluginOptionsNative,
   SlugDefinition as SlugDefinitionNative,
+  SlugRule,
   SlugValue,
   StrictDefinition,
   StringDefinition as StringDefinitionNative,
+  StringRule,
   TextDefinition as TextDefinitionNative,
+  TextRule,
   TypeAliasDefinition,
   UrlDefinition as UrlDefinitionNative,
+  UrlRule,
   WorkspaceOptions as WorkspaceOptionsNative,
 } from "sanity";
 import {
@@ -54,14 +71,16 @@ type WithRequired<
   TRequired extends boolean,
   Rule extends RuleDef<Rule, any>
 > = Merge<
-  Rule,
+  {
+    [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule
+      ? (...args: Args) => WithRequired<TRequired, Rule>
+      : Rule[key];
+  },
   {
     required: () => WithRequired<true, Rule>;
     [requiredSymbol]: TRequired;
   }
 >;
-
-type WithValue<Value> = RuleDef<WithValue<Value>, Value>;
 
 type ValidationBuilder<
   TRequired extends boolean,
@@ -76,7 +95,7 @@ type ValidationBuilder<
 type DefinitionBase<
   TRequired extends boolean,
   Value,
-  Rule extends RuleDef<Rule, Value> = RuleDef<WithValue<Value>, Value>
+  Rule extends RuleDef<Rule, Value>
 > = {
   validation?: ValidationBuilder<TRequired, Value, Rule>;
 };
@@ -85,64 +104,81 @@ export type InferValue<Def> = Def extends DefinitionBase<any, infer Value, any>
   ? Value
   : unknown;
 
+type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = Merge<
+  {
+    [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule
+      ? (...args: Args) => RewriteValue<Value, Rule>
+      : Rule[key];
+  },
+  {
+    custom: <LenientValue extends Value>(
+      fn: CustomValidator<LenientValue | undefined>
+    ) => RewriteValue<Value, Rule>;
+  }
+>;
+
 export type BlockDefinition<TRequired extends boolean> = Merge<
   BlockDefinitionNative,
-  DefinitionBase<TRequired, PortableTextBlock>
+  DefinitionBase<
+    TRequired,
+    PortableTextBlock,
+    RewriteValue<PortableTextBlock, BlockRule>
+  >
 >;
 
 export type BooleanDefinition<TRequired extends boolean> = Merge<
   BooleanDefinitionNative,
-  DefinitionBase<TRequired, boolean>
+  DefinitionBase<TRequired, boolean, BooleanRule>
 >;
 
 export type DateDefinition<TRequired extends boolean> = Merge<
   DateDefinitionNative,
-  DefinitionBase<TRequired, string>
+  DefinitionBase<TRequired, string, DateRule>
 >;
 
 export type DatetimeDefinition<TRequired extends boolean> = Merge<
   DatetimeDefinitionNative,
-  DefinitionBase<TRequired, string>
+  DefinitionBase<TRequired, string, DatetimeRule>
 >;
 
 export type EmailDefinition<TRequired extends boolean> = Merge<
   EmailDefinitionNative,
-  DefinitionBase<TRequired, string>
+  DefinitionBase<TRequired, string, EmailRule>
 >;
 
 export type GeopointDefinition<TRequired extends boolean> = Merge<
   GeopointDefinitionNative,
-  DefinitionBase<TRequired, Omit<GeopointValue, "_type">>
+  DefinitionBase<TRequired, Omit<GeopointValue, "_type">, GeopointRule>
 >;
 
 export type NumberDefinition<TRequired extends boolean> = Merge<
   NumberDefinitionNative,
-  DefinitionBase<TRequired, number>
+  DefinitionBase<TRequired, number, NumberRule>
 >;
 
 export type ReferenceDefinition<TRequired extends boolean> = Merge<
   ReferenceDefinitionNative,
-  DefinitionBase<TRequired, Omit<ReferenceValue, "_type">>
+  DefinitionBase<TRequired, Omit<ReferenceValue, "_type">, ReferenceRule>
 >;
 
 export type SlugDefinition<TRequired extends boolean> = Merge<
   SlugDefinitionNative,
-  DefinitionBase<TRequired, Omit<SlugValue, "_type">>
+  DefinitionBase<TRequired, Omit<SlugValue, "_type">, SlugRule>
 >;
 
 export type StringDefinition<TRequired extends boolean> = Merge<
   StringDefinitionNative,
-  DefinitionBase<TRequired, string>
+  DefinitionBase<TRequired, string, StringRule>
 >;
 
 export type TextDefinition<TRequired extends boolean> = Merge<
   TextDefinitionNative,
-  DefinitionBase<TRequired, string>
+  DefinitionBase<TRequired, string, TextRule>
 >;
 
 export type UrlDefinition<TRequired extends boolean> = Merge<
   UrlDefinitionNative,
-  DefinitionBase<TRequired, string>
+  DefinitionBase<TRequired, string, UrlRule>
 >;
 
 type ArrayValue<
@@ -158,7 +194,11 @@ export type ArrayDefinition<
   TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
 > = Merge<
   ArrayDefinitionNative,
-  DefinitionBase<TRequired, ArrayValue<TMemberDefinitions>> & {
+  DefinitionBase<
+    TRequired,
+    ArrayValue<TMemberDefinitions>,
+    ArrayRule<ArrayValue<TMemberDefinitions>>
+  > & {
     of: TMemberDefinitions;
   }
 >;
@@ -182,7 +222,11 @@ export type ObjectDefinition<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = Merge<
   ObjectDefinitionNative,
-  DefinitionBase<TRequired, ObjectValue<TFieldDefinitions>> & {
+  DefinitionBase<
+    TRequired,
+    ObjectValue<TFieldDefinitions>,
+    RewriteValue<ObjectValue<TFieldDefinitions>, ObjectRule>
+  > & {
     fields: TFieldDefinitions;
   }
 >;
@@ -201,7 +245,11 @@ export type DocumentDefinition<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 > = Merge<
   DocumentDefinitionNative,
-  DefinitionBase<TRequired, DocumentValue<TName, TFieldDefinitions>> & {
+  DefinitionBase<
+    TRequired,
+    DocumentValue<TName, TFieldDefinitions>,
+    RewriteValue<DocumentValue<TName, TFieldDefinitions>, DocumentRule>
+  > & {
     fields: TFieldDefinitions;
   }
 >;
@@ -216,7 +264,11 @@ type FileDefinition<
   TFieldDefinitions extends { name: string }[]
 > = Merge<
   FileDefinitionNative,
-  DefinitionBase<TRequired, FileValue<TFieldDefinitions>> & {
+  DefinitionBase<
+    TRequired,
+    FileValue<TFieldDefinitions>,
+    RewriteValue<FileValue<TFieldDefinitions>, FileRule>
+  > & {
     fields?: TFieldDefinitions;
   }
 >;
@@ -231,7 +283,11 @@ type ImageDefinition<
   TFieldDefinitions extends { name: string }[]
 > = Merge<
   ImageDefinitionNative,
-  DefinitionBase<TRequired, ImageValue<TFieldDefinitions>> & {
+  DefinitionBase<
+    TRequired,
+    ImageValue<TFieldDefinitions>,
+    RewriteValue<ImageValue<TFieldDefinitions>, FileRule>
+  > & {
     fields?: TFieldDefinitions;
   }
 >;
