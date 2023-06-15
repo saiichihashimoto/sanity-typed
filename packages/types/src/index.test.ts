@@ -17,7 +17,13 @@ import type {
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { Config, FileValue, ImageValue, InferValue } from ".";
+import type {
+  Config,
+  CrossDatasetReferenceValue,
+  FileValue,
+  ImageValue,
+  InferValue,
+} from ".";
 
 describe("defineArrayMember", () => {
   describe("block", () => {
@@ -82,7 +88,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers unknown", () => {
+    it("infers CrossDatasetReferenceValue", () => {
       const arrayMember = defineArrayMember({
         type: "crossDatasetReference",
         to: [],
@@ -90,7 +96,9 @@ describe("defineArrayMember", () => {
         projectId: "bar",
       });
 
-      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
+      expectType<
+        InferValue<typeof arrayMember>
+      >().toStrictEqual<CrossDatasetReferenceValue>();
     });
   });
 
@@ -577,6 +585,27 @@ describe("defineArrayMember", () => {
       expectType<InferValue<typeof arrayMember>>().toStrictEqual<string>();
     });
   });
+
+  describe("<alias>", () => {
+    it("returns the same object as sanity", () =>
+      expect(
+        defineArrayMember({
+          type: "named",
+        })
+      ).toStrictEqual(
+        defineArrayMemberNative({
+          type: "named",
+        })
+      ));
+
+    it("infers unknown", () => {
+      const arrayMember = defineArrayMember({
+        type: "named",
+      });
+
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
+    });
+  });
 });
 
 describe("defineField", () => {
@@ -715,7 +744,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers something string", () => {
+    it("infers CrossDatasetReferenceValue", () => {
       const field = defineField({
         name: "foo",
         type: "crossDatasetReference",
@@ -724,7 +753,9 @@ describe("defineField", () => {
         projectId: "bar",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<unknown>();
+      expectType<
+        InferValue<typeof field>
+      >().toStrictEqual<CrossDatasetReferenceValue>();
     });
   });
 
@@ -1365,6 +1396,30 @@ describe("defineField", () => {
       expectType<InferValue<typeof field>>().toStrictEqual<string>();
     });
   });
+
+  describe("<alias>", () => {
+    it("returns the same object as sanity", () =>
+      expect(
+        defineField({
+          name: "foo",
+          type: "named",
+        })
+      ).toStrictEqual(
+        defineFieldNative({
+          name: "foo",
+          type: "named",
+        })
+      ));
+
+    it("infers unknown", () => {
+      const arrayMember = defineField({
+        name: "foo",
+        type: "named",
+      });
+
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
+    });
+  });
 });
 
 describe("defineType", () => {
@@ -1478,7 +1533,7 @@ describe("defineType", () => {
         })
       ));
 
-    it("infers something string", () => {
+    it("infers CrossDatasetReferenceValue", () => {
       const type = defineType({
         name: "foo",
         type: "crossDatasetReference",
@@ -1487,7 +1542,9 @@ describe("defineType", () => {
         projectId: "bar",
       });
 
-      expectType<InferValue<typeof type>>().toStrictEqual<unknown>();
+      expectType<
+        InferValue<typeof type>
+      >().toStrictEqual<CrossDatasetReferenceValue>();
     });
   });
 
@@ -2126,6 +2183,30 @@ describe("defineType", () => {
       });
 
       expectType<InferValue<typeof type>>().toStrictEqual<string>();
+    });
+  });
+
+  describe("<alias>", () => {
+    it("returns the same object as sanity", () =>
+      expect(
+        defineType({
+          name: "foo",
+          type: "named",
+        })
+      ).toStrictEqual(
+        defineTypeNative({
+          name: "foo",
+          type: "named",
+        })
+      ));
+
+    it("infers unknown", () => {
+      const arrayMember = defineType({
+        name: "foo",
+        type: "named",
+      });
+
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
     });
   });
 });
