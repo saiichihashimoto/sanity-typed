@@ -100,7 +100,7 @@ type DefinitionBase<
 
 export type InferValue<Def> = Def extends DefinitionBase<any, infer Value, any>
   ? Value
-  : unknown;
+  : never;
 
 type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = Merge<
   {
@@ -336,13 +336,19 @@ type IntrinsicDefinitions<
 
 type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any>;
 
+declare const aliasTypeSymbol: unique symbol;
+
+export type AliasValue<TType extends string> = {
+  [aliasTypeSymbol]: TType;
+};
+
 type TypeAliasDefinition<
   TType extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TRequired extends boolean
 > = Merge<
   TypeAliasDefinitionNative<TType, TAlias>,
-  DefinitionBase<TRequired, unknown, any> & {
+  DefinitionBase<TRequired, AliasValue<TType>, any> & {
     options?: TAlias extends IntrinsicTypeName
       ? IntrinsicDefinitions<any, any, any, TRequired>[TAlias]["options"]
       : unknown;
@@ -477,7 +483,7 @@ export const defineType = <
   ) as typeof schemaDefinition;
 
 type WorkspaceOptions<
-  TSchemaType extends Type<any, any, any, any, any, any, any>
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>
 > = Merge<
   WorkspaceOptionsNative,
   {
@@ -486,32 +492,50 @@ type WorkspaceOptions<
       {
         types?:
           | ComposableOption<
-              TSchemaType[],
+              TTypeDefinition[],
               Omit<
                 ConfigContext,
                 "client" | "currentUser" | "getClient" | "schema"
               >
             >
-          | TSchemaType[];
+          | TTypeDefinition[];
       }
     >;
   }
 >;
 
 export type Config<
-  TSchemaType extends Type<any, any, any, any, any, any, any>
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>
 > =
   | Merge<
-      WorkspaceOptions<TSchemaType>,
+      WorkspaceOptions<TTypeDefinition>,
       {
         basePath?: string;
         name?: string;
       }
     >
-  | WorkspaceOptions<TSchemaType>[];
+  | WorkspaceOptions<TTypeDefinition>[];
+
+export type InferConfigValues<TConfig> =
+  // HACK Why can't I do TConfig extends Config<infer TTypeDefinition> ? ...
+  TConfig extends {
+    schema?: {
+      types?:
+        | (infer TTypeDefinition)[]
+        | ComposableOption<
+            (infer TTypeDefinition)[],
+            Omit<
+              ConfigContext,
+              "client" | "currentUser" | "getClient" | "schema"
+            >
+          >;
+    };
+  }
+    ? InferValue<TTypeDefinition>
+    : never;
 
 export const defineConfig = <
-  TSchemaType extends Type<any, any, any, any, any, any, any>
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>
 >(
-  config: Config<TSchemaType>
+  config: Config<TTypeDefinition>
 ) => defineConfigNative(config as any) as typeof config;

@@ -18,10 +18,12 @@ import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
 import type {
+  AliasValue,
   Config,
   CrossDatasetReferenceValue,
   FileValue,
   ImageValue,
+  InferConfigValues,
   InferValue,
 } from ".";
 
@@ -598,12 +600,14 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers unknown", () => {
+    it("infers AliasValue", () => {
       const arrayMember = defineArrayMember({
         type: "named",
       });
 
-      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<
+        AliasValue<"named">
+      >();
     });
   });
 });
@@ -1411,13 +1415,15 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers unknown", () => {
-      const arrayMember = defineField({
+    it("infers AliasValue", () => {
+      const field = defineField({
         name: "foo",
         type: "named",
       });
 
-      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
+      expectType<InferValue<typeof field>>().toStrictEqual<
+        AliasValue<"named">
+      >();
     });
   });
 });
@@ -2200,13 +2206,15 @@ describe("defineType", () => {
         })
       ));
 
-    it("infers unknown", () => {
-      const arrayMember = defineType({
+    it("infers AliasValue", () => {
+      const type = defineType({
         name: "foo",
         type: "named",
       });
 
-      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
+      expectType<InferValue<typeof type>>().toStrictEqual<
+        AliasValue<"named">
+      >();
     });
   });
 });
@@ -2246,5 +2254,35 @@ describe("defineConfig", () => {
     });
 
     expectType<typeof config>().toStrictEqual<Config<typeof type>>();
+  });
+
+  it("infers type", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "document",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "boolean",
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    expectType<InferConfigValues<typeof config>>().toStrictEqual<{
+      _createdAt: string;
+      _id: string;
+      _rev: string;
+      _type: "foo";
+      _updatedAt: string;
+      bar?: boolean;
+    }>();
   });
 });
