@@ -98,9 +98,14 @@ type DefinitionBase<
   validation?: ValidationBuilder<TRequired, Value, Rule>;
 };
 
-export type InferValue<Def> = Def extends DefinitionBase<any, infer Value, any>
+export type _InferValue<Def> = Def extends DefinitionBase<any, infer Value, any>
   ? Value
-  : unknown;
+  : never;
+
+/**
+ * @deprecated Use {@link InferSchemaValues} instead. Otherwise, you won't get any aliased types (e.g. named object types, plugin types).
+ */
+export type InferValue<Def> = _InferValue<Def>;
 
 type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = Merge<
   {
@@ -200,9 +205,9 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
 
 type ArrayValue<TMemberDefinitions extends DefinitionBase<any, any, any>[]> =
   Simplify<
-    (InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
-      ? Merge<InferValue<TMemberDefinitions[number]>, { _key: string }>
-      : InferValue<TMemberDefinitions[number]>)[]
+    (_InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
+      ? Merge<_InferValue<TMemberDefinitions[number]>, { _key: string }>
+      : _InferValue<TMemberDefinitions[number]>)[]
   >;
 
 export type ArrayDefinition<
@@ -224,12 +229,14 @@ type ObjectValue<TFieldDefinitions extends { name: string }[]> = Simplify<
     [Name in Extract<
       TFieldDefinitions[number],
       { [requiredSymbol]?: false }
-    >["name"]]?: InferValue<Extract<TFieldDefinitions[number], { name: Name }>>;
+    >["name"]]?: _InferValue<
+      Extract<TFieldDefinitions[number], { name: Name }>
+    >;
   } & {
     [Name in Extract<
       TFieldDefinitions[number],
       { [requiredSymbol]?: true }
-    >["name"]]: InferValue<Extract<TFieldDefinitions[number], { name: Name }>>;
+    >["name"]]: _InferValue<Extract<TFieldDefinitions[number], { name: Name }>>;
   }
 >;
 
@@ -336,13 +343,19 @@ type IntrinsicDefinitions<
 
 type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any>;
 
+declare const aliasTypeSymbol: unique symbol;
+
+export type AliasValue<TType extends string> = {
+  [aliasTypeSymbol]: TType;
+};
+
 type TypeAliasDefinition<
   TType extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TRequired extends boolean
 > = Merge<
   TypeAliasDefinitionNative<TType, TAlias>,
-  DefinitionBase<TRequired, unknown, any> & {
+  DefinitionBase<TRequired, AliasValue<TType>, any> & {
     options?: TAlias extends IntrinsicTypeName
       ? IntrinsicDefinitions<any, any, any, TRequired>[TAlias]["options"]
       : unknown;
@@ -477,7 +490,7 @@ export const defineType = <
   ) as typeof schemaDefinition;
 
 type WorkspaceOptions<
-  TSchemaType extends Type<any, any, any, any, any, any, any>
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>
 > = Merge<
   WorkspaceOptionsNative,
   {
@@ -486,32 +499,76 @@ type WorkspaceOptions<
       {
         types?:
           | ComposableOption<
-              TSchemaType[],
+              TTypeDefinition[],
               Omit<
                 ConfigContext,
                 "client" | "currentUser" | "getClient" | "schema"
               >
             >
-          | TSchemaType[];
+          | TTypeDefinition[];
       }
     >;
   }
 >;
 
 export type Config<
-  TSchemaType extends Type<any, any, any, any, any, any, any>
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>
 > =
   | Merge<
-      WorkspaceOptions<TSchemaType>,
+      WorkspaceOptions<TTypeDefinition>,
       {
         basePath?: string;
         name?: string;
       }
     >
-  | WorkspaceOptions<TSchemaType>[];
+  | WorkspaceOptions<TTypeDefinition>[];
+
+type ExpandAliasValues<
+  Value,
+  AliasedValue extends { _type: string }
+> = Value extends AliasValue<infer TType>
+  ? TType extends AliasedValue["_type"]
+    ? ExpandAliasValues<Extract<AliasedValue, { _type: TType }>, AliasedValue>
+    : unknown
+  : Value extends (infer Item)[]
+  ? ExpandAliasValues<Item, AliasedValue>[]
+  : Value extends
+      | boolean
+      | number
+      | string
+      | ((...args: any[]) => any)
+      | null
+      | undefined
+  ? Value
+  : {
+      [key in keyof Value]: ExpandAliasValues<Value[key], AliasedValue>;
+    };
+
+export type InferSchemaValues<TConfig> =
+  // HACK Why can't I do TConfig extends Config<infer TTypeDefinition> ? ...
+  TConfig extends {
+    schema?: {
+      types?:
+        | (infer TTypeDefinition)[]
+        | ComposableOption<
+            (infer TTypeDefinition)[],
+            Omit<
+              ConfigContext,
+              "client" | "currentUser" | "getClient" | "schema"
+            >
+          >;
+    };
+  }
+    ? _InferValue<TTypeDefinition> extends { _type: string }
+      ? ExpandAliasValues<
+          _InferValue<TTypeDefinition>,
+          _InferValue<TTypeDefinition>
+        >
+      : never
+    : never;
 
 export const defineConfig = <
-  TSchemaType extends Type<any, any, any, any, any, any, any>
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>
 >(
-  config: Config<TSchemaType>
+  config: Config<TTypeDefinition>
 ) => defineConfigNative(config as any) as typeof config;
