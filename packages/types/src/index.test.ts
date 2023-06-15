@@ -2236,7 +2236,7 @@ describe("defineConfig", () => {
     ));
 
   it("accepts types", () => {
-    const type = defineType({
+    const foo = defineType({
       name: "foo",
       type: "document",
       fields: [
@@ -2247,15 +2247,28 @@ describe("defineConfig", () => {
       ],
     });
 
+    const baz = defineType({
+      name: "baz",
+      type: "object",
+      fields: [
+        defineField({
+          name: "qux",
+          type: "boolean",
+        }),
+      ],
+    });
+
     const config = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
       schema: {
-        types: [type],
+        types: [foo, baz],
       },
     });
 
-    expectType<typeof config>().toStrictEqual<Config<typeof type>>();
+    expectType<typeof config>().toStrictEqual<
+      Config<typeof baz | typeof foo>
+    >();
   });
 
   it("infers type value", () => {
@@ -2274,18 +2287,33 @@ describe("defineConfig", () => {
               }),
             ],
           }),
+          defineType({
+            name: "baz",
+            type: "object",
+            fields: [
+              defineField({
+                name: "qux",
+                type: "boolean",
+              }),
+            ],
+          }),
         ],
       },
     });
 
-    expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
-      _createdAt: string;
-      _id: string;
-      _rev: string;
-      _type: "foo";
-      _updatedAt: string;
-      bar?: boolean;
-    }>();
+    expectType<InferSchemaValues<typeof config>>().toStrictEqual<
+      | {
+          _createdAt: string;
+          _id: string;
+          _rev: string;
+          _type: "foo";
+          _updatedAt: string;
+          bar?: boolean;
+        }
+      | {
+          qux?: boolean;
+        }
+    >();
   });
 
   it("infers aliased type value", () => {
@@ -2306,7 +2334,7 @@ describe("defineConfig", () => {
           }),
           defineType({
             name: "bar",
-            type: "document",
+            type: "object",
             fields: [
               defineField({
                 name: "baz",
@@ -2323,24 +2351,14 @@ describe("defineConfig", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "bar";
-          _updatedAt: string;
-          baz?: boolean;
-        }
-      | {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
           _type: "foo";
           _updatedAt: string;
           bar?: {
-            _createdAt: string;
-            _id: string;
-            _rev: string;
-            _type: "bar";
-            _updatedAt: string;
             baz?: boolean;
           };
+        }
+      | {
+          baz?: boolean;
         }
     >();
   });
@@ -2353,7 +2371,7 @@ describe("defineConfig", () => {
         types: [
           defineType({
             name: "foo",
-            type: "document",
+            type: "object",
             fields: [
               defineField({
                 name: "foo",
@@ -2367,11 +2385,6 @@ describe("defineConfig", () => {
     });
 
     type Foo = {
-      _createdAt: string;
-      _id: string;
-      _rev: string;
-      _type: "foo";
-      _updatedAt: string;
       // Cycle!
       foo: Foo;
     };
@@ -2392,7 +2405,7 @@ describe("defineConfig", () => {
         types: [
           defineType({
             name: "foo",
-            type: "document",
+            type: "object",
             fields: [
               defineField({
                 name: "bar",
@@ -2403,7 +2416,7 @@ describe("defineConfig", () => {
           }),
           defineType({
             name: "bar",
-            type: "document",
+            type: "object",
             fields: [
               defineField({
                 name: "baz",
@@ -2414,7 +2427,7 @@ describe("defineConfig", () => {
           }),
           defineType({
             name: "baz",
-            type: "document",
+            type: "object",
             fields: [
               defineField({
                 name: "foo",
@@ -2428,31 +2441,16 @@ describe("defineConfig", () => {
     });
 
     type Foo = {
-      _createdAt: string;
-      _id: string;
-      _rev: string;
-      _type: "foo";
-      _updatedAt: string;
       // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
       bar: Bar;
     };
 
     type Bar = {
-      _createdAt: string;
-      _id: string;
-      _rev: string;
-      _type: "bar";
-      _updatedAt: string;
       // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
       baz: Baz;
     };
 
     type Baz = {
-      _createdAt: string;
-      _id: string;
-      _rev: string;
-      _type: "baz";
-      _updatedAt: string;
       foo: Foo;
     };
 
@@ -2464,10 +2462,11 @@ describe("defineConfig", () => {
     expectType<
       Extract<
         InferSchemaValues<typeof config>,
-        { _type: "foo" }
+        // Gets us the Foo object
+        { bar: any }
       >["bar"]["baz"]["foo"]
     >().toStrictEqual<
-      Extract<InferSchemaValues<typeof config>, { _type: "foo" }>
+      Extract<InferSchemaValues<typeof config>, { bar: any }>
     >();
   });
 });
