@@ -30,11 +30,11 @@ import type {
   ImageDefinition as ImageDefinitionNative,
   ImageValue as ImageValueNative,
   MaybeAllowUnknownProps,
-  NarrowPreview,
   NumberDefinition as NumberDefinitionNative,
   NumberRule,
   ObjectDefinition as ObjectDefinitionNative,
   ObjectRule,
+  PreviewConfig,
   ReferenceDefinition as ReferenceDefinitionNative,
   ReferenceRule,
   ReferenceValue,
@@ -96,6 +96,7 @@ type DefinitionBase<
   Value,
   Rule extends RuleDef<Rule, Value>
 > = {
+  preview?: PreviewConfig;
   validation?: ValidationBuilder<TRequired, Value, Rule>;
 };
 
@@ -338,14 +339,11 @@ type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any>;
 
 export const defineArrayMember = <
   TType extends IntrinsicTypeName,
-  TSelect extends { [key: string]: string } | undefined,
-  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
 >(
   arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
-    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
     (TType extends "document"
       ? never
       : TType extends IntrinsicTypeName
@@ -354,7 +352,7 @@ export const defineArrayMember = <
           {
             [K in IntrinsicTypeName]: Omit<
               IntrinsicDefinitions<any, any, TFieldDefinitions, any>[K],
-              "hidden" | "name" | "preview"
+              "hidden" | "name"
             >;
           }[IntrinsicTypeName],
           { type: TType }
@@ -372,15 +370,12 @@ export const defineArrayMember = <
 type DefineSchemaBase<
   TType extends IntrinsicTypeName,
   TName extends string,
-  TSelect extends { [key: string]: string } | undefined,
-  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
   TRequired extends boolean
 > = MaybeAllowUnknownProps<TStrict> &
-  NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
   (TType extends IntrinsicTypeName
     ? // Why can't I just index off of IntrinsicDefinitions?
       Extract<
@@ -394,7 +389,7 @@ type DefineSchemaBase<
             >[K] & {
               name: TName;
             },
-            "preview"
+            "FIXME why does this fail without the omit? we're clearly not using it"
           >;
         }[IntrinsicTypeName],
         { type: TType }
@@ -406,8 +401,6 @@ type DefineSchemaBase<
 export const defineField = <
   TType extends IntrinsicTypeName,
   TName extends string,
-  TSelect extends { [key: string]: string } | undefined,
-  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
@@ -417,8 +410,6 @@ export const defineField = <
   schemaField: DefineSchemaBase<
     TType,
     TName,
-    TSelect,
-    TPrepareValue,
     TAlias,
     TStrict,
     TFieldDefinitions,
@@ -432,8 +423,6 @@ export const defineField = <
 type Type<
   TType extends IntrinsicTypeName,
   TName extends string,
-  TSelect extends { [key: string]: string } | undefined,
-  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
@@ -442,8 +431,6 @@ type Type<
 > = DefineSchemaBase<
   TType,
   TName,
-  TSelect,
-  TPrepareValue,
   TAlias,
   TStrict,
   TFieldDefinitions,
@@ -454,8 +441,6 @@ type Type<
 export const defineType = <
   TType extends IntrinsicTypeName,
   TName extends string,
-  TSelect extends { [key: string]: string } | undefined,
-  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
@@ -465,8 +450,6 @@ export const defineType = <
   schemaDefinition: Type<
     TType,
     TName,
-    TSelect,
-    TPrepareValue,
     TAlias,
     TStrict,
     TFieldDefinitions,
@@ -481,7 +464,7 @@ export const defineType = <
   ) as typeof schemaDefinition;
 
 type WorkspaceOptions<
-  TSchemaType extends Type<any, any, any, any, any, any, any, any, any>
+  TSchemaType extends Type<any, any, any, any, any, any, any>
 > = Merge<
   WorkspaceOptionsNative,
   {
@@ -503,7 +486,7 @@ type WorkspaceOptions<
 >;
 
 export type Config<
-  TSchemaType extends Type<any, any, any, any, any, any, any, any, any>
+  TSchemaType extends Type<any, any, any, any, any, any, any>
 > =
   | Merge<
       WorkspaceOptions<TSchemaType>,
@@ -515,7 +498,7 @@ export type Config<
   | WorkspaceOptions<TSchemaType>[];
 
 export const defineConfig = <
-  TSchemaType extends Type<any, any, any, any, any, any, any, any, any>
+  TSchemaType extends Type<any, any, any, any, any, any, any>
 >(
   config: Config<TSchemaType>
 ) => defineConfigNative(config as any) as typeof config;
