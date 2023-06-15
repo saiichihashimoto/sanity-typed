@@ -17,7 +17,7 @@ npm install @sanity-typed/types sanity
 
 ## Usage
 
-Use `defineConfig`, `defineType`, `defineField`, and `defineArrayMember` from this library exactly as you would from [sanity's own exports](https://www.sanity.io/docs/schema-field-types#e5642a3e8506). Then, you can `InferValue` to have the typescript type!
+Use `defineConfig`, `defineType`, `defineField`, and `defineArrayMember` from this library exactly as you would from [sanity's own exports](https://www.sanity.io/docs/schema-field-types#e5642a3e8506). Then, you can `InferSchemaValues` to have the typescript types!
 
 ```typescript
 // import { defineArrayMember, defineConfig, defineField, defineType } from "sanity";
@@ -27,8 +27,7 @@ import {
   defineField,
   defineType,
 } from "@sanity-typed/types";
-// This is where the magic happens!
-import type { InferValue } from "@sanity-typed/types";
+import type { InferSchemaValues } from "@sanity-typed/types";
 
 // Corresponding example: https://www.sanity.io/docs/schema-field-types#e5642a3e8506
 // No changes using defineArrayMember, defineField, and defineArrayMember https://www.sanity.io/docs/schema-field-types
@@ -61,15 +60,23 @@ const product = defineType({
 });
 
 // No changes using defineConfig https://www.sanity.io/docs/config-api-reference
-export default defineConfig({
+const config = defineConfig({
   // ...
   schema: {
-    types: [product],
+    types: [
+      product,
+      // ...
+    ],
   },
 });
 
+export default config;
+
+// This is where the magic happens!
+type Values = InferSchemaValues<typeof config>;
+
 // Import Product type into your application!
-export type Product = InferValue<typeof product>;
+export type Product = Extract<Values, { _type: "product" }>;
 /**
  *  Product === {
  *    _createdAt: string;
@@ -90,6 +97,6 @@ export type Product = InferValue<typeof product>;
 
 Typescript was an after-the-fact concern with sanity, since the rise of typescript happened after sanity took off. The `define*` methods are a good start, but they only help restrict the schema, not type the document types. There's been attempts, namely [`sanity-codegen`](https://github.com/ricokahler/sanity-codegen) and [`@sanity-typed/schema-builder`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/schema-builder), but they take the approach of creating a new way of building schemas. The drop-in replacement approach allows for zero migration cost.
 
-The long term goal is to deprecate `@sanity-typed/types` altogether. Building this seperately was in service of moving quickly and these should be in sanity directly (and is likely one of their internal goals). The idea is to introduce these changes iteratively into sanity itself while removing them from this library, until it's reduced to simply passing through the `define*` methods directly, and will then be deprecated.
+The long term goal is to deprecate the monorepo altogether. Building this seperately was to move quickly and these features should be in sanity directly (and is likely one of their internal goals). The idea is to introduce these changes iteratively into sanity itself while removing them from this library, until it's reduced to simply passing through the `define*` methods directly, and will then be deprecated.
 
 This shouldn't deter you from using it! Under the hood, it's passing all the inputs to sanity's native `define*` methods, so you shouldn't have any runtime differences. With all the typings being attempting to make their way into sanity, you should keep all the benefits of just importing the `define*` methods and noticing no differences.
