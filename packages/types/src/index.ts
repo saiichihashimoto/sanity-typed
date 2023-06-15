@@ -533,17 +533,11 @@ type ExpandAliasValues<
     >
   : Value extends (infer Item)[]
   ? ExpandAliasValues<Item, TAliasedDefinition>[]
-  : Value extends
-      | boolean
-      | number
-      | string
-      | ((...args: any[]) => any)
-      | null
-      | undefined
-  ? Value
-  : {
+  : Value extends { [key: string]: any }
+  ? {
       [key in keyof Value]: ExpandAliasValues<Value[key], TAliasedDefinition>;
-    };
+    }
+  : Value;
 
 export type InferSchemaValues<TConfig> =
   // HACK Why can't I do TConfig extends Config<infer TTypeDefinition> ? ...
