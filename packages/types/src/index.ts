@@ -347,17 +347,17 @@ export const defineArrayMember = <
     (TType extends "document"
       ? never
       : TType extends IntrinsicTypeName
-      ? // Why can't I just index off of IntrinsicDefinitions?
+      ? // HACK Why can't I just index off of IntrinsicDefinitions?
         Extract<
           {
             [K in IntrinsicTypeName]: Omit<
               IntrinsicDefinitions<any, any, TFieldDefinitions, any>[K],
-              "hidden" | "name"
+              "name"
             >;
           }[IntrinsicTypeName],
           { type: TType }
         >
-      : Omit<TypeAliasDefinition<string, TAlias>, "hidden" | "name">) & {
+      : Omit<TypeAliasDefinition<string, TAlias>, "name">) & {
       name?: string;
     },
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
@@ -377,7 +377,7 @@ type DefineSchemaBase<
   TRequired extends boolean
 > = MaybeAllowUnknownProps<TStrict> &
   (TType extends IntrinsicTypeName
-    ? // Why can't I just index off of IntrinsicDefinitions?
+    ? // HACK Why can't I just index off of IntrinsicDefinitions?
       Extract<
         {
           [K in IntrinsicTypeName]: Omit<
