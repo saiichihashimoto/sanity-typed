@@ -49,7 +49,7 @@ import type {
   StringRule,
   TextDefinition as TextDefinitionNative,
   TextRule,
-  TypeAliasDefinition,
+  TypeAliasDefinition as TypeAliasDefinitionNative,
   UrlDefinition as UrlDefinitionNative,
   UrlRule,
   WorkspaceOptions as WorkspaceOptionsNative,
@@ -61,8 +61,6 @@ import {
   defineType as defineTypeNative,
 } from "sanity";
 import type { Merge, RemoveIndexSignature, Simplify } from "type-fest";
-
-import type { TupleOfLength } from "./utils";
 
 declare const requiredSymbol: unique symbol;
 
@@ -200,15 +198,16 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
   DefinitionBase<TRequired, string, UrlRule>
 >;
 
-type ArrayValue<
-  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
-> = (InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
-  ? Merge<InferValue<TMemberDefinitions[number]>, { _key: string }>
-  : InferValue<TMemberDefinitions[number]>)[];
+type ArrayValue<TMemberDefinitions extends DefinitionBase<any, any, any>[]> =
+  Simplify<
+    (InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
+      ? Merge<InferValue<TMemberDefinitions[number]>, { _key: string }>
+      : InferValue<TMemberDefinitions[number]>)[]
+  >;
 
 export type ArrayDefinition<
   TRequired extends boolean,
-  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
+  TMemberDefinitions extends DefinitionBase<any, any, any>[]
 > = Merge<
   ArrayDefinitionNative,
   DefinitionBase<
@@ -236,7 +235,7 @@ type ObjectValue<TFieldDefinitions extends { name: string }[]> = Simplify<
 
 export type ObjectDefinition<
   TRequired extends boolean,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+  TFieldDefinitions extends { name: string }[]
 > = Merge<
   ObjectDefinitionNative,
   DefinitionBase<
@@ -250,7 +249,7 @@ export type ObjectDefinition<
 
 type DocumentValue<
   TType extends string,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+  TFieldDefinitions extends { name: string }[]
 > = Simplify<
   ObjectValue<TFieldDefinitions> &
     RemoveIndexSignature<SanityDocument> & { _type: TType }
@@ -259,7 +258,7 @@ type DocumentValue<
 export type DocumentDefinition<
   TName extends string,
   TRequired extends boolean,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+  TFieldDefinitions extends { name: string }[]
 > = Merge<
   DocumentDefinitionNative,
   DefinitionBase<
@@ -311,9 +310,9 @@ type ImageDefinition<
 
 type IntrinsicDefinitions<
   TName extends string,
-  TRequired extends boolean,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
+  TFieldDefinitions extends { name: string }[],
+  TMemberDefinitions extends DefinitionBase<any, any, any>[],
+  TRequired extends boolean
 > = {
   array: ArrayDefinition<TRequired, TMemberDefinitions>;
   block: BlockDefinition<TRequired>;
@@ -337,11 +336,24 @@ type IntrinsicDefinitions<
 
 type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any>;
 
+type TypeAliasDefinition<
+  TType extends string,
+  TAlias extends IntrinsicTypeName | undefined,
+  TRequired extends boolean
+> = Merge<
+  TypeAliasDefinitionNative<TType, TAlias>,
+  DefinitionBase<TRequired, unknown, any> & {
+    options?: TAlias extends IntrinsicTypeName
+      ? IntrinsicDefinitions<any, any, any, TRequired>[TAlias]["options"]
+      : unknown;
+  }
+>;
+
 export const defineArrayMember = <
-  TType extends IntrinsicTypeName,
+  TType extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+  TFieldDefinitions extends { name: string }[]
 >(
   arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
     (TType extends "document"
@@ -351,14 +363,15 @@ export const defineArrayMember = <
         Extract<
           {
             [K in IntrinsicTypeName]: Omit<
-              IntrinsicDefinitions<any, any, TFieldDefinitions, any>[K],
+              IntrinsicDefinitions<any, TFieldDefinitions, any, any>[K],
               "name"
             >;
           }[IntrinsicTypeName],
           { type: TType }
         >
-      : Omit<TypeAliasDefinition<string, TAlias>, "name">) & {
+      : Omit<TypeAliasDefinition<TType, TAlias, any>, "name">) & {
       name?: string;
+      type: TType;
     },
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) =>
@@ -368,12 +381,12 @@ export const defineArrayMember = <
   ) as typeof arrayOfSchema;
 
 type DefineSchemaBase<
-  TType extends IntrinsicTypeName,
+  TType extends string,
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
+  TFieldDefinitions extends { name: string }[],
+  TMemberDefinitions extends DefinitionBase<any, any, any>[],
   TRequired extends boolean
 > = MaybeAllowUnknownProps<TStrict> &
   (TType extends IntrinsicTypeName
@@ -383,28 +396,28 @@ type DefineSchemaBase<
           [K in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
               TName,
-              TRequired,
               TFieldDefinitions,
-              TMemberDefinitions
-            >[K] & {
-              name: TName;
-            },
+              TMemberDefinitions,
+              TRequired
+            >[K],
             "FIXME why does this fail without the omit? we're clearly not using it"
           >;
         }[IntrinsicTypeName],
         { type: TType }
       >
-    : TypeAliasDefinition<TType, TAlias>) & {
+    : TypeAliasDefinition<TType, TAlias, TRequired>) & {
+    name: TName;
     [requiredSymbol]?: TRequired;
+    type: TType;
   };
 
 export const defineField = <
-  TType extends IntrinsicTypeName,
+  TType extends string,
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
+  TFieldDefinitions extends { name: string }[],
+  TMemberDefinitions extends DefinitionBase<any, any, any>[],
   TRequired extends boolean = false
 >(
   schemaField: DefineSchemaBase<
@@ -421,12 +434,12 @@ export const defineField = <
 ) => defineFieldNative(schemaField as any, defineOptions) as typeof schemaField;
 
 type Type<
-  TType extends IntrinsicTypeName,
+  TType extends string,
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
+  TFieldDefinitions extends { name: string }[],
+  TMemberDefinitions extends DefinitionBase<any, any, any>[],
   TRequired extends boolean
 > = DefineSchemaBase<
   TType,
@@ -439,12 +452,12 @@ type Type<
 >;
 
 export const defineType = <
-  TType extends IntrinsicTypeName,
+  TType extends string,
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
+  TFieldDefinitions extends { name: string }[],
+  TMemberDefinitions extends DefinitionBase<any, any, any>[],
   TRequired extends boolean = false
 >(
   schemaDefinition: Type<

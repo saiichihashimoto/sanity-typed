@@ -585,6 +585,27 @@ describe("defineArrayMember", () => {
       expectType<InferValue<typeof arrayMember>>().toStrictEqual<string>();
     });
   });
+
+  describe("<alias>", () => {
+    it("returns the same object as sanity", () =>
+      expect(
+        defineArrayMember({
+          type: "named",
+        })
+      ).toStrictEqual(
+        defineArrayMemberNative({
+          type: "named",
+        })
+      ));
+
+    it("infers unknown", () => {
+      const arrayMember = defineArrayMember({
+        type: "named",
+      });
+
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
+    });
+  });
 });
 
 describe("defineField", () => {
@@ -1375,6 +1396,30 @@ describe("defineField", () => {
       expectType<InferValue<typeof field>>().toStrictEqual<string>();
     });
   });
+
+  describe("<alias>", () => {
+    it("returns the same object as sanity", () =>
+      expect(
+        defineField({
+          name: "foo",
+          type: "named",
+        })
+      ).toStrictEqual(
+        defineFieldNative({
+          name: "foo",
+          type: "named",
+        })
+      ));
+
+    it("infers unknown", () => {
+      const arrayMember = defineField({
+        name: "foo",
+        type: "named",
+      });
+
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
+    });
+  });
 });
 
 describe("defineType", () => {
@@ -2138,6 +2183,30 @@ describe("defineType", () => {
       });
 
       expectType<InferValue<typeof type>>().toStrictEqual<string>();
+    });
+  });
+
+  describe("<alias>", () => {
+    it("returns the same object as sanity", () =>
+      expect(
+        defineType({
+          name: "foo",
+          type: "named",
+        })
+      ).toStrictEqual(
+        defineTypeNative({
+          name: "foo",
+          type: "named",
+        })
+      ));
+
+    it("infers unknown", () => {
+      const arrayMember = defineType({
+        name: "foo",
+        type: "named",
+      });
+
+      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
     });
   });
 });
