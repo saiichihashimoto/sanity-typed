@@ -1,7 +1,6 @@
 import type { PortableTextBlock } from "@portabletext/types";
 import type {
   ArrayDefinition as ArrayDefinitionNative,
-  ArrayOfEntry,
   ArrayRule,
   BlockDefinition as BlockDefinitionNative,
   BlockRule,
@@ -9,7 +8,8 @@ import type {
   BooleanRule,
   ComposableOption,
   ConfigContext,
-  CrossDatasetReferenceDefinition,
+  CrossDatasetReferenceDefinition as CrossDatasetReferenceDefinitionNative,
+  CrossDatasetReferenceValue as CrossDatasetReferenceValueNative,
   CustomValidator,
   DateDefinition as DateDefinitionNative,
   DateRule,
@@ -29,7 +29,6 @@ import type {
   GeopointValue,
   ImageDefinition as ImageDefinitionNative,
   ImageValue as ImageValueNative,
-  IntrinsicTypeName,
   MaybeAllowUnknownProps,
   NarrowPreview,
   NumberDefinition as NumberDefinitionNative,
@@ -131,6 +130,25 @@ export type BooleanDefinition<TRequired extends boolean> = Merge<
   DefinitionBase<TRequired, boolean, BooleanRule>
 >;
 
+export type CrossDatasetReferenceValue = Merge<
+  CrossDatasetReferenceValueNative,
+  { _type: "crossDatasetReference" }
+>;
+
+type CrossDatasetReferenceRule = RuleDef<
+  CrossDatasetReferenceRule,
+  CrossDatasetReferenceValue
+>;
+
+export type CrossDatasetReferenceDefinition<TRequired extends boolean> = Merge<
+  CrossDatasetReferenceDefinitionNative,
+  DefinitionBase<
+    TRequired,
+    CrossDatasetReferenceValue,
+    CrossDatasetReferenceRule
+  >
+>;
+
 export type DateDefinition<TRequired extends boolean> = Merge<
   DateDefinitionNative,
   DefinitionBase<TRequired, string, DateRule>
@@ -183,11 +201,9 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
 
 type ArrayValue<
   TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
-> = Simplify<
-  InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
-    ? Simplify<InferValue<TMemberDefinitions[number]> & { _key: string }>
-    : InferValue<TMemberDefinitions[number]>
->[];
+> = (InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
+  ? Merge<InferValue<TMemberDefinitions[number]>, { _key: string }>
+  : InferValue<TMemberDefinitions[number]>)[];
 
 export type ArrayDefinition<
   TRequired extends boolean,
@@ -301,7 +317,7 @@ type IntrinsicDefinitions<
   array: ArrayDefinition<TRequired, TMemberDefinitions>;
   block: BlockDefinition<TRequired>;
   boolean: BooleanDefinition<TRequired>;
-  crossDatasetReference: CrossDatasetReferenceDefinition;
+  crossDatasetReference: CrossDatasetReferenceDefinition<TRequired>;
   date: DateDefinition<TRequired>;
   datetime: DatetimeDefinition<TRequired>;
   document: DocumentDefinition<TName, TRequired, TFieldDefinitions>;
@@ -318,52 +334,42 @@ type IntrinsicDefinitions<
   url: UrlDefinition<TRequired>;
 };
 
-type IntrinsicBase<
-  TName extends string,
-  TRequired extends boolean,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>
-> = {
-  [K in keyof IntrinsicDefinitions<
-    TName,
-    TRequired,
-    TFieldDefinitions,
-    TMemberDefinitions
-  >]: Omit<
-    IntrinsicDefinitions<
-      TName,
-      TRequired,
-      TFieldDefinitions,
-      TMemberDefinitions
-    >[K] & {
-      name: TName;
+type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any>;
+
+export const defineArrayMember = <
+  TType extends IntrinsicTypeName,
+  TSelect extends { [key: string]: string } | undefined,
+  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
+>(
+  arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
+    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
+    (TType extends "document"
+      ? never
+      : TType extends IntrinsicTypeName
+      ? // Why can't I just index off of IntrinsicDefinitions?
+        Extract<
+          {
+            [K in IntrinsicTypeName]: Omit<
+              IntrinsicDefinitions<any, any, TFieldDefinitions, any>[K],
+              "hidden" | "name" | "preview"
+            >;
+          }[IntrinsicTypeName],
+          { type: TType }
+        >
+      : Omit<TypeAliasDefinition<string, TAlias>, "hidden" | "name">) & {
+      name?: string;
     },
-    "preview"
-  >;
-}[keyof IntrinsicDefinitions<
-  TName,
-  TRequired,
-  TFieldDefinitions,
-  TMemberDefinitions
->];
+  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
+) =>
+  defineArrayMemberNative(
+    arrayOfSchema as any,
+    defineOptions
+  ) as typeof arrayOfSchema;
 
 type DefineSchemaBase<
-  TType extends IntrinsicTypeName,
-  TName extends string,
-  TAlias extends IntrinsicTypeName | undefined,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
-  TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
-  TRequired extends boolean
-> = (TType extends IntrinsicTypeName
-  ? Extract<
-      IntrinsicBase<TName, TRequired, TFieldDefinitions, TMemberDefinitions>,
-      { type: TType }
-    >
-  : TypeAliasDefinition<TType, TAlias>) & {
-  [requiredSymbol]?: TRequired;
-};
-
-type Field<
   TType extends IntrinsicTypeName,
   TName extends string,
   TSelect extends { [key: string]: string } | undefined,
@@ -373,17 +379,29 @@ type Field<
   TFieldDefinitions extends TupleOfLength<{ name: string }, 1>,
   TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
   TRequired extends boolean
-> = DefineSchemaBase<
-  TType,
-  TName,
-  TAlias,
-  TFieldDefinitions,
-  TMemberDefinitions,
-  TRequired
-> &
-  FieldDefinitionBase &
-  MaybeAllowUnknownProps<TStrict> &
-  NarrowPreview<TType, TAlias, TSelect, TPrepareValue>;
+> = MaybeAllowUnknownProps<TStrict> &
+  NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
+  (TType extends IntrinsicTypeName
+    ? // Why can't I just index off of IntrinsicDefinitions?
+      Extract<
+        {
+          [K in IntrinsicTypeName]: Omit<
+            IntrinsicDefinitions<
+              TName,
+              TRequired,
+              TFieldDefinitions,
+              TMemberDefinitions
+            >[K] & {
+              name: TName;
+            },
+            "preview"
+          >;
+        }[IntrinsicTypeName],
+        { type: TType }
+      >
+    : TypeAliasDefinition<TType, TAlias>) & {
+    [requiredSymbol]?: TRequired;
+  };
 
 export const defineField = <
   TType extends IntrinsicTypeName,
@@ -396,7 +414,7 @@ export const defineField = <
   TMemberDefinitions extends TupleOfLength<DefinitionBase<any, any, any>, 1>,
   TRequired extends boolean = false
 >(
-  schemaField: Field<
+  schemaField: DefineSchemaBase<
     TType,
     TName,
     TSelect,
@@ -406,7 +424,8 @@ export const defineField = <
     TFieldDefinitions,
     TMemberDefinitions,
     TRequired
-  >,
+  > &
+    FieldDefinitionBase,
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) => defineFieldNative(schemaField as any, defineOptions) as typeof schemaField;
 
@@ -423,13 +442,14 @@ type Type<
 > = DefineSchemaBase<
   TType,
   TName,
+  TSelect,
+  TPrepareValue,
   TAlias,
+  TStrict,
   TFieldDefinitions,
   TMemberDefinitions,
   TRequired
-> &
-  MaybeAllowUnknownProps<TStrict> &
-  NarrowPreview<TType, TAlias, TSelect, TPrepareValue>;
+>;
 
 export const defineType = <
   TType extends IntrinsicTypeName,
@@ -460,64 +480,6 @@ export const defineType = <
     defineOptions
   ) as typeof schemaDefinition;
 
-type IntrinsicArrayOfBase<
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
-> = {
-  [K in keyof IntrinsicDefinitions<any, any, TFieldDefinitions, any>]: Omit<
-    ArrayOfEntry<IntrinsicDefinitions<any, any, TFieldDefinitions, any>[K]>,
-    "preview"
-  >;
-}[keyof IntrinsicDefinitions<any, any, TFieldDefinitions, any>];
-
-type DefineArrayMemberBase<
-  TType extends IntrinsicTypeName,
-  TAlias extends IntrinsicTypeName | undefined,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
-> = TType extends "document"
-  ? never
-  : TType extends IntrinsicTypeName
-  ? Extract<IntrinsicArrayOfBase<TFieldDefinitions>, { type: TType }>
-  : ArrayOfEntry<TypeAliasDefinition<string, TAlias>>;
-
-type ArrayMember<
-  TType extends IntrinsicTypeName,
-  TName extends string,
-  TSelect extends { [key: string]: string } | undefined,
-  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
-  TAlias extends IntrinsicTypeName | undefined,
-  TStrict extends StrictDefinition,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
-> = DefineArrayMemberBase<TType, TAlias, TFieldDefinitions> &
-  MaybeAllowUnknownProps<TStrict> &
-  NarrowPreview<TType, TAlias, TSelect, TPrepareValue> & {
-    name?: TName;
-  };
-
-export const defineArrayMember = <
-  TType extends IntrinsicTypeName,
-  TName extends string,
-  TSelect extends { [key: string]: string } | undefined,
-  TPrepareValue extends { [key in keyof TSelect]: any } | undefined,
-  TAlias extends IntrinsicTypeName | undefined,
-  TStrict extends StrictDefinition,
-  TFieldDefinitions extends TupleOfLength<{ name: string }, 1>
->(
-  arrayOfSchema: ArrayMember<
-    TType,
-    TName,
-    TSelect,
-    TPrepareValue,
-    TAlias,
-    TStrict,
-    TFieldDefinitions
-  >,
-  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
-) =>
-  defineArrayMemberNative(
-    arrayOfSchema as any,
-    defineOptions
-  ) as typeof arrayOfSchema;
-
 type WorkspaceOptions<
   TSchemaType extends Type<any, any, any, any, any, any, any, any, any>
 > = Merge<
@@ -540,19 +502,17 @@ type WorkspaceOptions<
   }
 >;
 
-type SingleWorkspace<
-  TSchemaType extends Type<any, any, any, any, any, any, any, any, any>
-> = Merge<
-  WorkspaceOptions<TSchemaType>,
-  {
-    basePath?: string;
-    name?: string;
-  }
->;
-
 export type Config<
   TSchemaType extends Type<any, any, any, any, any, any, any, any, any>
-> = SingleWorkspace<TSchemaType> | WorkspaceOptions<TSchemaType>[];
+> =
+  | Merge<
+      WorkspaceOptions<TSchemaType>,
+      {
+        basePath?: string;
+        name?: string;
+      }
+    >
+  | WorkspaceOptions<TSchemaType>[];
 
 export const defineConfig = <
   TSchemaType extends Type<any, any, any, any, any, any, any, any, any>

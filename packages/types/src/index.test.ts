@@ -17,7 +17,13 @@ import type {
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { Config, FileValue, ImageValue, InferValue } from ".";
+import type {
+  Config,
+  CrossDatasetReferenceValue,
+  FileValue,
+  ImageValue,
+  InferValue,
+} from ".";
 
 describe("defineArrayMember", () => {
   describe("block", () => {
@@ -82,7 +88,7 @@ describe("defineArrayMember", () => {
         })
       ));
 
-    it("infers unknown", () => {
+    it("infers CrossDatasetReferenceValue", () => {
       const arrayMember = defineArrayMember({
         type: "crossDatasetReference",
         to: [],
@@ -90,7 +96,9 @@ describe("defineArrayMember", () => {
         projectId: "bar",
       });
 
-      expectType<InferValue<typeof arrayMember>>().toStrictEqual<unknown>();
+      expectType<
+        InferValue<typeof arrayMember>
+      >().toStrictEqual<CrossDatasetReferenceValue>();
     });
   });
 
@@ -715,7 +723,7 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers something string", () => {
+    it("infers CrossDatasetReferenceValue", () => {
       const field = defineField({
         name: "foo",
         type: "crossDatasetReference",
@@ -724,7 +732,9 @@ describe("defineField", () => {
         projectId: "bar",
       });
 
-      expectType<InferValue<typeof field>>().toStrictEqual<unknown>();
+      expectType<
+        InferValue<typeof field>
+      >().toStrictEqual<CrossDatasetReferenceValue>();
     });
   });
 
@@ -1478,7 +1488,7 @@ describe("defineType", () => {
         })
       ));
 
-    it("infers something string", () => {
+    it("infers CrossDatasetReferenceValue", () => {
       const type = defineType({
         name: "foo",
         type: "crossDatasetReference",
@@ -1487,7 +1497,9 @@ describe("defineType", () => {
         projectId: "bar",
       });
 
-      expectType<InferValue<typeof type>>().toStrictEqual<unknown>();
+      expectType<
+        InferValue<typeof type>
+      >().toStrictEqual<CrossDatasetReferenceValue>();
     });
   });
 
