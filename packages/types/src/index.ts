@@ -525,13 +525,14 @@ export type Config<
 
 type ExpandAliasValues<
   Value,
-  AliasedValue extends { _type: string }
+  TAliasedDefinition extends Type<"object", any, any, any, any, any, any>
 > = Value extends AliasValue<infer TType>
-  ? TType extends AliasedValue["_type"]
-    ? ExpandAliasValues<Extract<AliasedValue, { _type: TType }>, AliasedValue>
-    : unknown
+  ? ExpandAliasValues<
+      _InferValue<Extract<TAliasedDefinition, { name: TType }>>,
+      TAliasedDefinition
+    >
   : Value extends (infer Item)[]
-  ? ExpandAliasValues<Item, AliasedValue>[]
+  ? ExpandAliasValues<Item, TAliasedDefinition>[]
   : Value extends
       | boolean
       | number
@@ -541,7 +542,7 @@ type ExpandAliasValues<
       | undefined
   ? Value
   : {
-      [key in keyof Value]: ExpandAliasValues<Value[key], AliasedValue>;
+      [key in keyof Value]: ExpandAliasValues<Value[key], TAliasedDefinition>;
     };
 
 export type InferSchemaValues<TConfig> =
@@ -559,12 +560,10 @@ export type InferSchemaValues<TConfig> =
           >;
     };
   }
-    ? _InferValue<TTypeDefinition> extends { _type: string }
-      ? ExpandAliasValues<
-          _InferValue<TTypeDefinition>,
-          _InferValue<TTypeDefinition>
-        >
-      : never
+    ? ExpandAliasValues<
+        _InferValue<TTypeDefinition>,
+        Extract<TTypeDefinition, Type<"object", any, any, any, any, any, any>>
+      >
     : never;
 
 export const defineConfig = <
