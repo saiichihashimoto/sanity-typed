@@ -205,9 +205,10 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
 
 type ArrayValue<TMemberDefinitions extends DefinitionBase<any, any, any>[]> =
   Simplify<
-    (_InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
-      ? Merge<_InferValue<TMemberDefinitions[number]>, { _key: string }>
-      : _InferValue<TMemberDefinitions[number]>)[]
+    (_InferValue<TMemberDefinitions[number]> &
+      (_InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
+        ? { _key: string }
+        : unknown))[]
   >;
 
 export type ArrayDefinition<
@@ -364,26 +365,27 @@ type TypeAliasDefinition<
 
 export const defineArrayMember = <
   TType extends string,
+  TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
   TFieldDefinitions extends { name: string }[]
 >(
   arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
-    (TType extends "document"
+    (TType extends "array"
       ? never
       : TType extends IntrinsicTypeName
       ? // HACK Why can't I just index off of IntrinsicDefinitions?
         Extract<
           {
             [K in IntrinsicTypeName]: Omit<
-              IntrinsicDefinitions<any, TFieldDefinitions, any, any>[K],
+              IntrinsicDefinitions<TName, TFieldDefinitions, any, any>[K],
               "name"
             >;
           }[IntrinsicTypeName],
           { type: TType }
         >
       : Omit<TypeAliasDefinition<TType, TAlias, any>, "name">) & {
-      name?: string;
+      name?: TName;
       type: TType;
     },
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
@@ -393,7 +395,44 @@ export const defineArrayMember = <
     defineOptions
   ) as typeof arrayOfSchema;
 
-type DefineSchemaBase<
+export const defineField = <
+  TType extends string,
+  TName extends string,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+  TFieldDefinitions extends { name: string }[],
+  TMemberDefinitions extends DefinitionBase<any, any, any>[],
+  TRequired extends boolean = false
+>(
+  schemaField: FieldDefinitionBase &
+    MaybeAllowUnknownProps<TStrict> &
+    (TType extends "block"
+      ? never
+      : TType extends IntrinsicTypeName
+      ? // HACK Why can't I just index off of IntrinsicDefinitions?
+        Extract<
+          {
+            [K in IntrinsicTypeName]: Omit<
+              IntrinsicDefinitions<
+                TName,
+                TFieldDefinitions,
+                TMemberDefinitions,
+                TRequired
+              >[K],
+              "FIXME why does this fail without the omit? we're clearly not using it"
+            >;
+          }[IntrinsicTypeName],
+          { type: TType }
+        >
+      : TypeAliasDefinition<TType, TAlias, TRequired>) & {
+      name: TName;
+      [requiredSymbol]?: TRequired;
+      type: TType;
+    },
+  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
+) => defineFieldNative(schemaField as any, defineOptions) as typeof schemaField;
+
+type Type<
   TType extends string,
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
@@ -423,46 +462,6 @@ type DefineSchemaBase<
     [requiredSymbol]?: TRequired;
     type: TType;
   };
-
-export const defineField = <
-  TType extends string,
-  TName extends string,
-  TAlias extends IntrinsicTypeName | undefined,
-  TStrict extends StrictDefinition,
-  TFieldDefinitions extends { name: string }[],
-  TMemberDefinitions extends DefinitionBase<any, any, any>[],
-  TRequired extends boolean = false
->(
-  schemaField: DefineSchemaBase<
-    TType,
-    TName,
-    TAlias,
-    TStrict,
-    TFieldDefinitions,
-    TMemberDefinitions,
-    TRequired
-  > &
-    FieldDefinitionBase,
-  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
-) => defineFieldNative(schemaField as any, defineOptions) as typeof schemaField;
-
-type Type<
-  TType extends string,
-  TName extends string,
-  TAlias extends IntrinsicTypeName | undefined,
-  TStrict extends StrictDefinition,
-  TFieldDefinitions extends { name: string }[],
-  TMemberDefinitions extends DefinitionBase<any, any, any>[],
-  TRequired extends boolean
-> = DefineSchemaBase<
-  TType,
-  TName,
-  TAlias,
-  TStrict,
-  TFieldDefinitions,
-  TMemberDefinitions,
-  TRequired
->;
 
 export const defineType = <
   TType extends string,
