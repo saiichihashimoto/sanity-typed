@@ -528,9 +528,17 @@ type ExpandAliasValues<
   TAliasedDefinition extends Type<"object", any, any, any, any, any, any>
 > = Value extends AliasValue<infer TType>
   ? ExpandAliasValues<
-      _InferValue<Extract<TAliasedDefinition, { name: TType }>>,
+      _InferValue<
+        Extract<
+          TAliasedDefinition,
+          Type<"object", TType, any, any, any, any, any>
+        >
+      >,
       TAliasedDefinition
-    >
+    > & {
+      // We can't Merge this. I think it breaks however typescript detects recursion.
+      _type: TType;
+    }
   : Value extends (infer Item)[]
   ? ExpandAliasValues<Item, TAliasedDefinition>[]
   : Value extends { [key: string]: any }
