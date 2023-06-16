@@ -812,6 +812,54 @@ describe("defineField", () => {
         })[]
       >();
     });
+
+    it('adds "_type" to named objects', () => {
+      const field = defineField({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            name: "inlineMemberName",
+            type: "object",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "boolean",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        ({
+          _key: string;
+          _type: "inlineMemberName";
+        } & {
+          bar?: boolean;
+        })[]
+      >();
+    });
+
+    it('adds "_type" to named alias values', () => {
+      const field = defineField({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            name: "inlineMemberName",
+            type: "named",
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        (AliasValue<"named"> & {
+          _key: string;
+          _type: "inlineMemberName";
+        })[]
+      >();
+    });
   });
 
   describe("block", () => {
@@ -1630,6 +1678,54 @@ describe("defineType", () => {
           _key: string;
         } & {
           bar?: boolean;
+        })[]
+      >();
+    });
+
+    it('adds "_type" to named objects', () => {
+      const field = defineType({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            name: "inlineMemberName",
+            type: "object",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "boolean",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        ({
+          _key: string;
+          _type: "inlineMemberName";
+        } & {
+          bar?: boolean;
+        })[]
+      >();
+    });
+
+    it('adds "_type" to named alias values', () => {
+      const field = defineType({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            name: "inlineMemberName",
+            type: "named",
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        (AliasValue<"named"> & {
+          _key: string;
+          _type: "inlineMemberName";
         })[]
       >();
     });
@@ -2520,6 +2616,62 @@ describe("defineConfig", () => {
           } & {
             baz?: boolean;
           };
+        }
+      | {
+          baz?: boolean;
+        }
+    >();
+  });
+
+  it('adds "_type" to inferred named alias values in arrays', () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "document",
+            fields: [
+              defineField({
+                name: "array",
+                type: "array",
+                of: [
+                  defineArrayMember({
+                    name: "aliasedMemberName",
+                    type: "bar",
+                  }),
+                ],
+              }),
+            ],
+          }),
+          defineType({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "baz",
+                type: "boolean",
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    expectType<InferSchemaValues<typeof config>>().toStrictEqual<
+      | {
+          _createdAt: string;
+          _id: string;
+          _rev: string;
+          _type: "foo";
+          _updatedAt: string;
+          array?: ({
+            _key: string;
+            _type: "aliasedMemberName";
+          } & {
+            baz?: boolean;
+          })[];
         }
       | {
           baz?: boolean;

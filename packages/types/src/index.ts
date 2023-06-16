@@ -203,12 +203,24 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
   DefinitionBase<TRequired, string, UrlRule>
 >;
 
+type ArrayValueExtra<TMemberDefinition extends DefinitionBase<any, any, any>> =
+  _InferValue<TMemberDefinition> extends { [key: string]: any }
+    ? Merge<
+        { _key: string },
+        TMemberDefinition extends {
+          name?: infer TName;
+        }
+          ? string extends TName
+            ? unknown
+            : { _type: TName }
+          : unknown
+      >
+    : unknown;
+
 type ArrayValue<TMemberDefinitions extends DefinitionBase<any, any, any>[]> =
   Simplify<
     (_InferValue<TMemberDefinitions[number]> &
-      (_InferValue<TMemberDefinitions[number]> extends { [key: string]: any }
-        ? { _key: string }
-        : unknown))[]
+      ArrayValueExtra<TMemberDefinitions[number]>)[]
   >;
 
 export type ArrayDefinition<
@@ -539,8 +551,17 @@ type ExpandAliasValues<
       _type: TType;
     }
   : Value extends (infer Item)[]
-  ? ExpandAliasValues<Item, TAliasedDefinition>[]
-  : Value extends { [key: string]: any }
+  ? (Item extends ArrayValueExtra<any>
+      ? Item extends { [key: string]: any }
+        ? Simplify<
+            Omit<ExpandAliasValues<Item, TAliasedDefinition>, "_key" | "_type">
+          > &
+            Simplify<Pick<Item, "_key" | "_type">>
+        : ExpandAliasValues<Item, TAliasedDefinition>
+      : ExpandAliasValues<Item, TAliasedDefinition>)[]
+  : // : Value extends (infer Item)[]
+  // ? ExpandAliasValues<Item, TAliasedDefinition>[]
+  Value extends { [key: string]: any }
   ? {
       [key in keyof Value]: ExpandAliasValues<Value[key], TAliasedDefinition>;
     }
