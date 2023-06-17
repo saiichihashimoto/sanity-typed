@@ -91,7 +91,7 @@ const extraZodFields = <Hotspot extends boolean>(
   } as unknown as ExtraZodFields<Hotspot>);
 
 const zeroToOne = (faker: Faker) =>
-  faker.datatype.number({
+  faker.number.float({
     min: 0,
     max: 1,
     precision: 1 / 10 ** 15,
@@ -134,10 +134,10 @@ export const image = <
       _type: "image",
       asset: {
         _type: "reference",
-        _ref: `image-${faker.random.alphaNumeric(24)}-${faker.datatype.number({
+        _ref: `image-${faker.string.alphanumeric(24)}-${faker.number.int({
           min: 900,
           max: 3000,
-        })}x${faker.datatype.number({
+        })}x${faker.number.int({
           min: 900,
           max: 3000,
         })}-${faker.helpers.arrayElement([

@@ -17,9 +17,9 @@ export const geopoint = <
 >({
   mock = (faker) => ({
     _type: "geopoint",
-    alt: faker.datatype.number({ min: 0, max: 1000 }),
-    lat: Number.parseFloat(faker.address.latitude()),
-    lng: Number.parseFloat(faker.address.longitude()),
+    alt: faker.number.float({ min: 0, max: 1000 }),
+    lat: faker.location.latitude(),
+    lng: faker.location.longitude(),
   }),
   zod: zodFn = (zod) =>
     zod as unknown as z.ZodType<ParsedValue, any, GeopointValue>,

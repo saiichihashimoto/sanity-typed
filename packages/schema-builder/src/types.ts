@@ -1,4 +1,4 @@
-import type { Faker } from "@faker-js/faker";
+import { Faker, en } from "@faker-js/faker";
 import type { InitialValueProperty, RuleDef, ValidationBuilder } from "sanity";
 import type { Merge, SetOptional } from "type-fest";
 import { z } from "zod";
@@ -75,12 +75,9 @@ const createMocker = <MockType>(
   const fakers: { [key: string]: Faker } = {};
 
   return (faker: Faker, path = ""): MockType => {
-    // @ts-expect-error -- We need faker to not be bundled with the library while getting both the class to create new instances and faker.locales.
-    const FakerClass: typeof Faker = faker.constructor;
-
     if (!(path in fakers)) {
       // eslint-disable-next-line fp/no-mutation -- Need to set fakers
-      fakers[path] = new FakerClass({ locales: faker.locales });
+      fakers[path] = new Faker({ locale: [en] });
       // eslint-disable-next-line fp/no-unused-expression -- seed is a mutation
       fakers[path]!.seed(
         [...path].reduce(

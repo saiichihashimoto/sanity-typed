@@ -6,16 +6,12 @@ import type { SanityTypeDef } from "../types";
 
 export const date = <ParsedValue = string, ResolvedValue = string>({
   mock = (faker) =>
-    `${`${faker.datatype.number({
-      min: 1990,
-      max: 2020,
-    })}`.padStart(4, "0")}-${`${faker.datatype.number({
-      min: 1,
-      max: 12,
-    })}`.padStart(2, "0")}-${`${faker.datatype.number({
-      min: 1,
-      max: 28,
-    })}`.padStart(2, "0")}`,
+    faker.date
+      .between({
+        from: "1990-01-01T00:00:00.000Z",
+        to: "2020-12-31T00:00:00.000Z",
+      })
+      .toLocaleDateString("fr-CA"),
   zod: zodFn = (zod) => zod as unknown as z.ZodType<ParsedValue, any, string>,
   zodResolved,
   ...def

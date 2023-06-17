@@ -105,7 +105,7 @@ export const reference = <
         )
       );
       const isBrokenRef = faker.datatype.boolean();
-      const brokenRef = faker.datatype.uuid();
+      const brokenRef = faker.string.uuid();
 
       const mock: SanityReference = {
         _ref: weak && isBrokenRef ? brokenRef : ref,

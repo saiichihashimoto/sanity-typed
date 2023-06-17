@@ -25,7 +25,7 @@ export const number = <
   options: { list } = {},
   mock = !list
     ? (faker) =>
-        faker.datatype.number({
+        faker.number.float({
           max,
           min,
           precision: 1 / 10 ** (precision ?? 0),

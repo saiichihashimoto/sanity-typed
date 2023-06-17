@@ -21,13 +21,14 @@
     "zod": "3.21.4"
   },
   "devDependencies": {
-    "@faker-js/faker": "7.6.0",
+    "@faker-js/faker": "8.0.2",
     "@jest/globals": "29.5.0",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "sanity": "3.12.0"
   },
   "peerDependencies": {
+    "@faker-js/faker": "^8.0.2",
     "sanity": "^3.2.0"
   }
 }
