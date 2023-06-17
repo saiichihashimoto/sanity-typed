@@ -28,6 +28,32 @@ import type {
 } from ".";
 
 describe("defineArrayMember", () => {
+  describe("array", () => {
+    it("returns the same object as sanity", () =>
+      expect(
+        // @ts-expect-error -- arrays can't be children of arrays https://www.sanity.io/docs/array-type#fNBIr84P
+        defineArrayMember({
+          type: "array",
+          of: [],
+        })
+      ).toStrictEqual(
+        defineArrayMemberNative({
+          type: "array",
+          of: [],
+        })
+      ));
+
+    it("is a typescript error", () => {
+      // @ts-expect-error -- arrays can't be children of arrays https://www.sanity.io/docs/array-type#fNBIr84P
+      const arrayMember = defineArrayMember({
+        type: "array",
+        of: [],
+      });
+
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<never>();
+      expectType<never>().toStrictEqual<_InferValue<typeof arrayMember>>();
+    });
+  });
   describe("block", () => {
     it("returns the same object as sanity", () =>
       expect(
@@ -143,6 +169,113 @@ describe("defineArrayMember", () => {
       });
 
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<string>();
+    });
+  });
+
+  describe("document", () => {
+    it("returns the same object as sanity", () =>
+      expect(
+        defineArrayMember({
+          name: "foo",
+          type: "document",
+          fields: [
+            defineField({
+              name: "bar",
+              type: "boolean",
+            }),
+          ],
+        })
+      ).toStrictEqual(
+        defineArrayMemberNative({
+          name: "foo",
+          type: "document",
+          fields: [
+            defineFieldNative({
+              name: "bar",
+              type: "boolean",
+            }),
+          ],
+        })
+      ));
+
+    it("infers SanityDocument with fields", () => {
+      const field = defineArrayMember({
+        name: "foo",
+        type: "document",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+          }),
+          defineField({
+            name: "tar",
+            type: "number",
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar?: boolean;
+        tar?: number;
+      }>();
+    });
+
+    it("infers objects within documents", () => {
+      const field = defineArrayMember({
+        name: "foo",
+        type: "document",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "tar",
+                type: "number",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar?: {
+          tar?: number;
+        };
+      }>();
+    });
+
+    it("infers required fields", () => {
+      const field = defineArrayMember({
+        name: "foo",
+        type: "document",
+        fields: [
+          defineField({
+            name: "bar",
+            type: "boolean",
+            validation: (rule) => rule.required(),
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar: boolean;
+      }>();
     });
   });
 
@@ -672,10 +805,59 @@ describe("defineField", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<
-        {
+        ({
           _key: string;
+        } & {
           bar?: boolean;
-        }[]
+        })[]
+      >();
+    });
+
+    it('adds "_type" to named objects', () => {
+      const field = defineField({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            name: "inlineMemberName",
+            type: "object",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "boolean",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        ({
+          _key: string;
+          _type: "inlineMemberName";
+        } & {
+          bar?: boolean;
+        })[]
+      >();
+    });
+
+    it('adds "_type" to named alias values', () => {
+      const field = defineField({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            name: "inlineMemberName",
+            type: "named",
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        (AliasValue<"named"> & {
+          _key: string;
+          _type: "inlineMemberName";
+        })[]
       >();
     });
   });
@@ -683,6 +865,7 @@ describe("defineField", () => {
   describe("block", () => {
     it("returns the same object as sanity", () =>
       expect(
+        // @ts-expect-error -- arrays can't be children of arrays https://www.sanity.io/docs/array-type#fNBIr84P
         defineField({
           name: "foo",
           type: "block",
@@ -694,15 +877,15 @@ describe("defineField", () => {
         })
       ));
 
-    it("infers PortableTextBlock", () => {
+    it("is a typescript error", () => {
+      // @ts-expect-error -- arrays can't be children of arrays https://www.sanity.io/docs/array-type#fNBIr84P
       const field = defineField({
         name: "foo",
         type: "block",
       });
 
-      expectType<
-        _InferValue<typeof field>
-      >().toStrictEqual<PortableTextBlock>();
+      expectType<_InferValue<typeof field>>().toStrictEqual<never>();
+      expectType<never>().toStrictEqual<_InferValue<typeof field>>();
     });
   });
 
@@ -860,6 +1043,7 @@ describe("defineField", () => {
         _id: string;
         _rev: string;
         _type: "foo";
+        // FIXME documents as field have _type: "document";
         _updatedAt: string;
         bar?: boolean;
         tar?: number;
@@ -1469,6 +1653,80 @@ describe("defineType", () => {
 
       expectType<_InferValue<typeof type>>().toStrictEqual<
         (boolean | string)[]
+      >();
+    });
+
+    it('adds "_key" to objects', () => {
+      const field = defineType({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            type: "object",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "boolean",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        ({
+          _key: string;
+        } & {
+          bar?: boolean;
+        })[]
+      >();
+    });
+
+    it('adds "_type" to named objects', () => {
+      const field = defineType({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            name: "inlineMemberName",
+            type: "object",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "boolean",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        ({
+          _key: string;
+          _type: "inlineMemberName";
+        } & {
+          bar?: boolean;
+        })[]
+      >();
+    });
+
+    it('adds "_type" to named alias values', () => {
+      const field = defineType({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            name: "inlineMemberName",
+            type: "named",
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        (AliasValue<"named"> & {
+          _key: string;
+          _type: "inlineMemberName";
+        })[]
       >();
     });
   });
@@ -2354,8 +2612,66 @@ describe("defineConfig", () => {
           _type: "foo";
           _updatedAt: string;
           bar?: {
+            _type: "bar";
+          } & {
             baz?: boolean;
           };
+        }
+      | {
+          baz?: boolean;
+        }
+    >();
+  });
+
+  it('adds "_type" to inferred named alias values in arrays', () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "document",
+            fields: [
+              defineField({
+                name: "array",
+                type: "array",
+                of: [
+                  defineArrayMember({
+                    name: "aliasedMemberName",
+                    type: "bar",
+                  }),
+                ],
+              }),
+            ],
+          }),
+          defineType({
+            name: "bar",
+            type: "object",
+            fields: [
+              defineField({
+                name: "baz",
+                type: "boolean",
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    expectType<InferSchemaValues<typeof config>>().toStrictEqual<
+      | {
+          _createdAt: string;
+          _id: string;
+          _rev: string;
+          _type: "foo";
+          _updatedAt: string;
+          array?: ({
+            _key: string;
+            _type: "aliasedMemberName";
+          } & {
+            baz?: boolean;
+          })[];
         }
       | {
           baz?: boolean;
@@ -2386,14 +2702,16 @@ describe("defineConfig", () => {
 
     type Foo = {
       // Cycle!
-      foo: Foo;
+      foo: Foo & {
+        _type: "foo";
+      };
     };
 
     expectType<InferSchemaValues<typeof config>>().toStrictEqual<Foo>();
 
     // It really is cyclical!
-    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-      InferSchemaValues<typeof config>
+    expectType<InferSchemaValues<typeof config>["foo"]["foo"]>().toStrictEqual<
+      InferSchemaValues<typeof config>["foo"]
     >();
   });
 
@@ -2442,16 +2760,22 @@ describe("defineConfig", () => {
 
     type Foo = {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
-      bar: Bar;
+      bar: Bar & {
+        _type: "bar";
+      };
     };
 
     type Bar = {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
-      baz: Baz;
+      baz: Baz & {
+        _type: "baz";
+      };
     };
 
     type Baz = {
-      foo: Foo;
+      foo: Foo & {
+        _type: "foo";
+      };
     };
 
     expectType<InferSchemaValues<typeof config>>().toStrictEqual<
@@ -2464,9 +2788,12 @@ describe("defineConfig", () => {
         InferSchemaValues<typeof config>,
         // Gets us the Foo object
         { bar: any }
-      >["bar"]["baz"]["foo"]
+      >["bar"]["baz"]["foo"]["bar"]["baz"]["foo"]
     >().toStrictEqual<
-      Extract<InferSchemaValues<typeof config>, { bar: any }>
+      Extract<
+        InferSchemaValues<typeof config>,
+        { bar: any }
+      >["bar"]["baz"]["foo"]
     >();
   });
 });
