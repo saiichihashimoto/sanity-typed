@@ -396,7 +396,7 @@ export type AliasValue<TType extends string> = {
 
 type TypeAliasDefinition<
   TType extends string,
-  TAlias extends IntrinsicTypeName | undefined,
+  TAlias extends IntrinsicTypeName,
   TRequired extends boolean
 > = Merge<
   TypeAliasDefinitionNative<TType, TAlias>,
@@ -410,7 +410,7 @@ type TypeAliasDefinition<
 export const defineArrayMember = <
   TType extends string,
   TName extends string,
-  TAlias extends IntrinsicTypeName | undefined,
+  TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -445,7 +445,7 @@ export const defineArrayMember = <
 export const defineField = <
   TType extends string,
   TName extends string,
-  TAlias extends IntrinsicTypeName | undefined,
+  TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -485,7 +485,7 @@ export const defineField = <
 type Type<
   TType extends string,
   TName extends string,
-  TAlias extends IntrinsicTypeName | undefined,
+  TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -517,7 +517,7 @@ type Type<
 export const defineType = <
   TType extends string,
   TName extends string,
-  TAlias extends IntrinsicTypeName | undefined,
+  TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
