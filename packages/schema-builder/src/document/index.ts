@@ -105,17 +105,20 @@ export const document = <
   preview: previewDef,
   mock = (faker) => {
     const createdAt = faker.date
-      .between("2021-06-03T03:24:55.395Z", "2022-06-04T18:50:36.539Z")
+      .between({
+        from: "2021-06-03T03:24:55.395Z",
+        to: "2022-06-04T18:50:36.539Z",
+      })
       .toISOString();
 
     return {
       ...fieldsMock(fields)(faker, name),
-      _id: faker.datatype.uuid(),
+      _id: faker.string.uuid(),
       _createdAt: createdAt,
-      _rev: faker.datatype.string(23),
+      _rev: faker.string.sample(23),
       _type: name,
       _updatedAt: faker.date
-        .between(createdAt, "2022-06-05T18:50:36.539Z")
+        .between({ from: createdAt, to: "2022-06-05T18:50:36.539Z" })
         .toISOString(),
     } as unknown as z.input<Zod>;
   },
