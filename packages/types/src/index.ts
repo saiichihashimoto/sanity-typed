@@ -206,7 +206,7 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
 >;
 
 type ArrayMemberValueExtra<
-  TMemberDefinition extends DefinitionBase<any, any, any>
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
 > = _InferValue<TMemberDefinition> extends { [key: string]: any }
   ? Merge<
       { _key: string },
@@ -220,15 +220,15 @@ type ArrayMemberValueExtra<
     >
   : unknown;
 
-type ArrayValue<TMemberDefinition extends DefinitionBase<any, any, any>> =
-  Simplify<
-    (_InferValue<TMemberDefinition> &
-      ArrayMemberValueExtra<TMemberDefinition>)[]
-  >;
+type ArrayValue<
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
+> = Simplify<
+  (_InferValue<TMemberDefinition> & ArrayMemberValueExtra<TMemberDefinition>)[]
+>;
 
 export type ArrayDefinition<
   TRequired extends boolean,
-  TMemberDefinition extends DefinitionBase<any, any, any>
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
 > = Merge<
   ArrayDefinitionNative,
   DefinitionBase<
@@ -240,7 +240,12 @@ export type ArrayDefinition<
   }
 >;
 
-type ObjectValue<TFieldDefinition extends { name: string }> = Simplify<
+type ObjectValue<
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  }
+> = Simplify<
   {
     [Name in Extract<
       TFieldDefinition,
@@ -256,7 +261,10 @@ type ObjectValue<TFieldDefinition extends { name: string }> = Simplify<
 
 export type ObjectDefinition<
   TRequired extends boolean,
-  TFieldDefinition extends { name: string }
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  }
 > = Merge<
   ObjectDefinitionNative,
   DefinitionBase<
@@ -270,7 +278,10 @@ export type ObjectDefinition<
 
 type DocumentValue<
   TType extends string,
-  TFieldDefinition extends { name: string }
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  }
 > = Simplify<
   ObjectValue<TFieldDefinition> &
     RemoveIndexSignature<SanityDocument> & { _type: TType }
@@ -279,7 +290,10 @@ type DocumentValue<
 export type DocumentDefinition<
   TName extends string,
   TRequired extends boolean,
-  TFieldDefinition extends { name: string }
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  }
 > = Merge<
   DocumentDefinitionNative,
   DefinitionBase<
@@ -291,14 +305,21 @@ export type DocumentDefinition<
   }
 >;
 
-export type FileValue<TFieldDefinition extends { name: string } = never> =
-  Simplify<
-    ObjectValue<TFieldDefinition> & RemoveIndexSignature<FileValueNative>
-  >;
+export type FileValue<
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  } = never
+> = Simplify<
+  ObjectValue<TFieldDefinition> & RemoveIndexSignature<FileValueNative>
+>;
 
 type FileDefinition<
   TRequired extends boolean,
-  TFieldDefinition extends { name: string }
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  }
 > = Merge<
   FileDefinitionNative,
   DefinitionBase<
@@ -310,14 +331,21 @@ type FileDefinition<
   }
 >;
 
-export type ImageValue<TFieldDefinition extends { name: string } = never> =
-  Simplify<
-    ObjectValue<TFieldDefinition> & RemoveIndexSignature<ImageValueNative>
-  >;
+export type ImageValue<
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  } = never
+> = Simplify<
+  ObjectValue<TFieldDefinition> & RemoveIndexSignature<ImageValueNative>
+>;
 
 type ImageDefinition<
   TRequired extends boolean,
-  TFieldDefinition extends { name: string }
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  }
 > = Merge<
   ImageDefinitionNative,
   DefinitionBase<
@@ -331,8 +359,11 @@ type ImageDefinition<
 
 type IntrinsicDefinitions<
   TName extends string,
-  TFieldDefinition extends { name: string },
-  TMemberDefinition extends DefinitionBase<any, any, any>,
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  },
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TRequired extends boolean
 > = {
   array: ArrayDefinition<TRequired, TMemberDefinition>;
@@ -381,7 +412,10 @@ export const defineArrayMember = <
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinition extends { name: string }
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  }
 >(
   arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
     (TType extends "array"
@@ -413,8 +447,11 @@ export const defineField = <
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinition extends { name: string },
-  TMemberDefinition extends DefinitionBase<any, any, any>,
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  },
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TRequired extends boolean = false
 >(
   schemaField: FieldDefinitionBase &
@@ -450,9 +487,11 @@ type Type<
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinition extends { name: string },
-  TMemberDefinition extends DefinitionBase<any, any, any>,
-  TRequired extends boolean
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  },
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
 > = MaybeAllowUnknownProps<TStrict> &
   (TType extends IntrinsicTypeName
     ? // HACK Why can't I just index off of IntrinsicDefinitions?
@@ -463,16 +502,15 @@ type Type<
               TName,
               TFieldDefinition,
               TMemberDefinition,
-              TRequired
+              any
             >[K],
             "FIXME why does this fail without the omit? we're clearly not using it"
           >;
         }[IntrinsicTypeName],
         { type: TType }
       >
-    : TypeAliasDefinition<TType, TAlias, TRequired>) & {
+    : TypeAliasDefinition<TType, TAlias, any>) & {
     name: TName;
-    [requiredSymbol]?: TRequired;
     type: TType;
   };
 
@@ -481,9 +519,11 @@ export const defineType = <
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinition extends { name: string },
-  TMemberDefinition extends DefinitionBase<any, any, any>,
-  TRequired extends boolean = false
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [requiredSymbol]?: boolean;
+  },
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
 >(
   schemaDefinition: Type<
     TType,
@@ -491,8 +531,7 @@ export const defineType = <
     TAlias,
     TStrict,
     TFieldDefinition,
-    TMemberDefinition,
-    TRequired
+    TMemberDefinition
   >,
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) =>
@@ -502,7 +541,7 @@ export const defineType = <
   ) as typeof schemaDefinition;
 
 type WorkspaceOptions<
-  TTypeDefinition extends Type<any, any, any, any, any, any, any>
+  TTypeDefinition extends Type<any, any, any, any, any, any>
 > = Merge<
   WorkspaceOptionsNative,
   {
@@ -523,28 +562,24 @@ type WorkspaceOptions<
   }
 >;
 
-export type Config<
-  TTypeDefinition extends Type<any, any, any, any, any, any, any>
-> =
-  | Merge<
-      WorkspaceOptions<TTypeDefinition>,
-      {
-        basePath?: string;
-        name?: string;
-      }
-    >
-  | WorkspaceOptions<TTypeDefinition>[];
+export type Config<TTypeDefinition extends Type<any, any, any, any, any, any>> =
+
+    | Merge<
+        WorkspaceOptions<TTypeDefinition>,
+        {
+          basePath?: string;
+          name?: string;
+        }
+      >
+    | WorkspaceOptions<TTypeDefinition>[];
 
 type ExpandAliasValues<
   Value,
-  TAliasedDefinition extends Type<"object", any, any, any, any, any, any>
+  TAliasedDefinition extends Type<"object", any, any, any, any, any>
 > = Value extends AliasValue<infer TType>
   ? ExpandAliasValues<
       _InferValue<
-        Extract<
-          TAliasedDefinition,
-          Type<"object", TType, any, any, any, any, any>
-        >
+        Extract<TAliasedDefinition, Type<"object", TType, any, any, any, any>>
       >,
       TAliasedDefinition
     > & {
@@ -585,12 +620,12 @@ export type InferSchemaValues<TConfig> =
   }
     ? ExpandAliasValues<
         _InferValue<TTypeDefinition>,
-        Extract<TTypeDefinition, Type<"object", any, any, any, any, any, any>>
+        Extract<TTypeDefinition, Type<"object", any, any, any, any, any>>
       >
     : never;
 
 export const defineConfig = <
-  TTypeDefinition extends Type<any, any, any, any, any, any, any>
+  TTypeDefinition extends Type<any, any, any, any, any, any>
 >(
   config: Config<TTypeDefinition>
 ) => defineConfigNative(config as any) as typeof config;
