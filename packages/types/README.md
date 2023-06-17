@@ -93,6 +93,131 @@ export type Product = Extract<Values, { _type: "product" }>;
  **/
 ```
 
+### Named/Aliased Types
+
+```typescript
+const foo = defineType({
+  name: "foo",
+  type: "document",
+  fields: [
+    defineField({
+      name: "bar",
+      type: "bar",
+    }),
+  ],
+});
+
+const bar = defineType({
+  name: "bar",
+  type: "object",
+  fields: [
+    defineField({
+      name: "baz",
+      type: "boolean",
+    }),
+  ],
+});
+
+const config = defineConfig({
+  // ...
+  schema: {
+    types: [
+      foo,
+      bar,
+      // ...
+    ],
+  },
+});
+
+export default config;
+
+type Values = InferSchemaValues<typeof config>;
+
+export type Foo = Extract<Values, { _type: "foo" }>;
+/**
+ *  Foo === {
+ *    _createdAt: string;
+ *    _id: string;
+ *    _rev: string;
+ *    _type: "foo";
+ *    _updatedAt: string;
+ *    bar?: {
+ *      _type: "bar";
+ *    } & {
+ *      baz?: boolean;
+ *    };
+ *  };
+ **/
+```
+
+### Plugin Types
+
+```typescript
+// import { definePlugin } from "sanity";
+import { definePlugin } from "@sanity-typed/types";
+
+const foo = defineType({
+  name: "foo",
+  type: "document",
+  fields: [
+    defineField({
+      name: "bar",
+      type: "bar",
+    }),
+  ],
+});
+
+// No changes using definePlugin https://www.sanity.io/docs/developing-plugins
+const barPlugin = definePlugin({
+  name: "plugin",
+  schema: {
+    types: [
+      defineType({
+        name: "bar",
+        type: "object",
+        fields: [
+          defineField({
+            name: "baz",
+            type: "boolean",
+          }),
+        ],
+      }),
+    ],
+  },
+});
+
+const config = defineConfig({
+  // ...
+  schema: {
+    types: [
+      foo,
+      // ...
+    ],
+  },
+  plugins: [barPlugin()],
+});
+
+export default config;
+
+type Values = InferSchemaValues<typeof config>;
+
+export type Foo = Extract<Values, { _type: "foo" }>;
+/**
+ *  Foo === {
+ *    _createdAt: string;
+ *    _id: string;
+ *    _rev: string;
+ *    _type: "foo";
+ *    _updatedAt: string;
+ *    bar?: {
+ *      _type: "bar";
+ *    } & {
+ *      baz?: boolean;
+ *    };
+ *  };
+ **/
+```
+
 ## Goals
 
 Typescript was an after-the-fact concern with sanity, since the rise of typescript happened after sanity took off. The `define*` methods are a good start, but they only help restrict the schema, not type the document types. There's been attempts, namely [`sanity-codegen`](https://github.com/ricokahler/sanity-codegen) and [`@sanity-typed/schema-builder`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/schema-builder), but they take the approach of creating a new way of building schemas. The drop-in replacement approach allows for zero migration cost.
