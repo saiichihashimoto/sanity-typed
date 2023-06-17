@@ -240,100 +240,98 @@ export type ArrayDefinition<
   }
 >;
 
-type ObjectValue<TFieldDefinitions extends { name: string }[]> = Simplify<
+type ObjectValue<TFieldDefinition extends { name: string }> = Simplify<
   {
     [Name in Extract<
-      TFieldDefinitions[number],
+      TFieldDefinition,
       { [requiredSymbol]?: false }
-    >["name"]]?: _InferValue<
-      Extract<TFieldDefinitions[number], { name: Name }>
-    >;
+    >["name"]]?: _InferValue<Extract<TFieldDefinition, { name: Name }>>;
   } & {
     [Name in Extract<
-      TFieldDefinitions[number],
+      TFieldDefinition,
       { [requiredSymbol]?: true }
-    >["name"]]: _InferValue<Extract<TFieldDefinitions[number], { name: Name }>>;
+    >["name"]]: _InferValue<Extract<TFieldDefinition, { name: Name }>>;
   }
 >;
 
 export type ObjectDefinition<
   TRequired extends boolean,
-  TFieldDefinitions extends { name: string }[]
+  TFieldDefinition extends { name: string }
 > = Merge<
   ObjectDefinitionNative,
   DefinitionBase<
     TRequired,
-    ObjectValue<TFieldDefinitions>,
-    RewriteValue<ObjectValue<TFieldDefinitions>, ObjectRule>
+    ObjectValue<TFieldDefinition>,
+    RewriteValue<ObjectValue<TFieldDefinition>, ObjectRule>
   > & {
-    fields: TFieldDefinitions;
+    fields: TupleOfLength<TFieldDefinition, 1>;
   }
 >;
 
 type DocumentValue<
   TType extends string,
-  TFieldDefinitions extends { name: string }[]
+  TFieldDefinition extends { name: string }
 > = Simplify<
-  ObjectValue<TFieldDefinitions> &
+  ObjectValue<TFieldDefinition> &
     RemoveIndexSignature<SanityDocument> & { _type: TType }
 >;
 
 export type DocumentDefinition<
   TName extends string,
   TRequired extends boolean,
-  TFieldDefinitions extends { name: string }[]
+  TFieldDefinition extends { name: string }
 > = Merge<
   DocumentDefinitionNative,
   DefinitionBase<
     TRequired,
-    DocumentValue<TName, TFieldDefinitions>,
-    RewriteValue<DocumentValue<TName, TFieldDefinitions>, DocumentRule>
+    DocumentValue<TName, TFieldDefinition>,
+    RewriteValue<DocumentValue<TName, TFieldDefinition>, DocumentRule>
   > & {
-    fields: TFieldDefinitions;
+    fields: TupleOfLength<TFieldDefinition, 1>;
   }
 >;
 
-export type FileValue<TFieldDefinitions extends { name: string }[] = []> =
+export type FileValue<TFieldDefinition extends { name: string } = never> =
   Simplify<
-    ObjectValue<TFieldDefinitions> & RemoveIndexSignature<FileValueNative>
+    ObjectValue<TFieldDefinition> & RemoveIndexSignature<FileValueNative>
   >;
 
 type FileDefinition<
   TRequired extends boolean,
-  TFieldDefinitions extends { name: string }[]
+  TFieldDefinition extends { name: string }
 > = Merge<
   FileDefinitionNative,
   DefinitionBase<
     TRequired,
-    FileValue<TFieldDefinitions>,
-    RewriteValue<FileValue<TFieldDefinitions>, FileRule>
+    FileValue<TFieldDefinition>,
+    RewriteValue<FileValue<TFieldDefinition>, FileRule>
   > & {
-    fields?: TFieldDefinitions;
+    fields?: TFieldDefinition[];
   }
 >;
 
-export type ImageValue<TFieldDefinitions extends { name: string }[] = []> =
+export type ImageValue<TFieldDefinition extends { name: string } = never> =
   Simplify<
-    ObjectValue<TFieldDefinitions> & RemoveIndexSignature<ImageValueNative>
+    ObjectValue<TFieldDefinition> & RemoveIndexSignature<ImageValueNative>
   >;
 
 type ImageDefinition<
   TRequired extends boolean,
-  TFieldDefinitions extends { name: string }[]
+  TFieldDefinition extends { name: string }
 > = Merge<
   ImageDefinitionNative,
   DefinitionBase<
     TRequired,
-    ImageValue<TFieldDefinitions>,
-    RewriteValue<ImageValue<TFieldDefinitions>, FileRule>
+    ImageValue<TFieldDefinition>,
+    RewriteValue<ImageValue<TFieldDefinition>, FileRule>
   > & {
-    fields?: TFieldDefinitions;
+    fields?: TFieldDefinition[];
   }
 >;
 
 type IntrinsicDefinitions<
   TName extends string,
-  TFieldDefinitions extends { name: string }[],
+  TFieldDefinition extends { name: string },
   TMemberDefinition extends DefinitionBase<any, any, any>,
   TRequired extends boolean
 > = {
@@ -343,13 +341,13 @@ type IntrinsicDefinitions<
   crossDatasetReference: CrossDatasetReferenceDefinition<TRequired>;
   date: DateDefinition<TRequired>;
   datetime: DatetimeDefinition<TRequired>;
-  document: DocumentDefinition<TName, TRequired, TFieldDefinitions>;
+  document: DocumentDefinition<TName, TRequired, TFieldDefinition>;
   email: EmailDefinition<TRequired>;
-  file: FileDefinition<TRequired, TFieldDefinitions>;
+  file: FileDefinition<TRequired, TFieldDefinition>;
   geopoint: GeopointDefinition<TRequired>;
-  image: ImageDefinition<TRequired, TFieldDefinitions>;
+  image: ImageDefinition<TRequired, TFieldDefinition>;
   number: NumberDefinition<TRequired>;
-  object: ObjectDefinition<TRequired, TFieldDefinitions>;
+  object: ObjectDefinition<TRequired, TFieldDefinition>;
   reference: ReferenceDefinition<TRequired>;
   slug: SlugDefinition<TRequired>;
   string: StringDefinition<TRequired>;
@@ -383,7 +381,7 @@ export const defineArrayMember = <
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinitions extends { name: string }[]
+  TFieldDefinition extends { name: string }
 >(
   arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
     (TType extends "array"
@@ -393,7 +391,7 @@ export const defineArrayMember = <
         Extract<
           {
             [K in IntrinsicTypeName]: Omit<
-              IntrinsicDefinitions<TName, TFieldDefinitions, any, any>[K],
+              IntrinsicDefinitions<TName, TFieldDefinition, any, any>[K],
               "name"
             >;
           }[IntrinsicTypeName],
@@ -415,7 +413,7 @@ export const defineField = <
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinitions extends { name: string }[],
+  TFieldDefinition extends { name: string },
   TMemberDefinition extends DefinitionBase<any, any, any>,
   TRequired extends boolean = false
 >(
@@ -430,7 +428,7 @@ export const defineField = <
             [K in IntrinsicTypeName]: Omit<
               IntrinsicDefinitions<
                 TName,
-                TFieldDefinitions,
+                TFieldDefinition,
                 TMemberDefinition,
                 TRequired
               >[K],
@@ -452,7 +450,7 @@ type Type<
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinitions extends { name: string }[],
+  TFieldDefinition extends { name: string },
   TMemberDefinition extends DefinitionBase<any, any, any>,
   TRequired extends boolean
 > = MaybeAllowUnknownProps<TStrict> &
@@ -463,7 +461,7 @@ type Type<
           [K in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
               TName,
-              TFieldDefinitions,
+              TFieldDefinition,
               TMemberDefinition,
               TRequired
             >[K],
@@ -483,7 +481,7 @@ export const defineType = <
   TName extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition,
-  TFieldDefinitions extends { name: string }[],
+  TFieldDefinition extends { name: string },
   TMemberDefinition extends DefinitionBase<any, any, any>,
   TRequired extends boolean = false
 >(
@@ -492,7 +490,7 @@ export const defineType = <
     TName,
     TAlias,
     TStrict,
-    TFieldDefinitions,
+    TFieldDefinition,
     TMemberDefinition,
     TRequired
   >,
