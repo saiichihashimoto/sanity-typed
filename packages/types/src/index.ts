@@ -564,14 +564,11 @@ type WorkspaceOptions<
 
 export type Config<TTypeDefinition extends Type<any, any, any, any, any, any>> =
 
-    | Merge<
-        WorkspaceOptions<TTypeDefinition>,
-        {
-          basePath?: string;
-          name?: string;
-        }
-      >
-    | WorkspaceOptions<TTypeDefinition>[];
+    | WorkspaceOptions<TTypeDefinition>[]
+    | (Omit<WorkspaceOptions<TTypeDefinition>, "basePath" | "name"> & {
+        basePath?: string;
+        name?: string;
+      });
 
 type ExpandAliasValues<
   Value,
@@ -603,21 +600,9 @@ type ExpandAliasValues<
     }
   : Value;
 
-export type InferSchemaValues<TConfig> =
+export type InferSchemaValues<TConfig extends Config<any>> =
   // HACK Why can't I do TConfig extends Config<infer TTypeDefinition> ? ...
-  TConfig extends {
-    schema?: {
-      types?:
-        | (infer TTypeDefinition)[]
-        | ComposableOption<
-            (infer TTypeDefinition)[],
-            Omit<
-              ConfigContext,
-              "client" | "currentUser" | "getClient" | "schema"
-            >
-          >;
-    };
-  }
+  TConfig extends Config<infer TTypeDefinition>
     ? ExpandAliasValues<
         _InferValue<TTypeDefinition>,
         Extract<TTypeDefinition, Type<"object", any, any, any, any, any>>
