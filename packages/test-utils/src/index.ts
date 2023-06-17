@@ -1,19 +1,22 @@
 // TODO Release expect-type as it's own package
 
+declare const EXPECTED: unique symbol;
+declare const RECEIVED: unique symbol;
+
 type ToBeAssignableTo<Expected, Received, Inverted extends boolean> = [
   Expected
 ] extends [Received]
   ? Inverted extends false
     ? any
     : {
-        __EXPECTED__: { not: Expected };
-        __RECEIVED__: Received;
+        [EXPECTED]: { not: Expected };
+        [RECEIVED]: Received;
       }
   : Inverted extends true
   ? any
   : {
-      __EXPECTED__: Expected;
-      __RECEIVED__: Received;
+      [EXPECTED]: Expected;
+      [RECEIVED]: Received;
     };
 
 // https://twitter.com/mattpocockuk/status/1646452585006604291
@@ -23,14 +26,14 @@ type ToStrictEqual<Expected, Received, Inverted extends boolean> = (<
   ? Inverted extends false
     ? any
     : {
-        __EXPECTED__: { not: Expected };
-        __RECEIVED__: Received;
+        [EXPECTED]: { not: Expected };
+        [RECEIVED]: Received;
       }
   : Inverted extends true
   ? any
   : {
-      __EXPECTED__: Expected;
-      __RECEIVED__: Received;
+      [EXPECTED]: Expected;
+      [RECEIVED]: Received;
     };
 
 // https://twitter.com/mattpocockuk/status/1625173887590842369
