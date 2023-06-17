@@ -1,4 +1,11 @@
 import type { PortableTextBlock } from "@portabletext/types";
+import {
+  defineArrayMember as defineArrayMemberNative,
+  defineConfig as defineConfigNative,
+  defineField as defineFieldNative,
+  definePlugin as definePluginNative,
+  defineType as defineTypeNative,
+} from "sanity";
 import type {
   ArrayDefinition as ArrayDefinitionNative,
   ArrayRule,
@@ -34,6 +41,7 @@ import type {
   NumberRule,
   ObjectDefinition as ObjectDefinitionNative,
   ObjectRule,
+  PluginOptions as PluginOptionsNative,
   PreviewConfig,
   ReferenceDefinition as ReferenceDefinitionNative,
   ReferenceRule,
@@ -53,12 +61,6 @@ import type {
   UrlDefinition as UrlDefinitionNative,
   UrlRule,
   WorkspaceOptions as WorkspaceOptionsNative,
-} from "sanity";
-import {
-  defineArrayMember as defineArrayMemberNative,
-  defineConfig as defineConfigNative,
-  defineField as defineFieldNative,
-  defineType as defineTypeNative,
 } from "sanity";
 import type { Merge, RemoveIndexSignature, Simplify } from "type-fest";
 
@@ -540,35 +542,97 @@ export const defineType = <
     defineOptions
   ) as typeof schemaDefinition;
 
+type ConfigBase<
+  TTypeDefinition extends Type<any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any>
+> = {
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive type
+  plugins?: PluginOptions<TPluginTypeDefinition, any>[];
+  schema?: Merge<
+    SchemaPluginOptionsNative,
+    {
+      types?:
+        | ComposableOption<
+            TTypeDefinition[],
+            Omit<
+              ConfigContext,
+              "client" | "currentUser" | "getClient" | "schema"
+            >
+          >
+        | TTypeDefinition[];
+    }
+  >;
+};
+
+type PluginOptions<
+  TTypeDefinition extends Type<any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any>
+> = ConfigBase<TTypeDefinition, TPluginTypeDefinition> &
+  Omit<PluginOptionsNative, "plugins" | "schema">;
+
+export const definePlugin = <
+  TTypeDefinition extends Type<any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any> = Type<
+    string,
+    any,
+    any,
+    any,
+    any,
+    any
+  >,
+  TOptions = void
+>(
+  arg:
+    | PluginOptions<TTypeDefinition, TPluginTypeDefinition>
+    | ((
+        options: TOptions
+      ) => PluginOptions<TTypeDefinition, TPluginTypeDefinition>)
+) =>
+  definePluginNative(arg as any) as (
+    options: TOptions
+  ) => PluginOptions<TTypeDefinition, TPluginTypeDefinition>;
+
 type WorkspaceOptions<
-  TTypeDefinition extends Type<any, any, any, any, any, any>
+  TTypeDefinition extends Type<any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any>
 > = Merge<
   WorkspaceOptionsNative,
-  {
-    schema?: Merge<
-      SchemaPluginOptionsNative,
-      {
-        types?:
-          | ComposableOption<
-              TTypeDefinition[],
-              Omit<
-                ConfigContext,
-                "client" | "currentUser" | "getClient" | "schema"
-              >
-            >
-          | TTypeDefinition[];
-      }
-    >;
-  }
+  ConfigBase<TTypeDefinition, TPluginTypeDefinition>
 >;
 
-export type Config<TTypeDefinition extends Type<any, any, any, any, any, any>> =
+export type Config<
+  TTypeDefinition extends Type<any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any> = Type<
+    string,
+    any,
+    any,
+    any,
+    any,
+    any
+  >
+> =
+  | WorkspaceOptions<TTypeDefinition, TPluginTypeDefinition>[]
+  | (Omit<
+      WorkspaceOptions<TTypeDefinition, TPluginTypeDefinition>,
+      "basePath" | "name"
+    > & {
+      basePath?: string;
+      name?: string;
+    });
 
-    | WorkspaceOptions<TTypeDefinition>[]
-    | (Omit<WorkspaceOptions<TTypeDefinition>, "basePath" | "name"> & {
-        basePath?: string;
-        name?: string;
-      });
+export const defineConfig = <
+  TTypeDefinition extends Type<any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any> = Type<
+    string,
+    any,
+    any,
+    any,
+    any,
+    any
+  >
+>(
+  config: Config<TTypeDefinition, TPluginTypeDefinition>
+) => defineConfigNative(config as any) as typeof config;
 
 type ExpandAliasValues<
   Value,
@@ -580,7 +644,6 @@ type ExpandAliasValues<
       >,
       TAliasedDefinition
     > & {
-      // We can't Merge this. I think it breaks however typescript detects recursion.
       _type: TType;
     }
   : Value extends (infer Item)[]
@@ -592,25 +655,22 @@ type ExpandAliasValues<
             Simplify<Pick<Item, "_key" | "_type">>
         : ExpandAliasValues<Item, TAliasedDefinition>
       : ExpandAliasValues<Item, TAliasedDefinition>)[]
-  : // : Value extends (infer Item)[]
-  // ? ExpandAliasValues<Item, TAliasedDefinition>[]
-  Value extends { [key: string]: any }
+  : Value extends { [key: string]: any }
   ? {
       [key in keyof Value]: ExpandAliasValues<Value[key], TAliasedDefinition>;
     }
   : Value;
 
-export type InferSchemaValues<TConfig extends Config<any>> =
-  // HACK Why can't I do TConfig extends Config<infer TTypeDefinition> ? ...
-  TConfig extends Config<infer TTypeDefinition>
-    ? ExpandAliasValues<
-        _InferValue<TTypeDefinition>,
-        Extract<TTypeDefinition, Type<"object", any, any, any, any, any>>
+export type InferSchemaValues<
+  TConfig extends ConfigBase<any, any> | ConfigBase<any, any>[]
+> = TConfig extends
+  | ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
+  | ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>[]
+  ? ExpandAliasValues<
+      _InferValue<TTypeDefinition>,
+      Extract<
+        TPluginTypeDefinition | TTypeDefinition,
+        Type<"object", any, any, any, any, any>
       >
-    : never;
-
-export const defineConfig = <
-  TTypeDefinition extends Type<any, any, any, any, any, any>
->(
-  config: Config<TTypeDefinition>
-) => defineConfigNative(config as any) as typeof config;
+    >
+  : never;

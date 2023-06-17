@@ -16,7 +16,13 @@ import type {
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import { defineArrayMember, defineConfig, defineField, defineType } from ".";
+import {
+  defineArrayMember,
+  defineConfig,
+  defineField,
+  definePlugin,
+  defineType,
+} from ".";
 import type {
   AliasValue,
   Config,
@@ -2795,5 +2801,58 @@ describe("defineConfig", () => {
         { bar: any }
       >["bar"]["baz"]["foo"]
     >();
+  });
+
+  it("infers plugin type value", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "document",
+            fields: [
+              defineField({
+                name: "pluginValue",
+                type: "pluginValue",
+              }),
+            ],
+          }),
+        ],
+      },
+      plugins: [
+        definePlugin({
+          name: "plugin",
+          schema: {
+            types: [
+              defineType({
+                name: "pluginValue",
+                type: "object",
+                fields: [
+                  defineField({
+                    name: "baz",
+                    type: "boolean",
+                  }),
+                ],
+              }),
+            ],
+          },
+        })(),
+      ],
+    });
+
+    expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
+      _createdAt: string;
+      _id: string;
+      _rev: string;
+      _type: "foo";
+      _updatedAt: string;
+      pluginValue?: {
+        _type: "pluginValue";
+      } & {
+        baz?: boolean;
+      };
+    }>();
   });
 });
