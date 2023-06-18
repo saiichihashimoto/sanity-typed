@@ -500,9 +500,9 @@ describe("expectType", () => {
       undefined>();
     });
 
-    it.skip("expectType<null>.not.toStrictEqual<any>()", () => {
+    it("expectType<null>.not.toStrictEqual<any>()", () => {
       expectType<null>().not.toStrictEqual<any>();
-      expectType<null>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is any
+      expectType<null>().toStrictEqual<// @ts-expect-error
       any>();
     });
 
@@ -530,9 +530,9 @@ describe("expectType", () => {
       null>();
     });
 
-    it.skip("expectType<undefined>.not.toStrictEqual<any>()", () => {
+    it("expectType<undefined>.not.toStrictEqual<any>()", () => {
       expectType<undefined>().not.toStrictEqual<any>();
-      expectType<undefined>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is any
+      expectType<undefined>().toStrictEqual<// @ts-expect-error
       any>();
     });
 
@@ -548,9 +548,9 @@ describe("expectType", () => {
       never>();
     });
 
-    it.skip("expectType<any>.toStrictEqual<any>()", () => {
+    it("expectType<any>.toStrictEqual<any>()", () => {
       expectType<any>().toStrictEqual<any>();
-      expectType<any>().not.toStrictEqual<// FIXME can't @ts-expect-error when the second type is any
+      expectType<any>().not.toStrictEqual<// @ts-expect-error
       any>();
     });
 
@@ -596,9 +596,9 @@ describe("expectType", () => {
       undefined>();
     });
 
-    it.skip("expectType<unknown>.not.toStrictEqual<any>()", () => {
+    it("expectType<unknown>.not.toStrictEqual<any>()", () => {
       expectType<unknown>().not.toStrictEqual<any>();
-      expectType<unknown>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is any
+      expectType<unknown>().toStrictEqual<// @ts-expect-error
       any>();
     });
 
@@ -626,9 +626,9 @@ describe("expectType", () => {
       undefined>();
     });
 
-    it.skip("expectType<never>.not.toStrictEqual<any>()", () => {
+    it("expectType<never>.not.toStrictEqual<any>()", () => {
       expectType<never>().not.toStrictEqual<any>();
-      expectType<never>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is any
+      expectType<never>().toStrictEqual<// @ts-expect-error
       any>();
     });
 

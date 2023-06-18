@@ -19,25 +19,37 @@ type ToBeAssignableTo<Expected, Received, Inverted extends boolean> = [
       [RECEIVED]: Received;
     };
 
+type IfAny<Value, A, B> = false extends (any extends Value ? true : false)
+  ? B
+  : A;
+
 // https://twitter.com/mattpocockuk/status/1646452585006604291
 type ToStrictEqual<Expected, Received, Inverted extends boolean> = (<
   T
 >() => T extends Expected ? 1 : 2) extends <T>() => T extends Received ? 1 : 2
   ? Inverted extends false
     ? any
-    : {
-        [EXPECTED]: { not: Expected };
-        [RECEIVED]: Received;
-      }
+    : IfAny<
+        Received,
+        never,
+        {
+          [EXPECTED]: { not: Expected };
+          [RECEIVED]: Received;
+        }
+      >
   : Inverted extends true
   ? any
-  : {
-      [EXPECTED]: Expected;
-      [RECEIVED]: Received;
-    };
+  : IfAny<
+      Received,
+      never,
+      {
+        [EXPECTED]: Expected;
+        [RECEIVED]: Received;
+      }
+    >;
 
 // https://twitter.com/mattpocockuk/status/1625173887590842369
-const inverted: unique symbol = Symbol("Inverted Brand");
+declare const inverted: unique symbol;
 
 type TypeMatchers<Expected, Inverted extends boolean = false> = {
   [inverted]: Inverted;
@@ -68,8 +80,7 @@ type TypeMatchers<Expected, Inverted extends boolean = false> = {
 };
 
 export const expectType = <Expected>() => {
-  const valWithoutNot: Omit<TypeMatchers<Expected>, "not"> = {
-    [inverted]: undefined as unknown as false,
+  const valWithoutNot: Omit<TypeMatchers<Expected>, typeof inverted | "not"> = {
     toBeAssignableTo: () => {},
     toStrictEqual: () => {},
   };
