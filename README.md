@@ -5,6 +5,8 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/saiichihashimoto/sanity-typed?style=flat&logo=github)](https://github.com/saiichihashimoto/sanity-typed/graphs/contributors)
 [![License](https://img.shields.io/github/license/saiichihashimoto/sanity-typed?style=flat)](https://github.com/saiichihashimoto/sanity-typed/blob/main/LICENSE)
 
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
+
 Monorepo for typing Sanity.io.
 
 ## Packages

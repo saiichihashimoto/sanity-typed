@@ -7,6 +7,8 @@
 [![Minified Size](https://img.shields.io/bundlephobia/min/@sanity-typed/schema-builder?style=flat)](https://www.npmjs.com/package/@sanity-typed/schema-builder?activeTab=code)
 [![License](https://img.shields.io/github/license/saiichihashimoto/sanity-typed?style=flat)](https://github.com/saiichihashimoto/sanity-typed/blob/main/LICENSE)
 
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
+
 Build [Sanity schemas](https://www.sanity.io/docs/content-modelling) declaratively and get typescript types of schema values for free!
 
 - Typescript types for Sanity Values!
