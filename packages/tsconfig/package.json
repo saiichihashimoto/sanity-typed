@@ -1,5 +1,9 @@
 {
   "name": "@sanity-typed/tsconfig",
   "version": "0.0.0-development",
-  "private": true
+  "private": true,
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/saiichihashimoto"
+  }
 }

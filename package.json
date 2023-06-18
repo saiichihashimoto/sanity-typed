@@ -5,6 +5,10 @@
   "homepage": "https://github.com/saiichihashimoto/sanity-typed",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/saiichihashimoto"
+  },
   "workspaces": ["@types/*", "packages/*"],
   "scripts": {
     "build": "turbo run build --color --continue",

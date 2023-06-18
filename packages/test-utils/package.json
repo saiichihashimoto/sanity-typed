@@ -2,6 +2,10 @@
   "name": "@sanity-typed/test-utils",
   "version": "0.0.0-development",
   "private": true,
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/saiichihashimoto"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
