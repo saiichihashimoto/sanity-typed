@@ -40,7 +40,7 @@ describe("expectType", () => {
       expectType<boolean>().not.toBeAssignableTo<// @ts-expect-error
       boolean>();
 
-      const a: boolean = true as boolean;
+      const test: boolean = true as boolean;
     });
 
     it("expectType<boolean>.not.toBeAssignableTo<true>()", () => {
@@ -49,7 +49,7 @@ describe("expectType", () => {
       true>();
 
       // @ts-expect-error
-      const a: true = true as boolean;
+      const test: true = true as boolean;
     });
 
     it("expectType<true>.toBeAssignableTo<true>()", () => {
@@ -57,7 +57,7 @@ describe("expectType", () => {
       expectType<true>().not.toBeAssignableTo<// @ts-expect-error
       true>();
 
-      const a: true = true as true;
+      const test: true = true as true;
     });
 
     it("expectType<true>.toBeAssignableTo<boolean>()", () => {
@@ -65,7 +65,7 @@ describe("expectType", () => {
       expectType<true>().not.toBeAssignableTo<// @ts-expect-error
       boolean>();
 
-      const a: boolean = true as true;
+      const test: boolean = true as true;
     });
 
     it("expectType<number>.toBeAssignableTo<number>()", () => {
@@ -73,7 +73,7 @@ describe("expectType", () => {
       expectType<number>().not.toBeAssignableTo<// @ts-expect-error
       number>();
 
-      const a: number = 2 as number;
+      const test: number = 2 as number;
     });
 
     it("expectType<number>.not.toBeAssignableTo<1>()", () => {
@@ -82,7 +82,7 @@ describe("expectType", () => {
       1>();
 
       // @ts-expect-error
-      const a: 1 = 2 as number;
+      const test: 1 = 2 as number;
     });
 
     it("expectType<1>.toBeAssignableTo<1>()", () => {
@@ -90,7 +90,7 @@ describe("expectType", () => {
       expectType<1>().not.toBeAssignableTo<// @ts-expect-error
       1>();
 
-      const a: 1 = 1 as 1;
+      const test: 1 = 1 as 1;
     });
 
     it("expectType<1>.toBeAssignableTo<number>()", () => {
@@ -98,7 +98,7 @@ describe("expectType", () => {
       expectType<1>().not.toBeAssignableTo<// @ts-expect-error
       number>();
 
-      const a: number = 1 as 1;
+      const test: number = 1 as 1;
     });
 
     it("expectType<1>.toBeAssignableTo<1 | 2>()", () => {
@@ -108,7 +108,7 @@ describe("expectType", () => {
         1 | 2
       >();
 
-      const a: 1 | 2 = 1 as 1;
+      const test: 1 | 2 = 1 as 1;
     });
 
     it("expectType<1 | 2>.not.toBeAssignableTo<1>()", () => {
@@ -117,7 +117,7 @@ describe("expectType", () => {
       1>();
 
       // @ts-expect-error
-      const a: 1 = 1 as 1 | 2;
+      const test: 1 = 1 as 1 | 2;
     });
 
     it("expectType<string>.toBeAssignableTo<string>()", () => {
@@ -125,7 +125,7 @@ describe("expectType", () => {
       expectType<string>().not.toBeAssignableTo<// @ts-expect-error
       string>();
 
-      const a: string = "foo" as string;
+      const test: string = "foo" as string;
     });
 
     it('expectType<string>.not.toBeAssignableTo<"foo">()', () => {
@@ -134,7 +134,7 @@ describe("expectType", () => {
       "foo">();
 
       // @ts-expect-error
-      const a: "foo" = "foo" as string;
+      const test: "foo" = "foo" as string;
     });
 
     it('expectType<"foo">.toBeAssignableTo<"foo">()', () => {
@@ -142,7 +142,7 @@ describe("expectType", () => {
       expectType<"foo">().not.toBeAssignableTo<// @ts-expect-error
       "foo">();
 
-      const a: "foo" = "foo" as "foo";
+      const test: "foo" = "foo" as "foo";
     });
 
     it('expectType<"foo">.toBeAssignableTo<string>()', () => {
@@ -150,7 +150,7 @@ describe("expectType", () => {
       expectType<"foo">().not.toBeAssignableTo<// @ts-expect-error
       string>();
 
-      const a: string = "foo" as "foo";
+      const test: string = "foo" as "foo";
     });
 
     it('expectType<"foo">.toBeAssignableTo<"foo" | "bar">()', () => {
@@ -160,7 +160,7 @@ describe("expectType", () => {
         "bar" | "foo"
       >();
 
-      const a: "bar" | "foo" = "foo" as "foo";
+      const test: "bar" | "foo" = "foo" as "foo";
     });
 
     it('expectType<"foo" | "bar">.not.toBeAssignableTo<"foo">()', () => {
@@ -169,7 +169,7 @@ describe("expectType", () => {
       "foo">();
 
       // @ts-expect-error
-      const a: "foo" = "foo" as "bar" | "foo";
+      const test: "foo" = "foo" as "bar" | "foo";
     });
 
     it("expectType<symbol>.toBeAssignableTo<symbol>()", () => {
@@ -182,7 +182,7 @@ describe("expectType", () => {
         typeof B
       >();
 
-      const a: typeof B = A as typeof A;
+      const test: typeof B = A as typeof A;
     });
 
     it("expectType<symbol>.not.toBeAssignableTo<unique symbol>()", () => {
@@ -196,7 +196,7 @@ describe("expectType", () => {
       >();
 
       // @ts-expect-error
-      const a: typeof B = A as typeof A;
+      const test: typeof B = A as typeof A;
     });
 
     it("expectType<unique symbol>.not.toBeAssignableTo<unique symbol>()", () => {
@@ -210,7 +210,7 @@ describe("expectType", () => {
       >();
 
       // @ts-expect-error
-      const a: typeof B = A as typeof A;
+      const test: typeof B = A as typeof A;
     });
 
     it("expectType<unique symbol>.toBeAssignableTo<(same) unique symbol>()", () => {
@@ -224,7 +224,7 @@ describe("expectType", () => {
         typeof B
       >();
 
-      const a: typeof B = A as typeof A;
+      const test: typeof B = A as typeof A;
     });
 
     it("expectType<unique symbol>.toBeAssignableTo<symbol>()", () => {
@@ -237,7 +237,7 @@ describe("expectType", () => {
         typeof B
       >();
 
-      const a: typeof B = A as typeof A;
+      const test: typeof B = A as typeof A;
     });
 
     it("expectType<null>.toBeAssignableTo<null>()", () => {
@@ -245,7 +245,7 @@ describe("expectType", () => {
       expectType<null>().not.toBeAssignableTo<// @ts-expect-error
       null>();
 
-      const a: null = null as null;
+      const test: null = null as null;
     });
 
     it("expectType<null>.not.toBeAssignableTo<undefined>()", () => {
@@ -254,7 +254,7 @@ describe("expectType", () => {
       undefined>();
 
       // @ts-expect-error
-      const a: undefined = null as null;
+      const test: undefined = null as null;
     });
 
     it("expectType<null>.toBeAssignableTo<any>()", () => {
@@ -262,7 +262,7 @@ describe("expectType", () => {
       expectType<null>().not.toBeAssignableTo<// @ts-expect-error
       any>();
 
-      const a: any = null as null;
+      const test: any = null as null;
     });
 
     it("expectType<null>.toBeAssignableTo<unknown>()", () => {
@@ -270,7 +270,7 @@ describe("expectType", () => {
       expectType<null>().not.toBeAssignableTo<// @ts-expect-error
       unknown>();
 
-      const a: unknown = null as null;
+      const test: unknown = null as null;
     });
 
     it.skip("expectType<null>.not.toBeAssignableTo<never>()", () => {
@@ -279,7 +279,18 @@ describe("expectType", () => {
       never>();
 
       // @ts-expect-error
-      const a: never = null as null;
+      const test: never = null as null;
+    });
+
+    /* eslint-disable @typescript-eslint/no-invalid-void-type -- tests for void */
+
+    it("expectType<null>.not.toBeAssignableTo<void>()", () => {
+      expectType<null>().not.toBeAssignableTo<void>();
+      expectType<null>().toBeAssignableTo<// @ts-expect-error
+      void>();
+
+      // @ts-expect-error
+      const test: void = null as null;
     });
 
     it("expectType<undefined>.toBeAssignableTo<undefined>()", () => {
@@ -287,7 +298,7 @@ describe("expectType", () => {
       expectType<undefined>().not.toBeAssignableTo<// @ts-expect-error
       undefined>();
 
-      const a: undefined = undefined as undefined;
+      const test: undefined = undefined as undefined;
     });
 
     it("expectType<undefined>.not.toBeAssignableTo<null>()", () => {
@@ -296,7 +307,7 @@ describe("expectType", () => {
       null>();
 
       // @ts-expect-error
-      const a: null = undefined as undefined;
+      const test: null = undefined as undefined;
     });
 
     it("expectType<undefined>.toBeAssignableTo<any>()", () => {
@@ -304,7 +315,7 @@ describe("expectType", () => {
       expectType<undefined>().not.toBeAssignableTo<// @ts-expect-error
       any>();
 
-      const a: any = undefined as undefined;
+      const test: any = undefined as undefined;
     });
 
     it("expectType<undefined>.toBeAssignableTo<unknown>()", () => {
@@ -312,7 +323,7 @@ describe("expectType", () => {
       expectType<undefined>().not.toBeAssignableTo<// @ts-expect-error
       unknown>();
 
-      const a: unknown = undefined as undefined;
+      const test: unknown = undefined as undefined;
     });
 
     it.skip("expectType<undefined>.not.toBeAssignableTo<never>()", () => {
@@ -321,15 +332,23 @@ describe("expectType", () => {
       never>();
 
       // @ts-expect-error
-      const a: never = undefined as undefined;
+      const test: never = undefined as undefined;
     });
 
-    it("expectType<any>.not.toBeAssignableTo<any>()", () => {
+    it("expectType<undefined>.toBeAssignableTo<void>()", () => {
+      expectType<undefined>().toBeAssignableTo<void>();
+      expectType<undefined>().not.toBeAssignableTo<// @ts-expect-error
+      void>();
+
+      const test: void = undefined as undefined;
+    });
+
+    it("expectType<any>.toBeAssignableTo<any>()", () => {
       expectType<any>().toBeAssignableTo<any>();
       expectType<any>().not.toBeAssignableTo<// @ts-expect-error
       any>();
 
-      const a: any = {} as any;
+      const test: any = {} as any;
     });
 
     it("expectType<any>.toBeAssignableTo<null>()", () => {
@@ -337,7 +356,7 @@ describe("expectType", () => {
       expectType<any>().not.toBeAssignableTo<// @ts-expect-error
       null>();
 
-      const a: null = {} as any;
+      const test: null = {} as any;
     });
 
     it("expectType<any>.toBeAssignableTo<undefined>()", () => {
@@ -345,7 +364,7 @@ describe("expectType", () => {
       expectType<any>().not.toBeAssignableTo<// @ts-expect-error
       undefined>();
 
-      const a: undefined = {} as any;
+      const test: undefined = {} as any;
     });
 
     it("expectType<any>.toBeAssignableTo<unknown>()", () => {
@@ -353,7 +372,7 @@ describe("expectType", () => {
       expectType<any>().not.toBeAssignableTo<// @ts-expect-error
       unknown>();
 
-      const a: unknown = {} as any;
+      const test: unknown = {} as any;
     });
 
     it.skip("expectType<any>.not.toBeAssignableTo<never>()", () => {
@@ -362,7 +381,15 @@ describe("expectType", () => {
       never>();
 
       // @ts-expect-error
-      const a: never = {} as any;
+      const test: never = {} as any;
+    });
+
+    it("expectType<any>.toBeAssignableTo<void>()", () => {
+      expectType<any>().toBeAssignableTo<void>();
+      expectType<any>().not.toBeAssignableTo<// @ts-expect-error
+      void>();
+
+      const test: void = {} as any;
     });
 
     it("expectType<unknown>.toBeAssignableTo<unknown>()", () => {
@@ -370,7 +397,7 @@ describe("expectType", () => {
       expectType<unknown>().not.toBeAssignableTo<// @ts-expect-error
       unknown>();
 
-      const a: unknown = {} as unknown;
+      const test: unknown = {} as unknown;
     });
 
     it("expectType<unknown>.not.toBeAssignableTo<null>()", () => {
@@ -379,7 +406,7 @@ describe("expectType", () => {
       null>();
 
       // @ts-expect-error
-      const a: null = {} as unknown;
+      const test: null = {} as unknown;
     });
 
     it("expectType<unknown>.not.toBeAssignableTo<undefined>()", () => {
@@ -388,7 +415,7 @@ describe("expectType", () => {
       undefined>();
 
       // @ts-expect-error
-      const a: undefined = {} as unknown;
+      const test: undefined = {} as unknown;
     });
 
     it("expectType<unknown>.toBeAssignableTo<any>()", () => {
@@ -396,7 +423,7 @@ describe("expectType", () => {
       expectType<unknown>().not.toBeAssignableTo<// @ts-expect-error
       any>();
 
-      const a: any = {} as unknown;
+      const test: any = {} as unknown;
     });
 
     it.skip("expectType<unknown>.not.toBeAssignableTo<never>()", () => {
@@ -405,7 +432,16 @@ describe("expectType", () => {
       never>();
 
       // @ts-expect-error
-      const a: never = {} as unknown;
+      const test: never = {} as unknown;
+    });
+
+    it("expectType<unknown>.not.toBeAssignableTo<void>()", () => {
+      expectType<unknown>().not.toBeAssignableTo<void>();
+      expectType<unknown>().toBeAssignableTo<// @ts-expect-error
+      void>();
+
+      // @ts-expect-error
+      const test: void = {} as unknown;
     });
 
     it.skip("expectType<never>.toBeAssignableTo<never>()", () => {
@@ -413,7 +449,7 @@ describe("expectType", () => {
       expectType<never>().not.toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
       never>();
 
-      const a: never = {} as never;
+      const test: never = {} as never;
     });
 
     it("expectType<never>.toBeAssignableTo<null>()", () => {
@@ -421,7 +457,7 @@ describe("expectType", () => {
       expectType<never>().not.toBeAssignableTo<// @ts-expect-error
       null>();
 
-      const a: null = {} as never;
+      const test: null = {} as never;
     });
 
     it("expectType<never>.toBeAssignableTo<undefined>()", () => {
@@ -429,7 +465,7 @@ describe("expectType", () => {
       expectType<never>().not.toBeAssignableTo<// @ts-expect-error
       undefined>();
 
-      const a: undefined = {} as never;
+      const test: undefined = {} as never;
     });
 
     it("expectType<never>.toBeAssignableTo<any>()", () => {
@@ -437,7 +473,7 @@ describe("expectType", () => {
       expectType<never>().not.toBeAssignableTo<// @ts-expect-error
       any>();
 
-      const a: any = {} as never;
+      const test: any = {} as never;
     });
 
     it("expectType<never>.toBeAssignableTo<unknown>()", () => {
@@ -445,9 +481,69 @@ describe("expectType", () => {
       expectType<never>().not.toBeAssignableTo<// @ts-expect-error
       unknown>();
 
-      const a: unknown = {} as never;
+      const test: unknown = {} as never;
     });
 
+    it("expectType<never>.toBeAssignableTo<void>()", () => {
+      expectType<never>().toBeAssignableTo<void>();
+      expectType<never>().not.toBeAssignableTo<// @ts-expect-error
+      void>();
+
+      const test: void = {} as never;
+    });
+
+    it("expectType<void>.toBeAssignableTo<void>()", () => {
+      expectType<void>().toBeAssignableTo<void>();
+      expectType<void>().not.toBeAssignableTo<// @ts-expect-error
+      void>();
+
+      const test: void = undefined as void;
+    });
+
+    it("expectType<void>.not.toBeAssignableTo<null>()", () => {
+      expectType<void>().not.toBeAssignableTo<null>();
+      expectType<void>().toBeAssignableTo<// @ts-expect-error
+      null>();
+
+      // @ts-expect-error
+      const test: null = undefined as void;
+    });
+
+    it("expectType<void>.not.toBeAssignableTo<undefined>()", () => {
+      expectType<void>().not.toBeAssignableTo<undefined>();
+      expectType<void>().toBeAssignableTo<// @ts-expect-error
+      undefined>();
+
+      // @ts-expect-error
+      const test: undefined = undefined as void;
+    });
+
+    it("expectType<void>.toBeAssignableTo<any>()", () => {
+      expectType<void>().toBeAssignableTo<any>();
+      expectType<void>().not.toBeAssignableTo<// @ts-expect-error
+      any>();
+
+      const test: any = undefined as void;
+    });
+
+    it("expectType<void>.toBeAssignableTo<unknown>()", () => {
+      expectType<void>().toBeAssignableTo<unknown>();
+      expectType<void>().not.toBeAssignableTo<// @ts-expect-error
+      unknown>();
+
+      const test: unknown = undefined as void;
+    });
+
+    it.skip("expectType<void>.not.toBeAssignableTo<never>()", () => {
+      expectType<void>().not.toBeAssignableTo<never>();
+      expectType<void>().toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
+      never>();
+
+      // @ts-expect-error
+      const test: never = undefined as void;
+    });
+
+    /* eslint-enable @typescript-eslint/no-invalid-void-type */
     /* eslint-enable @typescript-eslint/no-unused-vars,@typescript-eslint/prefer-as-const */
   });
 
@@ -638,6 +734,14 @@ describe("expectType", () => {
       never>();
     });
 
+    /* eslint-disable @typescript-eslint/no-invalid-void-type -- tests for void */
+
+    it("expectType<null>.not.toStrictEqual<void>()", () => {
+      expectType<null>().not.toStrictEqual<void>();
+      expectType<null>().toStrictEqual<// @ts-expect-error
+      void>();
+    });
+
     it("expectType<undefined>.toStrictEqual<undefined>()", () => {
       expectType<undefined>().toStrictEqual<undefined>();
       expectType<undefined>().not.toStrictEqual<// @ts-expect-error
@@ -666,6 +770,12 @@ describe("expectType", () => {
       expectType<undefined>().not.toStrictEqual<never>();
       expectType<undefined>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is never
       never>();
+    });
+
+    it("expectType<undefined>.not.toStrictEqual<void>()", () => {
+      expectType<undefined>().not.toStrictEqual<void>();
+      expectType<undefined>().toStrictEqual<// @ts-expect-error
+      void>();
     });
 
     it("expectType<any>.toStrictEqual<any>()", () => {
@@ -698,6 +808,12 @@ describe("expectType", () => {
       never>();
     });
 
+    it("expectType<any>.not.toStrictEqual<void>()", () => {
+      expectType<any>().not.toStrictEqual<void>();
+      expectType<any>().toStrictEqual<// @ts-expect-error
+      void>();
+    });
+
     it("expectType<unknown>.toStrictEqual<unknown>()", () => {
       expectType<unknown>().toStrictEqual<unknown>();
       expectType<unknown>().not.toStrictEqual<// @ts-expect-error
@@ -726,6 +842,12 @@ describe("expectType", () => {
       expectType<unknown>().not.toStrictEqual<never>();
       expectType<unknown>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is never
       never>();
+    });
+
+    it("expectType<unknown>.not.toStrictEqual<void>()", () => {
+      expectType<unknown>().not.toStrictEqual<void>();
+      expectType<unknown>().toStrictEqual<// @ts-expect-error
+      void>();
     });
 
     it.skip("expectType<never>.toStrictEqual<never>()", () => {
@@ -757,5 +879,43 @@ describe("expectType", () => {
       expectType<never>().toStrictEqual<// @ts-expect-error
       unknown>();
     });
+
+    it("expectType<void>.toStrictEqual<void>()", () => {
+      expectType<void>().toStrictEqual<void>();
+      expectType<void>().not.toStrictEqual<// @ts-expect-error
+      void>();
+    });
+
+    it("expectType<void>.not.toStrictEqual<null>()", () => {
+      expectType<void>().not.toStrictEqual<null>();
+      expectType<void>().toStrictEqual<// @ts-expect-error
+      null>();
+    });
+
+    it("expectType<void>.not.toStrictEqual<undefined>()", () => {
+      expectType<void>().not.toStrictEqual<undefined>();
+      expectType<void>().toStrictEqual<// @ts-expect-error
+      undefined>();
+    });
+
+    it("expectType<void>.not.toStrictEqual<any>()", () => {
+      expectType<void>().not.toStrictEqual<any>();
+      expectType<void>().toStrictEqual<// @ts-expect-error
+      any>();
+    });
+
+    it("expectType<void>.not.toStrictEqual<unknown>()", () => {
+      expectType<void>().not.toStrictEqual<unknown>();
+      expectType<void>().toStrictEqual<// @ts-expect-error
+      unknown>();
+    });
+
+    it.skip("expectType<void>.not.toStrictEqual<never>()", () => {
+      expectType<void>().not.toStrictEqual<never>();
+      expectType<void>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is never
+      never>();
+    });
+
+    /* eslint-enable @typescript-eslint/no-invalid-void-type */
   });
 });
