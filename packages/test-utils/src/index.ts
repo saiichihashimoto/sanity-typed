@@ -3,50 +3,45 @@
 declare const EXPECTED: unique symbol;
 declare const RECEIVED: unique symbol;
 
-type ToBeAssignableTo<Expected, Received, Inverted extends boolean> = [
-  Expected
-] extends [Received]
-  ? Inverted extends false
-    ? any
-    : {
-        [EXPECTED]: { not: Expected };
-        [RECEIVED]: Received;
-      }
-  : Inverted extends true
-  ? any
-  : {
-      [EXPECTED]: Expected;
-      [RECEIVED]: Received;
-    };
-
-type IfAny<Value, A, B> = false extends (any extends Value ? true : false)
-  ? B
-  : A;
-
 // https://twitter.com/mattpocockuk/status/1646452585006604291
-type ToStrictEqual<Expected, Received, Inverted extends boolean> = (<
+type StrictEqual<A, B> = (<T>() => T extends A ? 1 : 2) extends <
   T
->() => T extends Expected ? 1 : 2) extends <T>() => T extends Received ? 1 : 2
-  ? Inverted extends false
-    ? any
-    : IfAny<
-        Received,
-        never,
-        {
-          [EXPECTED]: { not: Expected };
-          [RECEIVED]: Received;
-        }
-      >
-  : Inverted extends true
-  ? any
-  : IfAny<
-      Received,
-      never,
-      {
-        [EXPECTED]: Expected;
+>() => T extends B ? 1 : 2
+  ? true
+  : false;
+
+type ToStrictEqual<Expected, Received, Inverted extends boolean> = StrictEqual<
+  Expected,
+  Received
+> extends Inverted
+  ? StrictEqual<Received, any> extends true
+    ? // Typescript can only create errors when a type mismatch occurs, which is why TypeMatchers has Received extends ToStrictEqual<Expected, Received, Inverted>
+      // The is generally fine, unless Received is `any`, because it can be assigned to anything.
+      // Anything except `never`.
+      never
+    : {
+        [EXPECTED]: Inverted extends false ? Expected : { not: Expected };
         [RECEIVED]: Received;
       }
-    >;
+  : any;
+
+type AssignableTo<A, B> = [A] extends [B] ? true : false;
+
+type ToBeAssignableTo<
+  Expected,
+  Received,
+  Inverted extends boolean
+> = AssignableTo<Expected, Received> extends Inverted
+  ? StrictEqual<Received, any> extends true
+    ? // Typescript can only create errors when a type mismatch occurs, which is why TypeMatchers has Received extends ToStrictEqual<Expected, Received, Inverted>
+      // The is generally fine, unless Received is `any`, because it can be assigned to anything.
+      // Anything except `never`.
+      never
+    : {
+        [EXPECTED]: Inverted extends false ? Expected : { not: Expected };
+        [RECEIVED]: Received;
+      }
+  : any;
 
 // https://twitter.com/mattpocockuk/status/1625173887590842369
 declare const inverted: unique symbol;

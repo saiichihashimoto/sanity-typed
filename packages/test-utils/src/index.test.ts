@@ -34,52 +34,71 @@ describe("expectType", () => {
   });
 
   describe("toBeAssignableTo", () => {
+    /* eslint-disable @typescript-eslint/no-unused-vars,@typescript-eslint/prefer-as-const -- we set variables to see if they work like the assignables do */
     it("expectType<boolean>.toBeAssignableTo<boolean>()", () => {
       expectType<boolean>().toBeAssignableTo<boolean>();
       expectType<boolean>().not.toBeAssignableTo<// @ts-expect-error
       boolean>();
+
+      const a: boolean = true as boolean;
     });
 
     it("expectType<boolean>.not.toBeAssignableTo<true>()", () => {
       expectType<boolean>().not.toBeAssignableTo<true>();
       expectType<boolean>().toBeAssignableTo<// @ts-expect-error
       true>();
+
+      // @ts-expect-error
+      const a: true = true as boolean;
     });
 
     it("expectType<true>.toBeAssignableTo<true>()", () => {
       expectType<true>().toBeAssignableTo<true>();
       expectType<true>().not.toBeAssignableTo<// @ts-expect-error
       true>();
+
+      const a: true = true as true;
     });
 
     it("expectType<true>.toBeAssignableTo<boolean>()", () => {
       expectType<true>().toBeAssignableTo<boolean>();
       expectType<true>().not.toBeAssignableTo<// @ts-expect-error
       boolean>();
+
+      const a: boolean = true as true;
     });
 
     it("expectType<number>.toBeAssignableTo<number>()", () => {
       expectType<number>().toBeAssignableTo<number>();
       expectType<number>().not.toBeAssignableTo<// @ts-expect-error
       number>();
+
+      const a: number = 2 as number;
     });
 
     it("expectType<number>.not.toBeAssignableTo<1>()", () => {
       expectType<number>().not.toBeAssignableTo<1>();
       expectType<number>().toBeAssignableTo<// @ts-expect-error
       1>();
+
+      // @ts-expect-error
+      const a: 1 = 2 as number;
     });
 
     it("expectType<1>.toBeAssignableTo<1>()", () => {
       expectType<1>().toBeAssignableTo<1>();
       expectType<1>().not.toBeAssignableTo<// @ts-expect-error
       1>();
+
+      const a: 1 = 1 as 1;
     });
 
     it("expectType<1>.toBeAssignableTo<number>()", () => {
       expectType<1>().toBeAssignableTo<number>();
       expectType<1>().not.toBeAssignableTo<// @ts-expect-error
       number>();
+
+      const a: number = 1 as 1;
     });
 
     it("expectType<1>.toBeAssignableTo<1 | 2>()", () => {
@@ -88,36 +107,50 @@ describe("expectType", () => {
         // @ts-expect-error
         1 | 2
       >();
+
+      const a: 1 | 2 = 1 as 1;
     });
 
     it("expectType<1 | 2>.not.toBeAssignableTo<1>()", () => {
       expectType<1 | 2>().not.toBeAssignableTo<1>();
       expectType<1 | 2>().toBeAssignableTo<// @ts-expect-error
       1>();
+
+      // @ts-expect-error
+      const a: 1 = 1 as 1 | 2;
     });
 
     it("expectType<string>.toBeAssignableTo<string>()", () => {
       expectType<string>().toBeAssignableTo<string>();
       expectType<string>().not.toBeAssignableTo<// @ts-expect-error
       string>();
+
+      const a: string = "foo" as string;
     });
 
     it('expectType<string>.not.toBeAssignableTo<"foo">()', () => {
       expectType<string>().not.toBeAssignableTo<"foo">();
       expectType<string>().toBeAssignableTo<// @ts-expect-error
       "foo">();
+
+      // @ts-expect-error
+      const a: "foo" = "foo" as string;
     });
 
     it('expectType<"foo">.toBeAssignableTo<"foo">()', () => {
       expectType<"foo">().toBeAssignableTo<"foo">();
       expectType<"foo">().not.toBeAssignableTo<// @ts-expect-error
       "foo">();
+
+      const a: "foo" = "foo" as "foo";
     });
 
     it('expectType<"foo">.toBeAssignableTo<string>()', () => {
       expectType<"foo">().toBeAssignableTo<string>();
       expectType<"foo">().not.toBeAssignableTo<// @ts-expect-error
       string>();
+
+      const a: string = "foo" as "foo";
     });
 
     it('expectType<"foo">.toBeAssignableTo<"foo" | "bar">()', () => {
@@ -126,12 +159,17 @@ describe("expectType", () => {
         // @ts-expect-error
         "bar" | "foo"
       >();
+
+      const a: "bar" | "foo" = "foo" as "foo";
     });
 
     it('expectType<"foo" | "bar">.not.toBeAssignableTo<"foo">()', () => {
       expectType<"bar" | "foo">().not.toBeAssignableTo<"foo">();
       expectType<"bar" | "foo">().toBeAssignableTo<// @ts-expect-error
       "foo">();
+
+      // @ts-expect-error
+      const a: "foo" = "foo" as "bar" | "foo";
     });
 
     it("expectType<symbol>.toBeAssignableTo<symbol>()", () => {
@@ -143,6 +181,8 @@ describe("expectType", () => {
         // @ts-expect-error
         typeof B
       >();
+
+      const a: typeof B = A as typeof A;
     });
 
     it("expectType<symbol>.not.toBeAssignableTo<unique symbol>()", () => {
@@ -154,6 +194,9 @@ describe("expectType", () => {
         // @ts-expect-error
         typeof B
       >();
+
+      // @ts-expect-error
+      const a: typeof B = A as typeof A;
     });
 
     it("expectType<unique symbol>.not.toBeAssignableTo<unique symbol>()", () => {
@@ -165,6 +208,9 @@ describe("expectType", () => {
         // @ts-expect-error
         typeof B
       >();
+
+      // @ts-expect-error
+      const a: typeof B = A as typeof A;
     });
 
     it("expectType<unique symbol>.toBeAssignableTo<(same) unique symbol>()", () => {
@@ -177,6 +223,8 @@ describe("expectType", () => {
         // @ts-expect-error
         typeof B
       >();
+
+      const a: typeof B = A as typeof A;
     });
 
     it("expectType<unique symbol>.toBeAssignableTo<symbol>()", () => {
@@ -188,147 +236,219 @@ describe("expectType", () => {
         // @ts-expect-error
         typeof B
       >();
+
+      const a: typeof B = A as typeof A;
     });
 
     it("expectType<null>.toBeAssignableTo<null>()", () => {
       expectType<null>().toBeAssignableTo<null>();
       expectType<null>().not.toBeAssignableTo<// @ts-expect-error
       null>();
+
+      const a: null = null as null;
     });
 
     it("expectType<null>.not.toBeAssignableTo<undefined>()", () => {
       expectType<null>().not.toBeAssignableTo<undefined>();
       expectType<null>().toBeAssignableTo<// @ts-expect-error
       undefined>();
+
+      // @ts-expect-error
+      const a: undefined = null as null;
     });
 
-    it("expectType<null>[.not].toBeAssignableTo<any>()", () => {
-      expectType<null>().not.toBeAssignableTo<any>();
+    it("expectType<null>.toBeAssignableTo<any>()", () => {
       expectType<null>().toBeAssignableTo<any>();
+      expectType<null>().not.toBeAssignableTo<// @ts-expect-error
+      any>();
+
+      const a: any = null as null;
     });
 
     it("expectType<null>.toBeAssignableTo<unknown>()", () => {
       expectType<null>().toBeAssignableTo<unknown>();
       expectType<null>().not.toBeAssignableTo<// @ts-expect-error
       unknown>();
+
+      const a: unknown = null as null;
     });
 
-    it("expectType<null>[.not].toBeAssignableTo<never>()", () => {
-      expectType<null>().toBeAssignableTo<never>();
+    it.skip("expectType<null>.not.toBeAssignableTo<never>()", () => {
       expectType<null>().not.toBeAssignableTo<never>();
+      expectType<null>().toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
+      never>();
+
+      // @ts-expect-error
+      const a: never = null as null;
     });
 
     it("expectType<undefined>.toBeAssignableTo<undefined>()", () => {
       expectType<undefined>().toBeAssignableTo<undefined>();
       expectType<undefined>().not.toBeAssignableTo<// @ts-expect-error
       undefined>();
+
+      const a: undefined = undefined as undefined;
     });
 
     it("expectType<undefined>.not.toBeAssignableTo<null>()", () => {
       expectType<undefined>().not.toBeAssignableTo<null>();
       expectType<undefined>().toBeAssignableTo<// @ts-expect-error
       null>();
+
+      // @ts-expect-error
+      const a: null = undefined as undefined;
     });
 
-    it("expectType<undefined>[.not].toBeAssignableTo<any>()", () => {
+    it("expectType<undefined>.toBeAssignableTo<any>()", () => {
       expectType<undefined>().toBeAssignableTo<any>();
-      expectType<undefined>().not.toBeAssignableTo<any>();
+      expectType<undefined>().not.toBeAssignableTo<// @ts-expect-error
+      any>();
+
+      const a: any = undefined as undefined;
     });
 
     it("expectType<undefined>.toBeAssignableTo<unknown>()", () => {
       expectType<undefined>().toBeAssignableTo<unknown>();
       expectType<undefined>().not.toBeAssignableTo<// @ts-expect-error
       unknown>();
+
+      const a: unknown = undefined as undefined;
     });
 
-    it("expectType<undefined>[.not].toBeAssignableTo<never>()", () => {
-      expectType<undefined>().toBeAssignableTo<never>();
+    it.skip("expectType<undefined>.not.toBeAssignableTo<never>()", () => {
       expectType<undefined>().not.toBeAssignableTo<never>();
+      expectType<undefined>().toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
+      never>();
+
+      // @ts-expect-error
+      const a: never = undefined as undefined;
     });
 
-    it("expectType<any>[.not].toBeAssignableTo<any>()", () => {
+    it("expectType<any>.not.toBeAssignableTo<any>()", () => {
       expectType<any>().toBeAssignableTo<any>();
-      expectType<any>().not.toBeAssignableTo<any>();
+      expectType<any>().not.toBeAssignableTo<// @ts-expect-error
+      any>();
+
+      const a: any = {} as any;
     });
 
     it("expectType<any>.toBeAssignableTo<null>()", () => {
       expectType<any>().toBeAssignableTo<null>();
       expectType<any>().not.toBeAssignableTo<// @ts-expect-error
       null>();
+
+      const a: null = {} as any;
     });
 
     it("expectType<any>.toBeAssignableTo<undefined>()", () => {
       expectType<any>().toBeAssignableTo<undefined>();
       expectType<any>().not.toBeAssignableTo<// @ts-expect-error
       undefined>();
+
+      const a: undefined = {} as any;
     });
 
     it("expectType<any>.toBeAssignableTo<unknown>()", () => {
       expectType<any>().toBeAssignableTo<unknown>();
       expectType<any>().not.toBeAssignableTo<// @ts-expect-error
       unknown>();
+
+      const a: unknown = {} as any;
     });
 
-    it("expectType<any>[.not].toBeAssignableTo<never>()", () => {
-      expectType<any>().toBeAssignableTo<never>();
+    it.skip("expectType<any>.not.toBeAssignableTo<never>()", () => {
       expectType<any>().not.toBeAssignableTo<never>();
+      expectType<any>().toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
+      never>();
+
+      // @ts-expect-error
+      const a: never = {} as any;
     });
 
     it("expectType<unknown>.toBeAssignableTo<unknown>()", () => {
       expectType<unknown>().toBeAssignableTo<unknown>();
       expectType<unknown>().not.toBeAssignableTo<// @ts-expect-error
       unknown>();
+
+      const a: unknown = {} as unknown;
     });
 
     it("expectType<unknown>.not.toBeAssignableTo<null>()", () => {
       expectType<unknown>().not.toBeAssignableTo<null>();
       expectType<unknown>().toBeAssignableTo<// @ts-expect-error
       null>();
+
+      // @ts-expect-error
+      const a: null = {} as unknown;
     });
 
     it("expectType<unknown>.not.toBeAssignableTo<undefined>()", () => {
       expectType<unknown>().not.toBeAssignableTo<undefined>();
       expectType<unknown>().toBeAssignableTo<// @ts-expect-error
       undefined>();
+
+      // @ts-expect-error
+      const a: undefined = {} as unknown;
     });
 
-    it("expectType<unknown>[.not].toBeAssignableTo<any>()", () => {
+    it("expectType<unknown>.toBeAssignableTo<any>()", () => {
       expectType<unknown>().toBeAssignableTo<any>();
-      expectType<unknown>().not.toBeAssignableTo<any>();
+      expectType<unknown>().not.toBeAssignableTo<// @ts-expect-error
+      any>();
+
+      const a: any = {} as unknown;
     });
 
-    it("expectType<unknown>[.not].toBeAssignableTo<never>()", () => {
-      expectType<unknown>().toBeAssignableTo<never>();
+    it.skip("expectType<unknown>.not.toBeAssignableTo<never>()", () => {
       expectType<unknown>().not.toBeAssignableTo<never>();
+      expectType<unknown>().toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
+      never>();
+
+      // @ts-expect-error
+      const a: never = {} as unknown;
     });
 
-    it("expectType<never>[.not].toBeAssignableTo<never>()", () => {
+    it.skip("expectType<never>.toBeAssignableTo<never>()", () => {
       expectType<never>().toBeAssignableTo<never>();
-      expectType<never>().not.toBeAssignableTo<never>();
+      expectType<never>().not.toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
+      never>();
+
+      const a: never = {} as never;
     });
 
     it("expectType<never>.toBeAssignableTo<null>()", () => {
       expectType<never>().toBeAssignableTo<null>();
       expectType<never>().not.toBeAssignableTo<// @ts-expect-error
       null>();
+
+      const a: null = {} as never;
     });
 
     it("expectType<never>.toBeAssignableTo<undefined>()", () => {
       expectType<never>().toBeAssignableTo<undefined>();
       expectType<never>().not.toBeAssignableTo<// @ts-expect-error
       undefined>();
+
+      const a: undefined = {} as never;
     });
 
-    it("expectType<never>[.not].toBeAssignableTo<any>()", () => {
+    it("expectType<never>.toBeAssignableTo<any>()", () => {
       expectType<never>().toBeAssignableTo<any>();
-      expectType<never>().not.toBeAssignableTo<any>();
+      expectType<never>().not.toBeAssignableTo<// @ts-expect-error
+      any>();
+
+      const a: any = {} as never;
     });
 
     it("expectType<never>.toBeAssignableTo<unknown>()", () => {
       expectType<never>().toBeAssignableTo<unknown>();
       expectType<never>().not.toBeAssignableTo<// @ts-expect-error
       unknown>();
+
+      const a: unknown = {} as never;
     });
+
+    /* eslint-enable @typescript-eslint/no-unused-vars,@typescript-eslint/prefer-as-const */
   });
 
   describe("toStrictEqual", () => {
