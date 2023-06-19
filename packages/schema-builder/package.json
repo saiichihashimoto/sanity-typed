@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@portabletext/types": "2.0.2",
-    "@types/lodash": "4.14.194",
+    "@types/lodash": "4.14.195",
     "lodash": "4.17.21",
     "type-fest": "2.19.0",
     "zod": "3.21.4"
