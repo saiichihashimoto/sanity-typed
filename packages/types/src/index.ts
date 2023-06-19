@@ -102,14 +102,15 @@ type DefinitionBase<
   validation?: ValidationBuilder<TRequired, Value, Rule>;
 };
 
-export type _InferValue<Def> = Def extends DefinitionBase<any, infer Value, any>
-  ? Value
-  : never;
+export type _InferValue<Def extends DefinitionBase<any, any, any>> =
+  Def extends DefinitionBase<any, infer Value, any> ? Value : never;
 
 /**
  * @deprecated Use {@link InferSchemaValues} instead. Otherwise, you won't get any aliased types (e.g. named object types, plugin types).
  */
-export type InferValue<Def> = _InferValue<Def>;
+export type InferValue<Def> = Def extends DefinitionBase<any, any, any>
+  ? _InferValue<Def>
+  : never;
 
 type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = Merge<
   {
@@ -564,9 +565,16 @@ type ConfigBase<
   >;
 };
 
-type PluginOptions<
+export type PluginOptions<
   TTypeDefinition extends Type<any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any>
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any> = Type<
+    string,
+    any,
+    any,
+    any,
+    any,
+    any
+  >
 > = ConfigBase<TTypeDefinition, TPluginTypeDefinition> &
   Omit<PluginOptionsNative, "plugins" | "schema">;
 
