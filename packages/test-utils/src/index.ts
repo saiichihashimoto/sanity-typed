@@ -4,7 +4,6 @@ import type { ConditionalExcept, Simplify } from "type-fest";
 
 declare const EXPECTED: unique symbol;
 declare const RECEIVED: unique symbol;
-declare const NOT: unique symbol;
 
 type Negate<Value extends boolean> = Value extends true ? false : true;
 
@@ -74,7 +73,7 @@ type ToStrictEqual<Expected, Received, Inverted extends boolean> = StrictEqual<
     // Anything except `never`.
     never
   : {
-      [EXPECTED]: Inverted extends false ? Expected : { [NOT]: Expected };
+      [EXPECTED]: Expected;
       [RECEIVED]: Received;
     };
 
@@ -94,7 +93,7 @@ type ToBeAssignableTo<
     // Anything except `never`.
     never
   : {
-      [EXPECTED]: Inverted extends false ? Expected : { [NOT]: Expected };
+      [EXPECTED]: Expected;
       [RECEIVED]: Received;
     };
 
@@ -126,14 +125,18 @@ type TypeMatchers<Expected, Inverted extends boolean = false> = {
    */
   toStrictEqual: <
     Received extends ToStrictEqual<Expected, Received, Inverted>
-  >() => StrictDiff<Expected, Received> | void;
+  >() => StrictDiff<Expected, Received> extends never
+    ? void
+    : StrictDiff<Expected, Received>;
 };
 
 export const expectType = <Expected>() => {
   const valWithoutNot: Omit<TypeMatchers<Expected>, typeof inverted | "not"> = {
     toBeAssignableTo: () => {},
     toStrictEqual: <Received>() =>
-      undefined as unknown as StrictDiff<Expected, Received> | void,
+      undefined as unknown as StrictDiff<Expected, Received> extends never
+        ? void
+        : StrictDiff<Expected, Received>,
   };
 
   const val = valWithoutNot as TypeMatchers<Expected>;
