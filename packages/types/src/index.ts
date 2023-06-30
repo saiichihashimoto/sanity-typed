@@ -83,15 +83,15 @@ type WithRequired<
   }
 >;
 
+type MaybeArray<T> = T | T[];
+
 type ValidationBuilder<
   TRequired extends boolean,
   Value,
   Rule extends RuleDef<Rule, Value>
 > = (
   rule: WithRequired<false, Rule>
-) =>
-  | WithRequired<TRequired | false, Rule>
-  | WithRequired<TRequired | false, Rule>[];
+) => MaybeArray<WithRequired<TRequired | false, Rule>>;
 
 type DefinitionBase<
   TRequired extends boolean,
@@ -673,8 +673,6 @@ type ExpandAliasValues<
       [key in keyof Value]: ExpandAliasValues<Value[key], TAliasedDefinition>;
     }
   : Value;
-
-type MaybeArray<T> = T | T[];
 
 export type InferSchemaValues<
   TConfig extends MaybeArray<ConfigBase<any, any>>

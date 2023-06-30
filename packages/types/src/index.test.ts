@@ -62,6 +62,7 @@ describe("defineArrayMember", () => {
       expectType<never>().toStrictEqual<_InferValue<typeof arrayMember>>();
     });
   });
+
   describe("block", () => {
     it("returns the same object as sanity", () =>
       expect(
