@@ -674,13 +674,24 @@ type ExpandAliasValues<
     }
   : Value;
 
+type MaybeArray<T> = T | T[];
+
 export type InferSchemaValues<
-  TConfig extends ConfigBase<any, any> | ConfigBase<any, any>[]
-> = TConfig extends
-  | ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
-  | ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>[]
+  TConfig extends MaybeArray<ConfigBase<any, any>>
+> = TConfig extends MaybeArray<
+  ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
+>
   ? ExpandAliasValues<
-      _InferValue<TTypeDefinition>,
+      TTypeDefinition extends Type<
+        "object",
+        infer TName extends string,
+        any,
+        any,
+        any,
+        any
+      >
+        ? _InferValue<TTypeDefinition> & { _type: TName }
+        : _InferValue<TTypeDefinition>,
       Extract<
         | (Type<any, any, any, any, any, any> extends TPluginTypeDefinition
             ? never
