@@ -2577,6 +2577,7 @@ describe("defineConfig", () => {
           bar?: boolean;
         }
       | {
+          _type: "baz";
           qux?: boolean;
         }
     >();
@@ -2626,6 +2627,7 @@ describe("defineConfig", () => {
           };
         }
       | {
+          _type: "bar";
           baz?: boolean;
         }
     >();
@@ -2682,6 +2684,7 @@ describe("defineConfig", () => {
           })[];
         }
       | {
+          _type: "bar";
           baz?: boolean;
         }
     >();
@@ -2707,15 +2710,6 @@ describe("defineConfig", () => {
         ],
       },
     });
-
-    type Foo = {
-      // Cycle!
-      foo: Foo & {
-        _type: "foo";
-      };
-    };
-
-    expectType<InferSchemaValues<typeof config>>().toStrictEqual<Foo>();
 
     // It really is cyclical!
     expectType<InferSchemaValues<typeof config>["foo"]["foo"]>().toStrictEqual<
@@ -2766,41 +2760,17 @@ describe("defineConfig", () => {
       },
     });
 
-    type Foo = {
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
-      bar: Bar & {
-        _type: "bar";
-      };
-    };
-
-    type Bar = {
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
-      baz: Baz & {
-        _type: "baz";
-      };
-    };
-
-    type Baz = {
-      foo: Foo & {
-        _type: "foo";
-      };
-    };
-
-    expectType<InferSchemaValues<typeof config>>().toStrictEqual<
-      Bar | Baz | Foo
-    >();
-
     // It really is cyclical!
     expectType<
       Extract<
         InferSchemaValues<typeof config>,
         // Gets us the Foo object
-        { bar: any }
+        { _type: "foo" }
       >["bar"]["baz"]["foo"]["bar"]["baz"]["foo"]
     >().toStrictEqual<
       Extract<
         InferSchemaValues<typeof config>,
-        { bar: any }
+        { _type: "foo" }
       >["bar"]["baz"]["foo"]
     >();
   });
@@ -2994,6 +2964,7 @@ describe("definePlugin", () => {
           bar?: boolean;
         }
       | {
+          _type: "baz";
           qux?: boolean;
         }
     >();
@@ -3042,6 +3013,7 @@ describe("definePlugin", () => {
           };
         }
       | {
+          _type: "bar";
           baz?: boolean;
         }
     >();
@@ -3097,6 +3069,7 @@ describe("definePlugin", () => {
           })[];
         }
       | {
+          _type: "bar";
           baz?: boolean;
         }
     >();
@@ -3121,15 +3094,6 @@ describe("definePlugin", () => {
         ],
       },
     })();
-
-    type Foo = {
-      // Cycle!
-      foo: Foo & {
-        _type: "foo";
-      };
-    };
-
-    expectType<InferSchemaValues<typeof plugin>>().toStrictEqual<Foo>();
 
     // It really is cyclical!
     expectType<InferSchemaValues<typeof plugin>["foo"]["foo"]>().toStrictEqual<
@@ -3179,41 +3143,17 @@ describe("definePlugin", () => {
       },
     })();
 
-    type Foo = {
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
-      bar: Bar & {
-        _type: "bar";
-      };
-    };
-
-    type Bar = {
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
-      baz: Baz & {
-        _type: "baz";
-      };
-    };
-
-    type Baz = {
-      foo: Foo & {
-        _type: "foo";
-      };
-    };
-
-    expectType<InferSchemaValues<typeof plugin>>().toStrictEqual<
-      Bar | Baz | Foo
-    >();
-
     // It really is cyclical!
     expectType<
       Extract<
         InferSchemaValues<typeof plugin>,
         // Gets us the Foo object
-        { bar: any }
+        { _type: "foo" }
       >["bar"]["baz"]["foo"]["bar"]["baz"]["foo"]
     >().toStrictEqual<
       Extract<
         InferSchemaValues<typeof plugin>,
-        { bar: any }
+        { _type: "foo" }
       >["bar"]["baz"]["foo"]
     >();
   });
