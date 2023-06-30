@@ -222,7 +222,7 @@ export type Foo = Extract<Values, { _type: "foo" }>;
 
 ## Goals
 
-Typescript was an after-the-fact concern with sanity, since the rise of typescript happened after sanity took off. The `define*` methods are a good start, but they only help restrict the schema, not type the document types. There's been attempts, namely [`sanity-codegen`](https://github.com/ricokahler/sanity-codegen) and [`@sanity-typed/schema-builder`](https://github.com/saiichihashimoto/sanity-typed/tree/%40sanity-typed/types%402.0.0/packages/schema-builder), but they take the approach of creating a new way of building schemas. The drop-in replacement approach allows for zero migration cost.
+Typescript was an after-the-fact concern with sanity, since the rise of typescript happened after sanity took off. The `define*` methods are a good start, but they only help restrict the schema, not type the document types. There's been attempts, namely [`sanity-codegen`](https://github.com/ricokahler/sanity-codegen) and [`@sanity-typed/schema-builder`](https://github.com/saiichihashimoto/sanity-typed/tree/%40sanity-typed/schema-builder%403.0.1/packages/schema-builder), but they take the approach of creating a new way of building schemas. The drop-in replacement approach allows for zero migration cost.
 
 The long term goal is to deprecate the monorepo altogether. Building this seperately was to move quickly and these features should be in sanity directly (and is likely one of their internal goals). The idea is to introduce these changes iteratively into sanity itself while removing them from this library, until it's reduced to simply passing through the `define*` methods directly, and will then be deprecated.
 
