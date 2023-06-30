@@ -11,5 +11,6 @@ Monorepo for typing Sanity.io.
 
 ## Packages
 
-- [`@sanity-typed/schema-builder`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/schema-builder)
 - [`@sanity-typed/types`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types)
+
+- ~~[`@sanity-typed/schema-builder`](https://github.com/saiichihashimoto/sanity-typed/tree/%40sanity-typed/types%402.0.0/packages/schema-builder)~~

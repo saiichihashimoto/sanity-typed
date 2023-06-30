@@ -1,13 +1,8 @@
-# @sanity-typed/schema-builder
+# @sanity-typed/schema-builder [DEPRECATED]
 
-[![NPM Downloads](https://img.shields.io/npm/dw/@sanity-typed/schema-builder?style=flat&logo=npm)](https://www.npmjs.com/package/@sanity-typed/schema-builder)
-[![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/saiichihashimoto/sanity-typed?style=flat&logo=github)](https://github.com/saiichihashimoto/sanity-typed/pulls?q=is%3Apr+is%3Aclosed)
-[![GitHub Repo stars](https://img.shields.io/github/stars/saiichihashimoto/sanity-typed?style=flat&logo=github)](https://github.com/saiichihashimoto/sanity-typed/stargazers)
-[![GitHub contributors](https://img.shields.io/github/contributors/saiichihashimoto/sanity-typed?style=flat&logo=github)](https://github.com/saiichihashimoto/sanity-typed/graphs/contributors)
-[![Minified Size](https://img.shields.io/bundlephobia/min/@sanity-typed/schema-builder?style=flat)](https://www.npmjs.com/package/@sanity-typed/schema-builder?activeTab=code)
-[![License](https://img.shields.io/github/license/saiichihashimoto/sanity-typed?style=flat)](https://github.com/saiichihashimoto/sanity-typed/blob/main/LICENSE)
+## 🛑🛑🛑 **This has been deprecated for [`@sanity-typed/types`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types)**
 
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
+> It's approach is as close as possible to sanity's native schema definitions and will solve this problem in a more maintainable way. With the introduction of the `defineType`, `defineField`, and `defineArrayMember` methods, direct inference of typed values is possible.
 
 Build [Sanity schemas](https://www.sanity.io/docs/content-modelling) declaratively and get typescript types of schema values for free!
 
@@ -16,14 +11,6 @@ Build [Sanity schemas](https://www.sanity.io/docs/content-modelling) declarative
 - [Zod](https://zod.dev/) schemas for [parsing & transforming values](#parsing-and-zod) (most notably, `datetime` values into javascript `Date`)!
 - [Automatically generated mocks](#mocking) for testing!
 - Support for any [additional types](#additional-types)!
-
-## 🛑🛑🛑 **Deprecation Path (PLEASE READ!!!!)**
-
-> The focus will shift from this schema builder to [`@sanity-typed/types`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types). It's approach is as close as possible to sanity's native schema definitions and will ideally solve this problem in a more maintainable way. This builder was a necessity of the time but, with the introduction of the `defineType`, `defineField`, and `defineArrayMember` methods, direct inference of typed values should be possible.
-
-> We will continue to welcome bug fixes! `@sanity-typed/types` is still a work in progress and, as of now, this schema builder is widely used enough to warrant support. I encourage new users (and those interested in helping move this forward) to use [`@sanity-typed/types`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types) directly.
-
-**TLDR:** Use [`@sanity-typed/types`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types) instead, unless you're already heavily invested in this. Then maybe migrate, anyways.
 
 ## Install
 
