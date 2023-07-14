@@ -850,6 +850,52 @@ describe("defineField", () => {
       >();
     });
 
+    it("infers unions with objects", () => {
+      const field = defineField({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            type: "object",
+            name: "bar",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "boolean",
+              }),
+            ],
+          }),
+          defineArrayMember({
+            type: "object",
+            name: "qux",
+            fields: [
+              defineField({
+                name: "qux",
+                type: "boolean",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        (
+          | ({
+              _key: string;
+              _type: "bar";
+            } & {
+              bar?: boolean;
+            })
+          | ({
+              _key: string;
+              _type: "qux";
+            } & {
+              qux?: boolean;
+            })
+        )[]
+      >();
+    });
+
     it('adds "_type" to named alias values', () => {
       const field = defineField({
         name: "foo",
@@ -1666,7 +1712,7 @@ describe("defineType", () => {
     });
 
     it('adds "_key" to objects', () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "array",
         of: [
@@ -1682,7 +1728,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<
+      expectType<_InferValue<typeof type>>().toStrictEqual<
         ({
           _key: string;
         } & {
@@ -1692,7 +1738,7 @@ describe("defineType", () => {
     });
 
     it('adds "_type" to named objects', () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "array",
         of: [
@@ -1709,7 +1755,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<
+      expectType<_InferValue<typeof type>>().toStrictEqual<
         ({
           _key: string;
           _type: "inlineMemberName";
@@ -1719,8 +1765,54 @@ describe("defineType", () => {
       >();
     });
 
+    it("infers unions with objects", () => {
+      const type = defineType({
+        name: "foo",
+        type: "array",
+        of: [
+          defineArrayMember({
+            type: "object",
+            name: "bar",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "boolean",
+              }),
+            ],
+          }),
+          defineArrayMember({
+            type: "object",
+            name: "qux",
+            fields: [
+              defineField({
+                name: "qux",
+                type: "boolean",
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expectType<_InferValue<typeof type>>().toStrictEqual<
+        (
+          | ({
+              _key: string;
+              _type: "bar";
+            } & {
+              bar?: boolean;
+            })
+          | ({
+              _key: string;
+              _type: "qux";
+            } & {
+              qux?: boolean;
+            })
+        )[]
+      >();
+    });
+
     it('adds "_type" to named alias values', () => {
-      const field = defineType({
+      const type = defineType({
         name: "foo",
         type: "array",
         of: [
@@ -1731,7 +1823,7 @@ describe("defineType", () => {
         ],
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<
+      expectType<_InferValue<typeof type>>().toStrictEqual<
         (AliasValue<"named"> & {
           _key: string;
           _type: "inlineMemberName";
