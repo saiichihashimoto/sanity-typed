@@ -14,6 +14,7 @@ import type {
   Reference,
   SlugValue,
 } from "sanity";
+import type { Merge } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -814,11 +815,10 @@ describe("defineField", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<
-        ({
+        {
           _key: string;
-        } & {
           bar?: boolean;
-        })[]
+        }[]
       >();
     });
 
@@ -841,12 +841,11 @@ describe("defineField", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<
-        ({
+        {
           _key: string;
           _type: "inlineMemberName";
-        } & {
           bar?: boolean;
-        })[]
+        }[]
       >();
     });
 
@@ -880,18 +879,16 @@ describe("defineField", () => {
 
       expectType<_InferValue<typeof field>>().toStrictEqual<
         (
-          | ({
+          | {
               _key: string;
               _type: "bar";
-            } & {
               bar?: boolean;
-            })
-          | ({
+            }
+          | {
               _key: string;
               _type: "qux";
-            } & {
               qux?: boolean;
-            })
+            }
         )[]
       >();
     });
@@ -909,10 +906,13 @@ describe("defineField", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<
-        (AliasValue<"named"> & {
-          _key: string;
-          _type: "inlineMemberName";
-        })[]
+        Merge<
+          AliasValue<"named">,
+          {
+            _key: string;
+            _type: "inlineMemberName";
+          }
+        >[]
       >();
     });
   });
@@ -1729,11 +1729,10 @@ describe("defineType", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<
-        ({
+        {
           _key: string;
-        } & {
           bar?: boolean;
-        })[]
+        }[]
       >();
     });
 
@@ -1756,12 +1755,11 @@ describe("defineType", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<
-        ({
+        {
           _key: string;
           _type: "inlineMemberName";
-        } & {
           bar?: boolean;
-        })[]
+        }[]
       >();
     });
 
@@ -1795,18 +1793,16 @@ describe("defineType", () => {
 
       expectType<_InferValue<typeof type>>().toStrictEqual<
         (
-          | ({
+          | {
               _key: string;
               _type: "bar";
-            } & {
               bar?: boolean;
-            })
-          | ({
+            }
+          | {
               _key: string;
               _type: "qux";
-            } & {
               qux?: boolean;
-            })
+            }
         )[]
       >();
     });
@@ -1824,10 +1820,13 @@ describe("defineType", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<
-        (AliasValue<"named"> & {
-          _key: string;
-          _type: "inlineMemberName";
-        })[]
+        Merge<
+          AliasValue<"named">,
+          {
+            _key: string;
+            _type: "inlineMemberName";
+          }
+        >[]
       >();
     });
   });
