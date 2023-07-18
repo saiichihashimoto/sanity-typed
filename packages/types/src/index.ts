@@ -102,15 +102,13 @@ type DefinitionBase<
   validation?: ValidationBuilder<TRequired, Value, Rule>;
 };
 
+/**
+ * Infers the Value of a Definition, without aliased types.
+ *
+ * @private
+ */
 export type _InferValue<Def extends DefinitionBase<any, any, any>> =
   Def extends DefinitionBase<any, infer Value, any> ? Value : never;
-
-/**
- * @deprecated Use {@link InferSchemaValues} instead. Otherwise, you won't get any aliased types (e.g. named object types, plugin types).
- */
-export type InferValue<Def> = Def extends DefinitionBase<any, any, any>
-  ? _InferValue<Def>
-  : never;
 
 type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = Merge<
   {
@@ -644,21 +642,27 @@ export const defineConfig = <
 
 type ExpandAliasValues<
   Value,
-  TAliasedDefinition extends Type<"object", any, any, any, any, any>
+  TAliasedDefinition extends Type<any, any, any, any, any, any>
 > = Value extends AliasValue<infer TType>
   ? Extract<
       TAliasedDefinition,
-      Type<"object", TType, any, any, any, any>
+      Type<any, TType, any, any, any, any>
     > extends never
     ? unknown
     : ExpandAliasValues<
         _InferValue<
-          Extract<TAliasedDefinition, Type<"object", TType, any, any, any, any>>
+          Extract<TAliasedDefinition, Type<any, TType, any, any, any, any>>
         >,
         TAliasedDefinition
-      > & {
-        _type: TType;
-      }
+      > &
+        (Extract<
+          TAliasedDefinition,
+          Type<"object", TType, any, any, any, any>
+        > extends never
+          ? unknown
+          : {
+              _type: TType;
+            })
   : Value extends (infer Item)[]
   ? (Item extends ObjectArrayMemberValue<any>
       ? Item extends { [key: string]: any }
@@ -679,25 +683,29 @@ export type InferSchemaValues<
 > = TConfig extends MaybeArray<
   ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
 >
-  ? ExpandAliasValues<
-      TTypeDefinition extends Type<
-        "object",
+  ? {
+      [TName in TTypeDefinition extends Type<
+        any,
         infer TName extends string,
         any,
         any,
         any,
         any
       >
-        ? _InferValue<TTypeDefinition> & { _type: TName }
-        : _InferValue<TTypeDefinition>,
-      Extract<
+        ? TName
+        : never]: ExpandAliasValues<
+        TTypeDefinition extends Type<"object", TName, any, any, any, any>
+          ? _InferValue<TTypeDefinition> & { _type: TName }
+          : TTypeDefinition extends Type<any, TName, any, any, any, any>
+          ? _InferValue<TTypeDefinition>
+          : never,
+        // TPluginTypeDefinition | TTypeDefinition
         | (Type<any, any, any, any, any, any> extends TPluginTypeDefinition
             ? never
             : TPluginTypeDefinition)
         | (Type<any, any, any, any, any, any> extends TTypeDefinition
             ? never
-            : TTypeDefinition),
-        Type<"object", any, any, any, any, any>
-      >
-    >
+            : TTypeDefinition)
+      >;
+    }
   : never;
