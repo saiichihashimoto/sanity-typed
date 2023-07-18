@@ -110,13 +110,6 @@ type DefinitionBase<
 export type _InferValue<Def extends DefinitionBase<any, any, any>> =
   Def extends DefinitionBase<any, infer Value, any> ? Value : never;
 
-/**
- * @deprecated Use {@link InferSchemaValues} instead. Otherwise, you won't get any aliased types (e.g. named object types, plugin types).
- */
-export type InferValue<Def> = Def extends DefinitionBase<any, any, any>
-  ? _InferValue<Def>
-  : never;
-
 type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = Merge<
   {
     [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule

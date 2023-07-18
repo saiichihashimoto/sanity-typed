@@ -244,3 +244,52 @@ type Values = InferSchemaValues<typeof config>;
 - export type Product = Extract<Values, { _type: "product" }>
 + export type Product = Values["product"];
 ```
+
+#### InferValue
+
+Types used to be inferred using `InferValue<typeof type>` for easy exporting. Now, `InferSchemaValues<typeof config>` needs to be used, and individual types keyed off of it. The reason for this is that only the config has context about aliased types, so `InferValue` was always going to be missing those values.
+
+```diff
+const product = defineType({
+  name: "product",
+  type: "document",
+  title: "Product",
+  fields: [
+    // ...
+  ],
+});
+
+- export type Product = InferValue<typeof product>;
+
+const config = defineConfig({
+  // ...
+  schema: {
+    types: [
+      product,
+      // ...
+    ],
+  },
+});
+
+export default config;
+
+type Values = InferSchemaValues<typeof config>;
+
++ export type Product = Values["product"];
+```
+
+You can still use `_InferValue` but this is discouraged, because it will be missing the context from the config:
+
+```diff
+const product = defineType({
+  name: "product",
+  type: "document",
+  title: "Product",
+  fields: [
+    // ...
+  ],
+});
+
+- export type Product = InferValue<typeof product>;
++ export type Product = _InferValue<typeof product>;
+```
