@@ -78,7 +78,7 @@ export default config;
 type Values = InferSchemaValues<typeof config>;
 
 // Import Product type into your application!
-export type Product = Extract<Values, { _type: "product" }>;
+export type Product = Values["product"];
 /**
  *  Product === {
  *    _createdAt: string;
@@ -135,7 +135,7 @@ export default config;
 
 type Values = InferSchemaValues<typeof config>;
 
-export type Foo = Extract<Values, { _type: "foo" }>;
+export type Foo = Values["foo"];
 /**
  *  Foo === {
  *    _createdAt: string;
@@ -203,7 +203,7 @@ export default config;
 
 type Values = InferSchemaValues<typeof config>;
 
-export type Foo = Extract<Values, { _type: "foo" }>;
+export type Foo = Values["foo"];
 /**
  *  Foo === {
  *    _createdAt: string;
@@ -227,3 +227,20 @@ Typescript was an after-the-fact concern with sanity, since the rise of typescri
 The long term goal is to deprecate the monorepo altogether. Building this seperately was to move quickly and these features should be in sanity directly (and is likely one of their internal goals). The idea is to introduce these changes iteratively into sanity itself while removing them from this library, until it's reduced to simply passing through the `define*` methods directly, and will then be deprecated.
 
 This shouldn't deter you from using it! Under the hood, it's passing all the inputs to sanity's native `define*` methods, so you shouldn't have any runtime differences. With all the typings being attempting to make their way into sanity, you should keep all the benefits of just importing the `define*` methods and noticing no differences.
+
+## Migrations
+
+### Migrating from 2.x to 3.x
+
+#### InferSchemaValues
+
+`InferSchemaValues<typeof config>` used to return a union of all types but now returns an object keyed off by type. This is because using `Extract` to retrieve specific type was difficult. Object types would have a `_type` for easy extraction, but all the other types were less reliable (i.e. arrays and primitives).
+
+```diff
+export default config;
+
+type Values = InferSchemaValues<typeof config>;
+
+- export type Product = Extract<Values, { _type: "product" }>
++ export type Product = Values["product"];
+```
