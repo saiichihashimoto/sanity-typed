@@ -10,6 +10,20 @@ labels:
   - name: types
     color: "#3178c6"
 branches:
+  - name: alpha
+    protection:
+      required_status_checks:
+        contexts:
+          - Build
+          - Lint
+          - Test
+  - name: beta
+    protection:
+      required_status_checks:
+        contexts:
+          - Build
+          - Lint
+          - Test
   - name: main
     protection:
       required_status_checks:
