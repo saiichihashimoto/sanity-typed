@@ -5,6 +5,8 @@ repository:
   description: Monorepo for typing Sanity.io
   private: false
 labels:
+  - name: groq
+    color: "#dd4e3b"
   - name: schema-builder
     color: "#f1dd35"
   - name: types
