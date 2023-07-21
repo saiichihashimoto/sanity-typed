@@ -3,7 +3,7 @@ import { describe, it } from "@jest/globals";
 import { expectType } from "@sanity-typed/test-utils";
 import type { DocumentValue } from "@sanity-typed/types";
 
-import type { ExecuteQuery } from ".";
+import type { ExecuteQuery, Scope } from ".";
 
 describe("groq", () => {
   it("null", () =>
@@ -61,6 +61,22 @@ describe("groq", () => {
       ExecuteQuery<"[[null,null],[null,null,null]]", { [key: string]: never }>
     >().toStrictEqual<[[null, null], [null, null, null]]>());
 
+  it("@", () => {
+    const UNIQUE_VALUE: unique symbol = Symbol("");
+
+    expectType<
+      ExecuteQuery<"@", Scope<never, typeof UNIQUE_VALUE, never>>
+    >().toStrictEqual<typeof UNIQUE_VALUE>();
+  });
+
+  it("key", () => {
+    const UNIQUE_VALUE: unique symbol = Symbol("");
+
+    expectType<
+      ExecuteQuery<"key", Scope<never, { key: typeof UNIQUE_VALUE }, never>>
+    >().toStrictEqual<typeof UNIQUE_VALUE>();
+  });
+
   it("*", () =>
     expectType<
       ExecuteQuery<
@@ -74,6 +90,51 @@ describe("groq", () => {
     >().toStrictEqual<
       (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
     >());
+
+  it("^", () => {
+    const UNIQUE_VALUE: unique symbol = Symbol("");
+
+    expectType<
+      ExecuteQuery<
+        "^",
+        Scope<never, never, Scope<never, typeof UNIQUE_VALUE, never>>
+      >
+    >().toStrictEqual<typeof UNIQUE_VALUE>();
+  });
+
+  it("^.^", () => {
+    const UNIQUE_VALUE: unique symbol = Symbol("");
+
+    expectType<
+      ExecuteQuery<
+        "^.^",
+        Scope<
+          never,
+          never,
+          Scope<never, never, Scope<never, typeof UNIQUE_VALUE, never>>
+        >
+      >
+    >().toStrictEqual<typeof UNIQUE_VALUE>();
+  });
+
+  it("^.^.^", () => {
+    const UNIQUE_VALUE: unique symbol = Symbol("");
+
+    expectType<
+      ExecuteQuery<
+        "^.^.^",
+        Scope<
+          never,
+          never,
+          Scope<
+            never,
+            never,
+            Scope<never, never, Scope<never, typeof UNIQUE_VALUE, never>>
+          >
+        >
+      >
+    >().toStrictEqual<typeof UNIQUE_VALUE>();
+  });
 
   it("(*)", () =>
     expectType<
