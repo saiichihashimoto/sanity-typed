@@ -126,8 +126,12 @@ type Parent<
     ? Value
     : never
   : TExpression extends `^.${infer TParents}`
-  ? TScope extends Scope<any, any, infer TParent>
-    ? Parent<TParents, NonNullable<TParent>>
+  ? TScope extends Scope<
+      any,
+      any,
+      infer TParentScope extends Scope<any, any, any>
+    >
+    ? Parent<TParents, TParentScope>
     : never
   : never;
 

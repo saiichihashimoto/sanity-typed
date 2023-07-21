@@ -65,7 +65,7 @@ describe("groq", () => {
     const UNIQUE_VALUE: unique symbol = Symbol("");
 
     expectType<
-      ExecuteQuery<"@", Scope<any, typeof UNIQUE_VALUE, any>>
+      ExecuteQuery<"@", Scope<never, typeof UNIQUE_VALUE, never>>
     >().toStrictEqual<typeof UNIQUE_VALUE>();
   });
 
@@ -73,7 +73,7 @@ describe("groq", () => {
     const UNIQUE_VALUE: unique symbol = Symbol("");
 
     expectType<
-      ExecuteQuery<"key", Scope<any, { key: typeof UNIQUE_VALUE }, any>>
+      ExecuteQuery<"key", Scope<never, { key: typeof UNIQUE_VALUE }, never>>
     >().toStrictEqual<typeof UNIQUE_VALUE>();
   });
 
@@ -95,7 +95,10 @@ describe("groq", () => {
     const UNIQUE_VALUE: unique symbol = Symbol("");
 
     expectType<
-      ExecuteQuery<"^", Scope<any, any, Scope<any, typeof UNIQUE_VALUE, any>>>
+      ExecuteQuery<
+        "^",
+        Scope<never, never, Scope<never, typeof UNIQUE_VALUE, never>>
+      >
     >().toStrictEqual<typeof UNIQUE_VALUE>();
   });
 
@@ -105,7 +108,11 @@ describe("groq", () => {
     expectType<
       ExecuteQuery<
         "^.^",
-        Scope<any, any, Scope<any, any, Scope<any, typeof UNIQUE_VALUE, any>>>
+        Scope<
+          never,
+          never,
+          Scope<never, never, Scope<never, typeof UNIQUE_VALUE, never>>
+        >
       >
     >().toStrictEqual<typeof UNIQUE_VALUE>();
   });
@@ -117,9 +124,13 @@ describe("groq", () => {
       ExecuteQuery<
         "^.^.^",
         Scope<
-          any,
-          any,
-          Scope<any, any, Scope<any, any, Scope<any, typeof UNIQUE_VALUE, any>>>
+          never,
+          never,
+          Scope<
+            never,
+            never,
+            Scope<never, never, Scope<never, typeof UNIQUE_VALUE, never>>
+          >
         >
       >
     >().toStrictEqual<typeof UNIQUE_VALUE>();
