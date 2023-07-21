@@ -2,7 +2,6 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/groq",
   "version": "0.0.0-development",
-  "private": true,
   "description": "TODO Description",
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/groq",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Agroq",
