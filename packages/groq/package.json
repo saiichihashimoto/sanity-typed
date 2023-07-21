@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@sanity-typed/groq",
+  "version": "0.0.0-development",
+  "private": true,
+  "description": "TODO Description",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/groq",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Agroq",
+  "repository": "github:saiichihashimoto/sanity-typed",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/saiichihashimoto"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "npm run build -- --no-dts"
+  },
+  "dependencies": {
+    "@sanity-typed/types": "0.0.0-development"
+  },
+  "devDependencies": {
+    "@jest/globals": "29.6.1",
+    "@sanity-typed/test-utils": "0.0.0-development",
+    "@sanity-typed/tsconfig": "0.0.0-development",
+    "typescript": "5.1.6"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.4"
+  }
+}
