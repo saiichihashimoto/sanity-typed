@@ -144,9 +144,20 @@ type This<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ThisAttribute
+ */
+type ThisAttribute<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TScope extends Scope<any, infer Value, any>
+  ? TExpression extends keyof Value
+    ? Value[TExpression]
+    : never
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SimpleExpression
  *
- * @todo ThisAttribute
  * @todo FuncCall
  */
 type SimpleExpression<
@@ -155,7 +166,8 @@ type SimpleExpression<
 > =
   | Everything<TExpression, TScope>
   | Parent<TExpression, TScope>
-  | This<TExpression, TScope>;
+  | This<TExpression, TScope>
+  | ThisAttribute<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Parenthesis

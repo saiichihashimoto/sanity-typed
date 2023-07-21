@@ -69,6 +69,14 @@ describe("groq", () => {
     >().toStrictEqual<typeof UNIQUE_VALUE>();
   });
 
+  it("key", () => {
+    const UNIQUE_VALUE: unique symbol = Symbol("");
+
+    expectType<
+      ExecuteQuery<"key", Scope<any, { key: typeof UNIQUE_VALUE }, any>>
+    >().toStrictEqual<typeof UNIQUE_VALUE>();
+  });
+
   it("*", () =>
     expectType<
       ExecuteQuery<
