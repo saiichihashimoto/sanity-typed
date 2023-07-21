@@ -12,7 +12,7 @@ type Context<Dataset> = {
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Scope
  */
-type Scope<
+export type Scope<
   TContext extends Context<any>,
   Value,
   ParentScope extends Scope<any, any, any> | null
@@ -116,17 +116,46 @@ type Everything<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Parent
+ */
+type Parent<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends "^"
+  ? TScope extends Scope<any, any, Scope<any, infer Value, any>>
+    ? Value
+    : never
+  : TExpression extends `^.${infer TParents}`
+  ? TScope extends Scope<any, any, infer TParent>
+    ? Parent<TParents, NonNullable<TParent>>
+    : never
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#This
+ */
+type This<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends "@"
+  ? TScope extends Scope<any, infer Value, any>
+    ? Value
+    : never
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SimpleExpression
  *
- * @todo This
  * @todo ThisAttribute
- * @todo Parent
  * @todo FuncCall
  */
 type SimpleExpression<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = Everything<TExpression, TScope>;
+> =
+  | Everything<TExpression, TScope>
+  | Parent<TExpression, TScope>
+  | This<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Parenthesis
@@ -176,18 +205,20 @@ type Evaluate<
  */
 export type ExecuteQuery<
   TQuery extends string,
-  Values extends InferSchemaValues<any>
+  ValuesOrScope extends InferSchemaValues<any> | Scope<any, any, any>
 > = Evaluate<
   TQuery,
-  Scope<
-    Context<
-      Extract<
-        Values[keyof Values],
-        // TODO Is is true that we should only use documents?
-        DocumentValue<string, any>
-      >[]
-    >,
-    null,
-    null
-  >
+  ValuesOrScope extends Scope<any, any, any>
+    ? ValuesOrScope
+    : Scope<
+        Context<
+          Extract<
+            ValuesOrScope[keyof ValuesOrScope],
+            // TODO Is is true that we should only use documents?
+            DocumentValue<string, any>
+          >[]
+        >,
+        null,
+        null
+      >
 >;
