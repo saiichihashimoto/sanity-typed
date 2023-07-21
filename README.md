@@ -11,6 +11,7 @@ Monorepo for typing Sanity.io.
 
 ## Packages
 
+- [`@sanity-typed/groq`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/groq)
 - [`@sanity-typed/types`](https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types)
 
 - ~~[`@sanity-typed/schema-builder`](https://github.com/saiichihashimoto/sanity-typed/tree/%40sanity-typed/schema-builder%403.0.1/packages/schema-builder)~~
