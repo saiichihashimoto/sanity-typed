@@ -149,4 +149,19 @@ describe("groq", () => {
     >().toStrictEqual<
       (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
     >());
+
+  it("count(5)", () =>
+    expectType<
+      ExecuteQuery<"count(5)", { [key: string]: never }>
+    >().toStrictEqual<null>());
+
+  it("count([1,2,3,4])", () =>
+    expectType<
+      ExecuteQuery<"count([1,2,3,4])", { [key: string]: never }>
+    >().toStrictEqual<4>());
+
+  it("global::count([1,2,3,4])", () =>
+    expectType<
+      ExecuteQuery<"global::count([1,2,3,4])", { [key: string]: never }>
+    >().toStrictEqual<4>());
 });

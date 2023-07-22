@@ -5,15 +5,16 @@ import type { DocumentValue, InferSchemaValues } from "@sanity-typed/types";
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Query-context
  */
-type Context<Dataset> = {
+type Context<Dataset, Mode extends "delta" | "normal"> = {
   dataset: Dataset;
+  mode: Mode;
 };
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Scope
  */
 export type Scope<
-  TContext extends Context<any>,
+  TContext extends Context<any, any>,
   Value,
   ParentScope extends Scope<any, any, any> | null
 > = {
@@ -25,7 +26,7 @@ export type Scope<
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayElement
  */
-type EvaluateArrayElement<
+type ArrayElement<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > = TExpression extends `...${infer TArrayElement}`
@@ -45,22 +46,18 @@ type EvaluateArrayElement<
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayElements
  */
-type EvaluateArrayElements<
+type ArrayElements<
   TExpression extends string,
   TScope extends Scope<any, any, any>,
   TPrefix extends string = ""
 > = TExpression extends `${infer TArrayElement},${infer TArrayElements}`
-  ? EvaluateArrayElement<`${TPrefix}${TArrayElement}`, TScope> extends [never]
-    ? EvaluateArrayElements<
-        TArrayElements,
-        TScope,
-        `${TPrefix}${TArrayElement},`
-      >
+  ? ArrayElement<`${TPrefix}${TArrayElement}`, TScope> extends [never]
+    ? ArrayElements<TArrayElements, TScope, `${TPrefix}${TArrayElement},`>
     : [
-        ...EvaluateArrayElement<`${TPrefix}${TArrayElement}`, TScope>,
-        ...EvaluateArrayElements<TArrayElements, TScope>
+        ...ArrayElement<`${TPrefix}${TArrayElement}`, TScope>,
+        ...ArrayElements<TArrayElements, TScope>
       ]
-  : EvaluateArrayElement<`${TPrefix}${TExpression}`, TScope>;
+  : ArrayElement<`${TPrefix}${TExpression}`, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Array
@@ -71,7 +68,7 @@ type ArrayType<
 > = TExpression extends `[${infer TArrayElements}${"," | ""}]`
   ? TArrayElements extends ""
     ? []
-    : EvaluateArrayElements<TArrayElements, TScope>
+    : ArrayElements<TArrayElements, TScope>
   : never;
 
 /**
@@ -103,6 +100,68 @@ type Literal<TExpression extends string, TScope extends Scope<any, any, any>> =
   | Primitives<TExpression>
   | StringType<TExpression>;
 
+type Count<TArgs extends string, TScope extends Scope<any, any, any>> =
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
+  Evaluate<TArgs, TScope> extends never
+    ? never
+    : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
+    Evaluate<TArgs, TScope> extends any[]
+    ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
+      Evaluate<TArgs, TScope>["length"]
+    : null;
+
+/**
+ * @todo array
+ * @todo dateTime
+ * @todo delta
+ * @todo diff
+ * @todo math
+ * @todo string
+ */
+type Functions<TArgs extends string, TScope extends Scope<any, any, any>> = {
+  /**
+   * @todo after
+   * @todo before
+   * @todo boost
+   * @todo coalesce
+   * @todo dateTime
+   * @todo defined
+   * @todo length
+   * @todo lower
+   * @todo now
+   * @todo operation
+   * @todo references
+   * @todo round
+   * @todo select
+   * @todo string
+   * @todo upper
+   */
+  global: {
+    count: Count<TArgs, TScope>;
+  };
+};
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#FuncCall
+ */
+type FuncCall<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `${infer TFunction extends keyof Functions<
+  any,
+  TScope
+>["global"]}(${infer TArgs})`
+  ? Functions<TArgs, TScope>["global"][TFunction]
+  : TExpression extends `${infer TNamespace extends keyof Functions<
+      any,
+      TScope
+    >}::${infer TFuncCall}`
+  ? TFuncCall extends `${infer TFunction extends string &
+      keyof Functions<any, TScope>[TNamespace]}(${infer TArgs})`
+    ? Functions<TArgs, TScope>[TNamespace][TFunction]
+    : never
+  : never;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Everything
  */
@@ -110,7 +169,7 @@ type Everything<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > = TExpression extends "*"
-  ? TScope extends Scope<Context<infer Dataset>, any, any>
+  ? TScope extends Scope<Context<infer Dataset, any>, any, any>
     ? Dataset
     : never
   : never;
@@ -161,14 +220,13 @@ type ThisAttribute<
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SimpleExpression
- *
- * @todo FuncCall
  */
 type SimpleExpression<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > =
   | Everything<TExpression, TScope>
+  | FuncCall<TExpression, TScope>
   | Parent<TExpression, TScope>
   | This<TExpression, TScope>
   | ThisAttribute<TExpression, TScope>;
@@ -232,7 +290,8 @@ export type ExecuteQuery<
             ValuesOrScope[keyof ValuesOrScope],
             // TODO Is is true that we should only use documents?
             DocumentValue<string, any>
-          >[]
+          >[],
+          "normal"
         >,
         null,
         null
