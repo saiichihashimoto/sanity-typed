@@ -179,4 +179,24 @@ describe("groq", () => {
     expectType<
       ExecuteQuery<"global::defined(5)", { [key: string]: never }>
     >().toStrictEqual<true>());
+
+  it("length(10)", () =>
+    expectType<
+      ExecuteQuery<"length(10)", { [key: string]: never }>
+    >().toStrictEqual<null>());
+
+  it("length([null,null,null])", () =>
+    expectType<
+      ExecuteQuery<"length([null,null,null])", { [key: string]: never }>
+    >().toStrictEqual<3>());
+
+  it('length("string")', () =>
+    expectType<
+      ExecuteQuery<'length("string")', { [key: string]: never }>
+    >().toStrictEqual<number>());
+
+  it('global::length("string")', () =>
+    expectType<
+      ExecuteQuery<'global::length("string")', { [key: string]: never }>
+    >().toStrictEqual<number>());
 });
