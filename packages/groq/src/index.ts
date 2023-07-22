@@ -126,6 +126,19 @@ type Defined<TArgs extends string, TScope extends Scope<any, any, any>> =
     : true;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-length-
+ */
+type Length<TArgs extends string, TScope extends Scope<any, any, any>> =
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
+  Evaluate<TArgs, TScope> extends never
+    ? never
+    : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
+    Evaluate<TArgs, TScope> extends any[] | string
+    ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
+      Evaluate<TArgs, TScope>["length"]
+    : null;
+
+/**
  * @todo array
  * @todo dateTime
  * @todo delta
@@ -140,7 +153,6 @@ type Functions<TArgs extends string, TScope extends Scope<any, any, any>> = {
    * @todo boost
    * @todo coalesce
    * @todo dateTime
-   * @todo length
    * @todo lower
    * @todo now
    * @todo operation
@@ -153,6 +165,7 @@ type Functions<TArgs extends string, TScope extends Scope<any, any, any>> = {
   global: {
     count: Count<TArgs, TScope>;
     defined: Defined<TArgs, TScope>;
+    length: Length<TArgs, TScope>;
   };
 };
 
