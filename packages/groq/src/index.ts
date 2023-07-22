@@ -100,6 +100,9 @@ type Literal<TExpression extends string, TScope extends Scope<any, any, any>> =
   | Primitives<TExpression>
   | StringType<TExpression>;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-count-
+ */
 type Count<TArgs extends string, TScope extends Scope<any, any, any>> =
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
   Evaluate<TArgs, TScope> extends never
@@ -109,6 +112,18 @@ type Count<TArgs extends string, TScope extends Scope<any, any, any>> =
     ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
       Evaluate<TArgs, TScope>["length"]
     : null;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-defined-
+ */
+type Defined<TArgs extends string, TScope extends Scope<any, any, any>> =
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
+  Evaluate<TArgs, TScope> extends never
+    ? never
+    : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
+    Evaluate<TArgs, TScope> extends null
+    ? false
+    : true;
 
 /**
  * @todo array
@@ -125,7 +140,6 @@ type Functions<TArgs extends string, TScope extends Scope<any, any, any>> = {
    * @todo boost
    * @todo coalesce
    * @todo dateTime
-   * @todo defined
    * @todo length
    * @todo lower
    * @todo now
@@ -138,6 +152,7 @@ type Functions<TArgs extends string, TScope extends Scope<any, any, any>> = {
    */
   global: {
     count: Count<TArgs, TScope>;
+    defined: Defined<TArgs, TScope>;
   };
 };
 

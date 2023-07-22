@@ -164,4 +164,19 @@ describe("groq", () => {
     expectType<
       ExecuteQuery<"global::count([1,2,3,4])", { [key: string]: never }>
     >().toStrictEqual<4>());
+
+  it("defined(null)", () =>
+    expectType<
+      ExecuteQuery<"defined(null)", { [key: string]: never }>
+    >().toStrictEqual<false>());
+
+  it("defined(5)", () =>
+    expectType<
+      ExecuteQuery<"defined(5)", { [key: string]: never }>
+    >().toStrictEqual<true>());
+
+  it("global::defined(5)", () =>
+    expectType<
+      ExecuteQuery<"global::defined(5)", { [key: string]: never }>
+    >().toStrictEqual<true>());
 });
