@@ -23,6 +23,39 @@ export type Scope<
   this: Value;
 };
 
+type NestedScope<
+  Value,
+  TScope extends Scope<any, any, any>
+> = TScope extends Scope<infer TContext, any, any>
+  ? Scope<TContext, Value, TScope>
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Evaluate()
+ */
+type Evaluate<TExpression extends string, TScope extends Scope<any, any, any>> =
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Evaluate should be at the bottom but, because of recursion, it's cleanest to put it here
+  Expression<TExpression, TScope>;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Boolean
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Null
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Number
+ */
+type Primitives<TExpression extends string> =
+  TExpression extends `${infer TBoolean extends boolean | number | null}`
+    ? TBoolean
+    : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#String
+ */
+type StringType<TExpression extends string> = TExpression extends  // FIXME Should check for specific characters
+  | `'${infer TString extends string}'`
+  | `"${infer TString extends string}"`
+  ? TString
+  : never;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayElement
  */
@@ -30,18 +63,10 @@ type ArrayElement<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > = TExpression extends `...${infer TArrayElement}`
-  ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-    Evaluate<TArrayElement, TScope> extends any[]
-    ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-      Evaluate<TArrayElement, TScope>
-    : [
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-        Evaluate<TArrayElement, TScope>
-      ]
-  : [
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-      Evaluate<TExpression, TScope>
-    ];
+  ? Evaluate<TArrayElement, TScope> extends any[]
+    ? Evaluate<TArrayElement, TScope>
+    : [Evaluate<TArrayElement, TScope>]
+  : [Evaluate<TExpression, TScope>];
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayElements
@@ -53,10 +78,14 @@ type ArrayElements<
 > = TExpression extends `${infer TArrayElement},${infer TArrayElements}`
   ? ArrayElement<`${TPrefix}${TArrayElement}`, TScope> extends [never]
     ? ArrayElements<TArrayElements, TScope, `${TPrefix}${TArrayElement},`>
+    : ArrayElements<TArrayElements, TScope> extends never
+    ? never
     : [
         ...ArrayElement<`${TPrefix}${TArrayElement}`, TScope>,
         ...ArrayElements<TArrayElements, TScope>
       ]
+  : ArrayElement<`${TPrefix}${TExpression}`, TScope> extends [never]
+  ? never
   : ArrayElement<`${TPrefix}${TExpression}`, TScope>;
 
 /**
@@ -72,25 +101,6 @@ type ArrayType<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#String
- */
-type StringType<TExpression extends string> = TExpression extends  // FIXME Should check for specific characters
-  | `'${infer TString extends string}'`
-  | `"${infer TString extends string}"`
-  ? TString
-  : never;
-
-/**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Boolean
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Null
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Number
- */
-type Primitives<TExpression extends string> =
-  TExpression extends `${infer TBoolean extends boolean | number | null}`
-    ? TBoolean
-    : never;
-
-/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Literal
  *
  * @todo Object
@@ -100,43 +110,82 @@ type Literal<TExpression extends string, TScope extends Scope<any, any, any>> =
   | Primitives<TExpression>
   | StringType<TExpression>;
 
+type Negate<TBoolean extends boolean> = TBoolean extends true ? false : true;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Equality
+ *
+ * @todo Test Equality cases in https://sanity-io.github.io/GROQ/GROQ-1.revision1/#PartialCompare()
+ */
+type Equality<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `${infer TLeft}!=${infer TRight}`
+  ? Negate<Equality<`${TLeft}==${TRight}`, TScope>>
+  : TExpression extends `${infer TLeft}==${infer TRight}`
+  ? Evaluate<TLeft, TScope> extends never
+    ? never
+    : Evaluate<TRight, TScope> extends never
+    ? never
+    : Evaluate<TLeft, TScope> extends Evaluate<TRight, TScope>
+    ? true
+    : Evaluate<TRight, TScope> extends Evaluate<TLeft, TScope>
+    ? true
+    : false
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#OperatorCall
+ *
+ * @todo And
+ * @todo Asc
+ * @todo Comparison
+ * @todo Desc
+ * @todo In
+ * @todo Match
+ * @todo Minus
+ * @todo Not
+ * @todo Or
+ * @todo Percent
+ * @todo Plus
+ * @todo Slash
+ * @todo Star
+ * @todo StarStar
+ * @todo UnaryMinus
+ * @todo UnaryPlus
+ */
+type OperatorCall<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = Equality<TExpression, TScope>;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-count-
  */
-type Count<TArgs extends string, TScope extends Scope<any, any, any>> =
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-  Evaluate<TArgs, TScope> extends never
-    ? never
-    : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-    Evaluate<TArgs, TScope> extends any[]
-    ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-      Evaluate<TArgs, TScope>["length"]
-    : null;
+type Count<
+  TArgs extends string,
+  TScope extends Scope<any, any, any>
+> = Evaluate<TArgs, TScope> extends any[]
+  ? Evaluate<TArgs, TScope>["length"]
+  : null;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-defined-
  */
-type Defined<TArgs extends string, TScope extends Scope<any, any, any>> =
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-  Evaluate<TArgs, TScope> extends never
-    ? never
-    : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-    Evaluate<TArgs, TScope> extends null
-    ? false
-    : true;
+type Defined<
+  TArgs extends string,
+  TScope extends Scope<any, any, any>
+> = Evaluate<TArgs, TScope> extends null ? false : true;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-length-
  */
-type Length<TArgs extends string, TScope extends Scope<any, any, any>> =
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-  Evaluate<TArgs, TScope> extends never
-    ? never
-    : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-    Evaluate<TArgs, TScope> extends any[] | string
-    ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-      Evaluate<TArgs, TScope>["length"]
-    : null;
+type Length<
+  TArgs extends string,
+  TScope extends Scope<any, any, any>
+> = Evaluate<TArgs, TScope> extends any[] | string
+  ? Evaluate<TArgs, TScope>["length"]
+  : null;
 
 /**
  * @todo array
@@ -260,31 +309,102 @@ type SimpleExpression<
   | ThisAttribute<TExpression, TScope>;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Filter
+ */
+type Filter<
+  TBase extends any[],
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TBase extends []
+  ? []
+  : TBase extends [infer TFirst, ...infer TRest]
+  ? Evaluate<TExpression, NestedScope<TFirst, TScope>> extends true
+    ? [TFirst, ...Filter<TRest, TExpression, TScope>]
+    : Filter<TRest, TExpression, TScope>
+  : TBase extends (infer ArrayElement)[]
+  ? (ArrayElement extends never
+      ? never
+      : Evaluate<TExpression, NestedScope<ArrayElement, TScope>> extends true
+      ? ArrayElement
+      : never)[]
+  : [];
+
+type BasicTraversalFilter<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>,
+  TPrefix extends string = ""
+> = TExpression extends `${infer TBase}[${infer TFilterExpression}]`
+  ? Evaluate<`${TPrefix}${TBase}`, TScope> extends never
+    ? BasicTraversalFilter<
+        `${TFilterExpression}]`,
+        TScope,
+        `${TPrefix}${TBase}[`
+      >
+    : Evaluate<`${TPrefix}${TBase}`, TScope> extends any[]
+    ? Filter<Evaluate<`${TPrefix}${TBase}`, TScope>, TFilterExpression, TScope>
+    : Evaluate<`${TPrefix}${TBase}`, TScope>
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#BasicTraversalArray
+ *
+ * @todo Slice
+ * @todo ArrayPostfix
+ */
+type BasicTraversalArray<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = BasicTraversalFilter<TExpression, TScope>;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalArray
+ *
+ * @todo BasicTraversalArray TraversalArray
+ * @todo ElementAccess TraversalArray
+ * @todo ElementAccess TraversalArrayTarget
+ * @todo BasicTraversalArray TraversalPlain
+ * @todo BasicTraversalArray TraversalArrayTarget
+ * @todo Projection TraversalArray
+ */
+type TraversalArray<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = BasicTraversalArray<TExpression, TScope>;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalExpression
+ *
+ * @todo TraversalPlain
+ * @todo TraversalArraySource
+ * @todo TraversalArrayTarget
+ */
+type TraversalExpression<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TraversalArray<TExpression, TScope>;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Parenthesis
  */
 type Parenthesis<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > = TExpression extends `(${infer TInnerExpression})`
-  ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursion
-    Evaluate<TInnerExpression, TScope>
+  ? Evaluate<TInnerExpression, TScope>
   : never;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#CompoundExpression
  *
  * @todo PipeFuncCall
- * @todo TraversalExpression
  */
 type CompoundExpression<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = Parenthesis<TExpression, TScope>;
+> = Parenthesis<TExpression, TScope> | TraversalExpression<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Expression
- *
- * @todo OperatorCall
  */
 type Expression<
   TExpression extends string,
@@ -292,15 +412,8 @@ type Expression<
 > =
   | CompoundExpression<TExpression, TScope>
   | Literal<TExpression, TScope>
+  | OperatorCall<TExpression, TScope>
   | SimpleExpression<TExpression, TScope>;
-
-/**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Evaluate()
- */
-type Evaluate<
-  TExpression extends string,
-  TScope extends Scope<any, any, any>
-> = Expression<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ExecuteQuery()
