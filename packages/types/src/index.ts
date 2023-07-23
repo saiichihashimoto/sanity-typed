@@ -27,6 +27,7 @@ import type {
   DocumentRule,
   EmailDefinition as EmailDefinitionNative,
   EmailRule,
+  EnumListProps,
   FieldDefinitionBase,
   FileDefinition as FileDefinitionNative,
   FileRule,
@@ -38,6 +39,7 @@ import type {
   ImageValue as ImageValueNative,
   MaybeAllowUnknownProps,
   NumberDefinition as NumberDefinitionNative,
+  NumberOptions,
   NumberRule,
   ObjectDefinition as ObjectDefinitionNative,
   ObjectRule,
@@ -178,9 +180,18 @@ export type GeopointDefinition<TRequired extends boolean> = Merge<
   DefinitionBase<TRequired, Omit<GeopointValue, "_type">, GeopointRule>
 >;
 
-export type NumberDefinition<TRequired extends boolean> = Merge<
+type ExtractUnionValues<T extends NumberOptions> = T["list"][number]["value"];
+
+export type NumberDefinition<
+  TRequired extends boolean,
+  TOptions extends NumberOptions | undefined
+> = Merge<
   NumberDefinitionNative,
-  DefinitionBase<TRequired, number, NumberRule>
+  DefinitionBase<
+    TRequired,
+    TOptions extends EnumListProps ? ExtractUnionValues<TOptions> : number,
+    NumberRule
+  >
 >;
 
 export type ReferenceDefinition<TRequired extends boolean> = Merge<
@@ -367,7 +378,8 @@ type IntrinsicDefinitions<
     [requiredSymbol]?: boolean;
   },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
-  TRequired extends boolean
+  TRequired extends boolean,
+  TOptions extends NumberOptions | undefined = undefined
 > = {
   array: ArrayDefinition<TRequired, TMemberDefinition>;
   block: BlockDefinition<TRequired>;
@@ -380,7 +392,7 @@ type IntrinsicDefinitions<
   file: FileDefinition<TRequired, TFieldDefinition>;
   geopoint: GeopointDefinition<TRequired>;
   image: ImageDefinition<TRequired, TFieldDefinition>;
-  number: NumberDefinition<TRequired>;
+  number: NumberDefinition<TRequired, TOptions>;
   object: ObjectDefinition<TRequired, TFieldDefinition>;
   reference: ReferenceDefinition<TRequired>;
   slug: SlugDefinition<TRequired>;
@@ -454,7 +466,10 @@ export const defineField = <
     name: string;
     [requiredSymbol]?: boolean;
   },
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+  TMemberDefinition extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
+  TOptions extends NumberOptions,
   TRequired extends boolean = false
 >(
   schemaField: FieldDefinitionBase &
@@ -470,7 +485,8 @@ export const defineField = <
                 TName,
                 TFieldDefinition,
                 TMemberDefinition,
-                TRequired
+                TRequired,
+                TOptions
               >[K],
               "FIXME why does this fail without the omit? we're clearly not using it"
             >;
@@ -479,6 +495,7 @@ export const defineField = <
         >
       : TypeAliasDefinition<TType, TAlias, TRequired>) & {
       name: TName;
+      options?: TOptions;
       [requiredSymbol]?: TRequired;
       type: TType;
     },
