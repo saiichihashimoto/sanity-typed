@@ -5,6 +5,8 @@ import type { DocumentValue } from "@sanity-typed/types";
 
 import type { ExecuteQuery, Scope } from ".";
 
+const UNIQUE_VALUE: unique symbol = Symbol("");
+
 type Empty = { [key: string]: never };
 
 describe("groq", () => {
@@ -42,6 +44,9 @@ describe("groq", () => {
       [null, true, false, -5.6, "double quoted string", "single quoted string"]
     >());
 
+  it("[true,]", () =>
+    expectType<ExecuteQuery<"[true,]", Empty>>().toStrictEqual<[true]>());
+
   it("[1,notvalid]", () =>
     expectType<never>().toStrictEqual<ExecuteQuery<"[1,notvalid]", Empty>>());
 
@@ -53,21 +58,15 @@ describe("groq", () => {
       ExecuteQuery<"[[null,null],[null,null,null]]", Empty>
     >().toStrictEqual<[[null, null], [null, null, null]]>());
 
-  it("@", () => {
-    const UNIQUE_VALUE: unique symbol = Symbol("");
-
+  it("@", () =>
     expectType<
       ExecuteQuery<"@", Scope<never, typeof UNIQUE_VALUE, never>>
-    >().toStrictEqual<typeof UNIQUE_VALUE>();
-  });
+    >().toStrictEqual<typeof UNIQUE_VALUE>());
 
-  it("key", () => {
-    const UNIQUE_VALUE: unique symbol = Symbol("");
-
+  it("key", () =>
     expectType<
       ExecuteQuery<"key", Scope<never, { key: typeof UNIQUE_VALUE }, never>>
-    >().toStrictEqual<typeof UNIQUE_VALUE>();
-  });
+    >().toStrictEqual<typeof UNIQUE_VALUE>());
 
   it("*", () =>
     expectType<

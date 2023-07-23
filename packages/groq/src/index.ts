@@ -23,12 +23,11 @@ export type Scope<
   this: Value;
 };
 
-type NestedScope<
+type NestedScope<Value, TScope extends Scope<any, any, any>> = Scope<
+  TScope["context"],
   Value,
-  TScope extends Scope<any, any, any>
-> = TScope extends Scope<infer TContext, any, any>
-  ? Scope<TContext, Value, TScope>
-  : never;
+  TScope
+>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Evaluate()
@@ -63,9 +62,13 @@ type ArrayElement<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > = TExpression extends `...${infer TArrayElement}`
-  ? Evaluate<TArrayElement, TScope> extends any[]
+  ? Evaluate<TArrayElement, TScope> extends never
+    ? never
+    : Evaluate<TArrayElement, TScope> extends any[]
     ? Evaluate<TArrayElement, TScope>
     : [Evaluate<TArrayElement, TScope>]
+  : Evaluate<TExpression, TScope> extends never
+  ? never
   : [Evaluate<TExpression, TScope>];
 
 /**
@@ -76,16 +79,16 @@ type ArrayElements<
   TScope extends Scope<any, any, any>,
   TPrefix extends string = ""
 > = TExpression extends `${infer TArrayElement},${infer TArrayElements}`
-  ? ArrayElement<`${TPrefix}${TArrayElement}`, TScope> extends [never]
-    ? ArrayElements<TArrayElements, TScope, `${TPrefix}${TArrayElement},`>
-    : ArrayElements<TArrayElements, TScope> extends never
-    ? never
-    : [
-        ...ArrayElement<`${TPrefix}${TArrayElement}`, TScope>,
-        ...ArrayElements<TArrayElements, TScope>
-      ]
-  : ArrayElement<`${TPrefix}${TExpression}`, TScope> extends [never]
-  ? never
+  ?
+      | ArrayElements<TArrayElements, TScope, `${TPrefix}${TArrayElement},`>
+      | (
+          | ArrayElement<`${TPrefix}${TArrayElement}`, TScope>
+          | ArrayElements<TArrayElements, TScope> extends never
+          ? never
+          : [
+              ...ArrayElement<`${TPrefix}${TArrayElement}`, TScope>,
+              ...ArrayElements<TArrayElements, TScope>
+            ])
   : ArrayElement<`${TPrefix}${TExpression}`, TScope>;
 
 /**
@@ -119,19 +122,31 @@ type Negate<TBoolean extends boolean> = TBoolean extends true ? false : true;
  */
 type Equality<
   TExpression extends string,
-  TScope extends Scope<any, any, any>
-> = TExpression extends `${infer TLeft}!=${infer TRight}`
-  ? Negate<Equality<`${TLeft}==${TRight}`, TScope>>
-  : TExpression extends `${infer TLeft}==${infer TRight}`
-  ? Evaluate<TLeft, TScope> extends never
-    ? never
-    : Evaluate<TRight, TScope> extends never
-    ? never
-    : Evaluate<TLeft, TScope> extends Evaluate<TRight, TScope>
-    ? true
-    : Evaluate<TRight, TScope> extends Evaluate<TLeft, TScope>
-    ? true
-    : false
+  TScope extends Scope<any, any, any>,
+  TOperator extends "!=" | "==" | null = null,
+  TPrefix extends string = ""
+> = TOperator extends null
+  ?
+      | Equality<TExpression, TScope, "==">
+      | Negate<Equality<TExpression, TScope, "!=">>
+  : TExpression extends `${infer TLeft}${TOperator}${infer TRight}`
+  ?
+      | Equality<TRight, TScope, TOperator, `${TPrefix}${TLeft}${TOperator}`>
+      | (
+          | Evaluate<`${TPrefix}${TLeft}`, TScope>
+          | Evaluate<TRight, TScope> extends never
+          ? never
+          : Evaluate<`${TPrefix}${TLeft}`, TScope> extends Evaluate<
+              TRight,
+              TScope
+            >
+          ? true
+          : Evaluate<TRight, TScope> extends Evaluate<
+              `${TPrefix}${TLeft}`,
+              TScope
+            >
+          ? true
+          : false)
   : never;
 
 /**
@@ -245,11 +260,7 @@ type FuncCall<
 type Everything<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = TExpression extends "*"
-  ? TScope extends Scope<Context<infer Dataset, any>, any, any>
-    ? Dataset
-    : never
-  : never;
+> = TExpression extends "*" ? TScope["context"]["dataset"] : never;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Parent
@@ -258,17 +269,9 @@ type Parent<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > = TExpression extends "^"
-  ? TScope extends Scope<any, any, Scope<any, infer Value, any>>
-    ? Value
-    : never
+  ? TScope["parent"]["this"]
   : TExpression extends `^.${infer TParents}`
-  ? TScope extends Scope<
-      any,
-      any,
-      infer TParentScope extends Scope<any, any, any>
-    >
-    ? Parent<TParents, TParentScope>
-    : never
+  ? Parent<TParents, TScope["parent"]>
   : never;
 
 /**
@@ -277,11 +280,7 @@ type Parent<
 type This<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = TExpression extends "@"
-  ? TScope extends Scope<any, infer Value, any>
-    ? Value
-    : never
-  : never;
+> = TExpression extends "@" ? TScope["this"] : never;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ThisAttribute
@@ -289,10 +288,8 @@ type This<
 type ThisAttribute<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = TScope extends Scope<any, infer Value, any>
-  ? TExpression extends keyof Value
-    ? Value[TExpression]
-    : never
+> = TExpression extends keyof TScope["this"]
+  ? TScope["this"][TExpression]
   : never;
 
 /**
@@ -321,11 +318,11 @@ type Filter<
   ? Evaluate<TExpression, NestedScope<TFirst, TScope>> extends true
     ? [TFirst, ...Filter<TRest, TExpression, TScope>]
     : Filter<TRest, TExpression, TScope>
-  : TBase extends (infer ArrayElement)[]
-  ? (ArrayElement extends never
+  : TBase extends (infer TArrayElement)[]
+  ? (TArrayElement extends never
       ? never
-      : Evaluate<TExpression, NestedScope<ArrayElement, TScope>> extends true
-      ? ArrayElement
+      : Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends true
+      ? TArrayElement
       : never)[]
   : [];
 
@@ -334,15 +331,19 @@ type BasicTraversalFilter<
   TScope extends Scope<any, any, any>,
   TPrefix extends string = ""
 > = TExpression extends `${infer TBase}[${infer TFilterExpression}]`
-  ? Evaluate<`${TPrefix}${TBase}`, TScope> extends never
-    ? BasicTraversalFilter<
-        `${TFilterExpression}]`,
-        TScope,
-        `${TPrefix}${TBase}[`
-      >
-    : Evaluate<`${TPrefix}${TBase}`, TScope> extends any[]
-    ? Filter<Evaluate<`${TPrefix}${TBase}`, TScope>, TFilterExpression, TScope>
-    : Evaluate<`${TPrefix}${TBase}`, TScope>
+  ?
+      | BasicTraversalFilter<
+          `${TFilterExpression}]`,
+          TScope,
+          `${TPrefix}${TBase}[`
+        >
+      | (Evaluate<`${TPrefix}${TBase}`, TScope> extends any[]
+          ? Filter<
+              Evaluate<`${TPrefix}${TBase}`, TScope>,
+              TFilterExpression,
+              TScope
+            >
+          : Evaluate<`${TPrefix}${TBase}`, TScope>)
   : never;
 
 /**
