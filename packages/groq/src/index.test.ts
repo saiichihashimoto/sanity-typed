@@ -8,6 +8,8 @@ import type { Context, ExecuteQuery, Scope } from ".";
 const UNIQUE_VALUE: unique symbol = Symbol("");
 
 describe("groq", () => {
+  it("empty", () => expectType<never>().toStrictEqual<ExecuteQuery<"">>());
+
   it("null", () => expectType<ExecuteQuery<"null">>().toStrictEqual<null>());
 
   it("true", () => expectType<ExecuteQuery<"true">>().toStrictEqual<true>());
