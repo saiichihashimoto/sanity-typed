@@ -1,7 +1,6 @@
 import { describe, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
-import type { DocumentValue } from "@sanity-typed/types";
 
 import type { Context, ExecuteQuery, Scope } from ".";
 
@@ -83,13 +82,8 @@ describe("groq", () => {
 
   it("*", () =>
     expectType<
-      ExecuteQuery<
-        "*",
-        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
-      >
-    >().toStrictEqual<
-      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
-    >());
+      ExecuteQuery<"*", Context<({ _type: "bar" } | { _type: "foo" })[]>>
+    >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>());
 
   it("^", () => {
     const UNIQUE_VALUE: unique symbol = Symbol("");
@@ -155,11 +149,9 @@ describe("groq", () => {
     expectType<
       ExecuteQuery<
         "*[0..10][5...7][0..10][5...7]",
-        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+        Context<({ _type: "bar" } | { _type: "foo" })[]>
       >
-    >().toStrictEqual<
-      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
-    >());
+    >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>());
 
   it("false[@]", () =>
     expectType<ExecuteQuery<"false[@]">>().toStrictEqual<false>());
@@ -174,35 +166,24 @@ describe("groq", () => {
 
   it("*[true]", () =>
     expectType<
-      ExecuteQuery<
-        "*[true]",
-        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
-      >
-    >().toStrictEqual<
-      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
-    >());
+      ExecuteQuery<"*[true]", Context<({ _type: "bar" } | { _type: "foo" })[]>>
+    >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>());
 
   it('*[_type=="foo"]', () =>
     expectType<
       ExecuteQuery<
         '*[_type=="foo"]',
-        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+        Context<({ _type: "bar" } | { _type: "foo" })[]>
       >
-    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+    >().toStrictEqual<{ _type: "foo" }[]>());
 
   it('*[_type!="bar"][_type!="qux"][_type=="foo"]', () =>
     expectType<
       ExecuteQuery<
         '*[_type!="bar"][_type!="qux"][_type=="foo"]',
-        Context<
-          (
-            | DocumentValue<"bar", never>
-            | DocumentValue<"foo", never>
-            | DocumentValue<"qux", never>
-          )[]
-        >
+        Context<({ _type: "bar" } | { _type: "foo" } | { _type: "qux" })[]>
       >
-    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+    >().toStrictEqual<{ _type: "foo" }[]>());
 
   it("[true,false][]", () =>
     expectType<ExecuteQuery<"[true,false][]">>().toStrictEqual<
@@ -211,65 +192,56 @@ describe("groq", () => {
 
   it("*[]", () =>
     expectType<
-      ExecuteQuery<
-        "*[]",
-        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
-      >
-    >().toStrictEqual<
-      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
-    >());
+      ExecuteQuery<"*[]", Context<({ _type: "bar" } | { _type: "foo" })[]>>
+    >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>());
 
   it('*[0...10][_type=="foo"]', () =>
     expectType<
       ExecuteQuery<
         '*[0...10][_type=="foo"]',
-        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+        Context<({ _type: "bar" } | { _type: "foo" })[]>
       >
-    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+    >().toStrictEqual<{ _type: "foo" }[]>());
 
   it("*[0...10][]", () =>
     expectType<
       ExecuteQuery<
         "*[0...10][]",
-        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+        Context<({ _type: "bar" } | { _type: "foo" })[]>
       >
-    >().toStrictEqual<
-      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
-    >());
+    >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>());
 
   it('*[_type=="foo"][0...10]', () =>
     expectType<
       ExecuteQuery<
         '*[_type=="foo"][0...10]',
-        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+        Context<({ _type: "bar" } | { _type: "foo" })[]>
       >
-    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+    >().toStrictEqual<{ _type: "foo" }[]>());
 
   it('*[_type=="foo"][]', () =>
     expectType<
       ExecuteQuery<
         '*[_type=="foo"][]',
-        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+        Context<({ _type: "bar" } | { _type: "foo" })[]>
       >
-    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+    >().toStrictEqual<{ _type: "foo" }[]>());
 
   it("*[][0...10]", () =>
     expectType<
       ExecuteQuery<
         "*[][0...10]",
-        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+        Context<({ _type: "bar" } | { _type: "foo" })[]>
       >
-    >().toStrictEqual<
-      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
-    >());
+    >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>());
 
   it('*[][_type=="foo"]', () =>
     expectType<
       ExecuteQuery<
         '*[][_type=="foo"]',
-        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+        Context<({ _type: "bar" } | { _type: "foo" })[]>
       >
-    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+    >().toStrictEqual<{ _type: "foo" }[]>());
 
   it("4==5", () => expectType<ExecuteQuery<"4==5">>().toStrictEqual<false>());
 
