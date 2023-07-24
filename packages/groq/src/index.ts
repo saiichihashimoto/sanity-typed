@@ -370,13 +370,17 @@ type Filter<
 > = TBase extends []
   ? []
   : TBase extends [infer TFirst, ...infer TRest]
-  ? Evaluate<TExpression, NestedScope<TFirst, TScope>> extends never
+  ? // https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Disambiguating-square-bracket-traversal
+    Evaluate<TExpression, NestedScope<TFirst, TScope>> extends number | string
     ? never
     : Evaluate<TExpression, NestedScope<TFirst, TScope>> extends true
     ? [TFirst, ...Filter<TRest, TExpression, TScope>]
     : Filter<TRest, TExpression, TScope>
   : TBase extends (infer TArrayElement)[]
-  ? Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends never
+  ? // https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Disambiguating-square-bracket-traversal
+    Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends
+      | number
+      | string
     ? never
     : (TArrayElement extends never
         ? never
