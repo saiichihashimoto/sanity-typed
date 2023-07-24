@@ -338,10 +338,10 @@ type This<
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ThisAttribute
  */
 type ThisAttribute<
-  TExpression extends string,
+  TIdentifier extends string,
   TScope extends Scope<any, any, any>
-> = TExpression extends keyof TScope["this"]
-  ? TScope["this"][TExpression]
+> = TIdentifier extends keyof TScope["this"]
+  ? TScope["this"][TIdentifier]
   : never;
 
 /**
@@ -357,19 +357,50 @@ type SimpleExpression<
   | This<TExpression, TScope>
   | ThisAttribute<TExpression, TScope>;
 
+type AttributeAccessOverArray<TBase extends any[], TAttribute> = {
+  [K in keyof TBase]: [TBase[K][TAttribute & keyof TBase[K]]];
+};
+
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayPostfix
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#AttributeAccess
  */
-type ArrayPostfix<
+type AttributeAccess<
   TExpression extends string,
-  TScope extends Scope<any, any, any>
-> = TExpression extends `${infer TBase}[]`
-  ? Evaluate<TBase, TScope> extends never
-    ? never
-    : Evaluate<TBase, TScope> extends any[]
-    ? Evaluate<TBase, TScope>
-    : // TODO TraversalArrayTarget
-      null
+  TScope extends Scope<any, any, any>,
+  _Prefix extends string = ""
+> = TExpression extends `${infer TBase}.${infer TIdentifier}`
+  ?
+      | AttributeAccess<TIdentifier, TScope, `${_Prefix}${TBase}.`>
+      | (Evaluate<`${_Prefix}${TBase}`, TScope> extends never
+          ? never
+          : Evaluate<`${_Prefix}${TBase}`, TScope> extends any[]
+          ? AttributeAccessOverArray<
+              Evaluate<`${_Prefix}${TBase}`, TScope>,
+              TIdentifier
+            >
+          : Evaluate<`${_Prefix}${TBase}`, TScope>[TIdentifier &
+              keyof Evaluate<`${_Prefix}${TBase}`, TScope>])
+  : TExpression extends `${infer TBase}[${infer TAttributeAccessExpression}]`
+  ?
+      | AttributeAccess<
+          `${TAttributeAccessExpression}]`,
+          TScope,
+          `${_Prefix}${TBase}[`
+        >
+      | (Evaluate<`${_Prefix}${TBase}`, TScope> extends never
+          ? never
+          : StringType<TAttributeAccessExpression> extends never
+          ? never
+          : Evaluate<`${_Prefix}${TBase}`, TScope> extends any[]
+          ? AttributeAccessOverArray<
+              Evaluate<`${_Prefix}${TBase}`, TScope>,
+              StringType<TAttributeAccessExpression>
+            >
+          : Evaluate<
+              `${_Prefix}${TBase}`,
+              TScope
+            >[StringType<TAttributeAccessExpression> &
+              keyof Evaluate<`${_Prefix}${TBase}`, TScope>])
   : never;
 
 /**
@@ -457,6 +488,8 @@ type EvaluateFilter<
         : Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends true
         ? TArrayElement
         : never)[]
+  : Evaluate<TExpression, TScope> extends number | string
+  ? never
   : // TODO TraversalArrayTarget
     TBase;
 
@@ -475,6 +508,21 @@ type Filter<
           TScope
         >
       | Filter<`${TFilterExpression}]`, TScope, `${_Prefix}${TBase}[`>
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayPostfix
+ */
+type ArrayPostfix<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `${infer TBase}[]`
+  ? Evaluate<TBase, TScope> extends never
+    ? never
+    : Evaluate<TBase, TScope> extends any[]
+    ? Evaluate<TBase, TScope>
+    : // TODO TraversalArrayTarget
+      null
   : never;
 
 /**
@@ -504,12 +552,12 @@ type TraversalExpression<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > =
-  // TODO AttributeAccess
   | ArrayPostfix<TExpression, TScope>
-  // TODO Dereference
-  // TODO ElementAccess
+  | AttributeAccess<TExpression, TScope>
+  // TODO Dereference<TExpression, TScope>
+  // TODO ElementAccess<TExpression, TScope>
   | Filter<TExpression, TScope>
-  // TODO Projection
+  // TODO Projection<TExpression, TScope>
   | Slice<TExpression, TScope>;
 
 /**
