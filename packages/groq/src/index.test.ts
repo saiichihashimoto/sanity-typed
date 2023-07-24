@@ -168,6 +168,20 @@ describe("groq", () => {
       >
     >().toStrictEqual<DocumentValue<"foo", never>[]>());
 
+  it('*[_type!="bar"][_type!="qux"][_type=="foo"]', () =>
+    expectType<
+      ExecuteQuery<
+        '*[_type!="bar"][_type!="qux"][_type=="foo"]',
+        Context<
+          (
+            | DocumentValue<"bar", never>
+            | DocumentValue<"foo", never>
+            | DocumentValue<"qux", never>
+          )[]
+        >
+      >
+    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+
   it("4==5", () => expectType<ExecuteQuery<"4==5">>().toStrictEqual<false>());
 
   it("4!=5", () => expectType<ExecuteQuery<"4!=5">>().toStrictEqual<true>());

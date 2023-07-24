@@ -376,11 +376,13 @@ type Filter<
     ? [TFirst, ...Filter<TRest, TExpression, TScope>]
     : Filter<TRest, TExpression, TScope>
   : TBase extends (infer TArrayElement)[]
-  ? (TArrayElement extends never
-      ? never
-      : Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends true
-      ? TArrayElement
-      : never)[]
+  ? Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends never
+    ? never
+    : (TArrayElement extends never
+        ? never
+        : Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends true
+        ? TArrayElement
+        : never)[]
   : TBase;
 
 type BasicTraversalFilter<
