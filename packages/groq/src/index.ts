@@ -123,19 +123,19 @@ type ArrayElement<
 type ArrayElements<
   TExpression extends string,
   TScope extends Scope<any, any, any>,
-  TPrefix extends string = ""
+  _Prefix extends string = ""
 > = TExpression extends `${infer TArrayElement},${infer TArrayElements}`
   ?
-      | ArrayElements<TArrayElements, TScope, `${TPrefix}${TArrayElement},`>
+      | ArrayElements<TArrayElements, TScope, `${_Prefix}${TArrayElement},`>
       | (
-          | ArrayElement<`${TPrefix}${TArrayElement}`, TScope>
+          | ArrayElement<`${_Prefix}${TArrayElement}`, TScope>
           | ArrayElements<TArrayElements, TScope> extends never
           ? never
           : [
-              ...ArrayElement<`${TPrefix}${TArrayElement}`, TScope>,
+              ...ArrayElement<`${_Prefix}${TArrayElement}`, TScope>,
               ...ArrayElements<TArrayElements, TScope>
             ])
-  : ArrayElement<`${TPrefix}${TExpression}`, TScope>;
+  : ArrayElement<`${_Prefix}${TExpression}`, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Array
@@ -166,41 +166,44 @@ type Negate<
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Equality
- *
- * @todo Test Equality cases in https://sanity-io.github.io/GROQ/GROQ-1.revision1/#PartialCompare()
  */
 type Equality<
   TExpression extends string,
   TScope extends Scope<any, any, any>,
-  Negated extends boolean,
-  TPrefix extends string = ""
-> = TExpression extends `${infer TLeft}${Negated extends true
-  ? "!"
-  : "="}=${infer TRight}`
+  _Negated extends boolean = boolean,
+  _Prefix extends string = ""
+> = boolean extends _Negated
+  ?
+      | Equality<TExpression, TScope, false, _Prefix>
+      | Equality<TExpression, TScope, true, _Prefix>
+  : TExpression extends `${infer TLeft}${_Negated extends true
+      ? "!"
+      : "="}=${infer TRight}`
   ?
       | Equality<
           TRight,
           TScope,
-          Negated,
-          `${TPrefix}${TLeft}${Negated extends true ? "!" : "="}=`
+          _Negated,
+          `${_Prefix}${TLeft}${_Negated extends true ? "!" : "="}=`
         >
-      | (Evaluate<`${TPrefix}${TLeft}`, TScope> extends never
+      | (Evaluate<`${_Prefix}${TLeft}`, TScope> extends never
           ? never
           : Evaluate<TRight, TScope> extends never
           ? never
           : Negate<
-              Evaluate<`${TPrefix}${TLeft}`, TScope> extends Evaluate<
+              // TODO Test Equality cases in https://sanity-io.github.io/GROQ/GROQ-1.revision1/#PartialCompare()
+              Evaluate<`${_Prefix}${TLeft}`, TScope> extends Evaluate<
                 TRight,
                 TScope
               >
                 ? true
                 : Evaluate<TRight, TScope> extends Evaluate<
-                    `${TPrefix}${TLeft}`,
+                    `${_Prefix}${TLeft}`,
                     TScope
                   >
                 ? true
                 : false,
-              Negated
+              _Negated
             >)
   : never;
 
@@ -227,7 +230,7 @@ type Equality<
 type OperatorCall<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = Equality<TExpression, TScope, false> | Equality<TExpression, TScope, true>;
+> = Equality<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-count-
@@ -361,6 +364,63 @@ type SimpleExpression<
   | ThisAttribute<TExpression, TScope>;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Range
+ */
+type Range<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>,
+  _Exclusive extends boolean = boolean,
+  _Prefix extends string = ""
+> = boolean extends _Exclusive
+  ?
+      | Range<TExpression, TScope, false, _Prefix>
+      | Range<TExpression, TScope, true, _Prefix>
+  : TExpression extends `${infer TLeft}${_Exclusive extends true
+      ? "."
+      : ""}..${infer TRight}`
+  ?
+      | Range<
+          TRight,
+          TScope,
+          _Exclusive,
+          `${_Prefix}${TLeft}${_Exclusive extends true ? "." : ""}..`
+        >
+      | (Evaluate<`${_Prefix}${TLeft}`, TScope> extends never
+          ? never
+          : Evaluate<TRight, TScope> extends never
+          ? never
+          : Evaluate<`${_Prefix}${TLeft}`, TScope> extends number
+          ? Evaluate<TRight, TScope> extends number
+            ? {
+                exclusive: _Exclusive;
+                left: Evaluate<`${_Prefix}${TLeft}`, TScope>;
+                right: Evaluate<TRight, TScope>;
+              }
+            : never
+          : never)
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Slice
+ */
+type Slice<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>,
+  _Prefix extends string = ""
+> = TExpression extends `${infer TBase}[${infer TRange}]`
+  ?
+      | Slice<`${TRange}]`, TScope, `${_Prefix}${TBase}[`>
+      | (Evaluate<`${_Prefix}${TBase}`, TScope> extends never
+          ? never
+          : Range<TRange, TScope> extends never
+          ? never
+          : Evaluate<`${_Prefix}${TBase}`, TScope> extends any[]
+          ? // TODO Is there a way to incoporate the range in this result
+            Evaluate<`${_Prefix}${TBase}`, TScope>
+          : null)
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateFilter()
  */
 type EvaluateFilter<
@@ -395,27 +455,26 @@ type EvaluateFilter<
 type Filter<
   TExpression extends string,
   TScope extends Scope<any, any, any>,
-  TPrefix extends string = ""
+  _Prefix extends string = ""
 > = TExpression extends `${infer TBase}[${infer TFilterExpression}]`
   ?
       | EvaluateFilter<
-          Evaluate<`${TPrefix}${TBase}`, TScope>,
+          Evaluate<`${_Prefix}${TBase}`, TScope>,
           TFilterExpression,
           TScope
         >
-      | Filter<`${TFilterExpression}]`, TScope, `${TPrefix}${TBase}[`>
+      | Filter<`${TFilterExpression}]`, TScope, `${_Prefix}${TBase}[`>
   : never;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#BasicTraversalArray
  *
- * @todo Slice
  * @todo ArrayPostfix
  */
 type BasicTraversalArray<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = Filter<TExpression, TScope>;
+> = Filter<TExpression, TScope> | Slice<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalArray

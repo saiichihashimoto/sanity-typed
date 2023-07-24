@@ -141,6 +141,26 @@ describe("groq", () => {
   it("(((10)))", () =>
     expectType<ExecuteQuery<"(((10)))">>().toStrictEqual<10>());
 
+  it("[true,false][0..1]", () =>
+    expectType<ExecuteQuery<"[true,false][0..1]">>().toStrictEqual<
+      [true, false]
+    >());
+
+  it("[true,false][0...2]", () =>
+    expectType<ExecuteQuery<"[true,false][0...2]">>().toStrictEqual<
+      [true, false]
+    >());
+
+  it("*[0..10][5...7][0..10][5...7]", () =>
+    expectType<
+      ExecuteQuery<
+        "*[0..10][5...7][0..10][5...7]",
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<
+      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
+    >());
+
   it("false[@]", () =>
     expectType<ExecuteQuery<"false[@]">>().toStrictEqual<false>());
 
