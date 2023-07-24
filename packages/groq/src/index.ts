@@ -368,7 +368,8 @@ type ArrayPostfix<
     ? never
     : Evaluate<TBase, TScope> extends any[]
     ? Evaluate<TBase, TScope>
-    : null
+    : // TODO TraversalArrayTarget
+      null
   : never;
 
 /**
@@ -425,7 +426,8 @@ type Slice<
           : Evaluate<`${_Prefix}${TBase}`, TScope> extends any[]
           ? // TODO Is there a way to incoporate the range in this result
             Evaluate<`${_Prefix}${TBase}`, TScope>
-          : null)
+          : // TODO TraversalArrayTarget
+            null)
   : never;
 
 /**
@@ -455,7 +457,8 @@ type EvaluateFilter<
         : Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends true
         ? TArrayElement
         : never)[]
-  : TBase;
+  : // TODO TraversalArrayTarget
+    TBase;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Filter
@@ -475,42 +478,39 @@ type Filter<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#BasicTraversalArray
- */
-type BasicTraversalArray<
-  TExpression extends string,
-  TScope extends Scope<any, any, any>
-> =
-  | ArrayPostfix<TExpression, TScope>
-  | Filter<TExpression, TScope>
-  | Slice<TExpression, TScope>;
-
-/**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalArray
- */
-type TraversalArray<
-  TExpression extends string,
-  TScope extends Scope<any, any, any>
-> =
-  // TODO BasicTraversalArray TraversalArray
-  // TODO ElementAccess TraversalArray
-  // TODO ElementAccess TraversalArrayTarget
-  // TODO BasicTraversalArray TraversalPlain
-  // TODO BasicTraversalArray TraversalArrayTarget
-  // TODO Projection TraversalArray
-  BasicTraversalArray<TExpression, TScope>;
-
-/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalExpression
+ *
+ * In the documentation, GROQ is defined as a CFG, which makes sense.
+ * And, if typescript allowed for direct recursive types, we could type GROQ as a CFG,
+ * ie. type TraversalArray = BasicTraversalArray | `${BasicTraversalArray}${TraversalArray}` | ...;
+ *
+ * But we can't 😭 The way we're doing recursion, is to flip it, where everything attempts to infer correctly,
+ * then returns `never` on failure. This is generally fine, but we lose a few things:
+ *
+ * 1. We won't get autocomplete.
+ * 2. We can't type as a CFG directly.
+ * 3. We need to evaluate right to left NOT left to right like the CFG.
+ *
+ * 1 & 2 is unfortunate, but 3 is a problem. TraversalArray, TraversalPlain, etc mapping to the EvaluateTraversal*
+ * needs to be figured out.
+ *
+ * Luckily, most of the traversals can just identify which of these it is internally, and array-ify or un-array-ify it.
+ *
+ * Regardless, the Traversal*s won't make direct sense as much sense. We'll find the correct traversal, then evaluate.
+ *
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Traversal-operators
  */
 type TraversalExpression<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > =
-  // TODO TraversalPlain
-  // TODO TraversalArraySource
-  // TODO TraversalArrayTarget
-  TraversalArray<TExpression, TScope>;
+  // TODO AttributeAccess
+  | ArrayPostfix<TExpression, TScope>
+  // TODO Dereference
+  // TODO ElementAccess
+  | Filter<TExpression, TScope>
+  // TODO Projection
+  | Slice<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Parenthesis
