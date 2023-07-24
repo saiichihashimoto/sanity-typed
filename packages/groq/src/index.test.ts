@@ -1,6 +1,6 @@
 import { describe, it } from "@jest/globals";
+import type { Simplify } from "type-fest";
 
-// import type { Simplify } from "type-fest";
 import { expectType } from "@sanity-typed/test-utils";
 
 import type { Context, ExecuteQuery, Scope } from ".";
@@ -216,6 +216,18 @@ describe("groq", () => {
     expectType<
       ExecuteQuery<'*["key"]', Context<({ key: Bar } | { key: Foo })[]>>
     >().toStrictEqual<[Bar | Foo][]>();
+  });
+
+  it("[true,false][1]", () => {
+    expectType<ExecuteQuery<"[true,false][1]">>().toStrictEqual<false | true>();
+  });
+
+  it("*[1]", () => {
+    type Result = Simplify<
+      ExecuteQuery<"*[1]", Context<({ key: Bar } | { key: Foo })[]>>
+    >;
+
+    expectType<Result>().toStrictEqual<{ key: Bar } | { key: Foo }>();
   });
 
   it("[true,false][0..1]", () => {

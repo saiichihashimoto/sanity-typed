@@ -403,6 +403,29 @@ type AttributeAccess<
               keyof Evaluate<`${_Prefix}${TBase}`, TScope>])
   : never;
 
+type ElementAccess<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>,
+  _Prefix extends string = ""
+> = TExpression extends `${infer TBase}[${infer TElementAccessExpression}]`
+  ?
+      | ElementAccess<
+          `${TElementAccessExpression}]`,
+          TScope,
+          `${_Prefix}${TBase}[`
+        >
+      | (Evaluate<`${_Prefix}${TBase}`, TScope> extends never
+          ? never
+          : Evaluate<TElementAccessExpression, TScope> extends never
+          ? never
+          : Evaluate<TElementAccessExpression, TScope> extends number
+          ? Evaluate<`${_Prefix}${TBase}`, TScope> extends any[]
+            ? Evaluate<`${_Prefix}${TBase}`, TScope>[number]
+            : // TODO TraversalArrayTarget
+              never
+          : never)
+  : never;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Range
  */
@@ -555,7 +578,7 @@ type TraversalExpression<
   | ArrayPostfix<TExpression, TScope>
   | AttributeAccess<TExpression, TScope>
   // TODO Dereference<TExpression, TScope>
-  // TODO ElementAccess<TExpression, TScope>
+  | ElementAccess<TExpression, TScope>
   | Filter<TExpression, TScope>
   // TODO Projection<TExpression, TScope>
   | Slice<TExpression, TScope>;
