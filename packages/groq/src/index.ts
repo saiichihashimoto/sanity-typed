@@ -358,7 +358,7 @@ type SimpleExpression<
   | ThisAttribute<TExpression, TScope>;
 
 type AttributeAccessOverArray<TBase extends any[], TAttribute> = {
-  [K in keyof TBase]: [TBase[K][TAttribute & keyof TBase[K]]];
+  [K in keyof TBase]: TBase[K][TAttribute & keyof TBase[K]];
 };
 
 /**

@@ -209,13 +209,13 @@ describe("groq", () => {
   it("*.key", () => {
     expectType<
       ExecuteQuery<"*.key", Context<({ key: Bar } | { key: Foo })[]>>
-    >().toStrictEqual<[Bar | Foo][]>();
+    >().toStrictEqual<(Bar | Foo)[]>();
   });
 
   it('*["key"]', () => {
     expectType<
       ExecuteQuery<'*["key"]', Context<({ key: Bar } | { key: Foo })[]>>
-    >().toStrictEqual<[Bar | Foo][]>();
+    >().toStrictEqual<(Bar | Foo)[]>();
   });
 
   it("[true,false][1]", () => {
