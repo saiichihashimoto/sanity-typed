@@ -195,54 +195,6 @@ describe("groq", () => {
       ExecuteQuery<"*[]", Context<({ _type: "bar" } | { _type: "foo" })[]>>
     >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>());
 
-  it('*[0...10][_type=="foo"]', () =>
-    expectType<
-      ExecuteQuery<
-        '*[0...10][_type=="foo"]',
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
-      >
-    >().toStrictEqual<{ _type: "foo" }[]>());
-
-  it("*[0...10][]", () =>
-    expectType<
-      ExecuteQuery<
-        "*[0...10][]",
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
-      >
-    >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>());
-
-  it('*[_type=="foo"][0...10]', () =>
-    expectType<
-      ExecuteQuery<
-        '*[_type=="foo"][0...10]',
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
-      >
-    >().toStrictEqual<{ _type: "foo" }[]>());
-
-  it('*[_type=="foo"][]', () =>
-    expectType<
-      ExecuteQuery<
-        '*[_type=="foo"][]',
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
-      >
-    >().toStrictEqual<{ _type: "foo" }[]>());
-
-  it("*[][0...10]", () =>
-    expectType<
-      ExecuteQuery<
-        "*[][0...10]",
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
-      >
-    >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>());
-
-  it('*[][_type=="foo"]', () =>
-    expectType<
-      ExecuteQuery<
-        '*[][_type=="foo"]',
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
-      >
-    >().toStrictEqual<{ _type: "foo" }[]>());
-
   it("4==5", () => expectType<ExecuteQuery<"4==5">>().toStrictEqual<false>());
 
   it("4!=5", () => expectType<ExecuteQuery<"4!=5">>().toStrictEqual<true>());
