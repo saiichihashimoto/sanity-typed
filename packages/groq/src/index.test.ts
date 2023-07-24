@@ -3,81 +3,89 @@ import { describe, it } from "@jest/globals";
 import { expectType } from "@sanity-typed/test-utils";
 import type { DocumentValue } from "@sanity-typed/types";
 
-import type { ExecuteQuery, Scope } from ".";
+import type { Context, ExecuteQuery, Scope } from ".";
 
-type Empty = { [key: string]: never };
+const UNIQUE_VALUE: unique symbol = Symbol("");
 
 describe("groq", () => {
-  it("null", () =>
-    expectType<ExecuteQuery<"null", Empty>>().toStrictEqual<null>());
+  it("empty", () => expectType<never>().toStrictEqual<ExecuteQuery<"">>());
 
-  it("true", () =>
-    expectType<ExecuteQuery<"true", Empty>>().toStrictEqual<true>());
+  it("null", () => expectType<ExecuteQuery<"null">>().toStrictEqual<null>());
 
-  it("false", () =>
-    expectType<ExecuteQuery<"false", Empty>>().toStrictEqual<false>());
+  it("true", () => expectType<ExecuteQuery<"true">>().toStrictEqual<true>());
 
-  it("-5.6", () =>
-    expectType<ExecuteQuery<"-5.6", Empty>>().toStrictEqual<-5.6>());
+  it("false", () => expectType<ExecuteQuery<"false">>().toStrictEqual<false>());
+
+  it("-5.6", () => expectType<ExecuteQuery<"-5.6">>().toStrictEqual<-5.6>());
 
   it('"double quoted string"', () =>
     expectType<
-      ExecuteQuery<'"double quoted string"', Empty>
+      ExecuteQuery<'"double quoted string"'>
     >().toStrictEqual<"double quoted string">());
+
+  it('"double\\" \\"quoted\\" \\"string\\"', () =>
+    expectType<
+      ExecuteQuery<'"double\\" \\"quoted\\" \\"string\\"'>
+    >().toStrictEqual<'double\\" \\"quoted\\" \\"string\\'>());
+
+  it('"double" "quoted" "string"', () =>
+    expectType<
+      ExecuteQuery<'"double" "quoted" "string"'>
+    >().toStrictEqual<never>());
 
   it("'single quoted string'", () =>
     expectType<
-      ExecuteQuery<"'single quoted string'", Empty>
+      ExecuteQuery<"'single quoted string'">
     >().toStrictEqual<"single quoted string">());
 
-  it("[]", () => expectType<ExecuteQuery<"[]", Empty>>().toStrictEqual<[]>());
+  it("'single\\' \\'quoted\\' \\'string'", () =>
+    expectType<
+      ExecuteQuery<"'single\\' \\'quoted\\' \\'string'">
+    >().toStrictEqual<"single\\' \\'quoted\\' \\'string">());
+
+  it("'single' 'quoted' 'string'", () =>
+    expectType<
+      ExecuteQuery<"'single' 'quoted' 'string'">
+    >().toStrictEqual<never>());
+
+  it("[]", () => expectType<ExecuteQuery<"[]">>().toStrictEqual<[]>());
 
   it("[null,true,false,-5.6,\"double quoted string\",'single quoted string']", () =>
     expectType<
-      ExecuteQuery<
-        "[null,true,false,-5.6,\"double quoted string\",'single quoted string']",
-        Empty
-      >
+      ExecuteQuery<"[null,true,false,-5.6,\"double quoted string\",'single quoted string']">
     >().toStrictEqual<
       [null, true, false, -5.6, "double quoted string", "single quoted string"]
     >());
 
+  it("[true,]", () =>
+    expectType<ExecuteQuery<"[true,]">>().toStrictEqual<[true]>());
+
   it("[1,notvalid]", () =>
-    expectType<never>().toStrictEqual<ExecuteQuery<"[1,notvalid]", Empty>>());
+    expectType<never>().toStrictEqual<ExecuteQuery<"[1,notvalid]">>());
 
   it("[...[null]]", () =>
-    expectType<ExecuteQuery<"[...[null]]", Empty>>().toStrictEqual<[null]>());
+    expectType<ExecuteQuery<"[...[null]]">>().toStrictEqual<[null]>());
 
   it("[[null,null],[null,null,null]]", () =>
-    expectType<
-      ExecuteQuery<"[[null,null],[null,null,null]]", Empty>
-    >().toStrictEqual<[[null, null], [null, null, null]]>());
+    expectType<ExecuteQuery<"[[null,null],[null,null,null]]">>().toStrictEqual<
+      [[null, null], [null, null, null]]
+    >());
 
-  it("@", () => {
-    const UNIQUE_VALUE: unique symbol = Symbol("");
-
+  it("@", () =>
     expectType<
       ExecuteQuery<"@", Scope<never, typeof UNIQUE_VALUE, never>>
-    >().toStrictEqual<typeof UNIQUE_VALUE>();
-  });
+    >().toStrictEqual<typeof UNIQUE_VALUE>());
 
-  it("key", () => {
-    const UNIQUE_VALUE: unique symbol = Symbol("");
-
+  it("key", () =>
     expectType<
       ExecuteQuery<"key", Scope<never, { key: typeof UNIQUE_VALUE }, never>>
-    >().toStrictEqual<typeof UNIQUE_VALUE>();
-  });
+    >().toStrictEqual<typeof UNIQUE_VALUE>());
 
   it("*", () =>
     expectType<
       ExecuteQuery<
         "*",
-        {
-          bar: DocumentValue<"bar", never>;
-          foo: DocumentValue<"foo", never>;
-          qux: { _type: "qux" };
-        }
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
       >
     >().toStrictEqual<
       (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
@@ -128,17 +136,39 @@ describe("groq", () => {
     >().toStrictEqual<typeof UNIQUE_VALUE>();
   });
 
-  it("(10)", () =>
-    expectType<ExecuteQuery<"(10)", Empty>>().toStrictEqual<10>());
+  it("(10)", () => expectType<ExecuteQuery<"(10)">>().toStrictEqual<10>());
 
   it("(((10)))", () =>
-    expectType<ExecuteQuery<"(((10)))", Empty>>().toStrictEqual<10>());
+    expectType<ExecuteQuery<"(((10)))">>().toStrictEqual<10>());
+
+  it("[true,false][0..1]", () =>
+    expectType<ExecuteQuery<"[true,false][0..1]">>().toStrictEqual<
+      [true, false]
+    >());
+
+  it("[true,false][0...2]", () =>
+    expectType<ExecuteQuery<"[true,false][0...2]">>().toStrictEqual<
+      [true, false]
+    >());
+
+  it("*[0..10][5...7][0..10][5...7]", () =>
+    expectType<
+      ExecuteQuery<
+        "*[0..10][5...7][0..10][5...7]",
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<
+      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
+    >());
 
   it("false[@]", () =>
-    expectType<ExecuteQuery<"false[@]", Empty>>().toStrictEqual<false>());
+    expectType<ExecuteQuery<"false[@]">>().toStrictEqual<false>());
 
   it("[true,false][@]", () =>
-    expectType<ExecuteQuery<"[true,false][@]", Empty>>().toStrictEqual<
+    expectType<ExecuteQuery<"[true,false][@]">>().toStrictEqual<[true]>());
+
+  it("[true,false][@][@][@]", () =>
+    expectType<ExecuteQuery<"[true,false][@][@][@]">>().toStrictEqual<
       [true]
     >());
 
@@ -146,11 +176,7 @@ describe("groq", () => {
     expectType<
       ExecuteQuery<
         "*[true]",
-        {
-          bar: DocumentValue<"bar", never>;
-          foo: DocumentValue<"foo", never>;
-          qux: { _type: "qux" };
-        }
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
       >
     >().toStrictEqual<
       (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
@@ -160,63 +186,128 @@ describe("groq", () => {
     expectType<
       ExecuteQuery<
         '*[_type=="foo"]',
-        {
-          bar: DocumentValue<"bar", never>;
-          foo: DocumentValue<"foo", never>;
-          qux: { _type: "qux" };
-        }
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
       >
     >().toStrictEqual<DocumentValue<"foo", never>[]>());
 
-  it("4==5", () =>
-    expectType<ExecuteQuery<"4==5", Empty>>().toStrictEqual<false>());
+  it('*[_type!="bar"][_type!="qux"][_type=="foo"]', () =>
+    expectType<
+      ExecuteQuery<
+        '*[_type!="bar"][_type!="qux"][_type=="foo"]',
+        Context<
+          (
+            | DocumentValue<"bar", never>
+            | DocumentValue<"foo", never>
+            | DocumentValue<"qux", never>
+          )[]
+        >
+      >
+    >().toStrictEqual<DocumentValue<"foo", never>[]>());
 
-  it("4!=5", () =>
-    expectType<ExecuteQuery<"4!=5", Empty>>().toStrictEqual<true>());
+  it("[true,false][]", () =>
+    expectType<ExecuteQuery<"[true,false][]">>().toStrictEqual<
+      [true, false]
+    >());
 
-  it("5==5", () =>
-    expectType<ExecuteQuery<"5==5", Empty>>().toStrictEqual<true>());
+  it("*[]", () =>
+    expectType<
+      ExecuteQuery<
+        "*[]",
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<
+      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
+    >());
 
-  it("5!=5", () =>
-    expectType<ExecuteQuery<"5!=5", Empty>>().toStrictEqual<false>());
+  it('*[0...10][_type=="foo"]', () =>
+    expectType<
+      ExecuteQuery<
+        '*[0...10][_type=="foo"]',
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+
+  it("*[0...10][]", () =>
+    expectType<
+      ExecuteQuery<
+        "*[0...10][]",
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<
+      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
+    >());
+
+  it('*[_type=="foo"][0...10]', () =>
+    expectType<
+      ExecuteQuery<
+        '*[_type=="foo"][0...10]',
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+
+  it('*[_type=="foo"][]', () =>
+    expectType<
+      ExecuteQuery<
+        '*[_type=="foo"][]',
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+
+  it("*[][0...10]", () =>
+    expectType<
+      ExecuteQuery<
+        "*[][0...10]",
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<
+      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
+    >());
+
+  it('*[][_type=="foo"]', () =>
+    expectType<
+      ExecuteQuery<
+        '*[][_type=="foo"]',
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+
+  it("4==5", () => expectType<ExecuteQuery<"4==5">>().toStrictEqual<false>());
+
+  it("4!=5", () => expectType<ExecuteQuery<"4!=5">>().toStrictEqual<true>());
+
+  it("5==5", () => expectType<ExecuteQuery<"5==5">>().toStrictEqual<true>());
+
+  it("5!=5", () => expectType<ExecuteQuery<"5!=5">>().toStrictEqual<false>());
 
   it("count(5)", () =>
-    expectType<ExecuteQuery<"count(5)", Empty>>().toStrictEqual<null>());
+    expectType<ExecuteQuery<"count(5)">>().toStrictEqual<null>());
 
   it("count([1,2,3,4])", () =>
-    expectType<ExecuteQuery<"count([1,2,3,4])", Empty>>().toStrictEqual<4>());
+    expectType<ExecuteQuery<"count([1,2,3,4])">>().toStrictEqual<4>());
 
   it("global::count([1,2,3,4])", () =>
-    expectType<
-      ExecuteQuery<"global::count([1,2,3,4])", Empty>
-    >().toStrictEqual<4>());
+    expectType<ExecuteQuery<"global::count([1,2,3,4])">>().toStrictEqual<4>());
 
   it("defined(null)", () =>
-    expectType<ExecuteQuery<"defined(null)", Empty>>().toStrictEqual<false>());
+    expectType<ExecuteQuery<"defined(null)">>().toStrictEqual<false>());
 
   it("defined(5)", () =>
-    expectType<ExecuteQuery<"defined(5)", Empty>>().toStrictEqual<true>());
+    expectType<ExecuteQuery<"defined(5)">>().toStrictEqual<true>());
 
   it("global::defined(5)", () =>
-    expectType<
-      ExecuteQuery<"global::defined(5)", Empty>
-    >().toStrictEqual<true>());
+    expectType<ExecuteQuery<"global::defined(5)">>().toStrictEqual<true>());
 
   it("length(10)", () =>
-    expectType<ExecuteQuery<"length(10)", Empty>>().toStrictEqual<null>());
+    expectType<ExecuteQuery<"length(10)">>().toStrictEqual<null>());
 
   it("length([null,null,null])", () =>
-    expectType<
-      ExecuteQuery<"length([null,null,null])", Empty>
-    >().toStrictEqual<3>());
+    expectType<ExecuteQuery<"length([null,null,null])">>().toStrictEqual<3>());
 
   it('length("string")', () =>
-    expectType<
-      ExecuteQuery<'length("string")', Empty>
-    >().toStrictEqual<number>());
+    expectType<ExecuteQuery<'length("string")'>>().toStrictEqual<number>());
 
   it('global::length("string")', () =>
     expectType<
-      ExecuteQuery<'global::length("string")', Empty>
+      ExecuteQuery<'global::length("string")'>
     >().toStrictEqual<number>());
 });
