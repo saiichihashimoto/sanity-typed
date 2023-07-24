@@ -1,11 +1,9 @@
-import type { DocumentValue, InferSchemaValues } from "@sanity-typed/types";
-
 // FIXME Handle Whitespace
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Query-context
  */
-type Context<Dataset, Mode extends "delta" | "normal"> = {
+export type Context<Dataset, Mode extends "delta" | "normal" = "normal"> = {
   dataset: Dataset;
   mode: Mode;
 };
@@ -478,21 +476,12 @@ type Expression<
  */
 export type ExecuteQuery<
   TQuery extends string,
-  ValuesOrScope extends InferSchemaValues<any> | Scope<any, any, any>
+  ContextOrScope extends
+    | Context<any, any>
+    | Scope<any, any, any> = Context<never>
 > = Evaluate<
   TQuery,
-  ValuesOrScope extends Scope<any, any, any>
-    ? ValuesOrScope
-    : Scope<
-        Context<
-          Extract<
-            ValuesOrScope[keyof ValuesOrScope],
-            // TODO Is is true that we should only use documents?
-            DocumentValue<string, any>
-          >[],
-          "normal"
-        >,
-        null,
-        null
-      >
+  ContextOrScope extends Context<any, any>
+    ? Scope<ContextOrScope, null, null>
+    : ContextOrScope
 >;
