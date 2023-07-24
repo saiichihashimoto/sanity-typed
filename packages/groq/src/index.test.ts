@@ -27,10 +27,30 @@ describe("groq", () => {
       ExecuteQuery<'"double quoted string"', Empty>
     >().toStrictEqual<"double quoted string">());
 
+  it('"double\\" \\"quoted\\" \\"string\\"', () =>
+    expectType<
+      ExecuteQuery<'"double\\" \\"quoted\\" \\"string\\"', Empty>
+    >().toStrictEqual<'double\\" \\"quoted\\" \\"string\\'>());
+
+  it('"double" "quoted" "string"', () =>
+    expectType<
+      ExecuteQuery<'"double" "quoted" "string"', Empty>
+    >().toStrictEqual<never>());
+
   it("'single quoted string'", () =>
     expectType<
       ExecuteQuery<"'single quoted string'", Empty>
     >().toStrictEqual<"single quoted string">());
+
+  it("'single\\' \\'quoted\\' \\'string'", () =>
+    expectType<
+      ExecuteQuery<"'single\\' \\'quoted\\' \\'string'", Empty>
+    >().toStrictEqual<"single\\' \\'quoted\\' \\'string">());
+
+  it("'single' 'quoted' 'string'", () =>
+    expectType<
+      ExecuteQuery<"'single' 'quoted' 'string'", Empty>
+    >().toStrictEqual<never>());
 
   it("[]", () => expectType<ExecuteQuery<"[]", Empty>>().toStrictEqual<[]>());
 
@@ -138,6 +158,11 @@ describe("groq", () => {
 
   it("[true,false][@]", () =>
     expectType<ExecuteQuery<"[true,false][@]", Empty>>().toStrictEqual<
+      [true]
+    >());
+
+  it("[true,false][@][@][@]", () =>
+    expectType<ExecuteQuery<"[true,false][@][@][@]", Empty>>().toStrictEqual<
       [true]
     >());
 
