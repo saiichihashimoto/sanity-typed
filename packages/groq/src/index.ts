@@ -358,6 +358,20 @@ type SimpleExpression<
   | ThisAttribute<TExpression, TScope>;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayPostfix
+ */
+type ArrayPostfix<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `${infer TBase}[]`
+  ? Evaluate<TBase, TScope> extends never
+    ? never
+    : Evaluate<TBase, TScope> extends any[]
+    ? Evaluate<TBase, TScope>
+    : null
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Range
  */
 type Range<
@@ -467,8 +481,9 @@ type BasicTraversalArray<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > =
-  // ArrayPostfix
-  Filter<TExpression, TScope> | Slice<TExpression, TScope>;
+  | ArrayPostfix<TExpression, TScope>
+  | Filter<TExpression, TScope>
+  | Slice<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalArray
@@ -487,7 +502,6 @@ type TraversalArray<
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalExpression
-
  */
 type TraversalExpression<
   TExpression extends string,
