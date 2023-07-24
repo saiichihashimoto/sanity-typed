@@ -361,9 +361,9 @@ type SimpleExpression<
   | ThisAttribute<TExpression, TScope>;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Filter
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateFilter()
  */
-type Filter<
+type EvaluateFilter<
   TBase,
   TExpression extends string,
   TScope extends Scope<any, any, any>
@@ -374,8 +374,8 @@ type Filter<
     Evaluate<TExpression, NestedScope<TFirst, TScope>> extends number | string
     ? never
     : Evaluate<TExpression, NestedScope<TFirst, TScope>> extends true
-    ? [TFirst, ...Filter<TRest, TExpression, TScope>]
-    : Filter<TRest, TExpression, TScope>
+    ? [TFirst, ...EvaluateFilter<TRest, TExpression, TScope>]
+    : EvaluateFilter<TRest, TExpression, TScope>
   : TBase extends (infer TArrayElement)[]
   ? // https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Disambiguating-square-bracket-traversal
     Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends
@@ -389,22 +389,21 @@ type Filter<
         : never)[]
   : TBase;
 
-type BasicTraversalFilter<
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Filter
+ */
+type Filter<
   TExpression extends string,
   TScope extends Scope<any, any, any>,
   TPrefix extends string = ""
 > = TExpression extends `${infer TBase}[${infer TFilterExpression}]`
   ?
-      | BasicTraversalFilter<
-          `${TFilterExpression}]`,
-          TScope,
-          `${TPrefix}${TBase}[`
-        >
-      | Filter<
+      | EvaluateFilter<
           Evaluate<`${TPrefix}${TBase}`, TScope>,
           TFilterExpression,
           TScope
         >
+      | Filter<`${TFilterExpression}]`, TScope, `${TPrefix}${TBase}[`>
   : never;
 
 /**
@@ -416,7 +415,7 @@ type BasicTraversalFilter<
 type BasicTraversalArray<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = BasicTraversalFilter<TExpression, TScope>;
+> = Filter<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalArray
