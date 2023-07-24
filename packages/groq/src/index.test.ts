@@ -219,6 +219,58 @@ describe("groq", () => {
       (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
     >());
 
+  it('*[0...10][_type=="foo"]', () =>
+    expectType<
+      ExecuteQuery<
+        '*[0...10][_type=="foo"]',
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+
+  it("*[0...10][]", () =>
+    expectType<
+      ExecuteQuery<
+        "*[0...10][]",
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<
+      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
+    >());
+
+  it('*[_type=="foo"][0...10]', () =>
+    expectType<
+      ExecuteQuery<
+        '*[_type=="foo"][0...10]',
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+
+  it('*[_type=="foo"][]', () =>
+    expectType<
+      ExecuteQuery<
+        '*[_type=="foo"][]',
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+
+  it("*[][0...10]", () =>
+    expectType<
+      ExecuteQuery<
+        "*[][0...10]",
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<
+      (DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]
+    >());
+
+  it('*[][_type=="foo"]', () =>
+    expectType<
+      ExecuteQuery<
+        '*[][_type=="foo"]',
+        Context<(DocumentValue<"bar", never> | DocumentValue<"foo", never>)[]>
+      >
+    >().toStrictEqual<DocumentValue<"foo", never>[]>());
+
   it("4==5", () => expectType<ExecuteQuery<"4==5">>().toStrictEqual<false>());
 
   it("4!=5", () => expectType<ExecuteQuery<"4!=5">>().toStrictEqual<true>());
