@@ -63,10 +63,9 @@ type SingleEscapeSequence =
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EscapeSequence
- *
- * @todo UnicodeEscapeSequence
  */
-type EscapeSequence = SingleEscapeSequence;
+type EscapeSequence = // TODO UnicodeEscapeSequence
+  SingleEscapeSequence;
 
 type ExcludeFromString<
   TString extends string,
@@ -151,11 +150,10 @@ type ArrayType<
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Literal
- *
- * @todo Object
  */
 type Literal<TExpression extends string, TScope extends Scope<any, any, any>> =
   | ArrayType<TExpression, TScope>
+  // TODO Object
   | Primitives<TExpression>
   | StringType<TExpression>;
 
@@ -209,28 +207,28 @@ type Equality<
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#OperatorCall
- *
- * @todo And
- * @todo Asc
- * @todo Comparison
- * @todo Desc
- * @todo In
- * @todo Match
- * @todo Minus
- * @todo Not
- * @todo Or
- * @todo Percent
- * @todo Plus
- * @todo Slash
- * @todo Star
- * @todo StarStar
- * @todo UnaryMinus
- * @todo UnaryPlus
  */
 type OperatorCall<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = Equality<TExpression, TScope>;
+> =
+  // TODO And
+  // TODO Asc
+  // TODO Comparison
+  // TODO Desc
+  // TODO In
+  // TODO Match
+  // TODO Minus
+  // TODO Not
+  // TODO Or
+  // TODO Percent
+  // TODO Plus
+  // TODO Slash
+  // TODO Star
+  // TODO StarStar
+  // TODO UnaryMinus
+  // TODO UnaryPlus
+  Equality<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-count-
@@ -260,35 +258,31 @@ type Length<
   ? Evaluate<TArgs, TScope>["length"]
   : null;
 
-/**
- * @todo array
- * @todo dateTime
- * @todo delta
- * @todo diff
- * @todo math
- * @todo string
- */
 type Functions<TArgs extends string, TScope extends Scope<any, any, any>> = {
-  /**
-   * @todo after
-   * @todo before
-   * @todo boost
-   * @todo coalesce
-   * @todo dateTime
-   * @todo lower
-   * @todo now
-   * @todo operation
-   * @todo references
-   * @todo round
-   * @todo select
-   * @todo string
-   * @todo upper
-   */
+  // TODO array
+  // TODO dateTime
+  // TODO delta
+  // TODO diff
   global: {
+    // TODO after
+    // TODO before
+    // TODO boost
+    // TODO coalesce
     count: Count<TArgs, TScope>;
+    // TODO dateTime
     defined: Defined<TArgs, TScope>;
     length: Length<TArgs, TScope>;
+    // TODO lower
+    // TODO now
+    // TODO operation
+    // TODO references
+    // TODO round
+    // TODO select
+    // TODO string
+    // TODO upper
   };
+  // TODO math
+  // TODO string
 };
 
 /**
@@ -468,40 +462,41 @@ type Filter<
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#BasicTraversalArray
- *
- * @todo ArrayPostfix
  */
 type BasicTraversalArray<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = Filter<TExpression, TScope> | Slice<TExpression, TScope>;
+> =
+  // ArrayPostfix
+  Filter<TExpression, TScope> | Slice<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalArray
- *
- * @todo BasicTraversalArray TraversalArray
- * @todo ElementAccess TraversalArray
- * @todo ElementAccess TraversalArrayTarget
- * @todo BasicTraversalArray TraversalPlain
- * @todo BasicTraversalArray TraversalArrayTarget
- * @todo Projection TraversalArray
  */
 type TraversalArray<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = BasicTraversalArray<TExpression, TScope>;
+> =
+  // TODO BasicTraversalArray TraversalArray
+  // TODO ElementAccess TraversalArray
+  // TODO ElementAccess TraversalArrayTarget
+  // TODO BasicTraversalArray TraversalPlain
+  // TODO BasicTraversalArray TraversalArrayTarget
+  // TODO Projection TraversalArray
+  BasicTraversalArray<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalExpression
- *
- * @todo TraversalPlain
- * @todo TraversalArraySource
- * @todo TraversalArrayTarget
+
  */
 type TraversalExpression<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = TraversalArray<TExpression, TScope>;
+> =
+  // TODO TraversalPlain
+  // TODO TraversalArraySource
+  // TODO TraversalArrayTarget
+  TraversalArray<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Parenthesis
@@ -515,13 +510,14 @@ type Parenthesis<
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#CompoundExpression
- *
- * @todo PipeFuncCall
  */
 type CompoundExpression<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = Parenthesis<TExpression, TScope> | TraversalExpression<TExpression, TScope>;
+> =
+  | Parenthesis<TExpression, TScope>
+  // TODO PipeFuncCall
+  | TraversalExpression<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Expression
