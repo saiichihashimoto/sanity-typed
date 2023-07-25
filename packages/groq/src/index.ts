@@ -3,16 +3,15 @@
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Query-context
  */
-export type Context<Dataset, Mode extends "delta" | "normal" = "normal"> = {
+export type Context<Dataset> = {
   dataset: Dataset;
-  mode: Mode;
 };
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Scope
  */
 export type Scope<
-  TContext extends Context<any, any>,
+  TContext extends Context<any>,
   Value,
   ParentScope extends Scope<any, any, any> | null
 > = {
@@ -347,6 +346,20 @@ type Lower<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_now()
+ */
+type Now<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `${"" | "global::"}now(${infer TArgs})`
+  ? FuncArgs<TArgs, TScope> extends never
+    ? never
+    : FuncArgs<TArgs, TScope> extends []
+    ? string
+    : never
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_upper()
  */
 type Upper<
@@ -381,7 +394,7 @@ type FuncCall<TExpression extends string, TScope extends Scope<any, any, any>> =
   | Defined<TExpression, TScope>
   | Length<TExpression, TScope>
   | Lower<TExpression, TScope>
-  // TODO Now<TExpression, TScope>
+  | Now<TExpression, TScope>
   // TODO Operation<TExpression, TScope>
   // TODO References<TExpression, TScope>
   // TODO Round<TExpression, TScope>
@@ -712,12 +725,10 @@ type Expression<
  */
 export type ExecuteQuery<
   TQuery extends string,
-  ContextOrScope extends
-    | Context<any, any>
-    | Scope<any, any, any> = Context<never>
+  ContextOrScope extends Context<any> | Scope<any, any, any> = Context<never>
 > = Evaluate<
   TQuery,
-  ContextOrScope extends Context<any, any>
+  ContextOrScope extends Context<any>
     ? Scope<ContextOrScope, null, null>
     : ContextOrScope
 >;

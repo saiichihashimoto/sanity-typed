@@ -445,6 +445,14 @@ describe("groq", () => {
         >().toStrictEqual<"string">();
       });
 
+      it("now()", () => {
+        expectType<ExecuteQuery<"now()">>().toStrictEqual<string>();
+      });
+
+      it("global::now()", () => {
+        expectType<ExecuteQuery<"global::now()">>().toStrictEqual<string>();
+      });
+
       it('upper("String")', () => {
         expectType<ExecuteQuery<'upper("String")'>>().toStrictEqual<"STRING">();
       });
