@@ -3,7 +3,14 @@
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Query-context
  */
-export type Context<Dataset> = {
+export type Context<
+  Dataset,
+  Client extends { dataset: string; projectId: string } = {
+    dataset: string;
+    projectId: string;
+  }
+> = {
+  client: Client;
   dataset: Dataset;
 };
 
@@ -11,7 +18,7 @@ export type Context<Dataset> = {
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Scope
  */
 export type Scope<
-  TContext extends Context<any>,
+  TContext extends Context<any, any>,
   Value,
   ParentScope extends Scope<any, any, any> | null
 > = {
@@ -348,15 +355,10 @@ type Lower<
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_now()
  */
-type Now<
-  TExpression extends string,
-  TScope extends Scope<any, any, any>
-> = TExpression extends `${"" | "global::"}now(${infer TArgs})`
-  ? FuncArgs<TArgs, TScope> extends never
-    ? never
-    : FuncArgs<TArgs, TScope> extends []
-    ? string
-    : never
+type Now<TExpression extends string> = TExpression extends `${
+  | ""
+  | "global::"}now()`
+  ? string
   : never;
 
 /**
@@ -435,6 +437,26 @@ type MathFuncs<
   : never;
 
 /**
+ * @link https://www.sanity.io/docs/groq-functions#48b1e793d6b9
+ */
+type Sanity_Dataset<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `sanity::dataset()`
+  ? TScope["context"]["client"]["dataset"]
+  : never;
+
+/**
+ * @link https://www.sanity.io/docs/groq-functions#b89053823742
+ */
+type Sanity_ProjectId<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `sanity::projectId()`
+  ? TScope["context"]["client"]["projectId"]
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_startsWith()
  */
 type String_StartsWith<
@@ -458,30 +480,39 @@ type String_StartsWith<
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#FuncCall
  */
 type FuncCall<TExpression extends string, TScope extends Scope<any, any, any>> =
-  // TODO array::
-  // TODO dateTime::
-  // TODO delta::
-  // TODO geo::
-  // TODO pt::
-  // TODO sanity::
-  // TODO diff::
   // TODO After<TExpression, TScope>
+  // TODO Array_Compact<TExpression, TScope>
+  // TODO Array_Join<TExpression, TScope>
+  // TODO Array_Unique<TExpression, TScope>
   // TODO Before<TExpression, TScope>
   // TODO Boost<TExpression, TScope>
   | Coalesce<TExpression, TScope>
   | Count<TExpression, TScope>
+  // TODO DateTime_Now<TExpression, TScope>
   // TODO DateTime<TExpression, TScope>
   | Defined<TExpression, TScope>
+  // TODO Delta_ChangedAny<TExpression, TScope>
+  // TODO Delta_ChangedOnly<TExpression, TScope>
+  // TODO Diff_ChangedAny<TExpression, TScope>
+  // TODO Diff_ChangedOnly<TExpression, TScope>
+  // TODO Geo_Contains<TExpression, TScope>
+  // TODO Geo_Distance<TExpression, TScope>
+  // TODO Geo_Intersects<TExpression, TScope>
+  // TODO Geo<TExpression, TScope>
   // TODO Identify<TExpression, TScope>
   | Length<TExpression, TScope>
   | Lower<TExpression, TScope>
   | MathFuncs<TExpression, TScope, "avg" | "max" | "min", null>
   | MathFuncs<TExpression, TScope, "sum", 0>
-  | Now<TExpression, TScope>
+  | Now<TExpression>
   // TODO Operation<TExpression, TScope>
   // TODO Path<TExpression, TScope>
+  // TODO Pt_Text<TExpression, TScope>
+  // TODO Pt<TExpression, TScope>
   // TODO References<TExpression, TScope>
   | Round<TExpression, TScope>
+  | Sanity_Dataset<TExpression, TScope>
+  | Sanity_ProjectId<TExpression, TScope>
   // TODO Select<TExpression, TScope>
   // TODO String_Split<TExpression, TScope>
   | String_StartsWith<TExpression, TScope>
@@ -811,10 +842,12 @@ type Expression<
  */
 export type ExecuteQuery<
   TQuery extends string,
-  ContextOrScope extends Context<any> | Scope<any, any, any> = Context<never>
+  ContextOrScope extends
+    | Context<any, any>
+    | Scope<any, any, any> = Context<never>
 > = Evaluate<
   TQuery,
-  ContextOrScope extends Context<any>
+  ContextOrScope extends Context<any, any>
     ? Scope<ContextOrScope, null, null>
     : ContextOrScope
 >;

@@ -625,5 +625,37 @@ describe("groq", () => {
         expectType<ExecuteQuery<"math::max([])">>().toStrictEqual<null>();
       });
     });
+
+    describe("sanity", () => {
+      it("sanity::projectId()", () => {
+        expectType<
+          ExecuteQuery<
+            "sanity::projectId()",
+            Context<
+              never,
+              {
+                dataset: "dataset";
+                projectId: "projectId";
+              }
+            >
+          >
+        >().toStrictEqual<"projectId">();
+      });
+
+      it("sanity::dataset()", () => {
+        expectType<
+          ExecuteQuery<
+            "sanity::dataset()",
+            Context<
+              never,
+              {
+                dataset: "dataset";
+                projectId: "projectId";
+              }
+            >
+          >
+        >().toStrictEqual<"dataset">();
+      });
+    });
   });
 });
