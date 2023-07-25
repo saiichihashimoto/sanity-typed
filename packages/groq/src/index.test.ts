@@ -351,6 +351,44 @@ describe("groq", () => {
 
   describe("functions", () => {
     describe("global", () => {
+      it("coalesce()", () => {
+        expectType<ExecuteQuery<"coalesce()">>().toStrictEqual<null>();
+      });
+
+      it("coalesce(1)", () => {
+        expectType<ExecuteQuery<"coalesce(1)">>().toStrictEqual<1>();
+      });
+
+      it("coalesce(null)", () => {
+        expectType<ExecuteQuery<"coalesce(null)">>().toStrictEqual<null>();
+      });
+
+      it("coalesce(1,null)", () => {
+        expectType<ExecuteQuery<"coalesce(1,null)">>().toStrictEqual<1>();
+      });
+
+      it("coalesce(null,1)", () => {
+        expectType<ExecuteQuery<"coalesce(null,1)">>().toStrictEqual<1>();
+      });
+
+      it("coalesce(key,2)", () => {
+        type Result = ExecuteQuery<
+          "coalesce(key,2)",
+          Scope<never, { key: 1 | null }, never>
+        >;
+
+        expectType<Result>().toStrictEqual<1 | 2>();
+      });
+
+      it("global::coalesce(key,2)", () => {
+        type Result = ExecuteQuery<
+          "coalesce(key,2)",
+          Scope<never, { key: 1 | null }, never>
+        >;
+
+        expectType<Result>().toStrictEqual<1 | 2>();
+      });
+
       it("count(5)", () => {
         expectType<ExecuteQuery<"count(5)">>().toStrictEqual<null>();
       });

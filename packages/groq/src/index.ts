@@ -123,18 +123,29 @@ type ArrayElements<
   TExpression extends string,
   TScope extends Scope<any, any, any>,
   _Prefix extends string = ""
-> = TExpression extends `${infer TArrayElement},${infer TArrayElements}`
-  ?
-      | ArrayElements<TArrayElements, TScope, `${_Prefix}${TArrayElement},`>
-      | (
-          | ArrayElement<`${_Prefix}${TArrayElement}`, TScope>
-          | ArrayElements<TArrayElements, TScope> extends never
-          ? never
-          : [
-              ...ArrayElement<`${_Prefix}${TArrayElement}`, TScope>,
-              ...ArrayElements<TArrayElements, TScope>
-            ])
-  : ArrayElement<`${_Prefix}${TExpression}`, TScope>;
+> = `${_Prefix}${TExpression}` extends ""
+  ? []
+  :
+      | ArrayElement<`${_Prefix}${TExpression}`, TScope>
+      | (TExpression extends `${infer TArrayElement},${infer TArrayElements}`
+          ?
+              | ArrayElements<
+                  TArrayElements,
+                  TScope,
+                  `${_Prefix}${TArrayElement},`
+                >
+              | (ArrayElement<
+                  `${_Prefix}${TArrayElement}`,
+                  TScope
+                > extends never
+                  ? never
+                  : ArrayElements<TArrayElements, TScope> extends never
+                  ? never
+                  : [
+                      ...ArrayElement<`${_Prefix}${TArrayElement}`, TScope>,
+                      ...ArrayElements<TArrayElements, TScope>
+                    ])
+          : never);
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Array
@@ -142,10 +153,8 @@ type ArrayElements<
 type ArrayType<
   TExpression extends string,
   TScope extends Scope<any, any, any>
-> = TExpression extends `[${infer TArrayElements}${"," | ""}]`
-  ? TArrayElements extends ""
-    ? []
-    : ArrayElements<TArrayElements, TScope>
+> = TExpression extends `[${infer TArrayElements}]`
+  ? ArrayElements<TArrayElements, TScope>
   : never;
 
 /**
@@ -230,40 +239,95 @@ type OperatorCall<
   // TODO UnaryPlus
   Equality<TExpression, TScope>;
 
+type FuncArgs<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>,
+  _Prefix extends string = ""
+> = `${_Prefix}${TExpression}` extends ""
+  ? []
+  :
+      | (Evaluate<`${_Prefix}${TExpression}`, TScope> extends never
+          ? never
+          : [Evaluate<`${_Prefix}${TExpression}`, TScope>])
+      | (TExpression extends `${infer TFuncArg},${infer TFuncArgs}`
+          ?
+              | FuncArgs<TFuncArgs, TScope, `${_Prefix}${TFuncArg},`>
+              | (Evaluate<`${_Prefix}${TFuncArg}`, TScope> extends never
+                  ? never
+                  : FuncArgs<TFuncArgs, TScope> extends never
+                  ? never
+                  : [
+                      Evaluate<`${_Prefix}${TFuncArg}`, TScope>,
+                      ...FuncArgs<TFuncArgs, TScope>
+                    ])
+          : never);
+
+type CoalesceArgs<TArgs extends any[]> = TArgs extends []
+  ? null
+  : TArgs extends [infer TFirst, ...infer TRest]
+  ? TFirst extends null
+    ? CoalesceArgs<TRest> | NonNullable<TFirst>
+    : TFirst
+  : never;
+
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-count-
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_coalesce()
+ */
+type Coalesce<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `${"" | "global::"}coalesce(${infer TArgs})`
+  ? FuncArgs<TArgs, TScope> extends never
+    ? never
+    : CoalesceArgs<FuncArgs<TArgs, TScope>>
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_count()
  */
 type Count<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > = TExpression extends `${"" | "global::"}count(${infer TArgs})`
-  ? Evaluate<TArgs, TScope> extends any[]
-    ? Evaluate<TArgs, TScope>["length"]
-    : null
+  ? FuncArgs<TArgs, TScope> extends never
+    ? never
+    : FuncArgs<TArgs, TScope> extends [infer TBase]
+    ? TBase extends any[]
+      ? TBase["length"]
+      : null
+    : never
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-defined-
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_defined()
  */
 type Defined<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > = TExpression extends `${"" | "global::"}defined(${infer TArgs})`
-  ? Evaluate<TArgs, TScope> extends null
-    ? false
-    : true
+  ? FuncArgs<TArgs, TScope> extends never
+    ? never
+    : FuncArgs<TArgs, TScope> extends [infer TBase]
+    ? TBase extends null
+      ? false
+      : true
+    : never
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-length-
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_length()
  */
 type Length<
   TExpression extends string,
   TScope extends Scope<any, any, any>
 > = TExpression extends `${"" | "global::"}length(${infer TArgs})`
-  ? Evaluate<TArgs, TScope> extends any[] | string
-    ? Evaluate<TArgs, TScope>["length"]
-    : null
+  ? FuncArgs<TArgs, TScope> extends never
+    ? never
+    : FuncArgs<TArgs, TScope> extends [infer TBase]
+    ? TBase extends any[] | string
+      ? TBase["length"]
+      : null
+    : never
   : never;
 
 /**
@@ -279,7 +343,7 @@ type FuncCall<TExpression extends string, TScope extends Scope<any, any, any>> =
   // TODO After<TExpression, TScope>
   // TODO Before<TExpression, TScope>
   // TODO Boost<TExpression, TScope>
-  // TODO Coalesce<TExpression, TScope>
+  | Coalesce<TExpression, TScope>
   | Count<TExpression, TScope>
   // TODO DateTime<TExpression, TScope>
   | Defined<TExpression, TScope>
