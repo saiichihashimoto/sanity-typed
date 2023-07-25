@@ -412,15 +412,37 @@ type Upper<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_startsWith()
+ */
+type String_StartsWith<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `string::startsWith(${infer TArgs})`
+  ? FuncArgs<TArgs, TScope> extends never
+    ? never
+    : FuncArgs<TArgs, TScope> extends [infer TStr, infer TPrefix]
+    ? TStr extends string
+      ? TPrefix extends string
+        ? TStr extends `${TPrefix}${string}`
+          ? true
+          : false
+        : null
+      : null
+    : never
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#FuncCall
  */
 type FuncCall<TExpression extends string, TScope extends Scope<any, any, any>> =
   // TODO array::
   // TODO dateTime::
   // TODO delta::
+  // TODO geo::
+  // TODO pt::
+  // TODO sanity::
   // TODO diff::
   // TODO math::
-  // TODO string::
   // TODO After<TExpression, TScope>
   // TODO Before<TExpression, TScope>
   // TODO Boost<TExpression, TScope>
@@ -428,13 +450,17 @@ type FuncCall<TExpression extends string, TScope extends Scope<any, any, any>> =
   | Count<TExpression, TScope>
   // TODO DateTime<TExpression, TScope>
   | Defined<TExpression, TScope>
+  // TODO Identify<TExpression, TScope>
   | Length<TExpression, TScope>
   | Lower<TExpression, TScope>
   | Now<TExpression, TScope>
   // TODO Operation<TExpression, TScope>
+  // TODO Path<TExpression, TScope>
   // TODO References<TExpression, TScope>
   | Round<TExpression, TScope>
   // TODO Select<TExpression, TScope>
+  // TODO String_Split<TExpression, TScope>
+  | String_StartsWith<TExpression, TScope>
   | StringFunc<TExpression, TScope>
   | Upper<TExpression, TScope>;
 

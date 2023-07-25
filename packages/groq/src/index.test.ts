@@ -505,5 +505,19 @@ describe("groq", () => {
         >().toStrictEqual<"STRING">();
       });
     });
+
+    describe("string", () => {
+      it('string::startsWith("A String","A Str")', () => {
+        expectType<
+          ExecuteQuery<'string::startsWith("A String","A Str")'>
+        >().toStrictEqual<true>();
+      });
+
+      it('string::startsWith("A String","O Str")', () => {
+        expectType<
+          ExecuteQuery<'string::startsWith("A String","O Str")'>
+        >().toStrictEqual<false>();
+      });
+    });
   });
 });
