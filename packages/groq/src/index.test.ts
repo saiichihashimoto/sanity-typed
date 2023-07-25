@@ -435,16 +435,6 @@ describe("groq", () => {
         >().toStrictEqual<number>();
       });
 
-      it('lower("String")', () => {
-        expectType<ExecuteQuery<'lower("String")'>>().toStrictEqual<"string">();
-      });
-
-      it('global::lower("String")', () => {
-        expectType<
-          ExecuteQuery<'global::lower("String")'>
-        >().toStrictEqual<"string">();
-      });
-
       it("now()", () => {
         expectType<ExecuteQuery<"now()">>().toStrictEqual<string>();
       });
@@ -495,6 +485,16 @@ describe("groq", () => {
         >().toStrictEqual<"3.14">();
       });
 
+      it('lower("String")', () => {
+        expectType<ExecuteQuery<'lower("String")'>>().toStrictEqual<"string">();
+      });
+
+      it('global::lower("String")', () => {
+        expectType<
+          ExecuteQuery<'global::lower("String")'>
+        >().toStrictEqual<"string">();
+      });
+
       it('upper("String")', () => {
         expectType<ExecuteQuery<'upper("String")'>>().toStrictEqual<"STRING">();
       });
@@ -517,6 +517,112 @@ describe("groq", () => {
         expectType<
           ExecuteQuery<'string::startsWith("A String","O Str")'>
         >().toStrictEqual<false>();
+      });
+    });
+
+    describe("math", () => {
+      it("math::sum([1,2,3])", () => {
+        expectType<
+          ExecuteQuery<"math::sum([1,2,3])">
+        >().toStrictEqual<number>();
+      });
+
+      it("math::sum([1,null,3])", () => {
+        expectType<
+          ExecuteQuery<"math::sum([1,null,3])">
+        >().toStrictEqual<number>();
+      });
+
+      it("math::sum([1,false,3])", () => {
+        expectType<
+          ExecuteQuery<"math::sum([1,false,3])">
+        >().toStrictEqual<null>();
+      });
+
+      it("math::sum([null])", () => {
+        expectType<ExecuteQuery<"math::sum([null])">>().toStrictEqual<0>();
+      });
+
+      it("math::sum([])", () => {
+        expectType<ExecuteQuery<"math::sum([])">>().toStrictEqual<0>();
+      });
+
+      it("math::avg([1,2,3])", () => {
+        expectType<
+          ExecuteQuery<"math::avg([1,2,3])">
+        >().toStrictEqual<number>();
+      });
+
+      it("math::avg([1,null,3])", () => {
+        expectType<
+          ExecuteQuery<"math::avg([1,null,3])">
+        >().toStrictEqual<number>();
+      });
+
+      it("math::avg([1,false,3])", () => {
+        expectType<
+          ExecuteQuery<"math::avg([1,false,3])">
+        >().toStrictEqual<null>();
+      });
+
+      it("math::avg([null])", () => {
+        expectType<ExecuteQuery<"math::avg([null])">>().toStrictEqual<null>();
+      });
+
+      it("math::avg([])", () => {
+        expectType<ExecuteQuery<"math::avg([])">>().toStrictEqual<null>();
+      });
+
+      it("math::min([1,2,3])", () => {
+        expectType<
+          ExecuteQuery<"math::min([1,2,3])">
+        >().toStrictEqual<number>();
+      });
+
+      it("math::min([1,null,3])", () => {
+        expectType<
+          ExecuteQuery<"math::min([1,null,3])">
+        >().toStrictEqual<number>();
+      });
+
+      it("math::min([1,false,3])", () => {
+        expectType<
+          ExecuteQuery<"math::min([1,false,3])">
+        >().toStrictEqual<null>();
+      });
+
+      it("math::min([null])", () => {
+        expectType<ExecuteQuery<"math::min([null])">>().toStrictEqual<null>();
+      });
+
+      it("math::min([])", () => {
+        expectType<ExecuteQuery<"math::min([])">>().toStrictEqual<null>();
+      });
+
+      it("math::max([1,2,3])", () => {
+        expectType<
+          ExecuteQuery<"math::max([1,2,3])">
+        >().toStrictEqual<number>();
+      });
+
+      it("math::max([1,null,3])", () => {
+        expectType<
+          ExecuteQuery<"math::max([1,null,3])">
+        >().toStrictEqual<number>();
+      });
+
+      it("math::max([1,false,3])", () => {
+        expectType<
+          ExecuteQuery<"math::max([1,false,3])">
+        >().toStrictEqual<null>();
+      });
+
+      it("math::max([null])", () => {
+        expectType<ExecuteQuery<"math::max([null])">>().toStrictEqual<null>();
+      });
+
+      it("math::max([])", () => {
+        expectType<ExecuteQuery<"math::max([])">>().toStrictEqual<null>();
       });
     });
   });

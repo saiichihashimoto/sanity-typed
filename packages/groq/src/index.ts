@@ -412,6 +412,29 @@ type Upper<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_avg()
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_max()
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_min()
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_sum()
+ */
+type MathFuncs<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>,
+  TFuncs extends string,
+  TDefault
+> = TExpression extends `math::${TFuncs}(${infer TArgs})`
+  ? FuncArgs<TArgs, TScope> extends never
+    ? never
+    : FuncArgs<TArgs, TScope> extends [infer TArr]
+    ? TArr extends null[] | []
+      ? TDefault
+      : TArr extends (number | null)[]
+      ? number
+      : null
+    : never
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_startsWith()
  */
 type String_StartsWith<
@@ -442,7 +465,6 @@ type FuncCall<TExpression extends string, TScope extends Scope<any, any, any>> =
   // TODO pt::
   // TODO sanity::
   // TODO diff::
-  // TODO math::
   // TODO After<TExpression, TScope>
   // TODO Before<TExpression, TScope>
   // TODO Boost<TExpression, TScope>
@@ -453,6 +475,8 @@ type FuncCall<TExpression extends string, TScope extends Scope<any, any, any>> =
   // TODO Identify<TExpression, TScope>
   | Length<TExpression, TScope>
   | Lower<TExpression, TScope>
+  | MathFuncs<TExpression, TScope, "avg" | "max" | "min", null>
+  | MathFuncs<TExpression, TScope, "sum", 0>
   | Now<TExpression, TScope>
   // TODO Operation<TExpression, TScope>
   // TODO Path<TExpression, TScope>
