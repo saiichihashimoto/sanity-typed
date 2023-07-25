@@ -380,6 +380,22 @@ type Round<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_string()
+ */
+type StringFunc<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `${"" | "global::"}string(${infer TArgs})`
+  ? FuncArgs<TArgs, TScope> extends never
+    ? never
+    : FuncArgs<TArgs, TScope> extends [infer TVal]
+    ? TVal extends boolean | number | string
+      ? `${TVal}`
+      : null
+    : never
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_upper()
  */
 type Upper<
@@ -419,7 +435,7 @@ type FuncCall<TExpression extends string, TScope extends Scope<any, any, any>> =
   // TODO References<TExpression, TScope>
   | Round<TExpression, TScope>
   // TODO Select<TExpression, TScope>
-  // TODO String<TExpression, TScope>
+  | StringFunc<TExpression, TScope>
   | Upper<TExpression, TScope>;
 
 /**

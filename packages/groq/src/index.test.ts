@@ -467,6 +467,34 @@ describe("groq", () => {
         >().toStrictEqual<number>();
       });
 
+      it("string(true)", () => {
+        expectType<ExecuteQuery<"string(true)">>().toStrictEqual<"true">();
+      });
+
+      it("string(false)", () => {
+        expectType<ExecuteQuery<"string(false)">>().toStrictEqual<"false">();
+      });
+
+      it('string("a string")', () => {
+        expectType<
+          ExecuteQuery<'string("a string")'>
+        >().toStrictEqual<"a string">();
+      });
+
+      it("string(3.14)", () => {
+        expectType<ExecuteQuery<"string(3.14)">>().toStrictEqual<"3.14">();
+      });
+
+      it("string([])", () => {
+        expectType<ExecuteQuery<"string([])">>().toStrictEqual<null>();
+      });
+
+      it("global::string(3.14)", () => {
+        expectType<
+          ExecuteQuery<"global::string(3.14)">
+        >().toStrictEqual<"3.14">();
+      });
+
       it('upper("String")', () => {
         expectType<ExecuteQuery<'upper("String")'>>().toStrictEqual<"STRING">();
       });
