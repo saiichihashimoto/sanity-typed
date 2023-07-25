@@ -717,6 +717,9 @@ type AttributeAccess<
           : never)
   : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ElementAccess
+ */
 type ElementAccess<
   TExpression extends string,
   TScope extends Scope<any, any, any>,
@@ -734,7 +737,10 @@ type ElementAccess<
           ? never
           : Evaluate<TElementAccessExpression, TScope> extends number
           ? Evaluate<`${_Prefix}${TBase}`, TScope> extends any[]
-            ? Evaluate<`${_Prefix}${TBase}`, TScope>[number]
+            ? Evaluate<`${_Prefix}${TBase}`, TScope>[Evaluate<
+                TElementAccessExpression,
+                TScope
+              >]
             : // TODO TraversalArrayTarget
               never
           : never)

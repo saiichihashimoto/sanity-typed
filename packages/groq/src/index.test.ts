@@ -319,9 +319,7 @@ describe("groq", () => {
     });
 
     it("[true,false][1]", () => {
-      expectType<ExecuteQuery<"[true,false][1]">>().toStrictEqual<
-        false | true
-      >();
+      expectType<ExecuteQuery<"[true,false][1]">>().toStrictEqual<false>();
     });
 
     it("*[1]", () => {
