@@ -234,77 +234,64 @@ type OperatorCall<
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-count-
  */
 type Count<
-  TArgs extends string,
+  TExpression extends string,
   TScope extends Scope<any, any, any>
-> = Evaluate<TArgs, TScope> extends any[]
-  ? Evaluate<TArgs, TScope>["length"]
-  : null;
+> = TExpression extends `${"" | "global::"}count(${infer TArgs})`
+  ? Evaluate<TArgs, TScope> extends any[]
+    ? Evaluate<TArgs, TScope>["length"]
+    : null
+  : never;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-defined-
  */
 type Defined<
-  TArgs extends string,
+  TExpression extends string,
   TScope extends Scope<any, any, any>
-> = Evaluate<TArgs, TScope> extends null ? false : true;
+> = TExpression extends `${"" | "global::"}defined(${infer TArgs})`
+  ? Evaluate<TArgs, TScope> extends null
+    ? false
+    : true
+  : never;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-length-
  */
 type Length<
-  TArgs extends string,
+  TExpression extends string,
   TScope extends Scope<any, any, any>
-> = Evaluate<TArgs, TScope> extends any[] | string
-  ? Evaluate<TArgs, TScope>["length"]
-  : null;
-
-type Functions<TArgs extends string, TScope extends Scope<any, any, any>> = {
-  // TODO array
-  // TODO dateTime
-  // TODO delta
-  // TODO diff
-  global: {
-    // TODO after
-    // TODO before
-    // TODO boost
-    // TODO coalesce
-    count: Count<TArgs, TScope>;
-    // TODO dateTime
-    defined: Defined<TArgs, TScope>;
-    length: Length<TArgs, TScope>;
-    // TODO lower
-    // TODO now
-    // TODO operation
-    // TODO references
-    // TODO round
-    // TODO select
-    // TODO string
-    // TODO upper
-  };
-  // TODO math
-  // TODO string
-};
+> = TExpression extends `${"" | "global::"}length(${infer TArgs})`
+  ? Evaluate<TArgs, TScope> extends any[] | string
+    ? Evaluate<TArgs, TScope>["length"]
+    : null
+  : never;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#FuncCall
  */
-type FuncCall<
-  TExpression extends string,
-  TScope extends Scope<any, any, any>
-> = TExpression extends `${infer TFunction extends keyof Functions<
-  any,
-  TScope
->["global"]}(${infer TArgs})`
-  ? Functions<TArgs, TScope>["global"][TFunction]
-  : TExpression extends `${infer TNamespace extends keyof Functions<
-      any,
-      TScope
-    >}::${infer TFuncCall}`
-  ? TFuncCall extends `${infer TFunction extends string &
-      keyof Functions<any, TScope>[TNamespace]}(${infer TArgs})`
-    ? Functions<TArgs, TScope>[TNamespace][TFunction]
-    : never
-  : never;
+type FuncCall<TExpression extends string, TScope extends Scope<any, any, any>> =
+  // TODO array::
+  // TODO dateTime::
+  // TODO delta::
+  // TODO diff::
+  // TODO math::
+  // TODO string::
+  // TODO After<TExpression, TScope>
+  // TODO Before<TExpression, TScope>
+  // TODO Boost<TExpression, TScope>
+  // TODO Coalesce<TExpression, TScope>
+  | Count<TExpression, TScope>
+  // TODO DateTime<TExpression, TScope>
+  | Defined<TExpression, TScope>
+  | Length<TExpression, TScope>;
+// TODO Lower<TExpression, TScope>
+// TODO Now<TExpression, TScope>
+// TODO Operation<TExpression, TScope>
+// TODO References<TExpression, TScope>
+// TODO Round<TExpression, TScope>
+// TODO Select<TExpression, TScope>
+// TODO String<TExpression, TScope>
+// TODO uUpper<TExpression, TScope>
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Everything
@@ -338,10 +325,10 @@ type This<
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ThisAttribute
  */
 type ThisAttribute<
-  TIdentifier extends string,
+  TExpression extends string,
   TScope extends Scope<any, any, any>
-> = TIdentifier extends keyof TScope["this"]
-  ? TScope["this"][TIdentifier]
+> = TExpression extends keyof TScope["this"]
+  ? TScope["this"][TExpression]
   : never;
 
 /**
@@ -389,18 +376,24 @@ type AttributeAccess<
         >
       | (Evaluate<`${_Prefix}${TBase}`, TScope> extends never
           ? never
-          : StringType<TAttributeAccessExpression> extends never
+          : Evaluate<TAttributeAccessExpression, TScope> extends never
           ? never
-          : Evaluate<`${_Prefix}${TBase}`, TScope> extends any[]
-          ? AttributeAccessOverArray<
-              Evaluate<`${_Prefix}${TBase}`, TScope>,
-              StringType<TAttributeAccessExpression>
-            >
-          : Evaluate<
-              `${_Prefix}${TBase}`,
-              TScope
-            >[StringType<TAttributeAccessExpression> &
-              keyof Evaluate<`${_Prefix}${TBase}`, TScope>])
+          : Evaluate<TAttributeAccessExpression, TScope> extends string
+          ? Evaluate<`${_Prefix}${TBase}`, TScope> extends any[]
+            ? AttributeAccessOverArray<
+                Evaluate<`${_Prefix}${TBase}`, TScope>,
+                Evaluate<TAttributeAccessExpression, TScope>
+              >
+            : Evaluate<
+                TAttributeAccessExpression,
+                TScope
+              > extends infer TAttr extends keyof Evaluate<
+                `${_Prefix}${TBase}`,
+                TScope
+              >
+            ? Evaluate<`${_Prefix}${TBase}`, TScope>[TAttr]
+            : never
+          : never)
   : never;
 
 type ElementAccess<
@@ -494,27 +487,29 @@ type EvaluateFilter<
 > = TBase extends []
   ? []
   : TBase extends [infer TFirst, ...infer TRest]
-  ? // https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Disambiguating-square-bracket-traversal
-    Evaluate<TExpression, NestedScope<TFirst, TScope>> extends number | string
+  ? Evaluate<TExpression, NestedScope<TFirst, TScope>> extends never
     ? never
-    : Evaluate<TExpression, NestedScope<TFirst, TScope>> extends true
-    ? [TFirst, ...EvaluateFilter<TRest, TExpression, TScope>]
-    : EvaluateFilter<TRest, TExpression, TScope>
+    : Evaluate<TExpression, NestedScope<TFirst, TScope>> extends boolean
+    ? Evaluate<TExpression, NestedScope<TFirst, TScope>> extends true
+      ? [TFirst, ...EvaluateFilter<TRest, TExpression, TScope>]
+      : EvaluateFilter<TRest, TExpression, TScope>
+    : never
   : TBase extends (infer TArrayElement)[]
-  ? // https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Disambiguating-square-bracket-traversal
-    Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends
-      | number
-      | string
+  ? Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends never
     ? never
-    : (TArrayElement extends never
+    : Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends boolean
+    ? (TArrayElement extends never
         ? never
         : Evaluate<TExpression, NestedScope<TArrayElement, TScope>> extends true
         ? TArrayElement
         : never)[]
-  : Evaluate<TExpression, TScope> extends number | string
+    : never
+  : Evaluate<TExpression, NestedScope<TBase, TScope>> extends never
   ? never
-  : // TODO TraversalArrayTarget
-    TBase;
+  : Evaluate<TExpression, NestedScope<TBase, TScope>> extends boolean
+  ? // TODO TraversalArrayTarget
+    TBase
+  : never;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Filter
