@@ -331,6 +331,38 @@ type Length<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_lower()
+ */
+type Lower<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `${"" | "global::"}lower(${infer TArgs})`
+  ? FuncArgs<TArgs, TScope> extends never
+    ? never
+    : FuncArgs<TArgs, TScope> extends [infer TValue]
+    ? TValue extends string
+      ? Lowercase<TValue>
+      : null
+    : never
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_upper()
+ */
+type Upper<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `${"" | "global::"}upper(${infer TArgs})`
+  ? FuncArgs<TArgs, TScope> extends never
+    ? never
+    : FuncArgs<TArgs, TScope> extends [infer TValue]
+    ? TValue extends string
+      ? Uppercase<TValue>
+      : null
+    : never
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#FuncCall
  */
 type FuncCall<TExpression extends string, TScope extends Scope<any, any, any>> =
@@ -347,15 +379,15 @@ type FuncCall<TExpression extends string, TScope extends Scope<any, any, any>> =
   | Count<TExpression, TScope>
   // TODO DateTime<TExpression, TScope>
   | Defined<TExpression, TScope>
-  | Length<TExpression, TScope>;
-// TODO Lower<TExpression, TScope>
-// TODO Now<TExpression, TScope>
-// TODO Operation<TExpression, TScope>
-// TODO References<TExpression, TScope>
-// TODO Round<TExpression, TScope>
-// TODO Select<TExpression, TScope>
-// TODO String<TExpression, TScope>
-// TODO uUpper<TExpression, TScope>
+  | Length<TExpression, TScope>
+  | Lower<TExpression, TScope>
+  // TODO Now<TExpression, TScope>
+  // TODO Operation<TExpression, TScope>
+  // TODO References<TExpression, TScope>
+  // TODO Round<TExpression, TScope>
+  // TODO Select<TExpression, TScope>
+  // TODO String<TExpression, TScope>
+  | Upper<TExpression, TScope>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Everything

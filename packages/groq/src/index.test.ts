@@ -434,6 +434,26 @@ describe("groq", () => {
           ExecuteQuery<'global::length("string")'>
         >().toStrictEqual<number>();
       });
+
+      it('lower("String")', () => {
+        expectType<ExecuteQuery<'lower("String")'>>().toStrictEqual<"string">();
+      });
+
+      it('global::lower("String")', () => {
+        expectType<
+          ExecuteQuery<'global::lower("String")'>
+        >().toStrictEqual<"string">();
+      });
+
+      it('upper("String")', () => {
+        expectType<ExecuteQuery<'upper("String")'>>().toStrictEqual<"STRING">();
+      });
+
+      it('global::upper("String")', () => {
+        expectType<
+          ExecuteQuery<'global::upper("String")'>
+        >().toStrictEqual<"STRING">();
+      });
     });
   });
 });
