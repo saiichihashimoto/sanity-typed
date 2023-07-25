@@ -11,8 +11,8 @@ type Foo = typeof FOO;
 const BAR: unique symbol = Symbol("bar");
 type Bar = typeof BAR;
 
-const QUX: unique symbol = Symbol("qux");
-type Qux = typeof QUX;
+const BAZ: unique symbol = Symbol("baz");
+type Baz = typeof BAZ;
 
 describe("groq", () => {
   it('""', () => {
@@ -78,6 +78,18 @@ describe("groq", () => {
       expectType<ExecuteQuery<"[]">>().toStrictEqual<[]>();
     });
 
+    it("[true]", () => {
+      expectType<ExecuteQuery<"[true]">>().toStrictEqual<[true]>();
+    });
+
+    it("[true,]", () => {
+      expectType<ExecuteQuery<"[true,]">>().toStrictEqual<[true]>();
+    });
+
+    it("[1,notvalid]", () => {
+      expectType<never>().toStrictEqual<ExecuteQuery<"[1,notvalid]">>();
+    });
+
     it("[null,true,false,-5.6,\"double quoted string\",'single quoted string']", () => {
       type Result =
         ExecuteQuery<"[null,true,false,-5.6,\"double quoted string\",'single quoted string']">;
@@ -94,14 +106,6 @@ describe("groq", () => {
       >();
     });
 
-    it("[true,]", () => {
-      expectType<ExecuteQuery<"[true,]">>().toStrictEqual<[true]>();
-    });
-
-    it("[1,notvalid]", () => {
-      expectType<never>().toStrictEqual<ExecuteQuery<"[1,notvalid]">>();
-    });
-
     it("[...[null]]", () => {
       expectType<ExecuteQuery<"[...[null]]">>().toStrictEqual<[null]>();
     });
@@ -110,6 +114,88 @@ describe("groq", () => {
       expectType<
         ExecuteQuery<"[[null,null],[null,null,null]]">
       >().toStrictEqual<[[null, null], [null, null, null]]>();
+    });
+
+    it("{}", () => {
+      expectType<ExecuteQuery<"{}">>().toStrictEqual<{
+        [key: string]: never;
+      }>();
+    });
+
+    it("{foo}", () => {
+      expectType<
+        ExecuteQuery<"{foo}", Scope<never, { foo: "bar" }, never>>
+      >().toStrictEqual<{ foo: "bar" }>();
+    });
+
+    it("{foo,}", () => {
+      expectType<
+        ExecuteQuery<"{foo,}", Scope<never, { foo: "bar" }, never>>
+      >().toStrictEqual<{ foo: "bar" }>();
+    });
+
+    it("{foo,baz}", () => {
+      expectType<
+        ExecuteQuery<
+          "{foo,baz}",
+          Scope<never, { baz: "qux"; foo: "bar" }, never>
+        >
+      >().toStrictEqual<{ baz: "qux"; foo: "bar" }>();
+    });
+
+    it('{"foo":"bar"}', () => {
+      expectType<ExecuteQuery<'{"foo":"bar"}'>>().toStrictEqual<{
+        foo: "bar";
+      }>();
+    });
+
+    it('{"foo":"bar",}', () => {
+      expectType<ExecuteQuery<'{"foo":"bar",}'>>().toStrictEqual<{
+        foo: "bar";
+      }>();
+    });
+
+    it('{"foo":"bar","baz":"qux"}', () => {
+      expectType<ExecuteQuery<'{"foo":"bar","baz":"qux"}'>>().toStrictEqual<{
+        baz: "qux";
+        foo: "bar";
+      }>();
+    });
+
+    it('{...{"foo":"bar"}}', () => {
+      expectType<ExecuteQuery<'{...{"foo":"bar"}}'>>().toStrictEqual<{
+        foo: "bar";
+      }>();
+    });
+
+    it('{...{"foo":"bar"},}', () => {
+      expectType<ExecuteQuery<'{...{"foo":"bar"},}'>>().toStrictEqual<{
+        foo: "bar";
+      }>();
+    });
+
+    it('{...{"foo":"bar"},...{"baz":"qux"}}', () => {
+      expectType<
+        ExecuteQuery<'{...{"foo":"bar"},...{"baz":"qux"}}'>
+      >().toStrictEqual<{ baz: "qux"; foo: "bar" }>();
+    });
+
+    it("{...}", () => {
+      expectType<
+        ExecuteQuery<"{...}", Scope<never, { foo: "bar" }, never>>
+      >().toStrictEqual<{ foo: "bar" }>();
+    });
+
+    it("{...,}", () => {
+      expectType<
+        ExecuteQuery<"{...,}", Scope<never, { foo: "bar" }, never>>
+      >().toStrictEqual<{ foo: "bar" }>();
+    });
+
+    it('{...,"baz":"qux"}', () => {
+      expectType<
+        ExecuteQuery<'{...,"baz":"qux"}', Scope<never, { foo: "bar" }, never>>
+      >().toStrictEqual<{ baz: "qux"; foo: "bar" }>();
     });
   });
 
@@ -178,46 +264,46 @@ describe("groq", () => {
       >().toStrictEqual<Bar>();
     });
 
+    it("foo.bar.baz", () => {
+      type Result = ExecuteQuery<
+        "foo.bar.baz",
+        Scope<never, { foo: { bar: { baz: Baz } } }, never>
+      >;
+
+      expectType<Result>().toStrictEqual<Baz>();
+    });
+
     it('foo["bar"]', () => {
       expectType<
         ExecuteQuery<'foo["bar"]', Scope<never, { foo: { bar: Bar } }, never>>
       >().toStrictEqual<Bar>();
     });
 
-    it("foo.bar.qux", () => {
-      type Result = ExecuteQuery<
-        "foo.bar.qux",
-        Scope<never, { foo: { bar: { qux: Qux } } }, never>
-      >;
-
-      expectType<Result>().toStrictEqual<Qux>();
-    });
-
-    it('foo["bar"]["qux"]', () => {
+    it('foo["bar"]["baz"]', () => {
       expectType<
         ExecuteQuery<
-          'foo["bar"]["qux"]',
-          Scope<never, { foo: { bar: { qux: Qux } } }, never>
+          'foo["bar"]["baz"]',
+          Scope<never, { foo: { bar: { baz: Baz } } }, never>
         >
-      >().toStrictEqual<Qux>();
+      >().toStrictEqual<Baz>();
     });
 
-    it('foo.bar["qux"]', () => {
+    it('foo.bar["baz"]', () => {
       expectType<
         ExecuteQuery<
-          'foo.bar["qux"]',
-          Scope<never, { foo: { bar: { qux: Qux } } }, never>
+          'foo.bar["baz"]',
+          Scope<never, { foo: { bar: { baz: Baz } } }, never>
         >
-      >().toStrictEqual<Qux>();
+      >().toStrictEqual<Baz>();
     });
 
-    it('foo["bar"].qux', () => {
+    it('foo["bar"].baz', () => {
       expectType<
         ExecuteQuery<
-          'foo["bar"]["qux"]',
-          Scope<never, { foo: { bar: { qux: Qux } } }, never>
+          'foo["bar"]["baz"]',
+          Scope<never, { foo: { bar: { baz: Baz } } }, never>
         >
-      >().toStrictEqual<Qux>();
+      >().toStrictEqual<Baz>();
     });
 
     it("*.key", () => {
@@ -309,11 +395,11 @@ describe("groq", () => {
       expectType<Result>().toStrictEqual<{ _type: "foo" }[]>();
     });
 
-    it('*[_type!="bar"][_type!="qux"][_type=="foo"]', () => {
+    it('*[_type!="bar"][_type!="baz"][_type=="foo"]', () => {
       expectType<
         ExecuteQuery<
-          '*[_type!="bar"][_type!="qux"][_type=="foo"]',
-          Context<({ _type: "bar" } | { _type: "foo" } | { _type: "qux" })[]>
+          '*[_type!="bar"][_type!="baz"][_type=="foo"]',
+          Context<({ _type: "bar" } | { _type: "baz" } | { _type: "foo" })[]>
         >
       >().toStrictEqual<{ _type: "foo" }[]>();
     });

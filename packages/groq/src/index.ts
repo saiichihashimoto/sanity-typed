@@ -1,3 +1,5 @@
+import type { Merge } from "type-fest";
+
 // FIXME Handle Whitespace
 
 /**
@@ -110,33 +112,33 @@ type StringType<TExpression extends string> =
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayElement
  */
 type ArrayElement<
-  TExpression extends string,
+  TArrayElement extends string,
   TScope extends Scope<any, any, any>
-> = TExpression extends `...${infer TArrayElement}`
-  ? Evaluate<TArrayElement, TScope> extends never
+> = TArrayElement extends `...${infer TExpression}`
+  ? Evaluate<TExpression, TScope> extends never
     ? never
-    : Evaluate<TArrayElement, TScope> extends any[]
-    ? Evaluate<TArrayElement, TScope>
-    : [Evaluate<TArrayElement, TScope>]
-  : Evaluate<TExpression, TScope> extends never
+    : Evaluate<TExpression, TScope> extends any[]
+    ? Evaluate<TExpression, TScope>
+    : [Evaluate<TExpression, TScope>]
+  : Evaluate<TArrayElement, TScope> extends never
   ? never
-  : [Evaluate<TExpression, TScope>];
+  : [Evaluate<TArrayElement, TScope>];
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayElements
  */
 type ArrayElements<
-  TExpression extends string,
+  TArrayElements extends string,
   TScope extends Scope<any, any, any>,
   _Prefix extends string = ""
-> = `${_Prefix}${TExpression}` extends ""
+> = `${_Prefix}${TArrayElements}` extends ""
   ? []
   :
-      | ArrayElement<`${_Prefix}${TExpression}`, TScope>
-      | (TExpression extends `${infer TArrayElement},${infer TArrayElements}`
+      | ArrayElement<`${_Prefix}${TArrayElements}`, TScope>
+      | (TArrayElements extends `${infer TArrayElement},${infer TRemaininingElements}`
           ?
               | ArrayElements<
-                  TArrayElements,
+                  TRemaininingElements,
                   TScope,
                   `${_Prefix}${TArrayElement},`
                 >
@@ -145,11 +147,11 @@ type ArrayElements<
                   TScope
                 > extends never
                   ? never
-                  : ArrayElements<TArrayElements, TScope> extends never
+                  : ArrayElements<TRemaininingElements, TScope> extends never
                   ? never
                   : [
                       ...ArrayElement<`${_Prefix}${TArrayElement}`, TScope>,
-                      ...ArrayElements<TArrayElements, TScope>
+                      ...ArrayElements<TRemaininingElements, TScope>
                     ])
           : never);
 
@@ -164,11 +166,114 @@ type ArrayType<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ThisAttribute
+ */
+type ThisAttribute<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends keyof TScope["this"]
+  ? TScope["this"][TExpression]
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#DetermineName()
+ */
+type DetermineName<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> =
+  | (TExpression extends `${
+      // This might be too wide https://sanity-io.github.io/GROQ/GROQ-1.revision1/#DetermineName()
+      infer TName
+    }${"[" | "{" | "|"}}${string}`
+      ? TName
+      : never)
+  | (ThisAttribute<TExpression, TScope> extends never ? never : TExpression);
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ObjectAttribute
+ */
+type ObjectAttribute<
+  TObjectAttribute extends string,
+  TScope extends Scope<any, any, any>
+> = TObjectAttribute extends `...${infer TExpression}`
+  ? TExpression extends ""
+    ? TScope["this"]
+    : Evaluate<TExpression, TScope>
+  : TObjectAttribute extends `${infer TName}:${infer TExpression}`
+  ? StringType<TName> extends never
+    ? never
+    : Evaluate<TExpression, TScope> extends never
+    ? never
+    : { [name in StringType<TName>]: Evaluate<TExpression, TScope> }
+  : Evaluate<TObjectAttribute, TScope> extends never
+  ? never
+  : DetermineName<TObjectAttribute, TScope> extends never
+  ? never
+  : {
+      [key in DetermineName<TObjectAttribute, TScope>]: Evaluate<
+        TObjectAttribute,
+        TScope
+      >;
+    };
+
+type EmptyObject = { [key: string]: never };
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ObjectAttributes
+ */
+type ObjectAttributes<
+  TObjectAttributes extends string,
+  TScope extends Scope<any, any, any>,
+  _Prefix extends string = ""
+> = `${_Prefix}${TObjectAttributes}` extends ""
+  ? EmptyObject
+  :
+      | ObjectAttribute<`${_Prefix}${TObjectAttributes}`, TScope>
+      | (TObjectAttributes extends `${infer TObjectAttribute},${infer TRemaininingAttributes}`
+          ?
+              | ObjectAttributes<
+                  TRemaininingAttributes,
+                  TScope,
+                  `${_Prefix}${TObjectAttribute},`
+                >
+              | (ObjectAttribute<
+                  `${_Prefix}${TObjectAttribute}`,
+                  TScope
+                > extends never
+                  ? never
+                  : ObjectAttributes<
+                      TRemaininingAttributes,
+                      TScope
+                    > extends never
+                  ? never
+                  : ObjectAttributes<
+                      TRemaininingAttributes,
+                      TScope
+                    > extends EmptyObject
+                  ? ObjectAttribute<`${_Prefix}${TObjectAttribute}`, TScope>
+                  : Merge<
+                      ObjectAttribute<`${_Prefix}${TObjectAttribute}`, TScope>,
+                      ObjectAttributes<TRemaininingAttributes, TScope>
+                    >)
+          : never);
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Object
+ */
+type ObjectType<
+  TExpression extends string,
+  TScope extends Scope<any, any, any>
+> = TExpression extends `{${infer TObjectAttributes}}`
+  ? ObjectAttributes<TObjectAttributes, TScope>
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Literal
  */
 type Literal<TExpression extends string, TScope extends Scope<any, any, any>> =
   | ArrayType<TExpression, TScope>
-  // TODO Object
+  | ObjectType<TExpression, TScope>
   | Primitives<TExpression>
   | StringType<TExpression>;
 
@@ -246,16 +351,16 @@ type OperatorCall<
   Equality<TExpression, TScope>;
 
 type FuncArgs<
-  TExpression extends string,
+  TArgs extends string,
   TScope extends Scope<any, any, any>,
   _Prefix extends string = ""
-> = `${_Prefix}${TExpression}` extends ""
+> = `${_Prefix}${TArgs}` extends ""
   ? []
   :
-      | (Evaluate<`${_Prefix}${TExpression}`, TScope> extends never
+      | (Evaluate<`${_Prefix}${TArgs}`, TScope> extends never
           ? never
-          : [Evaluate<`${_Prefix}${TExpression}`, TScope>])
-      | (TExpression extends `${infer TFuncArg},${infer TFuncArgs}`
+          : [Evaluate<`${_Prefix}${TArgs}`, TScope>])
+      | (TArgs extends `${infer TFuncArg},${infer TFuncArgs}`
           ?
               | FuncArgs<TFuncArgs, TScope, `${_Prefix}${TFuncArg},`>
               | (Evaluate<`${_Prefix}${TFuncArg}`, TScope> extends never
@@ -548,16 +653,6 @@ type This<
 > = TExpression extends "@" ? TScope["this"] : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ThisAttribute
- */
-type ThisAttribute<
-  TExpression extends string,
-  TScope extends Scope<any, any, any>
-> = TExpression extends keyof TScope["this"]
-  ? TScope["this"][TExpression]
-  : never;
-
-/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SimpleExpression
  */
 type SimpleExpression<
@@ -649,15 +744,13 @@ type ElementAccess<
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Range
  */
 type Range<
-  TExpression extends string,
+  TRange extends string,
   TScope extends Scope<any, any, any>,
   _Exclusive extends boolean = boolean,
   _Prefix extends string = ""
 > = boolean extends _Exclusive
-  ?
-      | Range<TExpression, TScope, false, _Prefix>
-      | Range<TExpression, TScope, true, _Prefix>
-  : TExpression extends `${infer TLeft}${_Exclusive extends true
+  ? Range<TRange, TScope, false, _Prefix> | Range<TRange, TScope, true, _Prefix>
+  : TRange extends `${infer TLeft}${_Exclusive extends true
       ? "."
       : ""}..${infer TRight}`
   ?
