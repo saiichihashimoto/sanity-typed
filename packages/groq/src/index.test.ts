@@ -453,6 +453,20 @@ describe("groq", () => {
         expectType<ExecuteQuery<"global::now()">>().toStrictEqual<string>();
       });
 
+      it("round(3.14)", () => {
+        expectType<ExecuteQuery<"round(3.14)">>().toStrictEqual<number>();
+      });
+
+      it("round(3.14,1)", () => {
+        expectType<ExecuteQuery<"round(3.14,1)">>().toStrictEqual<number>();
+      });
+
+      it("global::round(3.14,1)", () => {
+        expectType<
+          ExecuteQuery<"global::round(3.14,1)">
+        >().toStrictEqual<number>();
+      });
+
       it('upper("String")', () => {
         expectType<ExecuteQuery<'upper("String")'>>().toStrictEqual<"STRING">();
       });
