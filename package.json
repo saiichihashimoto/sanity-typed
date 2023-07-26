@@ -22,12 +22,12 @@
     "test": "jest --color"
   },
   "dependencies": {
-    "@jest/types": "29.5.0",
+    "@jest/types": "29.6.1",
     "@manypkg/cli": "0.21.0",
     "@standard-configs/prettier-plugin": "1.0.11",
     "@total-typescript/ts-reset": "0.4.2",
-    "@trivago/prettier-plugin-sort-imports": "4.1.1",
-    "@types/jest": "29.5.2",
+    "@trivago/prettier-plugin-sort-imports": "4.2.0",
+    "@types/jest": "29.5.3",
     "@types/lint-staged": "13.2.0",
     "@typescript-eslint/eslint-plugin": "5.60.0",
     "concurrently": "8.2.0",
@@ -55,10 +55,10 @@
     "multi-semantic-release": "3.0.2",
     "prettier": "2.8.8",
     "prettier-plugin-sh": "0.12.8",
-    "ts-jest": "29.1.0",
+    "ts-jest": "29.1.1",
     "ts-node": "10.9.1",
     "tsup": "7.1.0",
-    "turbo": "1.10.7",
+    "turbo": "1.10.11",
     "typescript": "5.1.6"
   },
   "engines": {

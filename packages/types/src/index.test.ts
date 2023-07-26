@@ -2660,20 +2660,22 @@ describe("defineConfig", () => {
       },
     });
 
-    expectType<InferSchemaValues<typeof config>>().toStrictEqual<
-      | {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          bar?: boolean;
-        }
-      | {
-          _type: "baz";
-          qux?: boolean;
-        }
-    >();
+    type Values = InferSchemaValues<typeof config>;
+
+    expectType<Values>().toStrictEqual<{
+      baz: {
+        _type: "baz";
+        qux?: boolean;
+      };
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar?: boolean;
+      };
+    }>();
   });
 
   it("infers aliased type value", () => {
@@ -2706,24 +2708,65 @@ describe("defineConfig", () => {
       },
     });
 
-    expectType<InferSchemaValues<typeof config>>().toStrictEqual<
-      | {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          bar?: {
-            _type: "bar";
-          } & {
-            baz?: boolean;
-          };
-        }
-      | {
+    type Values = InferSchemaValues<typeof config>;
+
+    expectType<Values>().toStrictEqual<{
+      bar: {
+        _type: "bar";
+        baz?: boolean;
+      };
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar?: {
           _type: "bar";
+        } & {
           baz?: boolean;
-        }
-    >();
+        };
+      };
+    }>();
+  });
+
+  it("infers non-object aliased type value", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "document",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "bar",
+              }),
+            ],
+          }),
+          defineType({
+            name: "bar",
+            type: "string",
+          }),
+        ],
+      },
+    });
+
+    type Values = InferSchemaValues<typeof config>;
+
+    expectType<Values>().toStrictEqual<{
+      bar: string;
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar?: string;
+      };
+    }>();
   });
 
   it('adds "_type" to inferred named alias values in arrays', () => {
@@ -2762,25 +2805,27 @@ describe("defineConfig", () => {
       },
     });
 
-    expectType<InferSchemaValues<typeof config>>().toStrictEqual<
-      | {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          array?: ({
-            _key: string;
-            _type: "aliasedMemberName";
-          } & {
-            baz?: boolean;
-          })[];
-        }
-      | {
-          _type: "bar";
+    type Values = InferSchemaValues<typeof config>;
+
+    expectType<Values>().toStrictEqual<{
+      bar: {
+        _type: "bar";
+        baz?: boolean;
+      };
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        array?: ({
+          _key: string;
+          _type: "aliasedMemberName";
+        } & {
           baz?: boolean;
-        }
-    >();
+        })[];
+      };
+    }>();
   });
 
   it("infers cyclical type value", () => {
@@ -2804,9 +2849,11 @@ describe("defineConfig", () => {
       },
     });
 
+    type Values = InferSchemaValues<typeof config>;
+
     // It really is cyclical!
-    expectType<InferSchemaValues<typeof config>["foo"]["foo"]>().toStrictEqual<
-      InferSchemaValues<typeof config>["foo"]
+    expectType<Values["foo"]["foo"]["foo"]>().toStrictEqual<
+      Values["foo"]["foo"]
     >();
   });
 
@@ -2853,19 +2900,12 @@ describe("defineConfig", () => {
       },
     });
 
+    type Values = InferSchemaValues<typeof config>;
+
     // It really is cyclical!
     expectType<
-      Extract<
-        InferSchemaValues<typeof config>,
-        // Gets us the Foo object
-        { _type: "foo" }
-      >["bar"]["baz"]["foo"]["bar"]["baz"]["foo"]
-    >().toStrictEqual<
-      Extract<
-        InferSchemaValues<typeof config>,
-        { _type: "foo" }
-      >["bar"]["baz"]["foo"]
-    >();
+      Values["foo"]["bar"]["baz"]["foo"]["bar"]["baz"]["foo"]
+    >().toStrictEqual<Values["foo"]["bar"]["baz"]["foo"]>();
   });
 
   it("infers plugin type value", () => {
@@ -2907,16 +2947,20 @@ describe("defineConfig", () => {
       ],
     });
 
-    expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
-      _createdAt: string;
-      _id: string;
-      _rev: string;
-      _type: "foo";
-      _updatedAt: string;
-      pluginValue?: {
-        _type: "pluginValue";
-      } & {
-        baz?: boolean;
+    type Values = InferSchemaValues<typeof config>;
+
+    expectType<Values>().toStrictEqual<{
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        pluginValue?: {
+          _type: "pluginValue";
+        } & {
+          baz?: boolean;
+        };
       };
     }>();
   });
@@ -2960,13 +3004,17 @@ describe("defineConfig", () => {
       ],
     });
 
-    expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
-      _createdAt: string;
-      _id: string;
-      _rev: string;
-      _type: "foo";
-      _updatedAt: string;
-      pluginValue?: unknown;
+    type Values = InferSchemaValues<typeof config>;
+
+    expectType<Values>().toStrictEqual<{
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        pluginValue?: unknown;
+      };
     }>();
   });
 });
@@ -3047,20 +3095,22 @@ describe("definePlugin", () => {
       },
     })();
 
-    expectType<InferSchemaValues<typeof plugin>>().toStrictEqual<
-      | {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          bar?: boolean;
-        }
-      | {
-          _type: "baz";
-          qux?: boolean;
-        }
-    >();
+    type Values = InferSchemaValues<typeof plugin>;
+
+    expectType<Values>().toStrictEqual<{
+      baz: {
+        _type: "baz";
+        qux?: boolean;
+      };
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar?: boolean;
+      };
+    }>();
   });
 
   it("infers aliased type value", () => {
@@ -3092,24 +3142,64 @@ describe("definePlugin", () => {
       },
     })();
 
-    expectType<InferSchemaValues<typeof plugin>>().toStrictEqual<
-      | {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          bar?: {
-            _type: "bar";
-          } & {
-            baz?: boolean;
-          };
-        }
-      | {
+    type Values = InferSchemaValues<typeof plugin>;
+
+    expectType<Values>().toStrictEqual<{
+      bar: {
+        _type: "bar";
+        baz?: boolean;
+      };
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar?: {
           _type: "bar";
+        } & {
           baz?: boolean;
-        }
-    >();
+        };
+      };
+    }>();
+  });
+
+  it("infers non-object aliased type value", () => {
+    const plugin = definePlugin({
+      name: "plugin",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "document",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "bar",
+              }),
+            ],
+          }),
+          defineType({
+            name: "bar",
+            type: "string",
+          }),
+        ],
+      },
+    })();
+
+    type Values = InferSchemaValues<typeof plugin>;
+
+    expectType<Values>().toStrictEqual<{
+      bar: string;
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar?: string;
+      };
+    }>();
   });
 
   it('adds "_type" to inferred named alias values in arrays', () => {
@@ -3147,25 +3237,27 @@ describe("definePlugin", () => {
       },
     })();
 
-    expectType<InferSchemaValues<typeof plugin>>().toStrictEqual<
-      | {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          array?: ({
-            _key: string;
-            _type: "aliasedMemberName";
-          } & {
-            baz?: boolean;
-          })[];
-        }
-      | {
-          _type: "bar";
+    type Values = InferSchemaValues<typeof plugin>;
+
+    expectType<Values>().toStrictEqual<{
+      bar: {
+        _type: "bar";
+        baz?: boolean;
+      };
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        array?: ({
+          _key: string;
+          _type: "aliasedMemberName";
+        } & {
           baz?: boolean;
-        }
-    >();
+        })[];
+      };
+    }>();
   });
 
   it("infers cyclical type value", () => {
@@ -3188,9 +3280,11 @@ describe("definePlugin", () => {
       },
     })();
 
+    type Values = InferSchemaValues<typeof plugin>;
+
     // It really is cyclical!
-    expectType<InferSchemaValues<typeof plugin>["foo"]["foo"]>().toStrictEqual<
-      InferSchemaValues<typeof plugin>["foo"]
+    expectType<Values["foo"]["foo"]["foo"]>().toStrictEqual<
+      Values["foo"]["foo"]
     >();
   });
 
@@ -3236,19 +3330,12 @@ describe("definePlugin", () => {
       },
     })();
 
+    type Values = InferSchemaValues<typeof plugin>;
+
     // It really is cyclical!
     expectType<
-      Extract<
-        InferSchemaValues<typeof plugin>,
-        // Gets us the Foo object
-        { _type: "foo" }
-      >["bar"]["baz"]["foo"]["bar"]["baz"]["foo"]
-    >().toStrictEqual<
-      Extract<
-        InferSchemaValues<typeof plugin>,
-        { _type: "foo" }
-      >["bar"]["baz"]["foo"]
-    >();
+      Values["foo"]["bar"]["baz"]["foo"]["bar"]["baz"]["foo"]
+    >().toStrictEqual<Values["foo"]["bar"]["baz"]["foo"]>();
   });
 
   it("infers plugin type value", () => {
@@ -3289,16 +3376,20 @@ describe("definePlugin", () => {
       ],
     })();
 
-    expectType<InferSchemaValues<typeof plugin>>().toStrictEqual<{
-      _createdAt: string;
-      _id: string;
-      _rev: string;
-      _type: "foo";
-      _updatedAt: string;
-      pluginValue?: {
-        _type: "pluginValue";
-      } & {
-        baz?: boolean;
+    type Values = InferSchemaValues<typeof plugin>;
+
+    expectType<Values>().toStrictEqual<{
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        pluginValue?: {
+          _type: "pluginValue";
+        } & {
+          baz?: boolean;
+        };
       };
     }>();
   });
@@ -3341,13 +3432,17 @@ describe("definePlugin", () => {
       ],
     })();
 
-    expectType<InferSchemaValues<typeof plugin>>().toStrictEqual<{
-      _createdAt: string;
-      _id: string;
-      _rev: string;
-      _type: "foo";
-      _updatedAt: string;
-      pluginValue?: unknown;
+    type Values = InferSchemaValues<typeof plugin>;
+
+    expectType<Values>().toStrictEqual<{
+      foo: {
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        pluginValue?: unknown;
+      };
     }>();
   });
 });
