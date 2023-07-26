@@ -220,7 +220,6 @@ describe("defineArrayMember", () => {
           defineField({
             name: "tar",
             type: "number",
-            options: undefined,
           }),
         ],
       });
