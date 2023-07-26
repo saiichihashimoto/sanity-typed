@@ -27,7 +27,6 @@ import type {
   DocumentRule,
   EmailDefinition as EmailDefinitionNative,
   EmailRule,
-  EnumListProps,
   FieldDefinitionBase,
   FileDefinition as FileDefinitionNative,
   FileRule,
@@ -180,18 +179,23 @@ export type GeopointDefinition<TRequired extends boolean> = Merge<
   DefinitionBase<TRequired, Omit<GeopointValue, "_type">, GeopointRule>
 >;
 
-type ExtractUnionValues<T extends NumberOptions> = T["list"][number]["value"];
+type ExtractUnionValues<
+  T extends NumberOptions | undefined,
+  Default
+> = T extends NumberOptions
+  ? T["list"] extends (infer Item)[] // Check if "list" exists and is an array
+    ? Item extends { value: infer Value } // Check if "value" exists in each array item
+      ? Value // Return the type of "value"
+      : Default // If "value" is not present in any array item, return "any"
+    : Default // If "list" is not present, return "any"
+  : Default; // If the input type is "undefined", return "any"
 
 export type NumberDefinition<
   TRequired extends boolean,
   TOptions extends NumberOptions | undefined
 > = Merge<
   NumberDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    TOptions extends EnumListProps ? ExtractUnionValues<TOptions> : number,
-    NumberRule
-  >
+  DefinitionBase<TRequired, ExtractUnionValues<TOptions, number>, NumberRule>
 >;
 
 export type ReferenceDefinition<TRequired extends boolean> = Merge<
@@ -469,7 +473,7 @@ export const defineField = <
   TMemberDefinition extends DefinitionBase<any, any, any> & {
     name?: string;
   },
-  TOptions extends NumberOptions,
+  TOptions extends NumberOptions | undefined = undefined,
   TRequired extends boolean = false
 >(
   schemaField: FieldDefinitionBase &
