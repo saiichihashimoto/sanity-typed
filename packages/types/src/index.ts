@@ -181,12 +181,12 @@ type ExtractUnionValues<
   T extends NumberOptions | undefined,
   Default
 > = T extends NumberOptions
-  ? T["list"] extends (infer Item)[] // Check if "list" exists and is an array
-    ? Item extends { value: infer Value } // Check if "value" exists in each array item
-      ? Value // Return the type of "value"
-      : Default // If "value" is not present in any array item, return "any"
-    : Default // If "list" is not present, return "any"
-  : Default; // If the input type is "undefined", return "any"
+  ? T["list"] extends (infer Item)[]
+    ? Item extends { value: infer Value }
+      ? Value
+      : Default
+    : Default
+  : Default;
 
 export type NumberDefinition<
   TRequired extends boolean,
