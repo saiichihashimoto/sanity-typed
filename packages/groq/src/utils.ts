@@ -19,3 +19,20 @@ export type TupleOfLength<
             [T, ...Result]
           >
   : TupleOfLength<T, Min, Max, [T, ...Result]>;
+
+export type TupleToString<
+  T extends (bigint | boolean | number | string | null | undefined)[],
+  Result extends string = ""
+> = T extends [
+  infer Element extends bigint | boolean | number | string | null | undefined,
+  ...infer Remaining extends (
+    | bigint
+    | boolean
+    | number
+    | string
+    | null
+    | undefined
+  )[]
+]
+  ? TupleToString<Remaining, `${Result}${Element}`>
+  : Result;
