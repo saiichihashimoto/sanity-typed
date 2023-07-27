@@ -16,7 +16,7 @@ type Baz = typeof BAZ;
 
 describe("groq", () => {
   it('""', () => {
-    expectType<never>().toStrictEqual<ExecuteQuery<"">>();
+    expectType<ExecuteQuery<"">>().toBeNever();
   });
 
   describe("data types", () => {
@@ -51,9 +51,7 @@ describe("groq", () => {
     });
 
     it('"double" "quoted" "string"', () => {
-      expectType<never>().toStrictEqual<
-        ExecuteQuery<'"double" "quoted" "string"'>
-      >();
+      expectType<ExecuteQuery<'"double" "quoted" "string"'>>().toBeNever();
     });
 
     it("'single quoted string'", () => {
@@ -69,9 +67,7 @@ describe("groq", () => {
     });
 
     it("'single' 'quoted' 'string'", () => {
-      expectType<never>().toStrictEqual<
-        ExecuteQuery<"'single' 'quoted' 'string'">
-      >();
+      expectType<ExecuteQuery<"'single' 'quoted' 'string'">>().toBeNever();
     });
 
     it("[]", () => {
@@ -87,7 +83,7 @@ describe("groq", () => {
     });
 
     it("[1,notvalid]", () => {
-      expectType<never>().toStrictEqual<ExecuteQuery<"[1,notvalid]">>();
+      expectType<ExecuteQuery<"[1,notvalid]">>().toBeNever();
     });
 
     it("[null,true,false,-5.6,\"double quoted string\",'single quoted string']", () => {
