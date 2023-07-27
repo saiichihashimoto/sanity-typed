@@ -59,7 +59,7 @@ describe("defineArrayMember", () => {
         of: [],
       });
 
-      expectType<never>().toStrictEqual<_InferValue<typeof arrayMember>>();
+      expectType<_InferValue<typeof arrayMember>>().toBeNever();
     });
   });
 
@@ -938,7 +938,7 @@ describe("defineField", () => {
         type: "block",
       });
 
-      expectType<never>().toStrictEqual<_InferValue<typeof field>>();
+      expectType<_InferValue<typeof field>>().toBeNever();
     });
   });
 

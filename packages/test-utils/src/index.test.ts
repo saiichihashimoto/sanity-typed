@@ -444,54 +444,6 @@ describe("expectType", () => {
       const test: void = {} as unknown;
     });
 
-    it.skip("expectType<never>.toBeAssignableTo<never>()", () => {
-      expectType<never>().toBeAssignableTo<never>();
-      expectType<never>().not.toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
-      never>();
-
-      const test: never = {} as never;
-    });
-
-    it("expectType<never>.toBeAssignableTo<null>()", () => {
-      expectType<never>().toBeAssignableTo<null>();
-      expectType<never>().not.toBeAssignableTo<// @ts-expect-error
-      null>();
-
-      const test: null = {} as never;
-    });
-
-    it("expectType<never>.toBeAssignableTo<undefined>()", () => {
-      expectType<never>().toBeAssignableTo<undefined>();
-      expectType<never>().not.toBeAssignableTo<// @ts-expect-error
-      undefined>();
-
-      const test: undefined = {} as never;
-    });
-
-    it("expectType<never>.toBeAssignableTo<any>()", () => {
-      expectType<never>().toBeAssignableTo<any>();
-      expectType<never>().not.toBeAssignableTo<// @ts-expect-error
-      any>();
-
-      const test: any = {} as never;
-    });
-
-    it("expectType<never>.toBeAssignableTo<unknown>()", () => {
-      expectType<never>().toBeAssignableTo<unknown>();
-      expectType<never>().not.toBeAssignableTo<// @ts-expect-error
-      unknown>();
-
-      const test: unknown = {} as never;
-    });
-
-    it("expectType<never>.toBeAssignableTo<void>()", () => {
-      expectType<never>().toBeAssignableTo<void>();
-      expectType<never>().not.toBeAssignableTo<// @ts-expect-error
-      void>();
-
-      const test: void = {} as never;
-    });
-
     it("expectType<void>.toBeAssignableTo<void>()", () => {
       expectType<void>().toBeAssignableTo<void>();
       expectType<void>().not.toBeAssignableTo<// @ts-expect-error
@@ -848,36 +800,6 @@ describe("expectType", () => {
       expectType<unknown>().not.toStrictEqual<void>();
       expectType<unknown>().toStrictEqual<// @ts-expect-error
       void>();
-    });
-
-    it.skip("expectType<never>.toStrictEqual<never>()", () => {
-      expectType<never>().toStrictEqual<never>();
-      expectType<never>().not.toStrictEqual<// FIXME can't @ts-expect-error when the second type is never
-      never>();
-    });
-
-    it("expectType<never>.not.toStrictEqual<null>()", () => {
-      expectType<never>().not.toStrictEqual<null>();
-      expectType<never>().toStrictEqual<// @ts-expect-error
-      null>();
-    });
-
-    it("expectType<never>.not.toStrictEqual<undefined>()", () => {
-      expectType<never>().not.toStrictEqual<undefined>();
-      expectType<never>().toStrictEqual<// @ts-expect-error
-      undefined>();
-    });
-
-    it("expectType<never>.not.toStrictEqual<any>()", () => {
-      expectType<never>().not.toStrictEqual<any>();
-      expectType<never>().toStrictEqual<// @ts-expect-error
-      any>();
-    });
-
-    it("expectType<never>.not.toStrictEqual<unknown>()", () => {
-      expectType<never>().not.toStrictEqual<unknown>();
-      expectType<never>().toStrictEqual<// @ts-expect-error
-      unknown>();
     });
 
     it("expectType<void>.toStrictEqual<void>()", () => {
