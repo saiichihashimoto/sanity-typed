@@ -638,7 +638,10 @@ export const defineConfig = <
   >
 >(
   config: Config<TTypeDefinition, TPluginTypeDefinition>
-) => defineConfigNative(config as any) as typeof config;
+) =>
+  defineConfigNative(config as any) as typeof config extends any[]
+    ? Extract<typeof config, any[]>
+    : Exclude<typeof config, any[]>;
 
 type ExpandAliasValues<
   Value,

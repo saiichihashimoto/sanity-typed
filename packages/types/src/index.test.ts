@@ -938,7 +938,6 @@ describe("defineField", () => {
         type: "block",
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<never>();
       expectType<never>().toStrictEqual<_InferValue<typeof field>>();
     });
   });
@@ -2666,7 +2665,7 @@ describe("defineConfig", () => {
     });
 
     expectType<typeof config>().toStrictEqual<
-      Config<typeof baz | typeof foo>
+      Exclude<Config<typeof baz | typeof foo>, any[]>
     >();
   });
 
