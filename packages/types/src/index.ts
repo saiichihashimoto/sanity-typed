@@ -55,6 +55,7 @@ import type {
   SlugValue,
   StrictDefinition,
   StringDefinition as StringDefinitionNative,
+  StringOptions,
   StringRule,
   TextDefinition as TextDefinitionNative,
   TextRule,
@@ -178,9 +179,9 @@ export type GeopointDefinition<TRequired extends boolean> = Merge<
 >;
 
 type ExtractUnionValues<
-  T extends NumberOptions | undefined,
+  T extends NumberOptions | StringOptions | undefined,
   Default
-> = T extends NumberOptions
+> = T extends NumberOptions | StringOptions
   ? T["list"] extends (infer Item)[]
     ? Item extends { value: infer Value }
       ? Value
@@ -206,9 +207,12 @@ export type SlugDefinition<TRequired extends boolean> = Merge<
   DefinitionBase<TRequired, Omit<SlugValue, "_type">, SlugRule>
 >;
 
-export type StringDefinition<TRequired extends boolean> = Merge<
+export type StringDefinition<
+  TRequired extends boolean,
+  TOptions extends StringOptions | undefined
+> = Merge<
   StringDefinitionNative,
-  DefinitionBase<TRequired, string, StringRule>
+  DefinitionBase<TRequired, ExtractUnionValues<TOptions, string>, StringRule>
 >;
 
 export type TextDefinition<TRequired extends boolean> = Merge<
@@ -381,7 +385,14 @@ type IntrinsicDefinitions<
   },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TRequired extends boolean,
-  TOptions extends NumberOptions | undefined = undefined
+  TOptions extends
+    | IntrinsicDefinitions<any, any, any, any>[keyof IntrinsicDefinitions<
+        any,
+        any,
+        any,
+        any
+      >]["options"]
+    | undefined = undefined
 > = {
   array: ArrayDefinition<TRequired, TMemberDefinition>;
   block: BlockDefinition<TRequired>;
@@ -394,11 +405,17 @@ type IntrinsicDefinitions<
   file: FileDefinition<TRequired, TFieldDefinition>;
   geopoint: GeopointDefinition<TRequired>;
   image: ImageDefinition<TRequired, TFieldDefinition>;
-  number: NumberDefinition<TRequired, TOptions>;
+  number: NumberDefinition<
+    TRequired,
+    TOptions extends NumberOptions ? TOptions : undefined
+  >;
   object: ObjectDefinition<TRequired, TFieldDefinition>;
   reference: ReferenceDefinition<TRequired>;
   slug: SlugDefinition<TRequired>;
-  string: StringDefinition<TRequired>;
+  string: StringDefinition<
+    TRequired,
+    TOptions extends StringOptions ? TOptions : undefined
+  >;
   text: TextDefinition<TRequired>;
   url: UrlDefinition<TRequired>;
 };
@@ -471,7 +488,9 @@ export const defineField = <
   TMemberDefinition extends DefinitionBase<any, any, any> & {
     name?: string;
   },
-  TOptions extends NumberOptions | undefined = undefined,
+  TOptions extends
+    | IntrinsicDefinitions<any, any, any, any>[TAlias]["options"]
+    | undefined = undefined,
   TRequired extends boolean = false
 >(
   schemaField: FieldDefinitionBase &
