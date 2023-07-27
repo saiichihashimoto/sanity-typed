@@ -638,7 +638,10 @@ export const defineConfig = <
   >
 >(
   config: Config<TTypeDefinition, TPluginTypeDefinition>
-) => defineConfigNative(config as any) as typeof config;
+) =>
+  defineConfigNative(config as any) as typeof config extends any[]
+    ? Extract<typeof config, any[]>
+    : Exclude<typeof config, any[]>;
 
 type ExpandAliasValues<
   Value,
@@ -666,10 +669,25 @@ type ExpandAliasValues<
   : Value extends (infer Item)[]
   ? (Item extends ObjectArrayMemberValue<any>
       ? Item extends { [key: string]: any }
-        ? Simplify<
+        ? // eslint-disable-next-line @typescript-eslint/sort-type-constituents -- it keeps swapping them but still staying mad
+          Simplify<
             Omit<ExpandAliasValues<Item, TAliasedDefinition>, "_key" | "_type">
           > &
-            Simplify<Pick<Item, "_key" | "_type">>
+            Simplify<
+              // eslint-disable-next-line @typescript-eslint/sort-type-constituents -- it keeps swapping them but still staying mad
+              Pick<
+                Item extends { _key: any }
+                  ? Item
+                  : ExpandAliasValues<Item, TAliasedDefinition>,
+                "_key"
+              > &
+                Pick<
+                  Item extends { _type: any }
+                    ? Item
+                    : ExpandAliasValues<Item, TAliasedDefinition>,
+                  "_type"
+                >
+            >
         : ExpandAliasValues<Item, TAliasedDefinition>
       : ExpandAliasValues<Item, TAliasedDefinition>)[]
   : Value extends { [key: string]: any }

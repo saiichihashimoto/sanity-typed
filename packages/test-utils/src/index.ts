@@ -100,10 +100,14 @@ type ToBeAssignableTo<
 // https://twitter.com/mattpocockuk/status/1625173887590842369
 declare const inverted: unique symbol;
 
-type TypeMatchers<Expected, Inverted extends boolean = false> = {
+type NeverTypeMatchers = {
+  toBeNever: () => void;
+};
+
+type NonNeverTypeMatchers<Expected, Inverted extends boolean = false> = {
   [inverted]: Inverted;
   /** Inverse next matcher. If you know how to test something, .not lets you test its opposite. */
-  not: TypeMatchers<Expected, Negate<Inverted>>;
+  not: NonNeverTypeMatchers<Expected, Negate<Inverted>>;
   /**
    * Checks if Expected is assignable to Received.
    *
@@ -130,19 +134,28 @@ type TypeMatchers<Expected, Inverted extends boolean = false> = {
     : StrictDiff<Expected, Received>;
 };
 
+type TypeMatchers<Expected> = StrictEqual<Expected, never> extends true
+  ? NeverTypeMatchers
+  : NonNeverTypeMatchers<Expected>;
+
 export const expectType = <Expected>() => {
-  const valWithoutNot: Omit<TypeMatchers<Expected>, typeof inverted | "not"> = {
+  const valWithoutNot: Omit<
+    NeverTypeMatchers & NonNeverTypeMatchers<Expected>,
+    typeof inverted | "not"
+  > = {
     toBeAssignableTo: () => {},
+    toBeNever: () => {},
     toStrictEqual: <Received>() =>
       undefined as unknown as StrictDiff<Expected, Received> extends never
         ? void
         : StrictDiff<Expected, Received>,
   };
 
-  const val = valWithoutNot as TypeMatchers<Expected>;
+  const val = valWithoutNot as NeverTypeMatchers &
+    NonNeverTypeMatchers<Expected>;
 
   // eslint-disable-next-line fp/no-mutation -- recursion requires mutation
   val.not = val as unknown as typeof val.not;
 
-  return val;
+  return val as TypeMatchers<Expected>;
 };

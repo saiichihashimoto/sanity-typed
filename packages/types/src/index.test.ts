@@ -59,8 +59,7 @@ describe("defineArrayMember", () => {
         of: [],
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<never>();
-      expectType<never>().toStrictEqual<_InferValue<typeof arrayMember>>();
+      expectType<_InferValue<typeof arrayMember>>().toBeNever();
     });
   });
 
@@ -939,8 +938,7 @@ describe("defineField", () => {
         type: "block",
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<never>();
-      expectType<never>().toStrictEqual<_InferValue<typeof field>>();
+      expectType<_InferValue<typeof field>>().toBeNever();
     });
   });
 
@@ -1760,6 +1758,48 @@ describe("defineType", () => {
           _type: "inlineMemberName";
           bar?: boolean;
         }[]
+      >();
+    });
+
+    it('adds "_type" to types', () => {
+      const Foo = defineType({
+        title: "Foo",
+        name: "foo",
+        type: "object",
+        fields: [
+          defineField({
+            name: "value",
+            type: "boolean",
+          }),
+        ],
+      });
+
+      const TheArr = defineType({
+        title: "Body sections",
+        name: "thearr",
+        type: "array",
+        of: [
+          defineArrayMember({
+            type: "foo",
+          }),
+        ],
+      });
+
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [Foo, TheArr],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["thearr"]>().toStrictEqual<
+        ({
+          _key: string;
+          _type: "foo";
+        } & {
+          value?: boolean;
+        })[]
       >();
     });
 
@@ -2625,7 +2665,7 @@ describe("defineConfig", () => {
     });
 
     expectType<typeof config>().toStrictEqual<
-      Config<typeof baz | typeof foo>
+      Exclude<Config<typeof baz | typeof foo>, any[]>
     >();
   });
 
