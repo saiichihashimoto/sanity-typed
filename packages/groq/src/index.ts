@@ -1037,15 +1037,25 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
    */
   global: {
     /**
-     * TODO global::after
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_after()
      */
-    after: never;
+    after: TArgs extends []
+      ? TScope extends {
+          context: { delta: { after: infer TAfter } };
+        }
+        ? TAfter
+        : never
+      : never;
     /**
-     * TODO global::before
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_before()
      */
-    before: never;
+    before: TArgs extends []
+      ? TScope extends {
+          context: { delta: { before: infer TBefore } };
+        }
+        ? TBefore
+        : never
+      : never;
     /**
      * TODO global::boost
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_boost()
@@ -1113,7 +1123,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
      */
     now: TArgs extends [] ? string : never;
     /**
-     * TODO global::operation
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_operation()
      */
     operation: TArgs extends []

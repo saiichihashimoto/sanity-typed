@@ -7,6 +7,156 @@ import type { ExecuteQuery, Parse } from ".";
 
 describe("functions", () => {
   describe("global", () => {
+    it("after() (without delta)", () => {
+      const query = "after()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::after";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toBeNever();
+    });
+
+    it("after() (with null delta)", () => {
+      const query = "after()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::after";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
+    });
+
+    it("after() (with null after)", () => {
+      const query = "after()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::after";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: null; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<null>();
+    });
+
+    it("after()", () => {
+      const query = "after()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::after";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: null } }
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
+    it("global::after()", () => {
+      const query = "global::after()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::after";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: null } }
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
+    it("before() (without delta)", () => {
+      const query = "before()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::before";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toBeNever();
+    });
+
+    it("before() (with null delta)", () => {
+      const query = "before()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::before";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
+    });
+
+    it("before() (with null before)", () => {
+      const query = "before()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::before";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: null } }
+        >
+      >().toStrictEqual<null>();
+    });
+
+    it("before()", () => {
+      const query = "before()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::before";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: null; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
+    it("global::before()", () => {
+      const query = "global::before()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::before";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: null; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
     it("coalesce()", () => {
       const query = "coalesce()";
 
