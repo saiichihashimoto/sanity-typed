@@ -321,6 +321,98 @@ describe("functions", () => {
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<string>();
     });
 
+    it("operation() (without delta)", () => {
+      const query = "operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toBeNever();
+    });
+
+    it("operation() (with null delta)", () => {
+      const query = "operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
+    });
+
+    it("operation() (with create)", () => {
+      const query = "operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: null } }
+        >
+      >().toStrictEqual<"create">();
+    });
+
+    it("operation() (with delete)", () => {
+      const query = "operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: null; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<"delete">();
+    });
+
+    it("operation() (with update)", () => {
+      const query = "operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<"update">();
+    });
+
+    it("global::operation()", () => {
+      const query = "global::operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<"update">();
+    });
+
     it("round(3.14)", () => {
       const query = "round(3.14)";
 

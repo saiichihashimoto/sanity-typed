@@ -1116,7 +1116,17 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
      * TODO global::operation
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_operation()
      */
-    operation: never;
+    operation: TArgs extends []
+      ? TScope extends {
+          context: { delta: { after: infer TAfter; before: infer TBefore } };
+        }
+        ? TBefore extends null
+          ? "create"
+          : TAfter extends null
+          ? "delete"
+          : "update"
+        : never
+      : never;
     /**
      * TODO global::path
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_path()
