@@ -1,6 +1,7 @@
 import type {
   AccessAttributeNode,
   AccessElementNode,
+  AndNode,
   ArrayCoerceNode,
   ArrayElementNode,
   ArrayNode,
@@ -16,6 +17,7 @@ import type {
   ObjectAttributeValueNode,
   ObjectNode,
   ObjectSplatNode,
+  OrNode,
   ParentNode,
   ProjectionNode,
   SliceNode,
@@ -600,30 +602,72 @@ type CompoundExpression<TExpression extends string> =
   // TODO PipeFuncCall
   | TraversalExpression<TExpression>;
 
-type Op =
-  // | "-"
-  | "!="
-  // | "*"
-  // | "**"
-  // | "/"
-  // | "%"
-  // | "+"
-  // | "<"
-  // | "<="
-  | "==";
-// | ">"
-// | ">="
-// | "in"
-// | "match"
+type BooleanOperators = {
+  "&&": {
+    stronger: false;
+    type: "And";
+    weaker: true;
+  };
+  "||": {
+    stronger: true;
+    type: "Or";
+    weaker: false;
+  };
+};
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#And
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Or
+ */
+type BooleanOperator<
+  TExpression extends string,
+  TOp extends keyof BooleanOperators | null = null,
+  _Prefix extends string = ""
+> = TOp extends null
+  ? {
+      [TOp in keyof BooleanOperators]: BooleanOperator<TExpression, TOp>;
+    }[keyof BooleanOperators]
+  : TExpression extends `${infer TLeft}${TOp}${infer TRight}`
+  ?
+      | BooleanOperator<TRight, TOp, `${_Prefix}${TLeft}${TOp}`>
+      | (Parse<`${_Prefix}${TLeft}`> extends never
+          ? never
+          : Parse<TRight> extends never
+          ? never
+          : {
+              left: Parse<`${_Prefix}${TLeft}`>;
+              right: Parse<TRight>;
+              type: BooleanOperators[NonNullable<TOp>]["type"];
+            })
+  : never;
+
+type Operators = {
+  "!=": true;
+  "==": true;
+  // "-"
+  // "*"
+  // "**"
+  // "/"
+  // "%"
+  // "+"
+  // "<"
+  // "<="
+  // ">"
+  // ">="
+  // "in"
+  // "match"
+};
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Equality
  */
 type OpCall<
   TExpression extends string,
-  TOp extends Op,
+  TOp extends keyof Operators | null = null,
   _Prefix extends string = ""
-> = TExpression extends `${infer TLeft}${TOp}${infer TRight}`
+> = TOp extends null
+  ? { [TOp in keyof Operators]: OpCall<TExpression, TOp> }[keyof Operators]
+  : TExpression extends `${infer TLeft}${TOp}${infer TRight}`
   ?
       | OpCall<TRight, TOp, `${_Prefix}${TLeft}${TOp}`>
       | (Parse<`${_Prefix}${TLeft}`> extends never
@@ -642,7 +686,7 @@ type OpCall<
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#OperatorCall
  */
 type OperatorCall<TExpression extends string> =
-  // TODO And
+  | BooleanOperator<TExpression>
   // TODO Asc
   // TODO Comparison
   // TODO Desc
@@ -650,7 +694,6 @@ type OperatorCall<TExpression extends string> =
   // TODO Match
   // TODO Minus
   // TODO Not
-  // TODO Or
   // TODO Percent
   // TODO Plus
   // TODO Slash
@@ -659,7 +702,6 @@ type OperatorCall<TExpression extends string> =
   // TODO UnaryMinus
   // TODO UnaryPlus
   // | OpCall<TExpression, "-">
-  | OpCall<TExpression, "!=">
   // | OpCall<TExpression, "*">
   // | OpCall<TExpression, "**">
   // | OpCall<TExpression, "/">
@@ -667,11 +709,11 @@ type OperatorCall<TExpression extends string> =
   // | OpCall<TExpression, "+">
   // | OpCall<TExpression, "<">
   // | OpCall<TExpression, "<=">
-  | OpCall<TExpression, "==">;
-// | OpCall<TExpression, ">">
-// | OpCall<TExpression, ">=">
-// | OpCall<TExpression, "in">
-// | OpCall<TExpression, "match">
+  // | OpCall<TExpression, ">">
+  // | OpCall<TExpression, ">=">
+  // | OpCall<TExpression, "in">
+  // | OpCall<TExpression, "match">
+  | OpCall<TExpression>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Expression
@@ -783,6 +825,39 @@ type EvaluateArrayPostfix<
   ? Evaluate<TNode["base"], TScope> extends any[]
     ? Evaluate<TNode["base"], TScope>
     : null
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateAnd()
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateOr()
+ */
+type EvaluateBooleanOperator<
+  TNode extends ExprNode,
+  TScope extends Scope<any>
+> = TNode extends AndNode | OrNode
+  ? TNode extends {
+      left: infer TLeft extends ExprNode;
+      right: infer TRight extends ExprNode;
+      type: infer TType;
+    }
+    ? Extract<
+        BooleanOperators[keyof BooleanOperators],
+        { type: TType }
+      > extends {
+        stronger: infer TStronger;
+        weaker: infer TWeaker;
+      }
+      ? Evaluate<TLeft, TScope> extends TStronger
+        ? TStronger
+        : Evaluate<TRight, TScope> extends TStronger
+        ? TStronger
+        : Evaluate<TLeft, TScope> extends TWeaker
+        ? Evaluate<TRight, TScope> extends TWeaker
+          ? TWeaker
+          : null
+        : null
+      : never
+    : never
   : never;
 
 type EvaluateDereferenceElement<
@@ -1437,6 +1512,7 @@ type EvaluateExpression<TNode extends ExprNode, TScope extends Scope<any>> =
   | EvaluateAccessElement<TNode, TScope>
   | EvaluateArray<TNode, TScope>
   | EvaluateArrayPostfix<TNode, TScope>
+  | EvaluateBooleanOperator<TNode, TScope>
   | EvaluateDereference<TNode, TScope>
   | EvaluateEquality<TNode, TScope>
   | EvaluateEverything<TNode, TScope>
