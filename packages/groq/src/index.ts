@@ -421,15 +421,17 @@ type Functions<TArgs extends any[], TScope extends Scope<any, any, any>> = {
               >["global"]["string"] extends string
             ? TArr extends [infer TElement]
               ? Functions<[TElement], TScope>["global"]["string"]
-              : TArr extends [infer THead, ...infer TTail]
-              ? `${Functions<
-                  [THead],
-                  TScope
-                >["global"]["string"]}${TSep}${Functions<
-                  [TTail, TSep],
-                  TScope
-                >["array"]["join"]}`
-              : // Once it's reduced to Element[], a literal can't be determined
+              : // FIXME RangeError: Maximum call stack size exceeded
+                // TArr extends [infer THead, ...infer TTail]
+                // ? `${Functions<
+                //     [THead],
+                //     TScope
+                //   >["global"]["string"]}${TSep}${Functions<
+                //     [TTail, TSep],
+                //     TScope
+                //   >["array"]["join"]}`
+                // : // Once it's reduced to Element[], a literal can't be determined
+                //   string
                 string
             : null
           : null

@@ -183,7 +183,8 @@
     "unicorn/prefer-json-parse-buffer": "error",
     "unicorn/prefer-node-protocol": "off",
     "unicorn/prefer-string-replace-all": "error",
-    "unicorn/prevent-abbreviations": "off"
+    "unicorn/prevent-abbreviations": "off",
+    "unicorn/require-array-join-separator": "off"
   },
   "overrides": [
     {
