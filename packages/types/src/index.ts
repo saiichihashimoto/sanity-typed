@@ -307,7 +307,7 @@ export type ObjectDefinition<
   }
 >;
 
-type DocumentValue<
+export type DocumentValue<
   TType extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
