@@ -22,6 +22,7 @@ import type {
   ThisNode,
   ValueNode,
 } from "groq-js";
+import type { Simplify } from "type-fest";
 
 import type { TupleOfLength } from "./utils";
 
@@ -385,25 +386,6 @@ type Parent<
   ? Parent<TParents, [null, ...Levels]>
   : never;
 
-type FuncArgs<
-  TArgs extends string,
-  _Prefix extends string = ""
-> = `${_Prefix}${TArgs}` extends ""
-  ? []
-  :
-      | (Parse<`${_Prefix}${TArgs}`> extends never
-          ? never
-          : [Parse<`${_Prefix}${TArgs}`>])
-      | (TArgs extends `${infer TFuncArg},${infer TFuncArgs}`
-          ?
-              | FuncArgs<TFuncArgs, `${_Prefix}${TFuncArg},`>
-              | (Parse<`${_Prefix}${TFuncArg}`> extends never
-                  ? never
-                  : FuncArgs<TFuncArgs> extends never
-                  ? never
-                  : [Parse<`${_Prefix}${TFuncArg}`>, ...FuncArgs<TFuncArgs>])
-          : never);
-
 type Functions<TArgs extends any[], TScope extends Scope<any, any, any>> = {
   /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Array-namespace
@@ -688,6 +670,25 @@ type Functions<TArgs extends any[], TScope extends Scope<any, any, any>> = {
   };
 };
 
+type FuncArgs<
+  TArgs extends string,
+  _Prefix extends string = ""
+> = `${_Prefix}${TArgs}` extends ""
+  ? []
+  :
+      | (Parse<`${_Prefix}${TArgs}`> extends never
+          ? never
+          : [Parse<`${_Prefix}${TArgs}`>])
+      | (TArgs extends `${infer TFuncArg},${infer TFuncArgs}`
+          ?
+              | FuncArgs<TFuncArgs, `${_Prefix}${TFuncArg},`>
+              | (Parse<`${_Prefix}${TFuncArg}`> extends never
+                  ? never
+                  : FuncArgs<TFuncArgs> extends never
+                  ? never
+                  : [Parse<`${_Prefix}${TFuncArg}`>, ...FuncArgs<TFuncArgs>])
+          : never);
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#FuncCall
  */
@@ -699,7 +700,7 @@ type FuncCall<TExpression extends string> =
       ? TFuncNamespace extends keyof Functions<any, any>
         ? TFuncIdentifier extends keyof Functions<any, any>[TFuncNamespace]
           ? {
-              args: FuncArgs<TFuncCallArgs>;
+              args: Simplify<FuncArgs<TFuncCallArgs>>;
               func: GroqFunction;
               name: TFuncFullName;
               type: "FuncCall";
@@ -708,7 +709,7 @@ type FuncCall<TExpression extends string> =
         : never
       : TFuncFullName extends keyof Functions<any, any>["global"]
       ? {
-          args: FuncArgs<TFuncCallArgs>;
+          args: Simplify<FuncArgs<TFuncCallArgs>>;
           func: GroqFunction;
           name: `global::${TFuncFullName}`;
           type: "FuncCall";
@@ -1164,7 +1165,9 @@ type EvaluateObjectAttributes<
 type EvaluateObject<
   TNode extends ExprNode,
   TScope extends Scope<any, any, any>
-> = EvaluateObjectAttributes<Extract<TNode, ObjectNode>["attributes"], TScope>;
+> = Simplify<
+  EvaluateObjectAttributes<Extract<TNode, ObjectNode>["attributes"], TScope>
+>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateParent()
@@ -1244,9 +1247,11 @@ export type ExecuteQuery<
   ContextOrScope extends
     | Context<any, any>
     | Scope<any, any, any> = Context<never>
-> = Evaluate<
-  Parse<TQuery>,
-  ContextOrScope extends Context<any, any>
-    ? RootScope<ContextOrScope>
-    : ContextOrScope
+> = Simplify<
+  Evaluate<
+    Parse<TQuery>,
+    ContextOrScope extends Context<any, any>
+      ? RootScope<ContextOrScope>
+      : ContextOrScope
+  >
 >;

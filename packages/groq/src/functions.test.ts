@@ -117,115 +117,33 @@ describe("functions", () => {
       const query = "count([1,2,3,4])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 4 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 4 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 2 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 4 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 4 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 4 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "global::count";
         type: "FuncCall";
@@ -237,115 +155,33 @@ describe("functions", () => {
       const query = "global::count([1,2,3,4])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 4 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 4 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 2 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 4 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 4 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 4 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "global::count";
         type: "FuncCall";
@@ -408,73 +244,28 @@ describe("functions", () => {
         Parse<typeof query>
       >().toStrictEqual<// @ts-expect-error -- FIXME
       {
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: null };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: null };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: null };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "global::length";
         type: "FuncCall";
@@ -724,51 +515,28 @@ describe("functions", () => {
       const query = "math::sum([1,2,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 2 };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::sum";
         type: "FuncCall";
@@ -780,73 +548,28 @@ describe("functions", () => {
       const query = "math::sum([1,null,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: null };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::sum";
         type: "FuncCall";
@@ -858,73 +581,28 @@ describe("functions", () => {
       const query = "math::sum([1,false,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: false };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::sum";
         type: "FuncCall";
@@ -971,73 +649,28 @@ describe("functions", () => {
       const query = "math::avg([1,2,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 2 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::avg";
         type: "FuncCall";
@@ -1049,73 +682,28 @@ describe("functions", () => {
       const query = "math::avg([1,null,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: null };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::avg";
         type: "FuncCall";
@@ -1127,73 +715,28 @@ describe("functions", () => {
       const query = "math::avg([1,false,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: false };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::avg";
         type: "FuncCall";
@@ -1240,73 +783,28 @@ describe("functions", () => {
       const query = "math::min([1,2,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 2 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::min";
         type: "FuncCall";
@@ -1318,73 +816,28 @@ describe("functions", () => {
       const query = "math::min([1,null,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: null };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::min";
         type: "FuncCall";
@@ -1396,73 +849,28 @@ describe("functions", () => {
       const query = "math::min([1,false,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: false };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::min";
         type: "FuncCall";
@@ -1509,73 +917,28 @@ describe("functions", () => {
       const query = "math::max([1,2,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 2 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 2 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::max";
         type: "FuncCall";
@@ -1587,73 +950,28 @@ describe("functions", () => {
       const query = "math::max([1,null,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: null };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: null };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::max";
         type: "FuncCall";
@@ -1665,73 +983,28 @@ describe("functions", () => {
       const query = "math::max([1,false,3])";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args:
-          | [
+        args: [
+          {
+            elements: [
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
-              }
-            ]
-          | [
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: false };
+              },
               {
-                elements: [
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 1 };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: false };
-                  },
-                  {
-                    isSplat: false;
-                    type: "ArrayElement";
-                    value: { type: "Value"; value: 3 };
-                  }
-                ];
-                type: "Array";
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 3 };
               }
             ];
+            type: "Array";
+          }
+        ];
         func: GroqFunction;
         name: "math::max";
         type: "FuncCall";

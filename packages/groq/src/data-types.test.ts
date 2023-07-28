@@ -370,9 +370,10 @@ describe("data types", () => {
       ];
       type: "Object";
     }>();
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
-      Omit<{ foo: "bar" }, "baz"> & { baz: "qux" }
-    >();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<{
+      baz: "qux";
+      foo: "bar";
+    }>();
   });
 
   it("{foo}", () => {
@@ -434,7 +435,7 @@ describe("data types", () => {
         typeof query,
         Scope<never, { baz: "qux"; foo: "bar" }, never>
       >
-    >().toStrictEqual<Omit<{ foo: "bar" }, "baz"> & { baz: "qux" }>();
+    >().toStrictEqual<{ baz: "qux"; foo: "bar" }>();
   });
 
   it('{...{"foo":"bar"}}', () => {
@@ -519,9 +520,10 @@ describe("data types", () => {
       ];
       type: "Object";
     }>();
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
-      Omit<{ foo: "bar" }, "baz"> & { baz: "qux" }
-    >();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<{
+      baz: "qux";
+      foo: "bar";
+    }>();
   });
 
   it("{...}", () => {
@@ -564,6 +566,6 @@ describe("data types", () => {
     }>();
     expectType<
       ExecuteQuery<typeof query, Scope<never, { foo: "bar" }, never>>
-    >().toStrictEqual<Omit<{ foo: "bar" }, "baz"> & { baz: "qux" }>();
+    >().toStrictEqual<{ baz: "qux"; foo: "bar" }>();
   });
 });
