@@ -28,8 +28,6 @@ import type { ReferenceValue } from "@sanity-typed/types";
 
 import type { TupleOfLength } from "./utils";
 
-// FIXME Handle Whitespace
-
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Query-context
  */
@@ -394,10 +392,21 @@ type Functions<TArgs extends any[], TScope extends Scope<any, any, any>> = {
    */
   array: {
     /**
-     * TODO array::compact
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_compact()
      */
-    compact: never;
+    compact: TArgs extends [infer TArr]
+      ? TArr extends any[]
+        ? TArr extends null[] | []
+          ? []
+          : TArr extends [infer TFirst, ...infer TRest]
+          ? TFirst extends null
+            ? Functions<[TRest], TScope>["array"]["compact"]
+            : [TFirst, ...Functions<[TRest], TScope>["array"]["compact"]]
+          : TArr extends (infer TElement)[]
+          ? NonNullable<TElement>[]
+          : never
+        : null
+      : never;
     /**
      * TODO array::join
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_join()

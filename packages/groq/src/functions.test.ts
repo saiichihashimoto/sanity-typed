@@ -6,6 +6,93 @@ import { expectType } from "@sanity-typed/test-utils";
 import type { Context, ExecuteQuery, Parse, Scope } from ".";
 
 describe("functions", () => {
+  describe("array", () => {
+    it("array::compact(false)", () => {
+      const query = "array::compact(false)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: false }];
+        func: GroqFunction;
+        name: "array::compact";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it("array::compact([])", () => {
+      const query = "array::compact([])";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ elements: []; type: "Array" }];
+        func: GroqFunction;
+        name: "array::compact";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[]>();
+    });
+
+    it("array::compact([1,null,2])", () => {
+      const query = "array::compact([1,null,2])";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: null };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 2 };
+              }
+            ];
+            type: "Array";
+          }
+        ];
+        func: GroqFunction;
+        name: "array::compact";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[1, 2]>();
+    });
+
+    it("array::compact(*)", () => {
+      const query = "array::compact(*)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Everything" }];
+        func: GroqFunction;
+        name: "array::compact";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, Context<(1 | 2 | null)[]>>
+      >().toStrictEqual<(1 | 2)[]>();
+    });
+
+    it("array::compact(*) (only null)", () => {
+      const query = "array::compact(*)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Everything" }];
+        func: GroqFunction;
+        name: "array::compact";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, Context<null[]>>>().toStrictEqual<
+        []
+      >();
+    });
+  });
+
   describe("global", () => {
     it("coalesce()", () => {
       const query = "coalesce()";
