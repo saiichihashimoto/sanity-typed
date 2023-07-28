@@ -11,7 +11,7 @@ import type {
   GeopointValue,
   ImageCrop,
   ImageHotspot,
-  Reference,
+  ReferenceValue as ReferenceValueNative,
   SlugValue,
 } from "sanity";
 import type { Merge } from "type-fest";
@@ -33,6 +33,7 @@ import type {
   ImageValue,
   InferSchemaValues,
   PluginOptions,
+  ReferenceValue,
   _InferValue,
 } from ".";
 
@@ -345,7 +346,7 @@ describe("defineArrayMember", () => {
       });
 
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: boolean;
         tar?: number;
       }>();
@@ -369,7 +370,7 @@ describe("defineArrayMember", () => {
       });
 
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: {
           tar?: number;
         };
@@ -389,7 +390,7 @@ describe("defineArrayMember", () => {
       });
 
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar: boolean;
       }>();
     });
@@ -412,9 +413,9 @@ describe("defineArrayMember", () => {
         type: "geopoint",
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        Omit<GeopointValue, "_type">
-      >();
+      expectType<
+        _InferValue<typeof arrayMember>
+      >().toStrictEqual<GeopointValue>();
     });
   });
 
@@ -454,7 +455,7 @@ describe("defineArrayMember", () => {
       });
 
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
@@ -480,7 +481,7 @@ describe("defineArrayMember", () => {
       });
 
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: {
           tar?: number;
         };
@@ -502,7 +503,7 @@ describe("defineArrayMember", () => {
       });
 
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
@@ -623,23 +624,23 @@ describe("defineArrayMember", () => {
       expect(
         defineArrayMember({
           type: "reference",
-          to: [],
+          to: [{ type: "other" as const }],
         })
       ).toStrictEqual(
         defineArrayMemberNative({
           type: "reference",
-          to: [],
+          to: [{ type: "other" }],
         })
       ));
 
     it("infers Reference", () => {
       const arrayMember = defineArrayMember({
         type: "reference",
-        to: [],
+        to: [{ type: "other" as const }],
       });
 
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        Omit<Reference, "_type">
+        ReferenceValue<"other">
       >();
     });
   });
@@ -661,9 +662,7 @@ describe("defineArrayMember", () => {
         type: "slug",
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        Omit<SlugValue, "_type">
-      >();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<SlugValue>();
     });
   });
 
@@ -1221,7 +1220,7 @@ describe("defineField", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: boolean;
         tar?: number;
       }>();
@@ -1246,7 +1245,7 @@ describe("defineField", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: {
           tar?: number;
         };
@@ -1267,7 +1266,7 @@ describe("defineField", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar: boolean;
       }>();
     });
@@ -1293,9 +1292,7 @@ describe("defineField", () => {
         type: "geopoint",
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<
-        Omit<GeopointValue, "_type">
-      >();
+      expectType<_InferValue<typeof field>>().toStrictEqual<GeopointValue>();
     });
   });
 
@@ -1339,7 +1336,7 @@ describe("defineField", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
@@ -1366,7 +1363,7 @@ describe("defineField", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: {
           tar?: number;
         };
@@ -1389,7 +1386,7 @@ describe("defineField", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
@@ -1519,13 +1516,13 @@ describe("defineField", () => {
         defineField({
           name: "foo",
           type: "reference",
-          to: [],
+          to: [{ type: "other" as const }],
         })
       ).toStrictEqual(
         defineFieldNative({
           name: "foo",
           type: "reference",
-          to: [],
+          to: [{ type: "other" }],
         })
       ));
 
@@ -1533,11 +1530,11 @@ describe("defineField", () => {
       const field = defineField({
         name: "foo",
         type: "reference",
-        to: [],
+        to: [{ type: "other" as const }],
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<
-        Omit<Reference, "_type">
+        ReferenceValue<"other">
       >();
     });
   });
@@ -1562,9 +1559,7 @@ describe("defineField", () => {
         type: "slug",
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<
-        Omit<SlugValue, "_type">
-      >();
+      expectType<_InferValue<typeof field>>().toStrictEqual<SlugValue>();
     });
   });
 
@@ -2173,7 +2168,7 @@ describe("defineType", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: boolean;
         tar?: number;
       }>();
@@ -2198,7 +2193,7 @@ describe("defineType", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: {
           tar?: number;
         };
@@ -2219,7 +2214,7 @@ describe("defineType", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar: boolean;
       }>();
     });
@@ -2245,9 +2240,7 @@ describe("defineType", () => {
         type: "geopoint",
       });
 
-      expectType<_InferValue<typeof type>>().toStrictEqual<
-        Omit<GeopointValue, "_type">
-      >();
+      expectType<_InferValue<typeof type>>().toStrictEqual<GeopointValue>();
     });
   });
 
@@ -2291,7 +2284,7 @@ describe("defineType", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
@@ -2318,7 +2311,7 @@ describe("defineType", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar?: {
           tar?: number;
         };
@@ -2341,7 +2334,7 @@ describe("defineType", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
-        asset?: Reference;
+        asset?: ReferenceValueNative;
         bar: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
@@ -2471,13 +2464,13 @@ describe("defineType", () => {
         defineType({
           name: "foo",
           type: "reference",
-          to: [],
+          to: [{ type: "other" as const }],
         })
       ).toStrictEqual(
         defineTypeNative({
           name: "foo",
           type: "reference",
-          to: [],
+          to: [{ type: "other" }],
         })
       ));
 
@@ -2485,11 +2478,11 @@ describe("defineType", () => {
       const type = defineType({
         name: "foo",
         type: "reference",
-        to: [],
+        to: [{ type: "other" as const }],
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<
-        Omit<Reference, "_type">
+        ReferenceValue<"other">
       >();
     });
   });
@@ -2514,9 +2507,7 @@ describe("defineType", () => {
         type: "slug",
       });
 
-      expectType<_InferValue<typeof type>>().toStrictEqual<
-        Omit<SlugValue, "_type">
-      >();
+      expectType<_InferValue<typeof type>>().toStrictEqual<SlugValue>();
     });
   });
 
