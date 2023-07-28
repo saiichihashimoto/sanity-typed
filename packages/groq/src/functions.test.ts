@@ -91,6 +91,109 @@ describe("functions", () => {
         []
       >();
     });
+
+    it("array::unique(false)", () => {
+      const query = "array::unique(false)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: false }];
+        func: GroqFunction;
+        name: "array::unique";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it("array::unique([])", () => {
+      const query = "array::unique([])";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ elements: []; type: "Array" }];
+        func: GroqFunction;
+        name: "array::unique";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[]>();
+    });
+
+    it("array::unique([1,2,1])", () => {
+      const query = "array::unique([1,2,1])";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 2 };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              }
+            ];
+            type: "Array";
+          }
+        ];
+        func: GroqFunction;
+        name: "array::unique";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[1, 2]>();
+    });
+
+    it("array::unique([{},{}])", () => {
+      const query = "array::unique([{},{}])";
+
+      expectType<Parse<typeof query>>()
+        // FIXME toStrictEqual
+        .toBeAssignableTo<{
+          args: [
+            {
+              elements: [
+                {
+                  isSplat: false;
+                  type: "ArrayElement";
+                  value: { attributes: []; type: "Object" };
+                },
+                {
+                  isSplat: false;
+                  type: "ArrayElement";
+                  value: { attributes: []; type: "Object" };
+                }
+              ];
+              type: "Array";
+            }
+          ];
+          func: GroqFunction;
+          name: "array::unique";
+          type: "FuncCall";
+        }>();
+      expectType<ExecuteQuery<typeof query>>()
+        // FIXME toStrictEqual
+        .toBeAssignableTo<[{ [x: string]: never }, { [x: string]: never }]>();
+    });
+
+    it("array::unique(*)", () => {
+      const query = "array::unique(*)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Everything" }];
+        func: GroqFunction;
+        name: "array::unique";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, Context<(1 | 1 | 2)[]>>
+      >().toStrictEqual<(1 | 2)[]>();
+    });
   });
 
   describe("global", () => {
