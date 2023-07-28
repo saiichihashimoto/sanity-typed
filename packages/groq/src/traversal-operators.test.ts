@@ -1,5 +1,4 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -181,9 +180,7 @@ describe("traversal operators", () => {
       type: "AccessElement";
     }>();
     expectType<
-      Simplify<
-        ExecuteQuery<typeof query, Context<({ key: Bar } | { key: Foo })[]>>
-      >
+      ExecuteQuery<typeof query, Context<({ key: Bar } | { key: Foo })[]>>
     >().toStrictEqual<{ key: Bar } | { key: Foo }>();
   });
 
