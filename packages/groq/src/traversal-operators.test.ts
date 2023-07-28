@@ -534,6 +534,144 @@ describe("traversal operators", () => {
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
   });
 
+  it('{"key":"value"}{key}', () => {
+    const query = '{"key":"value"}{key}';
+
+    expectType<Parse<typeof query>>().toStrictEqual<{
+      base: {
+        attributes: [
+          {
+            name: "key";
+            type: "ObjectAttributeValue";
+            value: { type: "Value"; value: "value" };
+          }
+        ];
+        type: "Object";
+      };
+      expr: {
+        attributes: [
+          {
+            name: "key";
+            type: "ObjectAttributeValue";
+            value: { name: "key"; type: "AccessAttribute" };
+          }
+        ];
+        type: "Object";
+      };
+      type: "Projection";
+    }>();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<{ key: "value" }>();
+  });
+
+  it('{"key":"value"}|{key}', () => {
+    const query = '{"key":"value"}|{key}';
+
+    expectType<Parse<typeof query>>().toStrictEqual<{
+      base: {
+        attributes: [
+          {
+            name: "key";
+            type: "ObjectAttributeValue";
+            value: { type: "Value"; value: "value" };
+          }
+        ];
+        type: "Object";
+      };
+      expr: {
+        attributes: [
+          {
+            name: "key";
+            type: "ObjectAttributeValue";
+            value: { name: "key"; type: "AccessAttribute" };
+          }
+        ];
+        type: "Object";
+      };
+      type: "Projection";
+    }>();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<{ key: "value" }>();
+  });
+
+  it('[{"key":"value"}]{key}', () => {
+    const query = '[{"key":"value"}]{key}';
+
+    expectType<Parse<typeof query>>().toStrictEqual<{
+      base: {
+        elements: [
+          {
+            isSplat: false;
+            type: "ArrayElement";
+            value: {
+              attributes: [
+                {
+                  name: "key";
+                  type: "ObjectAttributeValue";
+                  value: { type: "Value"; value: "value" };
+                }
+              ];
+              type: "Object";
+            };
+          }
+        ];
+        type: "Array";
+      };
+      expr: {
+        attributes: [
+          {
+            name: "key";
+            type: "ObjectAttributeValue";
+            value: { name: "key"; type: "AccessAttribute" };
+          }
+        ];
+        type: "Object";
+      };
+      type: "Projection";
+    }>();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      [{ key: "value" }]
+    >();
+  });
+
+  it('[{"key":"value"}]|{key}', () => {
+    const query = '[{"key":"value"}]|{key}';
+
+    expectType<Parse<typeof query>>().toStrictEqual<{
+      base: {
+        elements: [
+          {
+            isSplat: false;
+            type: "ArrayElement";
+            value: {
+              attributes: [
+                {
+                  name: "key";
+                  type: "ObjectAttributeValue";
+                  value: { type: "Value"; value: "value" };
+                }
+              ];
+              type: "Object";
+            };
+          }
+        ];
+        type: "Array";
+      };
+      expr: {
+        attributes: [
+          {
+            name: "key";
+            type: "ObjectAttributeValue";
+            value: { name: "key"; type: "AccessAttribute" };
+          }
+        ];
+        type: "Object";
+      };
+      type: "Projection";
+    }>();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      [{ key: "value" }]
+    >();
+  });
+
   it("@->", () => {
     const query = "@->";
 
