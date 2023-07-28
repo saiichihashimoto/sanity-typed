@@ -420,10 +420,10 @@ type IntrinsicDefinitions<
 
 type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any, any>;
 
-declare const aliasTypeSymbol: unique symbol;
+declare const aliasedType: unique symbol;
 
 export type AliasValue<TType extends string> = {
-  [aliasTypeSymbol]: TType;
+  [aliasedType]: TType;
 };
 
 type TypeAliasDefinition<
