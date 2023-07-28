@@ -45,7 +45,7 @@ import type {
   PreviewConfig,
   ReferenceDefinition as ReferenceDefinitionNative,
   ReferenceRule,
-  ReferenceValue,
+  ReferenceValue as ReferenceValueNative,
   RuleDef,
   SanityDocument,
   SchemaPluginOptions as SchemaPluginOptionsNative,
@@ -58,6 +58,7 @@ import type {
   TextDefinition as TextDefinitionNative,
   TextRule,
   TypeAliasDefinition as TypeAliasDefinitionNative,
+  TypeReference as TypeReferenceNative,
   UrlDefinition as UrlDefinitionNative,
   UrlRule,
   WorkspaceOptions as WorkspaceOptionsNative,
@@ -66,7 +67,8 @@ import type { Merge, RemoveIndexSignature, Simplify } from "type-fest";
 
 import type { TupleOfLength } from "./utils";
 
-declare const requiredSymbol: unique symbol;
+// declare const README: unique symbol;
+declare const required: unique symbol;
 
 type WithRequired<
   TRequired extends boolean,
@@ -79,7 +81,7 @@ type WithRequired<
   },
   {
     required: () => WithRequired<true, Rule>;
-    [requiredSymbol]: TRequired;
+    [required]: TRequired;
   }
 >;
 
@@ -173,7 +175,7 @@ export type EmailDefinition<TRequired extends boolean> = Merge<
 
 export type GeopointDefinition<TRequired extends boolean> = Merge<
   GeopointDefinitionNative,
-  DefinitionBase<TRequired, Omit<GeopointValue, "_type">, GeopointRule>
+  DefinitionBase<TRequired, GeopointValue, GeopointRule>
 >;
 
 export type NumberDefinition<TRequired extends boolean> = Merge<
@@ -181,14 +183,42 @@ export type NumberDefinition<TRequired extends boolean> = Merge<
   DefinitionBase<TRequired, number, NumberRule>
 >;
 
-export type ReferenceDefinition<TRequired extends boolean> = Merge<
+declare const referenced: unique symbol;
+
+export type ReferenceValue<TReferenced extends string> = Merge<
+  Omit<ReferenceValueNative, "_type">,
+  { [referenced]: TReferenced[] }
+>;
+
+export type TypeReference<TReferenced extends string> = Merge<
+  TypeReferenceNative,
+  {
+    // type: string extends TReferenced
+    //   ? TReferenced & {
+    //       [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+    //     }
+    //   : TReferenced;
+    type: TReferenced;
+  }
+>;
+
+export type ReferenceDefinition<
+  TRequired extends boolean,
+  TReferenced extends string
+> = Merge<
   ReferenceDefinitionNative,
-  DefinitionBase<TRequired, Omit<ReferenceValue, "_type">, ReferenceRule>
+  DefinitionBase<
+    TRequired,
+    ReferenceValue<TReferenced>,
+    RewriteValue<ReferenceValue<TReferenced>, ReferenceRule>
+  > & {
+    to: TupleOfLength<TypeReference<TReferenced>, 1>;
+  }
 >;
 
 export type SlugDefinition<TRequired extends boolean> = Merge<
   SlugDefinitionNative,
-  DefinitionBase<TRequired, Omit<SlugValue, "_type">, SlugRule>
+  DefinitionBase<TRequired, SlugValue, SlugRule>
 >;
 
 export type StringDefinition<TRequired extends boolean> = Merge<
@@ -244,18 +274,18 @@ export type ArrayDefinition<
 type ObjectValue<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   }
 > = Simplify<
   {
     [Name in Extract<
       TFieldDefinition,
-      { [requiredSymbol]?: false }
+      { [required]?: false }
     >["name"]]?: _InferValue<Extract<TFieldDefinition, { name: Name }>>;
   } & {
     [Name in Extract<
       TFieldDefinition,
-      { [requiredSymbol]?: true }
+      { [required]?: true }
     >["name"]]: _InferValue<Extract<TFieldDefinition, { name: Name }>>;
   }
 >;
@@ -264,7 +294,7 @@ export type ObjectDefinition<
   TRequired extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   }
 > = Merge<
   ObjectDefinitionNative,
@@ -281,7 +311,7 @@ export type DocumentValue<
   TType extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   }
 > = Simplify<
   ObjectValue<TFieldDefinition> &
@@ -293,7 +323,7 @@ export type DocumentDefinition<
   TRequired extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   }
 > = Merge<
   DocumentDefinitionNative,
@@ -309,7 +339,7 @@ export type DocumentDefinition<
 export type FileValue<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   } = never
 > = Simplify<
   ObjectValue<TFieldDefinition> & RemoveIndexSignature<FileValueNative>
@@ -319,7 +349,7 @@ type FileDefinition<
   TRequired extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   }
 > = Merge<
   FileDefinitionNative,
@@ -335,7 +365,7 @@ type FileDefinition<
 export type ImageValue<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   } = never
 > = Simplify<
   ObjectValue<TFieldDefinition> & RemoveIndexSignature<ImageValueNative>
@@ -345,7 +375,7 @@ type ImageDefinition<
   TRequired extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   }
 > = Merge<
   ImageDefinitionNative,
@@ -362,9 +392,10 @@ type IntrinsicDefinitions<
   TName extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+  TReferenced extends string,
   TRequired extends boolean
 > = {
   array: ArrayDefinition<TRequired, TMemberDefinition>;
@@ -380,19 +411,19 @@ type IntrinsicDefinitions<
   image: ImageDefinition<TRequired, TFieldDefinition>;
   number: NumberDefinition<TRequired>;
   object: ObjectDefinition<TRequired, TFieldDefinition>;
-  reference: ReferenceDefinition<TRequired>;
+  reference: ReferenceDefinition<TRequired, TReferenced>;
   slug: SlugDefinition<TRequired>;
   string: StringDefinition<TRequired>;
   text: TextDefinition<TRequired>;
   url: UrlDefinition<TRequired>;
 };
 
-type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any>;
+type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any, any>;
 
-declare const aliasTypeSymbol: unique symbol;
+declare const aliasedType: unique symbol;
 
 export type AliasValue<TType extends string> = {
-  [aliasTypeSymbol]: TType;
+  [aliasedType]: TType;
 };
 
 type TypeAliasDefinition<
@@ -403,7 +434,7 @@ type TypeAliasDefinition<
   TypeAliasDefinitionNative<TType, TAlias>,
   DefinitionBase<TRequired, AliasValue<TType>, any> & {
     options?: TAlias extends IntrinsicTypeName
-      ? IntrinsicDefinitions<any, any, any, TRequired>[TAlias]["options"]
+      ? IntrinsicDefinitions<any, any, any, any, TRequired>[TAlias]["options"]
       : unknown;
   }
 >;
@@ -415,8 +446,9 @@ export const defineArrayMember = <
   TStrict extends StrictDefinition,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
-  }
+    [required]?: boolean;
+  },
+  TReferenced extends string
 >(
   arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
     (TType extends "array"
@@ -426,7 +458,13 @@ export const defineArrayMember = <
         Extract<
           {
             [K in IntrinsicTypeName]: Omit<
-              IntrinsicDefinitions<TName, TFieldDefinition, any, any>[K],
+              IntrinsicDefinitions<
+                TName,
+                TFieldDefinition,
+                any,
+                TReferenced,
+                any
+              >[K],
               "name"
             >;
           }[IntrinsicTypeName],
@@ -450,9 +488,10 @@ export const defineField = <
   TStrict extends StrictDefinition,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+  TReferenced extends string,
   TRequired extends boolean = false
 >(
   schemaField: FieldDefinitionBase &
@@ -468,6 +507,7 @@ export const defineField = <
                 TName,
                 TFieldDefinition,
                 TMemberDefinition,
+                TReferenced,
                 TRequired
               >[K],
               "FIXME why does this fail without the omit? we're clearly not using it"
@@ -477,7 +517,7 @@ export const defineField = <
         >
       : TypeAliasDefinition<TType, TAlias, TRequired>) & {
       name: TName;
-      [requiredSymbol]?: TRequired;
+      [required]?: TRequired;
       type: TType;
     },
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
@@ -490,9 +530,10 @@ type Type<
   TStrict extends StrictDefinition,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   },
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+  TReferenced extends string
 > = MaybeAllowUnknownProps<TStrict> &
   (TType extends IntrinsicTypeName
     ? // HACK Why can't I just index off of IntrinsicDefinitions?
@@ -503,6 +544,7 @@ type Type<
               TName,
               TFieldDefinition,
               TMemberDefinition,
+              TReferenced,
               any
             >[K],
             "FIXME why does this fail without the omit? we're clearly not using it"
@@ -522,9 +564,10 @@ export const defineType = <
   TStrict extends StrictDefinition,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
-    [requiredSymbol]?: boolean;
+    [required]?: boolean;
   },
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+  TReferenced extends string
 >(
   schemaDefinition: Type<
     TType,
@@ -532,7 +575,8 @@ export const defineType = <
     TAlias,
     TStrict,
     TFieldDefinition,
-    TMemberDefinition
+    TMemberDefinition,
+    TReferenced
   >,
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) =>
@@ -542,8 +586,8 @@ export const defineType = <
   ) as typeof schemaDefinition;
 
 type ConfigBase<
-  TTypeDefinition extends Type<any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any>
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any>
 > = {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive type
   plugins?: (PluginOptions<TPluginTypeDefinition, any> | PluginOptionsNative)[];
@@ -564,9 +608,10 @@ type ConfigBase<
 };
 
 export type PluginOptions<
-  TTypeDefinition extends Type<any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any> = Type<
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any> = Type<
     string,
+    any,
     any,
     any,
     any,
@@ -577,9 +622,10 @@ export type PluginOptions<
   Omit<PluginOptionsNative, "plugins" | "schema">;
 
 export const definePlugin = <
-  TTypeDefinition extends Type<any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any> = Type<
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any> = Type<
     string,
+    any,
     any,
     any,
     any,
@@ -599,17 +645,18 @@ export const definePlugin = <
   ) => PluginOptions<TTypeDefinition, TPluginTypeDefinition>;
 
 type WorkspaceOptions<
-  TTypeDefinition extends Type<any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any>
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any>
 > = Merge<
   WorkspaceOptionsNative,
   ConfigBase<TTypeDefinition, TPluginTypeDefinition>
 >;
 
 export type Config<
-  TTypeDefinition extends Type<any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any> = Type<
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any> = Type<
     string,
+    any,
     any,
     any,
     any,
@@ -627,9 +674,10 @@ export type Config<
     });
 
 export const defineConfig = <
-  TTypeDefinition extends Type<any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any> = Type<
+  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any> = Type<
     string,
+    any,
     any,
     any,
     any,
@@ -645,22 +693,22 @@ export const defineConfig = <
 
 type ExpandAliasValues<
   Value,
-  TAliasedDefinition extends Type<any, any, any, any, any, any>
+  TAliasedDefinition extends Type<any, any, any, any, any, any, any>
 > = Value extends AliasValue<infer TType>
   ? Extract<
       TAliasedDefinition,
-      Type<any, TType, any, any, any, any>
+      Type<any, TType, any, any, any, any, any>
     > extends never
     ? unknown
     : ExpandAliasValues<
         _InferValue<
-          Extract<TAliasedDefinition, Type<any, TType, any, any, any, any>>
+          Extract<TAliasedDefinition, Type<any, TType, any, any, any, any, any>>
         >,
         TAliasedDefinition
       > &
         (Extract<
           TAliasedDefinition,
-          Type<"object", TType, any, any, any, any>
+          Type<"object", TType, any, any, any, any, any>
         > extends never
           ? unknown
           : {
@@ -708,20 +756,21 @@ export type InferSchemaValues<
         any,
         any,
         any,
+        any,
         any
       >
         ? TName
         : never]: ExpandAliasValues<
-        TTypeDefinition extends Type<"object", TName, any, any, any, any>
+        TTypeDefinition extends Type<"object", TName, any, any, any, any, any>
           ? _InferValue<TTypeDefinition> & { _type: TName }
-          : TTypeDefinition extends Type<any, TName, any, any, any, any>
+          : TTypeDefinition extends Type<any, TName, any, any, any, any, any>
           ? _InferValue<TTypeDefinition>
           : never,
         // TPluginTypeDefinition | TTypeDefinition
-        | (Type<any, any, any, any, any, any> extends TPluginTypeDefinition
+        | (Type<any, any, any, any, any, any, any> extends TPluginTypeDefinition
             ? never
             : TPluginTypeDefinition)
-        | (Type<any, any, any, any, any, any> extends TTypeDefinition
+        | (Type<any, any, any, any, any, any, any> extends TTypeDefinition
             ? never
             : TTypeDefinition)
       >;
