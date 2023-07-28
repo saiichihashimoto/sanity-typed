@@ -28,8 +28,6 @@ import type { ReferenceValue } from "@sanity-typed/types";
 
 import type { TupleOfLength } from "./utils";
 
-// FIXME Handle Whitespace
-
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Query-context
  */
@@ -388,290 +386,6 @@ type Parent<
   ? Parent<TParents, [null, ...Levels]>
   : never;
 
-type Functions<TArgs extends any[], TScope extends Scope<any, any, any>> = {
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Array-namespace
-   */
-  array: {
-    /**
-     * TODO array::compact
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_compact()
-     */
-    compact: never;
-    /**
-     * TODO array::join
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_join()
-     */
-    join: never;
-    /**
-     * TODO array::unique
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_unique()
-     */
-    unique: never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-DateTime-namespace
-   */
-  dateTime: {
-    /**
-     * TODO dateTime::now
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#dateTime_now()
-     */
-    now: never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Delta-namespace
-   */
-  delta: {
-    /**
-     * TODO delta::changedAny
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedAny()
-     */
-    changedAny: never;
-    /**
-     * TODO delta::changedOnly
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedOnly()
-     */
-    changedOnly: never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Diff-namespace
-   */
-  diff: {
-    /**
-     * TODO diff::changedAny
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedAny()
-     */
-    changedAny: never;
-    /**
-     * TODO diff::changedOnly
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedOnly()
-     */
-    changedOnly: never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Geography-Extension
-   */
-  geo: {
-    /**
-     * TODO geo::contains
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_contains()
-     */
-    contains: never;
-    /**
-     * TODO geo::distance
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_distance()
-     */
-    distance: never;
-    /**
-     * TODO geo::intersects
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_intersects()
-     */
-    intersects: never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
-   */
-  global: {
-    /**
-     * TODO global::after
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_after()
-     */
-    after: never;
-    /**
-     * TODO global::before
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_before()
-     */
-    before: never;
-    /**
-     * TODO global::boost
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_boost()
-     */
-    boost: never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_coalesce()
-     */
-    coalesce: TArgs extends []
-      ? null
-      : TArgs extends [infer TFirst, ...infer TRest]
-      ? null extends TFirst
-        ? Functions<TRest, TScope>["global"]["coalesce"] | NonNullable<TFirst>
-        : TFirst
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_count()
-     */
-    count: TArgs extends [infer TBase]
-      ? TBase extends any[]
-        ? TBase["length"]
-        : null
-      : never;
-    /**
-     * TODO global::dateTime
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_dateTime()
-     */
-    dateTime: never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_defined()
-     */
-    defined: TArgs extends [infer TBase]
-      ? TBase extends null
-        ? false
-        : true
-      : never;
-    /**
-     * TODO global::geo
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_geo()
-     */
-    geo: never;
-    /**
-     * TODO global::identity
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-identity-
-     */
-    identity: never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_length()
-     */
-    length: TArgs extends [infer TBase]
-      ? TBase extends any[] | string
-        ? TBase["length"]
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_lower()
-     */
-    lower: TArgs extends [infer TValue]
-      ? TValue extends string
-        ? Lowercase<TValue>
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_now()
-     */
-    now: TArgs extends [] ? string : never;
-    /**
-     * TODO global::operation
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_operation()
-     */
-    operation: never;
-    /**
-     * TODO global::path
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_path()
-     */
-    path: never;
-    /**
-     * TODO global::pt
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
-     */
-    pt: never;
-    /**
-     * TODO global::references
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_references()
-     */
-    references: never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_round()
-     */
-    round: TArgs extends [infer TNum, infer TPrec] | [infer TNum]
-      ? TNum extends number
-        ? unknown extends TPrec
-          ? number
-          : TPrec extends number
-          ? number
-          : null
-        : null
-      : never;
-    /**
-     * TODO global::select
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_select()
-     */
-    select: never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_string()
-     */
-    string: TArgs extends [infer TVal]
-      ? TVal extends boolean | number | string
-        ? `${TVal}`
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_upper()
-     */
-    upper: TArgs extends [infer TValue]
-      ? TValue extends string
-        ? Uppercase<TValue>
-        : null
-      : never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Math-namespace
-   */
-  math: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_avg()
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_max()
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_min()
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_sum()
-     */
-    [mathFn in "avg" | "max" | "min" | "sum"]: TArgs extends [infer TArr]
-      ? TArr extends null[] | []
-        ? mathFn extends "sum"
-          ? 0
-          : null
-        : TArr extends (number | null)[]
-        ? number
-        : null
-      : never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Portable-Text-Extension
-   */
-  pt: {
-    /**
-     * TODO pt::text
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#pt_text()
-     */
-    text: never;
-  };
-  /**
-   * @link https://www.sanity.io/docs/groq-functions#61e2649fc0d8
-   */
-  sanity: {
-    /**
-     * @link https://www.sanity.io/docs/groq-functions#48b1e793d6b9
-     */
-    dataset: TArgs extends [] ? TScope["context"]["client"]["dataset"] : never;
-    /**
-     * @link https://www.sanity.io/docs/groq-functions#b89053823742
-     */
-    projectId: TArgs extends []
-      ? TScope["context"]["client"]["projectId"]
-      : never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-String-namespace
-   */
-  string: {
-    /**
-     * TODO string::split
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_split()
-     */
-    split: never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_startsWith()
-     */
-    startsWith: TArgs extends [infer TStr, infer TPrefix]
-      ? TStr extends string
-        ? TPrefix extends string
-          ? TStr extends `${TPrefix}${string}`
-            ? true
-            : false
-          : null
-        : null
-      : never;
-  };
-};
-
 type FuncArgs<
   TArgs extends string,
   _Prefix extends string = ""
@@ -699,24 +413,24 @@ type FuncCall<TExpression extends string> =
     ? FuncArgs<TFuncCallArgs> extends never
       ? never
       : TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncIdentifier}`
-      ? TFuncNamespace extends keyof Functions<any, any>
-        ? TFuncIdentifier extends keyof Functions<any, any>[TFuncNamespace]
-          ? {
-              args: Simplify<FuncArgs<TFuncCallArgs>>;
-              func: GroqFunction;
-              name: TFuncFullName;
-              type: "FuncCall";
-            }
-          : never
-        : never
-      : TFuncFullName extends keyof Functions<any, any>["global"]
-      ? {
+      ? Identifier<TFuncNamespace> extends never
+        ? never
+        : Identifier<TFuncIdentifier> extends never
+        ? never
+        : {
+            args: Simplify<FuncArgs<TFuncCallArgs>>;
+            func: GroqFunction;
+            name: TFuncFullName;
+            type: "FuncCall";
+          }
+      : Identifier<TFuncFullName> extends never
+      ? never
+      : {
           args: Simplify<FuncArgs<TFuncCallArgs>>;
           func: GroqFunction;
           name: `global::${TFuncFullName}`;
           type: "FuncCall";
         }
-      : never
     : never;
 
 /**
@@ -904,20 +618,20 @@ type CompoundExpression<TExpression extends string> =
   | TraversalExpression<TExpression>;
 
 type Op =
-  | "-"
+  // | "-"
   | "!="
-  | "*"
-  | "**"
-  | "/"
-  | "%"
-  | "+"
-  | "<"
-  | "<="
-  | "=="
-  | ">"
-  | ">="
-  | "in"
-  | "match";
+  // | "*"
+  // | "**"
+  // | "/"
+  // | "%"
+  // | "+"
+  // | "<"
+  // | "<="
+  | "==";
+// | ">"
+// | ">="
+// | "in"
+// | "match"
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Equality
@@ -961,20 +675,20 @@ type OperatorCall<TExpression extends string> =
   // TODO StarStar
   // TODO UnaryMinus
   // TODO UnaryPlus
-  | OpCall<TExpression, "-">
+  // | OpCall<TExpression, "-">
   | OpCall<TExpression, "!=">
-  | OpCall<TExpression, "*">
-  | OpCall<TExpression, "**">
-  | OpCall<TExpression, "/">
-  | OpCall<TExpression, "%">
-  | OpCall<TExpression, "+">
-  | OpCall<TExpression, "<">
-  | OpCall<TExpression, "<=">
-  | OpCall<TExpression, "==">
-  | OpCall<TExpression, ">">
-  | OpCall<TExpression, ">=">
-  | OpCall<TExpression, "in">
-  | OpCall<TExpression, "match">;
+  // | OpCall<TExpression, "*">
+  // | OpCall<TExpression, "**">
+  // | OpCall<TExpression, "/">
+  // | OpCall<TExpression, "%">
+  // | OpCall<TExpression, "+">
+  // | OpCall<TExpression, "<">
+  // | OpCall<TExpression, "<=">
+  | OpCall<TExpression, "==">;
+// | OpCall<TExpression, ">">
+// | OpCall<TExpression, ">=">
+// | OpCall<TExpression, "in">
+// | OpCall<TExpression, "match">
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Expression
@@ -1057,12 +771,12 @@ type EvaluateArrayElements<
   ? []
   : TElements extends [
       infer THead extends ArrayElementNode,
-      ...infer TRest extends ArrayElementNode[]
+      ...infer TTail extends ArrayElementNode[]
     ]
   ? // @ts-expect-error -- FIXME Type instantiation is excessively deep and possibly infinite.
     [
       ...EvaluateArrayElement<THead, TScope>,
-      ...EvaluateArrayElements<TRest, TScope>
+      ...EvaluateArrayElements<TTail, TScope>
     ]
   : TElements extends (infer TElement extends ArrayElementNode)[]
   ? EvaluateArrayElement<TElement, TScope>
@@ -1158,14 +872,14 @@ type EvaluateFilterElements<
   TScope extends Scope<any, any, any>
 > = TBase extends []
   ? []
-  : TBase extends [infer TFirst, ...infer TRest]
-  ? Evaluate<TFilterExpression, NestedScope<TFirst, TScope>> extends never
+  : TBase extends [infer THead, ...infer TTail]
+  ? Evaluate<TFilterExpression, NestedScope<THead, TScope>> extends never
     ? never
-    : EvaluateFilterElements<TRest, TFilterExpression, TScope> extends never
+    : EvaluateFilterElements<TTail, TFilterExpression, TScope> extends never
     ? never
-    : Evaluate<TFilterExpression, NestedScope<TFirst, TScope>> extends true
-    ? [TFirst, ...EvaluateFilterElements<TRest, TFilterExpression, TScope>]
-    : EvaluateFilterElements<TRest, TFilterExpression, TScope>
+    : Evaluate<TFilterExpression, NestedScope<THead, TScope>> extends true
+    ? [THead, ...EvaluateFilterElements<TTail, TFilterExpression, TScope>]
+    : EvaluateFilterElements<TTail, TFilterExpression, TScope>
   : TBase extends (infer TArrayElement)[]
   ? Evaluate<
       TFilterExpression,
@@ -1203,6 +917,340 @@ type EvaluateFuncArgs<
   TScope extends Scope<any, any, any>
 > = {
   [key in keyof TArgs]: Evaluate<TArgs[key], TScope>;
+};
+
+type Functions<TArgs extends any[], TScope extends Scope<any, any, any>> = {
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Array-namespace
+   */
+  array: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_compact()
+     */
+    compact: TArgs extends [infer TArr]
+      ? TArr extends any[]
+        ? TArr extends null[] | []
+          ? []
+          : TArr extends [infer THead, ...infer TTail]
+          ? THead extends null
+            ? Functions<[TTail], TScope>["array"]["compact"]
+            : [THead, ...Functions<[TTail], TScope>["array"]["compact"]]
+          : TArr extends (infer TElement)[]
+          ? NonNullable<TElement>[]
+          : never
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_join()
+     */
+    join: TArgs extends [infer TArr, infer TSep]
+      ? TArr extends any[]
+        ? TSep extends string
+          ? TArr extends []
+            ? ""
+            : Functions<
+                [TArr[number]],
+                TScope
+              >["global"]["string"] extends string
+            ? TArr extends [infer TElement]
+              ? Functions<[TElement], TScope>["global"]["string"]
+              : // FIXME RangeError: Maximum call stack size exceeded
+                // TArr extends [infer THead, ...infer TTail]
+                // ? `${Functions<
+                //     [THead],
+                //     TScope
+                //   >["global"]["string"]}${TSep}${Functions<
+                //     [TTail, TSep],
+                //     TScope
+                //   >["array"]["join"]}`
+                // : // Once it's reduced to Element[], a literal can't be determined
+                //   string
+                string
+            : null
+          : null
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_unique()
+     */
+    unique: TArgs extends [infer TArr]
+      ? TArr extends any[]
+        ? TArr extends null[] | []
+          ? []
+          : TArr extends [...infer TInitial, infer TLast]
+          ? TLast extends boolean | number | string
+            ? TLast extends Functions<
+                [TInitial],
+                TScope
+              >["array"]["unique"][number]
+              ? Functions<[TInitial], TScope>["array"]["unique"]
+              : [...Functions<[TInitial], TScope>["array"]["unique"], TLast]
+            : [...Functions<[TInitial], TScope>["array"]["unique"], TLast]
+          : TArr
+        : null
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-DateTime-namespace
+   */
+  dateTime: {
+    /**
+     * TODO dateTime::now
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#dateTime_now()
+     */
+    now: never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Delta-namespace
+   */
+  delta: {
+    /**
+     * TODO delta::changedAny
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedAny()
+     */
+    changedAny: never;
+    /**
+     * TODO delta::changedOnly
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedOnly()
+     */
+    changedOnly: never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Diff-namespace
+   */
+  diff: {
+    /**
+     * TODO diff::changedAny
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedAny()
+     */
+    changedAny: never;
+    /**
+     * TODO diff::changedOnly
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedOnly()
+     */
+    changedOnly: never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Geography-Extension
+   */
+  geo: {
+    /**
+     * TODO geo::contains
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_contains()
+     */
+    contains: never;
+    /**
+     * TODO geo::distance
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_distance()
+     */
+    distance: never;
+    /**
+     * TODO geo::intersects
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_intersects()
+     */
+    intersects: never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
+   */
+  global: {
+    /**
+     * TODO global::after
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_after()
+     */
+    after: never;
+    /**
+     * TODO global::before
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_before()
+     */
+    before: never;
+    /**
+     * TODO global::boost
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_boost()
+     */
+    boost: never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_coalesce()
+     */
+    coalesce: TArgs extends []
+      ? null
+      : TArgs extends [infer THead, ...infer TTail]
+      ? null extends THead
+        ? Functions<TTail, TScope>["global"]["coalesce"] | NonNullable<THead>
+        : THead
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_count()
+     */
+    count: TArgs extends [infer TBase]
+      ? TBase extends any[]
+        ? TBase["length"]
+        : null
+      : never;
+    /**
+     * TODO global::dateTime
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_dateTime()
+     */
+    dateTime: never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_defined()
+     */
+    defined: TArgs extends [infer TBase]
+      ? TBase extends null
+        ? false
+        : true
+      : never;
+    /**
+     * TODO global::geo
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_geo()
+     */
+    geo: never;
+    /**
+     * TODO global::identity
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-identity-
+     */
+    identity: never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_length()
+     */
+    length: TArgs extends [infer TBase]
+      ? TBase extends any[] | string
+        ? TBase["length"]
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_lower()
+     */
+    lower: TArgs extends [infer TValue]
+      ? TValue extends string
+        ? Lowercase<TValue>
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_now()
+     */
+    now: TArgs extends [] ? string : never;
+    /**
+     * TODO global::operation
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_operation()
+     */
+    operation: never;
+    /**
+     * TODO global::path
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_path()
+     */
+    path: never;
+    /**
+     * TODO global::pt
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
+     */
+    pt: never;
+    /**
+     * TODO global::references
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_references()
+     */
+    references: never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_round()
+     */
+    round: TArgs extends [infer TNum, infer TPrec] | [infer TNum]
+      ? TNum extends number
+        ? unknown extends TPrec
+          ? number
+          : TPrec extends number
+          ? number
+          : null
+        : null
+      : never;
+    /**
+     * TODO global::select
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_select()
+     */
+    select: never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_string()
+     */
+    string: TArgs extends [infer TVal]
+      ? TVal extends boolean | number | string
+        ? `${TVal}`
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_upper()
+     */
+    upper: TArgs extends [infer TValue]
+      ? TValue extends string
+        ? Uppercase<TValue>
+        : null
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Math-namespace
+   */
+  math: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_avg()
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_max()
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_min()
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_sum()
+     */
+    [mathFn in "avg" | "max" | "min" | "sum"]: TArgs extends [infer TArr]
+      ? TArr extends null[] | []
+        ? mathFn extends "sum"
+          ? 0
+          : null
+        : TArr extends (number | null)[]
+        ? number
+        : null
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Portable-Text-Extension
+   */
+  pt: {
+    /**
+     * TODO pt::text
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#pt_text()
+     */
+    text: never;
+  };
+  /**
+   * @link https://www.sanity.io/docs/groq-functions#61e2649fc0d8
+   */
+  sanity: {
+    /**
+     * @link https://www.sanity.io/docs/groq-functions#48b1e793d6b9
+     */
+    dataset: TArgs extends [] ? TScope["context"]["client"]["dataset"] : never;
+    /**
+     * @link https://www.sanity.io/docs/groq-functions#b89053823742
+     */
+    projectId: TArgs extends []
+      ? TScope["context"]["client"]["projectId"]
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-String-namespace
+   */
+  string: {
+    /**
+     * TODO string::split
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_split()
+     */
+    split: never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_startsWith()
+     */
+    startsWith: TArgs extends [infer TStr, infer TPrefix]
+      ? TStr extends string
+        ? TPrefix extends string
+          ? TStr extends `${TPrefix}${string}`
+            ? true
+            : false
+          : null
+        : null
+      : never;
+  };
 };
 
 /**
@@ -1245,15 +1293,15 @@ type EvaluateObjectAttributes<
 > = TAttributes extends []
   ? EmptyObject
   : TAttributes extends [
-      infer TFirst extends ObjectAttributeNode,
-      ...infer TRest extends ObjectAttributeNode[]
+      infer THead extends ObjectAttributeNode,
+      ...infer TTail extends ObjectAttributeNode[]
     ]
-  ? EvaluateObjectAttributes<TRest, TScope> extends EmptyObject
-    ? EvaluateObjectAttribute<TFirst, TScope>
-    : EvaluateObjectAttributes<TRest, TScope> &
+  ? EmptyObject extends EvaluateObjectAttributes<TTail, TScope>
+    ? EvaluateObjectAttribute<THead, TScope>
+    : EvaluateObjectAttributes<TTail, TScope> &
         Omit<
-          EvaluateObjectAttribute<TFirst, TScope>,
-          keyof EvaluateObjectAttributes<TRest, TScope>
+          EvaluateObjectAttribute<THead, TScope>,
+          keyof EvaluateObjectAttributes<TTail, TScope>
         >
   : TAttributes extends (infer TAttribute extends ObjectAttributeNode)[]
   ? EvaluateObjectAttribute<TAttribute, TScope>
