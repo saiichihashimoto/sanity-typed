@@ -1,6 +1,7 @@
 import { describe, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
+import type { ReferenceValue } from "@sanity-typed/types";
 
 import type { Context, ExecuteQuery, Parse, Scope } from ".";
 
@@ -530,11 +531,74 @@ describe("traversal operators", () => {
       base: { type: "Value"; value: false };
       type: "ArrayCoerce";
     }>();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+  });
+
+  it("@->", () => {
+    const query = "@->";
+
+    expectType<Parse<typeof query>>().toStrictEqual<{
+      base: { type: "This" };
+      type: "Deref";
+    }>();
     expectType<
       ExecuteQuery<
         typeof query,
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
+        Scope<
+          Context<
+            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
+          >,
+          ReferenceValue<"foo">,
+          never
+        >
       >
-    >().toStrictEqual<null>();
+    >().toStrictEqual<{ _type: "foo"; value: Foo }>();
+  });
+
+  it("@->value", () => {
+    const query = "@->value";
+
+    expectType<Parse<typeof query>>().toStrictEqual<{
+      base: { base: { type: "This" }; type: "Deref" };
+      name: "value";
+      type: "AccessAttribute";
+    }>();
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        Scope<
+          Context<
+            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
+          >,
+          ReferenceValue<"foo">,
+          never
+        >
+      >
+    >().toStrictEqual<Foo>();
+  });
+
+  it("@[]->value", () => {
+    const query = "@[]->value";
+
+    expectType<Parse<typeof query>>().toStrictEqual<{
+      base: {
+        base: { base: { type: "This" }; type: "ArrayCoerce" };
+        type: "Deref";
+      };
+      name: "value";
+      type: "AccessAttribute";
+    }>();
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        Scope<
+          Context<
+            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
+          >,
+          ReferenceValue<"foo">[],
+          never
+        >
+      >
+    >().toStrictEqual<Foo[]>();
   });
 });

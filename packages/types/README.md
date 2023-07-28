@@ -230,6 +230,30 @@ This shouldn't deter you from using it! Under the hood, it's passing all the inp
 
 ## Migrations
 
+### Migrating from 3.x to 4.x
+
+#### Referenced `_type` needs `as const`
+
+For `@sanity-typed/groq` to infer the right types from references, the reference type needs to carry the type it's referencing along with it. Unfortunately, it isn't deriving the literal so an `as const` is needed.
+
+```diff
+const product = defineType({
+  name: "product",
+  type: "document",
+  title: "Product",
+  fields: [
+    defineField({
+      name: "foo",
+      type: "reference",
+-     to: [{ type: "referencedType" }],
++     to: [{ type: "referencedType" as const }],
+    }),
+  ],
+});
+```
+
+This should be easy to identify through typescript errors, follow the suggestions and you should be on your way.
+
 ### Migrating from 2.x to 3.x
 
 #### InferSchemaValues

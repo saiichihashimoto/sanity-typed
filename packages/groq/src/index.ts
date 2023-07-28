@@ -24,6 +24,8 @@ import type {
 } from "groq-js";
 import type { Simplify } from "type-fest";
 
+import type { ReferenceValue } from "@sanity-typed/types";
+
 import type { TupleOfLength } from "./utils";
 
 // FIXME Handle Whitespace
@@ -824,7 +826,29 @@ type AttributeAccess<
           ? never
           : {
               base: Parse<`${_Prefix}${TBase}`>;
-              name: Identifier<TIdentifier>;
+              name: TIdentifier;
+              type: "AccessAttribute";
+            })
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Dereference
+ */
+type Dereference<
+  TExpression extends string,
+  _Prefix extends string = ""
+> = TExpression extends `${infer TBase}->${infer TIdentifier}`
+  ?
+      | Dereference<TIdentifier, `${_Prefix}${TBase}->`>
+      | (Parse<`${_Prefix}${TBase}`> extends never
+          ? never
+          : TIdentifier extends ""
+          ? { base: Parse<`${_Prefix}${TBase}`>; type: "Deref" }
+          : Identifier<TIdentifier> extends never
+          ? never
+          : {
+              base: { base: Parse<`${_Prefix}${TBase}`>; type: "Deref" };
+              name: TIdentifier;
               type: "AccessAttribute";
             })
   : never;
@@ -835,7 +859,7 @@ type AttributeAccess<
 type TraversalExpression<TExpression extends string> =
   | ArrayPostfix<TExpression>
   | AttributeAccess<TExpression>
-  // TODO Dereference<TExpression>
+  | Dereference<TExpression>
   // TODO Projection<TExpression>
   | SquareBracketTraversal<TExpression>;
 
@@ -1016,6 +1040,34 @@ type EvaluateArrayPostfix<
   ? Evaluate<TNode["base"], TScope> extends any[]
     ? Evaluate<TNode["base"], TScope>
     : null
+  : never;
+
+type EvaluateDereferenceElement<
+  TRef,
+  TScope extends Scope<any, any, any>
+> = TRef extends ReferenceValue<infer TReferenced>
+  ? TScope["context"]["dataset"] extends (infer TDataset)[]
+    ? Extract<TDataset, { _type: TReferenced }>
+    : null
+  : null;
+
+type EvaluateDereferenceElements<
+  TRefs extends any[],
+  TScope extends Scope<any, any, any>
+> = {
+  [index in keyof TRefs]: EvaluateDereferenceElement<TRefs[index], TScope>;
+};
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateDereference()
+ */
+type EvaluateDereference<
+  TNode extends ExprNode,
+  TScope extends Scope<any, any, any>
+> = TNode extends DerefNode
+  ? Evaluate<TNode["base"], TScope> extends any[]
+    ? EvaluateDereferenceElements<Evaluate<TNode["base"], TScope>, TScope>
+    : EvaluateDereferenceElement<Evaluate<TNode["base"], TScope>, TScope>
   : never;
 
 type Negate<
@@ -1228,6 +1280,7 @@ type EvaluateExpression<
   | EvaluateAccessElement<TNode, TScope>
   | EvaluateArray<TNode, TScope>
   | EvaluateArrayPostfix<TNode, TScope>
+  | EvaluateDereference<TNode, TScope>
   | EvaluateEquality<TNode, TScope>
   | EvaluateEverything<TNode, TScope>
   | EvaluateFilter<TNode, TScope>

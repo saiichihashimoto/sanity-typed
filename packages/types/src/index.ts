@@ -67,7 +67,7 @@ import type { Merge, RemoveIndexSignature, Simplify } from "type-fest";
 
 import type { TupleOfLength } from "./utils";
 
-// declare const README: unique symbol;
+declare const README: unique symbol;
 declare const required: unique symbol;
 
 type WithRequired<
@@ -193,12 +193,11 @@ export type ReferenceValue<TReferenced extends string> = Merge<
 export type TypeReference<TReferenced extends string> = Merge<
   TypeReferenceNative,
   {
-    // type: string extends TReferenced
-    //   ? TReferenced & {
-    //       [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-    //     }
-    //   : TReferenced;
-    type: TReferenced;
+    type: string extends TReferenced
+      ? TReferenced & {
+          [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+        }
+      : TReferenced;
   }
 >;
 
