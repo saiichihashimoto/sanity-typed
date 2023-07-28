@@ -1241,10 +1241,27 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
    */
   string: {
     /**
-     * TODO string::split
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_split()
      */
-    split: never;
+    split: TArgs extends [infer TStr, infer TSep]
+      ? TStr extends string
+        ? TSep extends string
+          ? string extends TStr
+            ? // There's no splitting an unknown string
+              string[]
+            : string extends TSep
+            ? // There's no splitting with an unknown string
+              string[]
+            : TStr extends `${infer TLeft}${TSep}${infer TRight}`
+            ? TRight extends ""
+              ? TSep extends ""
+                ? [TLeft]
+                : [TLeft, TRight]
+              : [TLeft, ...Functions<[TRight, TSep], TScope>["string"]["split"]]
+            : [TStr]
+          : null
+        : null
+      : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_startsWith()
      */

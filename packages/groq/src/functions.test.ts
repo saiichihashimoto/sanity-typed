@@ -1153,6 +1153,99 @@ describe("functions", () => {
   });
 
   describe("string", () => {
+    it('string::split("this is a string","not in there")', () => {
+      const query = 'string::split("this is a string","not in there")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { type: "Value"; value: "this is a string" },
+          { type: "Value"; value: "not in there" }
+        ];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        ["this is a string"]
+      >();
+    });
+
+    it('string::split("this is a string"," ")', () => {
+      const query = 'string::split("this is a string"," ")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { type: "Value"; value: "this is a string" },
+          { type: "Value"; value: " " }
+        ];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        ["this", "is", "a", "string"]
+      >();
+    });
+
+    it('string::split(" this is a string "," ")', () => {
+      const query = 'string::split(" this is a string "," ")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { type: "Value"; value: " this is a string " },
+          { type: "Value"; value: " " }
+        ];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        ["", "this", "is", "a", "string", ""]
+      >();
+    });
+
+    it('string::split("test","")', () => {
+      const query = 'string::split("test","")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: "test" }, { type: "Value"; value: "" }];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        ["t", "e", "s", "t"]
+      >();
+    });
+
+    it('string::split(@,"")', () => {
+      const query = 'string::split(@,"")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "This" }, { type: "Value"; value: "" }];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, { this: string }>>().toStrictEqual<
+        string[]
+      >();
+    });
+
+    it('string::split("this is a string",@)', () => {
+      const query = 'string::split("this is a string",@)';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: "this is a string" }, { type: "This" }];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, { this: string }>>().toStrictEqual<
+        string[]
+      >();
+    });
+
     it('string::startsWith("A String","A Str")', () => {
       const query = 'string::startsWith("A String","A Str")';
 
