@@ -563,6 +563,78 @@ describe("functions", () => {
       >().toStrictEqual<"update">();
     });
 
+    it("references([])", () => {
+      const query = "references([])";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ elements: []; type: "Array" }];
+        func: GroqFunction;
+        name: "global::references";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
+    });
+
+    it('references("id")', () => {
+      const query = 'references("id")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: "id" }];
+        func: GroqFunction;
+        name: "global::references";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<boolean>();
+    });
+
+    it('references("id",["id2"])', () => {
+      const query = 'references("id",["id2"])';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { type: "Value"; value: "id" },
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: "id2" };
+              }
+            ];
+            type: "Array";
+          }
+        ];
+        func: GroqFunction;
+        name: "global::references";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<boolean>();
+    });
+
+    it('global::references("id",["id2"])', () => {
+      const query = 'global::references("id",["id2"])';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { type: "Value"; value: "id" },
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: "id2" };
+              }
+            ];
+            type: "Array";
+          }
+        ];
+        func: GroqFunction;
+        name: "global::references";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<boolean>();
+    });
+
     it("round(3.14)", () => {
       const query = "round(3.14)";
 
@@ -1663,7 +1735,13 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          { client: { dataset: "dataset"; projectId: "projectId" } }
+          {
+            client: {
+              dataset: "dataset";
+              identity: never;
+              projectId: "projectId";
+            };
+          }
         >
       >().toStrictEqual<"projectId">();
     });
@@ -1680,7 +1758,13 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          { client: { dataset: "dataset"; projectId: "projectId" } }
+          {
+            client: {
+              dataset: "dataset";
+              identity: never;
+              projectId: "projectId";
+            };
+          }
         >
       >().toStrictEqual<"dataset">();
     });

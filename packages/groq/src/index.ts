@@ -32,7 +32,7 @@ import type { TupleOfLength } from "./utils";
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Query-context
  */
 type Context<Dataset extends any[], DeltaElement extends Dataset[number]> = {
-  client: { dataset: string; projectId: string };
+  client: { dataset: string; identity: string; projectId: string };
   dataset: Dataset;
   delta:
     | { after: DeltaElement; before: DeltaElement }
@@ -1147,10 +1147,16 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
      */
     pt: never;
     /**
-     * TODO global::references
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_references()
      */
-    references: never;
+    references: TArgs extends (infer TElement)[]
+      ? Extract<Exclude<TElement, []>, string[] | string> extends never
+        ? false
+        : // Once we're certain there's a string or string[] argument, we can't do better
+          // Whether or not the ids exist in a dataset is impossible to figure out
+          // TODO We could check only for docs that have ReferenceValues.
+          boolean
+      : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_round()
      */
