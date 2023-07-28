@@ -995,10 +995,12 @@ type Functions<TArgs extends any[], TScope extends Scope<any, any, any>> = {
    */
   dateTime: {
     /**
-     * TODO dateTime::now
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#dateTime_now()
      */
-    now: never;
+    now: TArgs extends []
+      ? // TODO dateTime type https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Datetime
+        string
+      : never;
   };
   /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Delta-namespace
