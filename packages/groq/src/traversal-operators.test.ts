@@ -601,4 +601,72 @@ describe("traversal operators", () => {
       >
     >().toStrictEqual<Foo[]>();
   });
+
+  it("@-> (weak)", () => {
+    const query = "@->";
+
+    expectType<Parse<typeof query>>().toStrictEqual<{
+      base: { type: "This" };
+      type: "Deref";
+    }>();
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        Scope<
+          Context<
+            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
+          >,
+          ReferenceValue<"foo"> & { weak: true },
+          never
+        >
+      >
+    >().toStrictEqual<{ _type: "foo"; value: Foo } | null>();
+  });
+
+  it("@->value (weak)", () => {
+    const query = "@->value";
+
+    expectType<Parse<typeof query>>().toStrictEqual<{
+      base: { base: { type: "This" }; type: "Deref" };
+      name: "value";
+      type: "AccessAttribute";
+    }>();
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        Scope<
+          Context<
+            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
+          >,
+          ReferenceValue<"foo"> & { weak: true },
+          never
+        >
+      >
+    >().toStrictEqual<Foo | null>();
+  });
+
+  it("@[]->value (weak)", () => {
+    const query = "@[]->value";
+
+    expectType<Parse<typeof query>>().toStrictEqual<{
+      base: {
+        base: { base: { type: "This" }; type: "ArrayCoerce" };
+        type: "Deref";
+      };
+      name: "value";
+      type: "AccessAttribute";
+    }>();
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        Scope<
+          Context<
+            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
+          >,
+          (ReferenceValue<"foo"> & { weak: true })[],
+          never
+        >
+      >
+    >().toStrictEqual<(Foo | null)[]>();
+  });
 });

@@ -954,11 +954,27 @@ type Expression<TExpression extends string> =
   | SimpleExpression<TExpression>;
 
 type EvaluateBaseOrThis<
-  TNode extends ExprNode,
+  TNode extends AccessAttributeNode,
   TScope extends Scope<any, any, any>
 > = TNode extends { base: infer TBase extends ExprNode }
   ? Evaluate<TBase, TScope>
   : TScope["this"];
+
+type EvaluateAccessAttributeElement<
+  TBase,
+  TName extends string
+> = TBase extends {
+  [key in TName]: infer TValue;
+}
+  ? TValue
+  : null;
+
+type EvaluateAccessAttributeElements<
+  TBases extends any[],
+  TName extends string
+> = {
+  [index in keyof TBases]: EvaluateAccessAttributeElement<TBases[index], TName>;
+};
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateAttributeAccess()
@@ -969,16 +985,14 @@ type EvaluateAccessAttribute<
   TScope extends Scope<any, any, any>
 > = TNode extends AccessAttributeNode
   ? EvaluateBaseOrThis<TNode, TScope> extends any[]
-    ? EvaluateBaseOrThis<TNode, TScope> extends {
-        [key in TNode["name"]]: infer TValue;
-      }[]
-      ? TValue[]
-      : null
-    : EvaluateBaseOrThis<TNode, TScope> extends {
-        [key in TNode["name"]]: infer TValue;
-      }
-    ? TValue
-    : null
+    ? EvaluateAccessAttributeElements<
+        EvaluateBaseOrThis<TNode, TScope>,
+        TNode["name"]
+      >
+    : EvaluateAccessAttributeElement<
+        EvaluateBaseOrThis<TNode, TScope>,
+        TNode["name"]
+      >
   : never;
 
 /**
@@ -1047,7 +1061,9 @@ type EvaluateDereferenceElement<
   TScope extends Scope<any, any, any>
 > = TRef extends ReferenceValue<infer TReferenced>
   ? TScope["context"]["dataset"] extends (infer TDataset)[]
-    ? Extract<TDataset, { _type: TReferenced }>
+    ?
+        | Extract<TDataset, { _type: TReferenced }>
+        | (TRef extends { weak: true } ? null : never)
     : null
   : null;
 
