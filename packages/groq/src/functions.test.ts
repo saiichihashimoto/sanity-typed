@@ -3,7 +3,7 @@ import type { GroqFunction } from "groq-js";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { Context, ExecuteQuery, Parse, Scope } from ".";
+import type { ExecuteQuery, Parse } from ".";
 
 describe("functions", () => {
   describe("global", () => {
@@ -80,7 +80,7 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, Scope<never, { key: 1 | null }, never>>
+        ExecuteQuery<typeof query, { this: { key: 1 | null } }>
       >().toStrictEqual<1 | 2>();
     });
 
@@ -97,7 +97,7 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, Scope<never, { key: 1 | null }, never>>
+        ExecuteQuery<typeof query, { this: { key: 1 | null } }>
       >().toStrictEqual<1 | 2>();
     });
 
@@ -628,7 +628,7 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, Context<(1 | 2)[]>>
+        ExecuteQuery<typeof query, { dataset: (1 | 2)[] }>
       >().toStrictEqual<string>();
     });
 
@@ -644,7 +644,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          Context<(1 | 2 | { [key: string]: never })[]>
+          { dataset: (1 | 2 | { [key: string]: never })[] }
         >
       >().toStrictEqual<null>();
     });
@@ -716,7 +716,7 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, Context<(1 | 2 | null)[]>>
+        ExecuteQuery<typeof query, { dataset: (1 | 2 | null)[] }>
       >().toStrictEqual<(1 | 2)[]>();
     });
 
@@ -729,9 +729,9 @@ describe("functions", () => {
         name: "array::compact";
         type: "FuncCall";
       }>();
-      expectType<ExecuteQuery<typeof query, Context<null[]>>>().toStrictEqual<
-        []
-      >();
+      expectType<
+        ExecuteQuery<typeof query, { dataset: null[] }>
+      >().toStrictEqual<[]>();
     });
 
     it("array::unique(false)", () => {
@@ -833,7 +833,7 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, Context<(1 | 1 | 2)[]>>
+        ExecuteQuery<typeof query, { dataset: (1 | 1 | 2)[] }>
       >().toStrictEqual<(1 | 2)[]>();
     });
   });
@@ -1421,7 +1421,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          Context<never, { dataset: "dataset"; projectId: "projectId" }>
+          { client: { dataset: "dataset"; projectId: "projectId" } }
         >
       >().toStrictEqual<"projectId">();
     });
@@ -1438,7 +1438,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          Context<never, { dataset: "dataset"; projectId: "projectId" }>
+          { client: { dataset: "dataset"; projectId: "projectId" } }
         >
       >().toStrictEqual<"dataset">();
     });

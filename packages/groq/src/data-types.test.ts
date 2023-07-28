@@ -2,7 +2,7 @@ import { describe, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { ExecuteQuery, Parse, Scope } from ".";
+import type { ExecuteQuery, Parse } from ".";
 
 describe("base case", () => {
   it('""', () => {
@@ -390,7 +390,7 @@ describe("data types", () => {
       type: "Object";
     }>();
     expectType<
-      ExecuteQuery<typeof query, Scope<never, { foo: "bar" }, never>>
+      ExecuteQuery<typeof query, { this: { foo: "bar" } }>
     >().toStrictEqual<{ foo: "bar" }>();
   });
 
@@ -408,7 +408,7 @@ describe("data types", () => {
       type: "Object";
     }>();
     expectType<
-      ExecuteQuery<typeof query, Scope<never, { foo: "bar" }, never>>
+      ExecuteQuery<typeof query, { this: { foo: "bar" } }>
     >().toStrictEqual<{ foo: "bar" }>();
   });
 
@@ -431,10 +431,7 @@ describe("data types", () => {
       type: "Object";
     }>();
     expectType<
-      ExecuteQuery<
-        typeof query,
-        Scope<never, { baz: "qux"; foo: "bar" }, never>
-      >
+      ExecuteQuery<typeof query, { this: { baz: "qux"; foo: "bar" } }>
     >().toStrictEqual<{ baz: "qux"; foo: "bar" }>();
   });
 
@@ -534,7 +531,7 @@ describe("data types", () => {
       type: "Object";
     }>();
     expectType<
-      ExecuteQuery<typeof query, Scope<never, { foo: "bar" }, never>>
+      ExecuteQuery<typeof query, { this: { foo: "bar" } }>
     >().toStrictEqual<{ foo: "bar" }>();
   });
 
@@ -546,7 +543,7 @@ describe("data types", () => {
       type: "Object";
     }>();
     expectType<
-      ExecuteQuery<typeof query, Scope<never, { foo: "bar" }, never>>
+      ExecuteQuery<typeof query, { this: { foo: "bar" } }>
     >().toStrictEqual<{ foo: "bar" }>();
   });
 
@@ -565,7 +562,7 @@ describe("data types", () => {
       type: "Object";
     }>();
     expectType<
-      ExecuteQuery<typeof query, Scope<never, { foo: "bar" }, never>>
+      ExecuteQuery<typeof query, { this: { foo: "bar" } }>
     >().toStrictEqual<{ baz: "qux"; foo: "bar" }>();
   });
 });
