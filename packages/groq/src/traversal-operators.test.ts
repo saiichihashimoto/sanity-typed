@@ -3,7 +3,7 @@ import { describe, it } from "@jest/globals";
 import { expectType } from "@sanity-typed/test-utils";
 import type { ReferenceValue } from "@sanity-typed/types";
 
-import type { Context, ExecuteQuery, Parse, Scope } from ".";
+import type { ExecuteQuery, Parse } from ".";
 
 const FOO: unique symbol = Symbol("foo");
 type Foo = typeof FOO;
@@ -24,7 +24,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute";
     }>();
     expectType<
-      ExecuteQuery<typeof query, Scope<never, { foo: { bar: Bar } }, never>>
+      ExecuteQuery<typeof query, { this: { foo: { bar: Bar } } }>
     >().toStrictEqual<Bar>();
   });
 
@@ -41,10 +41,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute";
     }>();
     expectType<
-      ExecuteQuery<
-        typeof query,
-        Scope<never, { foo: { bar: { baz: Baz } } }, never>
-      >
+      ExecuteQuery<typeof query, { this: { foo: { bar: { baz: Baz } } } }>
     >().toStrictEqual<Baz>();
   });
 
@@ -57,7 +54,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute";
     }>();
     expectType<
-      ExecuteQuery<typeof query, Scope<never, { foo: { bar: Bar } }, never>>
+      ExecuteQuery<typeof query, { this: { foo: { bar: Bar } } }>
     >().toStrictEqual<Bar>();
   });
 
@@ -74,10 +71,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute";
     }>();
     expectType<
-      ExecuteQuery<
-        typeof query,
-        Scope<never, { foo: { bar: { baz: Baz } } }, never>
-      >
+      ExecuteQuery<typeof query, { this: { foo: { bar: { baz: Baz } } } }>
     >().toStrictEqual<Baz>();
   });
 
@@ -94,10 +88,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute";
     }>();
     expectType<
-      ExecuteQuery<
-        typeof query,
-        Scope<never, { foo: { bar: { baz: Baz } } }, never>
-      >
+      ExecuteQuery<typeof query, { this: { foo: { bar: { baz: Baz } } } }>
     >().toStrictEqual<Baz>();
   });
 
@@ -114,10 +105,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute";
     }>();
     expectType<
-      ExecuteQuery<
-        typeof query,
-        Scope<never, { foo: { bar: { baz: Baz } } }, never>
-      >
+      ExecuteQuery<typeof query, { this: { foo: { bar: { baz: Baz } } } }>
     >().toStrictEqual<Baz>();
   });
 
@@ -130,7 +118,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute";
     }>();
     expectType<
-      ExecuteQuery<typeof query, Context<({ key: Bar } | { key: Foo })[]>>
+      ExecuteQuery<typeof query, { dataset: ({ key: Bar } | { key: Foo })[] }>
     >().toStrictEqual<(Bar | Foo)[]>();
   });
 
@@ -143,7 +131,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute";
     }>();
     expectType<
-      ExecuteQuery<typeof query, Context<({ key: Bar } | { key: Foo })[]>>
+      ExecuteQuery<typeof query, { dataset: ({ key: Bar } | { key: Foo })[] }>
     >().toStrictEqual<(Bar | Foo)[]>();
   });
 
@@ -181,7 +169,7 @@ describe("traversal operators", () => {
       type: "AccessElement";
     }>();
     expectType<
-      ExecuteQuery<typeof query, Context<({ key: Bar } | { key: Foo })[]>>
+      ExecuteQuery<typeof query, { dataset: ({ key: Bar } | { key: Foo })[] }>
     >().toStrictEqual<{ key: Bar } | { key: Foo }>();
   });
 
@@ -310,7 +298,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
+        { dataset: ({ _type: "bar" } | { _type: "foo" })[] }
       >
     >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>();
   });
@@ -420,7 +408,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
+        { dataset: ({ _type: "bar" } | { _type: "foo" })[] }
       >
     >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>();
   });
@@ -441,7 +429,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
+        { dataset: ({ _type: "bar" } | { _type: "foo" })[] }
       >
     >().toStrictEqual<{ _type: "foo" }[]>();
   });
@@ -480,7 +468,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Context<({ _type: "bar" } | { _type: "baz" } | { _type: "foo" })[]>
+        { dataset: ({ _type: "bar" } | { _type: "baz" } | { _type: "foo" })[] }
       >
     >().toStrictEqual<{ _type: "foo" }[]>();
   });
@@ -519,7 +507,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
+        { dataset: ({ _type: "bar" } | { _type: "foo" })[] }
       >
     >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>();
   });
@@ -682,13 +670,15 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Scope<
-          Context<
-            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
-          >,
-          ReferenceValue<"foo">,
-          never
-        >
+        {
+          context: {
+            dataset: (
+              | { _type: "bar"; value: Bar }
+              | { _type: "foo"; value: Foo }
+            )[];
+          };
+          this: ReferenceValue<"foo">;
+        }
       >
     >().toStrictEqual<{ _type: "foo"; value: Foo }>();
   });
@@ -704,13 +694,15 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Scope<
-          Context<
-            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
-          >,
-          ReferenceValue<"foo">,
-          never
-        >
+        {
+          context: {
+            dataset: (
+              | { _type: "bar"; value: Bar }
+              | { _type: "foo"; value: Foo }
+            )[];
+          };
+          this: ReferenceValue<"foo">;
+        }
       >
     >().toStrictEqual<Foo>();
   });
@@ -729,13 +721,15 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Scope<
-          Context<
-            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
-          >,
-          ReferenceValue<"foo">[],
-          never
-        >
+        {
+          context: {
+            dataset: (
+              | { _type: "bar"; value: Bar }
+              | { _type: "foo"; value: Foo }
+            )[];
+          };
+          this: ReferenceValue<"foo">[];
+        }
       >
     >().toStrictEqual<Foo[]>();
   });
@@ -750,13 +744,15 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Scope<
-          Context<
-            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
-          >,
-          ReferenceValue<"foo"> & { weak: true },
-          never
-        >
+        {
+          context: {
+            dataset: (
+              | { _type: "bar"; value: Bar }
+              | { _type: "foo"; value: Foo }
+            )[];
+          };
+          this: ReferenceValue<"foo"> & { weak: true };
+        }
       >
     >().toStrictEqual<{ _type: "foo"; value: Foo } | null>();
   });
@@ -772,13 +768,15 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Scope<
-          Context<
-            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
-          >,
-          ReferenceValue<"foo"> & { weak: true },
-          never
-        >
+        {
+          context: {
+            dataset: (
+              | { _type: "bar"; value: Bar }
+              | { _type: "foo"; value: Foo }
+            )[];
+          };
+          this: ReferenceValue<"foo"> & { weak: true };
+        }
       >
     >().toStrictEqual<Foo | null>();
   });
@@ -797,13 +795,15 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Scope<
-          Context<
-            ({ _type: "bar"; value: Bar } | { _type: "foo"; value: Foo })[]
-          >,
-          (ReferenceValue<"foo"> & { weak: true })[],
-          never
-        >
+        {
+          context: {
+            dataset: (
+              | { _type: "bar"; value: Bar }
+              | { _type: "foo"; value: Foo }
+            )[];
+          };
+          this: (ReferenceValue<"foo"> & { weak: true })[];
+        }
       >
     >().toStrictEqual<(Foo | null)[]>();
   });

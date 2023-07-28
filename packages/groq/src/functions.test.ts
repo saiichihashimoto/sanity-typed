@@ -3,10 +3,160 @@ import type { GroqFunction } from "groq-js";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { Context, ExecuteQuery, Parse, Scope } from ".";
+import type { ExecuteQuery, Parse } from ".";
 
 describe("functions", () => {
   describe("global", () => {
+    it("after() (without delta)", () => {
+      const query = "after()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::after";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toBeNever();
+    });
+
+    it("after() (with null delta)", () => {
+      const query = "after()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::after";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
+    });
+
+    it("after() (with null after)", () => {
+      const query = "after()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::after";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: null; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<null>();
+    });
+
+    it("after()", () => {
+      const query = "after()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::after";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: null } }
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
+    it("global::after()", () => {
+      const query = "global::after()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::after";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: null } }
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
+    it("before() (without delta)", () => {
+      const query = "before()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::before";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toBeNever();
+    });
+
+    it("before() (with null delta)", () => {
+      const query = "before()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::before";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
+    });
+
+    it("before() (with null before)", () => {
+      const query = "before()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::before";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: null } }
+        >
+      >().toStrictEqual<null>();
+    });
+
+    it("before()", () => {
+      const query = "before()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::before";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: null; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
+    it("global::before()", () => {
+      const query = "global::before()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::before";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: null; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
     it("coalesce()", () => {
       const query = "coalesce()";
 
@@ -80,7 +230,7 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, Scope<never, { key: 1 | null }, never>>
+        ExecuteQuery<typeof query, { this: { key: 1 | null } }>
       >().toStrictEqual<1 | 2>();
     });
 
@@ -97,7 +247,7 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, Scope<never, { key: 1 | null }, never>>
+        ExecuteQuery<typeof query, { this: { key: 1 | null } }>
       >().toStrictEqual<1 | 2>();
     });
 
@@ -321,6 +471,170 @@ describe("functions", () => {
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<string>();
     });
 
+    it("operation() (without delta)", () => {
+      const query = "operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toBeNever();
+    });
+
+    it("operation() (with null delta)", () => {
+      const query = "operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
+    });
+
+    it("operation() (with create)", () => {
+      const query = "operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: null } }
+        >
+      >().toStrictEqual<"create">();
+    });
+
+    it("operation() (with delete)", () => {
+      const query = "operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: null; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<"delete">();
+    });
+
+    it("operation() (with update)", () => {
+      const query = "operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<"update">();
+    });
+
+    it("global::operation()", () => {
+      const query = "global::operation()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "global::operation";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          { delta: { after: { _type: "foo" }; before: { _type: "foo" } } }
+        >
+      >().toStrictEqual<"update">();
+    });
+
+    it("references([])", () => {
+      const query = "references([])";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ elements: []; type: "Array" }];
+        func: GroqFunction;
+        name: "global::references";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
+    });
+
+    it('references("id")', () => {
+      const query = 'references("id")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: "id" }];
+        func: GroqFunction;
+        name: "global::references";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<boolean>();
+    });
+
+    it('references("id",["id2"])', () => {
+      const query = 'references("id",["id2"])';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { type: "Value"; value: "id" },
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: "id2" };
+              }
+            ];
+            type: "Array";
+          }
+        ];
+        func: GroqFunction;
+        name: "global::references";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<boolean>();
+    });
+
+    it('global::references("id",["id2"])', () => {
+      const query = 'global::references("id",["id2"])';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { type: "Value"; value: "id" },
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: "id2" };
+              }
+            ];
+            type: "Array";
+          }
+        ];
+        func: GroqFunction;
+        name: "global::references";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<boolean>();
+    });
+
     it("round(3.14)", () => {
       const query = "round(3.14)";
 
@@ -478,6 +792,20 @@ describe("functions", () => {
     });
   });
 
+  describe("dateTime", () => {
+    it("dateTime::now()", () => {
+      const query = "dateTime::now()";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [];
+        func: GroqFunction;
+        name: "dateTime::now";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<string>();
+    });
+  });
+
   describe("array", () => {
     it('array::join(false,",")', () => {
       const query = 'array::join(false,",")';
@@ -614,7 +942,7 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, Context<(1 | 2)[]>>
+        ExecuteQuery<typeof query, { dataset: (1 | 2)[] }>
       >().toStrictEqual<string>();
     });
 
@@ -630,7 +958,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          Context<(1 | 2 | { [key: string]: never })[]>
+          { dataset: (1 | 2 | { [key: string]: never })[] }
         >
       >().toStrictEqual<null>();
     });
@@ -702,7 +1030,7 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, Context<(1 | 2 | null)[]>>
+        ExecuteQuery<typeof query, { dataset: (1 | 2 | null)[] }>
       >().toStrictEqual<(1 | 2)[]>();
     });
 
@@ -715,9 +1043,9 @@ describe("functions", () => {
         name: "array::compact";
         type: "FuncCall";
       }>();
-      expectType<ExecuteQuery<typeof query, Context<null[]>>>().toStrictEqual<
-        []
-      >();
+      expectType<
+        ExecuteQuery<typeof query, { dataset: null[] }>
+      >().toStrictEqual<[]>();
     });
 
     it("array::unique(false)", () => {
@@ -819,12 +1147,105 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, Context<(1 | 1 | 2)[]>>
+        ExecuteQuery<typeof query, { dataset: (1 | 1 | 2)[] }>
       >().toStrictEqual<(1 | 2)[]>();
     });
   });
 
   describe("string", () => {
+    it('string::split("this is a string","not in there")', () => {
+      const query = 'string::split("this is a string","not in there")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { type: "Value"; value: "this is a string" },
+          { type: "Value"; value: "not in there" }
+        ];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        ["this is a string"]
+      >();
+    });
+
+    it('string::split("this is a string"," ")', () => {
+      const query = 'string::split("this is a string"," ")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { type: "Value"; value: "this is a string" },
+          { type: "Value"; value: " " }
+        ];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        ["this", "is", "a", "string"]
+      >();
+    });
+
+    it('string::split(" this is a string "," ")', () => {
+      const query = 'string::split(" this is a string "," ")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { type: "Value"; value: " this is a string " },
+          { type: "Value"; value: " " }
+        ];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        ["", "this", "is", "a", "string", ""]
+      >();
+    });
+
+    it('string::split("test","")', () => {
+      const query = 'string::split("test","")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: "test" }, { type: "Value"; value: "" }];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        ["t", "e", "s", "t"]
+      >();
+    });
+
+    it('string::split(@,"")', () => {
+      const query = 'string::split(@,"")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "This" }, { type: "Value"; value: "" }];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, { this: string }>>().toStrictEqual<
+        string[]
+      >();
+    });
+
+    it('string::split("this is a string",@)', () => {
+      const query = 'string::split("this is a string",@)';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: "this is a string" }, { type: "This" }];
+        func: GroqFunction;
+        name: "string::split";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, { this: string }>>().toStrictEqual<
+        string[]
+      >();
+    });
+
     it('string::startsWith("A String","A Str")', () => {
       const query = 'string::startsWith("A String","A Str")';
 
@@ -1407,7 +1828,13 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          Context<never, { dataset: "dataset"; projectId: "projectId" }>
+          {
+            client: {
+              dataset: "dataset";
+              identity: never;
+              projectId: "projectId";
+            };
+          }
         >
       >().toStrictEqual<"projectId">();
     });
@@ -1424,7 +1851,13 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          Context<never, { dataset: "dataset"; projectId: "projectId" }>
+          {
+            client: {
+              dataset: "dataset";
+              identity: never;
+              projectId: "projectId";
+            };
+          }
         >
       >().toStrictEqual<"dataset">();
     });

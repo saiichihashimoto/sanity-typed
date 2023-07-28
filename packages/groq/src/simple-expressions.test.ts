@@ -2,7 +2,7 @@ import { describe, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { Context, ExecuteQuery, Parse, Scope } from ".";
+import type { ExecuteQuery, Parse } from ".";
 
 const FOO: unique symbol = Symbol("foo");
 type Foo = typeof FOO;
@@ -13,7 +13,7 @@ describe("simple expressions", () => {
 
     expectType<Parse<typeof query>>().toStrictEqual<{ type: "This" }>;
     expectType<
-      ExecuteQuery<typeof query, Scope<never, Foo, never>>
+      ExecuteQuery<typeof query, { this: Foo }>
     >().toStrictEqual<Foo>();
   });
 
@@ -25,7 +25,7 @@ describe("simple expressions", () => {
       type: "AccessAttribute";
     }>;
     expectType<
-      ExecuteQuery<typeof query, Scope<never, { key: Foo }, never>>
+      ExecuteQuery<typeof query, { this: { key: Foo } }>
     >().toStrictEqual<Foo>();
   });
 
@@ -36,7 +36,7 @@ describe("simple expressions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Context<({ _type: "bar" } | { _type: "foo" })[]>
+        { dataset: ({ _type: "bar" } | { _type: "foo" })[] }
       >
     >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>();
   });
@@ -49,7 +49,10 @@ describe("simple expressions", () => {
       type: "Parent";
     }>();
     expectType<
-      ExecuteQuery<typeof query, Scope<never, never, Scope<never, Foo, never>>>
+      ExecuteQuery<
+        typeof query,
+        { parent: { context: never; parent: null; this: Foo } }
+      >
     >().toStrictEqual<Foo>();
   });
 
@@ -63,7 +66,13 @@ describe("simple expressions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Scope<never, never, Scope<never, never, Scope<never, Foo, never>>>
+        {
+          parent: {
+            context: never;
+            parent: { context: never; parent: null; this: Foo };
+            this: Foo;
+          };
+        }
       >
     >().toStrictEqual<Foo>();
   });
@@ -78,11 +87,17 @@ describe("simple expressions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        Scope<
-          never,
-          never,
-          Scope<never, never, Scope<never, never, Scope<never, Foo, never>>>
-        >
+        {
+          parent: {
+            context: never;
+            parent: {
+              context: never;
+              parent: { context: never; parent: null; this: Foo };
+              this: Foo;
+            };
+            this: Foo;
+          };
+        }
       >
     >().toStrictEqual<Foo>();
   });
