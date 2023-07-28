@@ -7,6 +7,158 @@ import type { Context, ExecuteQuery, Parse, Scope } from ".";
 
 describe("functions", () => {
   describe("array", () => {
+    it('array::join(false,",")', () => {
+      const query = 'array::join(false,",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: false }, { type: "Value"; value: "," }];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it("array::join([],false)", () => {
+      const query = "array::join([],false)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { elements: []; type: "Array" },
+          { type: "Value"; value: false }
+        ];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it('array::join([],",")', () => {
+      const query = 'array::join([],",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ elements: []; type: "Array" }, { type: "Value"; value: "," }];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<"">();
+    });
+
+    it('array::join([5],",")', () => {
+      const query = 'array::join([5],",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 5 };
+              }
+            ];
+            type: "Array";
+          },
+          { type: "Value"; value: "," }
+        ];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<"5">();
+    });
+
+    it('array::join([{}],",")', () => {
+      const query = 'array::join([{}],",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { attributes: []; type: "Object" };
+              }
+            ];
+            type: "Array";
+          },
+          { type: "Value"; value: "," }
+        ];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it('array::join([5,true,"foo"],",")', () => {
+      const query = 'array::join([5,true,"foo"],",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 5 };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: true };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: "foo" };
+              }
+            ];
+            type: "Array";
+          },
+          { type: "Value"; value: "," }
+        ];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<"5,true,foo">();
+    });
+
+    it('array::join(*,",")', () => {
+      const query = 'array::join(*,",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Everything" }, { type: "Value"; value: "," }];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, Context<(1 | 2)[]>>
+      >().toStrictEqual<string>();
+    });
+
+    it('array::join(*,",") (with {})', () => {
+      const query = 'array::join(*,",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Everything" }, { type: "Value"; value: "," }];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          Context<(1 | 2 | { [key: string]: never })[]>
+        >
+      >().toStrictEqual<null>();
+    });
+
     it("array::compact(false)", () => {
       const query = "array::compact(false)";
 

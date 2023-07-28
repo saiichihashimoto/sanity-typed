@@ -408,10 +408,33 @@ type Functions<TArgs extends any[], TScope extends Scope<any, any, any>> = {
         : null
       : never;
     /**
-     * TODO array::join
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_join()
      */
-    join: never;
+    join: TArgs extends [infer TArr, infer TSep]
+      ? TArr extends any[]
+        ? TSep extends string
+          ? TArr extends []
+            ? ""
+            : Functions<
+                [TArr[number]],
+                TScope
+              >["global"]["string"] extends string
+            ? TArr extends [infer TElement]
+              ? Functions<[TElement], TScope>["global"]["string"]
+              : TArr extends [infer THead, ...infer TTail]
+              ? `${Functions<
+                  [THead],
+                  TScope
+                >["global"]["string"]}${TSep}${Functions<
+                  [TTail, TSep],
+                  TScope
+                >["array"]["join"]}`
+              : // Once it's reduced to Element[], a literal can't be determined
+                string
+            : null
+          : null
+        : null
+      : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_unique()
      */
