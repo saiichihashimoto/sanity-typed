@@ -6,352 +6,6 @@ import { expectType } from "@sanity-typed/test-utils";
 import type { Context, ExecuteQuery, Parse, Scope } from ".";
 
 describe("functions", () => {
-  describe("array", () => {
-    it('array::join(false,",")', () => {
-      const query = 'array::join(false,",")';
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: false }, { type: "Value"; value: "," }];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
-    });
-
-    it("array::join([],false)", () => {
-      const query = "array::join([],false)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [
-          { elements: []; type: "Array" },
-          { type: "Value"; value: false }
-        ];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
-    });
-
-    it('array::join([],",")', () => {
-      const query = 'array::join([],",")';
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }, { type: "Value"; value: "," }];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<"">();
-    });
-
-    it('array::join([5],",")', () => {
-      const query = 'array::join([5],",")';
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [
-          {
-            elements: [
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 5 };
-              }
-            ];
-            type: "Array";
-          },
-          { type: "Value"; value: "," }
-        ];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<"5">();
-    });
-
-    it('array::join([{}],",")', () => {
-      const query = 'array::join([{}],",")';
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [
-          {
-            elements: [
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { attributes: []; type: "Object" };
-              }
-            ];
-            type: "Array";
-          },
-          { type: "Value"; value: "," }
-        ];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
-    });
-
-    it('array::join([5,true,"foo"],",")', () => {
-      const query = 'array::join([5,true,"foo"],",")';
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [
-          {
-            elements: [
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 5 };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: true };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: "foo" };
-              }
-            ];
-            type: "Array";
-          },
-          { type: "Value"; value: "," }
-        ];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<typeof query>
-      >().not.toStrictEqual<// FIXME This SHOULD be what returns, but it hits the maximum call stack
-      "5,true,foo">();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<string>();
-    });
-
-    it('array::join(*,",")', () => {
-      const query = 'array::join(*,",")';
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Everything" }, { type: "Value"; value: "," }];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<typeof query, Context<(1 | 2)[]>>
-      >().toStrictEqual<string>();
-    });
-
-    it('array::join(*,",") (with {})', () => {
-      const query = 'array::join(*,",")';
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Everything" }, { type: "Value"; value: "," }];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<
-          typeof query,
-          Context<(1 | 2 | { [key: string]: never })[]>
-        >
-      >().toStrictEqual<null>();
-    });
-
-    it("array::compact(false)", () => {
-      const query = "array::compact(false)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: false }];
-        func: GroqFunction;
-        name: "array::compact";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
-    });
-
-    it("array::compact([])", () => {
-      const query = "array::compact([])";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }];
-        func: GroqFunction;
-        name: "array::compact";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[]>();
-    });
-
-    it("array::compact([1,null,2])", () => {
-      const query = "array::compact([1,null,2])";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [
-          {
-            elements: [
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 2 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "array::compact";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[1, 2]>();
-    });
-
-    it("array::compact(*)", () => {
-      const query = "array::compact(*)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Everything" }];
-        func: GroqFunction;
-        name: "array::compact";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<typeof query, Context<(1 | 2 | null)[]>>
-      >().toStrictEqual<(1 | 2)[]>();
-    });
-
-    it("array::compact(*) (only null)", () => {
-      const query = "array::compact(*)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Everything" }];
-        func: GroqFunction;
-        name: "array::compact";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query, Context<null[]>>>().toStrictEqual<
-        []
-      >();
-    });
-
-    it("array::unique(false)", () => {
-      const query = "array::unique(false)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: false }];
-        func: GroqFunction;
-        name: "array::unique";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
-    });
-
-    it("array::unique([])", () => {
-      const query = "array::unique([])";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }];
-        func: GroqFunction;
-        name: "array::unique";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[]>();
-    });
-
-    it("array::unique([1,2,1])", () => {
-      const query = "array::unique([1,2,1])";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [
-          {
-            elements: [
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 2 };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "array::unique";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[1, 2]>();
-    });
-
-    it("array::unique([{},{}])", () => {
-      const query = "array::unique([{},{}])";
-
-      expectType<Parse<typeof query>>()
-        // FIXME toStrictEqual
-        .toBeAssignableTo<{
-          args: [
-            {
-              elements: [
-                {
-                  isSplat: false;
-                  type: "ArrayElement";
-                  value: { attributes: []; type: "Object" };
-                },
-                {
-                  isSplat: false;
-                  type: "ArrayElement";
-                  value: { attributes: []; type: "Object" };
-                }
-              ];
-              type: "Array";
-            }
-          ];
-          func: GroqFunction;
-          name: "array::unique";
-          type: "FuncCall";
-        }>();
-      expectType<ExecuteQuery<typeof query>>()
-        // FIXME toStrictEqual
-        .toBeAssignableTo<[{ [x: string]: never }, { [x: string]: never }]>();
-    });
-
-    it("array::unique(*)", () => {
-      const query = "array::unique(*)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Everything" }];
-        func: GroqFunction;
-        name: "array::unique";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<typeof query, Context<(1 | 1 | 2)[]>>
-      >().toStrictEqual<(1 | 2)[]>();
-    });
-  });
-
   describe("global", () => {
     it("coalesce()", () => {
       const query = "coalesce()";
@@ -821,6 +475,352 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"STRING">();
+    });
+  });
+
+  describe("array", () => {
+    it('array::join(false,",")', () => {
+      const query = 'array::join(false,",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: false }, { type: "Value"; value: "," }];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it("array::join([],false)", () => {
+      const query = "array::join([],false)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          { elements: []; type: "Array" },
+          { type: "Value"; value: false }
+        ];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it('array::join([],",")', () => {
+      const query = 'array::join([],",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ elements: []; type: "Array" }, { type: "Value"; value: "," }];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<"">();
+    });
+
+    it('array::join([5],",")', () => {
+      const query = 'array::join([5],",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 5 };
+              }
+            ];
+            type: "Array";
+          },
+          { type: "Value"; value: "," }
+        ];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<"5">();
+    });
+
+    it('array::join([{}],",")', () => {
+      const query = 'array::join([{}],",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { attributes: []; type: "Object" };
+              }
+            ];
+            type: "Array";
+          },
+          { type: "Value"; value: "," }
+        ];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it('array::join([5,true,"foo"],",")', () => {
+      const query = 'array::join([5,true,"foo"],",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 5 };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: true };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: "foo" };
+              }
+            ];
+            type: "Array";
+          },
+          { type: "Value"; value: "," }
+        ];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query>
+      >().not.toStrictEqual<// FIXME This SHOULD be what returns, but it hits the maximum call stack
+      "5,true,foo">();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<string>();
+    });
+
+    it('array::join(*,",")', () => {
+      const query = 'array::join(*,",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Everything" }, { type: "Value"; value: "," }];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, Context<(1 | 2)[]>>
+      >().toStrictEqual<string>();
+    });
+
+    it('array::join(*,",") (with {})', () => {
+      const query = 'array::join(*,",")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Everything" }, { type: "Value"; value: "," }];
+        func: GroqFunction;
+        name: "array::join";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          Context<(1 | 2 | { [key: string]: never })[]>
+        >
+      >().toStrictEqual<null>();
+    });
+
+    it("array::compact(false)", () => {
+      const query = "array::compact(false)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: false }];
+        func: GroqFunction;
+        name: "array::compact";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it("array::compact([])", () => {
+      const query = "array::compact([])";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ elements: []; type: "Array" }];
+        func: GroqFunction;
+        name: "array::compact";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[]>();
+    });
+
+    it("array::compact([1,null,2])", () => {
+      const query = "array::compact([1,null,2])";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: null };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 2 };
+              }
+            ];
+            type: "Array";
+          }
+        ];
+        func: GroqFunction;
+        name: "array::compact";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[1, 2]>();
+    });
+
+    it("array::compact(*)", () => {
+      const query = "array::compact(*)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Everything" }];
+        func: GroqFunction;
+        name: "array::compact";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, Context<(1 | 2 | null)[]>>
+      >().toStrictEqual<(1 | 2)[]>();
+    });
+
+    it("array::compact(*) (only null)", () => {
+      const query = "array::compact(*)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Everything" }];
+        func: GroqFunction;
+        name: "array::compact";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query, Context<null[]>>>().toStrictEqual<
+        []
+      >();
+    });
+
+    it("array::unique(false)", () => {
+      const query = "array::unique(false)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: false }];
+        func: GroqFunction;
+        name: "array::unique";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it("array::unique([])", () => {
+      const query = "array::unique([])";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ elements: []; type: "Array" }];
+        func: GroqFunction;
+        name: "array::unique";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[]>();
+    });
+
+    it("array::unique([1,2,1])", () => {
+      const query = "array::unique([1,2,1])";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 2 };
+              },
+              {
+                isSplat: false;
+                type: "ArrayElement";
+                value: { type: "Value"; value: 1 };
+              }
+            ];
+            type: "Array";
+          }
+        ];
+        func: GroqFunction;
+        name: "array::unique";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[1, 2]>();
+    });
+
+    it("array::unique([{},{}])", () => {
+      const query = "array::unique([{},{}])";
+
+      expectType<Parse<typeof query>>()
+        // FIXME toStrictEqual
+        .toBeAssignableTo<{
+          args: [
+            {
+              elements: [
+                {
+                  isSplat: false;
+                  type: "ArrayElement";
+                  value: { attributes: []; type: "Object" };
+                },
+                {
+                  isSplat: false;
+                  type: "ArrayElement";
+                  value: { attributes: []; type: "Object" };
+                }
+              ];
+              type: "Array";
+            }
+          ];
+          func: GroqFunction;
+          name: "array::unique";
+          type: "FuncCall";
+        }>();
+      expectType<ExecuteQuery<typeof query>>()
+        // FIXME toStrictEqual
+        .toBeAssignableTo<[{ [x: string]: never }, { [x: string]: never }]>();
+    });
+
+    it("array::unique(*)", () => {
+      const query = "array::unique(*)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Everything" }];
+        func: GroqFunction;
+        name: "array::unique";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, Context<(1 | 1 | 2)[]>>
+      >().toStrictEqual<(1 | 2)[]>();
     });
   });
 
