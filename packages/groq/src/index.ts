@@ -832,6 +832,38 @@ type AttributeAccess<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Projection
+ */
+type Projection<
+  TExpression extends string,
+  _Prefix extends string = ""
+> = TExpression extends `${infer TBase}|{${infer TProjection}}`
+  ?
+      | Projection<`${TProjection}}`, `${_Prefix}${TBase}|{`>
+      | (Parse<`${_Prefix}${TBase}`> extends never
+          ? never
+          : ObjectType<`{${TProjection}}`> extends never
+          ? never
+          : {
+              base: Parse<`${_Prefix}${TBase}`>;
+              expr: ObjectType<`{${TProjection}}`>;
+              type: "Projection";
+            })
+  : TExpression extends `${infer TBase}{${infer TProjection}}`
+  ?
+      | Projection<`${TProjection}}`, `${_Prefix}${TBase}{`>
+      | (Parse<`${_Prefix}${TBase}`> extends never
+          ? never
+          : ObjectType<`{${TProjection}}`> extends never
+          ? never
+          : {
+              base: Parse<`${_Prefix}${TBase}`>;
+              expr: ObjectType<`{${TProjection}}`>;
+              type: "Projection";
+            })
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Dereference
  */
 type Dereference<
@@ -860,7 +892,7 @@ type TraversalExpression<TExpression extends string> =
   | ArrayPostfix<TExpression>
   | AttributeAccess<TExpression>
   | Dereference<TExpression>
-  // TODO Projection<TExpression>
+  | Projection<TExpression>
   | SquareBracketTraversal<TExpression>;
 
 /**
@@ -1264,6 +1296,44 @@ type EvaluateParenthesis<
   TScope extends Scope<any, any, any>
 > = TNode extends GroupNode ? Evaluate<TNode["base"], TScope> : never;
 
+type EvaluateProjectionElement<
+  TBase,
+  TExpression extends ExprNode,
+  TScope extends Scope<any, any, any>
+> = Evaluate<TExpression, NestedScope<TBase, TScope>>;
+
+type EvaluateProjectionElements<
+  TBases extends any[],
+  TExpression extends ExprNode,
+  TScope extends Scope<any, any, any>
+> = {
+  [index in keyof TBases]: EvaluateProjectionElement<
+    TBases[index],
+    TExpression,
+    TScope
+  >;
+};
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateProjection()
+ */
+type EvaluateProjection<
+  TNode extends ExprNode,
+  TScope extends Scope<any, any, any>
+> = TNode extends ProjectionNode
+  ? Evaluate<TNode["base"], TScope> extends any[]
+    ? EvaluateProjectionElements<
+        Evaluate<TNode["base"], TScope>,
+        TNode["expr"],
+        TScope
+      >
+    : EvaluateProjectionElement<
+        Evaluate<TNode["base"], TScope>,
+        TNode["expr"],
+        TScope
+      >
+  : never;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateSlice()
  */
@@ -1304,6 +1374,7 @@ type EvaluateExpression<
   | EvaluateObject<TNode, TScope>
   | EvaluateParent<TNode, TScope>
   | EvaluateParenthesis<TNode, TScope>
+  | EvaluateProjection<TNode, TScope>
   | EvaluateSlice<TNode, TScope>
   | EvaluateThis<TNode, TScope>
   | EvaluateValue<TNode>;
