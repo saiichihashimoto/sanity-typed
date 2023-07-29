@@ -18,6 +18,7 @@ import type {
   ObjectAttributeValueNode,
   ObjectNode,
   ObjectSplatNode,
+  OpCallNode,
   OrNode,
   ParentNode,
   ProjectionNode,
@@ -663,17 +664,17 @@ type PrefixOperator<
 
 type Operators = {
   "!=": true;
+  "<": true;
+  "<=": true;
   "==": true;
+  ">": true;
+  ">=": true;
   // TODO "-": true
   // TODO "*": true
   // TODO "**": true
   // TODO "/": true
   // TODO "%": true
   // TODO "+": true
-  // TODO "<": true
-  // TODO "<=": true
-  // TODO ">": true
-  // TODO ">=": true
   // TODO "in": true
   // TODO "match": true
 };
@@ -863,6 +864,16 @@ type EvaluateBooleanOperator<
           : null
         : null
       : never
+    : never
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateComparison()
+ */
+type EvaluateComparison<TNode extends ExprNode> = TNode extends OpCallNode
+  ? TNode extends { op: "<" | "<=" | ">" | ">=" }
+    ? // TODO comparison can return null
+      boolean
     : never
   : never;
 
@@ -1530,6 +1541,7 @@ type EvaluateExpression<TNode extends ExprNode, TScope extends Scope<any>> =
   | EvaluateArray<TNode, TScope>
   | EvaluateArrayPostfix<TNode, TScope>
   | EvaluateBooleanOperator<TNode, TScope>
+  | EvaluateComparison<TNode>
   | EvaluateDereference<TNode, TScope>
   | EvaluateEquality<TNode, TScope>
   | EvaluateEverything<TNode, TScope>
