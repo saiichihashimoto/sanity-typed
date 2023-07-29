@@ -679,17 +679,17 @@ type PrefixOperator<
 
 type Operators = {
   "!=": true;
+  "%": true;
+  "*": true;
+  "**": true;
   "+": true;
+  "-": true;
+  "/": true;
   "<": true;
   "<=": true;
   "==": true;
   ">": true;
   ">=": true;
-  // TODO "-": true
-  // TODO "*": true
-  // TODO "**": true
-  // TODO "/": true
-  // TODO "%": true
   // TODO "in": true
   // TODO "match": true
 };
@@ -1422,40 +1422,48 @@ type EvaluateMath<
   TNode extends ExprNode,
   TScope extends Scope<any>
 > = TNode extends OpCallNode
-  ? TNode extends { op: "+" }
-    ? Evaluate<TNode["left"], TScope> extends string
-      ? Evaluate<TNode["right"], TScope> extends string
-        ? // @ts-expect-error -- FIXME Type instantiation is excessively deep and possibly infinite.
-          `${Evaluate<TNode["left"], TScope>}${Evaluate<
-            TNode["right"],
-            TScope
-          >}`
-        : null
-      : Evaluate<TNode["left"], TScope> extends number
-      ? Evaluate<TNode["right"], TScope> extends number
-        ? number
-        : null
-      : Evaluate<TNode["left"], TScope> extends any[]
-      ? Evaluate<TNode["right"], TScope> extends any[]
-        ? [
-            ...Evaluate<TNode["left"], TScope>,
-            ...Evaluate<TNode["right"], TScope>
-          ]
-        : null
-      : Evaluate<TNode["left"], TScope> extends object
-      ? Evaluate<TNode["right"], TScope> extends object
-        ? Simplify<
-            EmptyObject extends Evaluate<TNode["right"], TScope>
-              ? Evaluate<TNode["left"], TScope>
-              : Evaluate<TNode["right"], TScope> &
-                  Omit<
-                    Evaluate<TNode["left"], TScope>,
-                    keyof Evaluate<TNode["right"], TScope>
-                  >
-          >
-        : null
-      : null
-    : never
+  ?
+      | (TNode extends { op: "-" | "*" | "**" | "/" | "%" }
+          ? Evaluate<TNode["left"], TScope> extends number
+            ? Evaluate<TNode["right"], TScope> extends number
+              ? number
+              : null
+            : null
+          : never)
+      | (TNode extends { op: "+" }
+          ? Evaluate<TNode["left"], TScope> extends string
+            ? Evaluate<TNode["right"], TScope> extends string
+              ? // @ts-expect-error -- FIXME Type instantiation is excessively deep and possibly infinite.
+                `${Evaluate<TNode["left"], TScope>}${Evaluate<
+                  TNode["right"],
+                  TScope
+                >}`
+              : null
+            : Evaluate<TNode["left"], TScope> extends number
+            ? Evaluate<TNode["right"], TScope> extends number
+              ? number
+              : null
+            : Evaluate<TNode["left"], TScope> extends any[]
+            ? Evaluate<TNode["right"], TScope> extends any[]
+              ? [
+                  ...Evaluate<TNode["left"], TScope>,
+                  ...Evaluate<TNode["right"], TScope>
+                ]
+              : null
+            : Evaluate<TNode["left"], TScope> extends object
+            ? Evaluate<TNode["right"], TScope> extends object
+              ? Simplify<
+                  EmptyObject extends Evaluate<TNode["right"], TScope>
+                    ? Evaluate<TNode["left"], TScope>
+                    : Evaluate<TNode["right"], TScope> &
+                        Omit<
+                          Evaluate<TNode["left"], TScope>,
+                          keyof Evaluate<TNode["right"], TScope>
+                        >
+                >
+              : null
+            : null
+          : never)
   : never;
 
 /**

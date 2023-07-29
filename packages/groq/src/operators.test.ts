@@ -559,4 +559,74 @@ describe("operators", () => {
       }>();
     });
   });
+
+  describe("-", () => {
+    it("4-5", () => {
+      const query = "4-5";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: { type: "Value"; value: 4 };
+        op: "-";
+        right: { type: "Value"; value: 5 };
+        type: "OpCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+    });
+  });
+
+  describe("*", () => {
+    it("4*5", () => {
+      const query = "4*5";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: { type: "Value"; value: 4 };
+        op: "*";
+        right: { type: "Value"; value: 5 };
+        type: "OpCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+    });
+  });
+
+  describe("/", () => {
+    it("4/5", () => {
+      const query = "4/5";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: { type: "Value"; value: 4 };
+        op: "/";
+        right: { type: "Value"; value: 5 };
+        type: "OpCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+    });
+  });
+
+  describe("%", () => {
+    it("4%5", () => {
+      const query = "4%5";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: { type: "Value"; value: 4 };
+        op: "%";
+        right: { type: "Value"; value: 5 };
+        type: "OpCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+    });
+  });
+
+  describe("**", () => {
+    it("4**5", () => {
+      const query = "4**5";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: { type: "Value"; value: 4 };
+        op: "**";
+        right: { type: "Value"; value: 5 };
+        type: "OpCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+    });
+  });
 });
