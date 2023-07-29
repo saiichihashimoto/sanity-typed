@@ -664,22 +664,31 @@ type PrefixOperator<
 type Operators = {
   "!=": true;
   "==": true;
-  // "-"
-  // "*"
-  // "**"
-  // "/"
-  // "%"
-  // "+"
-  // "<"
-  // "<="
-  // ">"
-  // ">="
-  // "in"
-  // "match"
+  // TODO "-": true
+  // TODO "*": true
+  // TODO "**": true
+  // TODO "/": true
+  // TODO "%": true
+  // TODO "+": true
+  // TODO "<": true
+  // TODO "<=": true
+  // TODO ">": true
+  // TODO ">=": true
+  // TODO "in": true
+  // TODO "match": true
 };
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Equality
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Comparison
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#In
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Match
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Plus
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Minus
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Star
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Slash
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Percent
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#StarStar
  */
 type OpCall<
   TExpression extends string,
@@ -708,29 +717,7 @@ type OpCall<
 type OperatorCall<TExpression extends string> =
   | BooleanOperator<TExpression>
   // TODO Asc
-  // TODO Comparison
   // TODO Desc
-  // TODO In
-  // TODO Match
-  // TODO Minus
-  // TODO Not
-  // TODO Percent
-  // TODO Plus
-  // TODO Slash
-  // TODO Star
-  // TODO StarStar
-  // | OpCall<TExpression, "-">
-  // | OpCall<TExpression, "*">
-  // | OpCall<TExpression, "**">
-  // | OpCall<TExpression, "/">
-  // | OpCall<TExpression, "%">
-  // | OpCall<TExpression, "+">
-  // | OpCall<TExpression, "<">
-  // | OpCall<TExpression, "<=">
-  // | OpCall<TExpression, ">">
-  // | OpCall<TExpression, ">=">
-  // | OpCall<TExpression, "in">
-  // | OpCall<TExpression, "match">
   | OpCall<TExpression>
   | PrefixOperator<TExpression>;
 
