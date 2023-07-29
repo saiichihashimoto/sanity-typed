@@ -207,6 +207,38 @@ describe("operators", () => {
     });
   });
 
+  describe("!", () => {
+    it("!true", () => {
+      const query = "!true";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { type: "Value"; value: true };
+        type: "Not";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
+    });
+
+    it("!false", () => {
+      const query = "!false";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { type: "Value"; value: false };
+        type: "Not";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
+    });
+
+    it('!"string"', () => {
+      const query = '!"string"';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { type: "Value"; value: "string" };
+        type: "Not";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+  });
+
   describe("==", () => {
     it("4==5", () => {
       const query = "4==5";

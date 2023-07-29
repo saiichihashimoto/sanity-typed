@@ -13,6 +13,7 @@ import type {
   GroqFunction,
   GroupNode,
   MapNode,
+  NotNode,
   ObjectAttributeNode,
   ObjectAttributeValueNode,
   ObjectNode,
@@ -603,16 +604,8 @@ type CompoundExpression<TExpression extends string> =
   | TraversalExpression<TExpression>;
 
 type BooleanOperators = {
-  "&&": {
-    stronger: false;
-    type: "And";
-    weaker: true;
-  };
-  "||": {
-    stronger: true;
-    type: "Or";
-    weaker: false;
-  };
+  "&&": { stronger: false; type: "And"; weaker: true };
+  "||": { stronger: true; type: "Or"; weaker: false };
 };
 
 /**
@@ -639,6 +632,33 @@ type BooleanOperator<
               right: Parse<TRight>;
               type: BooleanOperators[NonNullable<TOp>]["type"];
             })
+  : never;
+
+type PrefixOperators = {
+  "!": { type: "Not" };
+  // TODO "+": { type: "Pos" };
+  // TODO "-": { type: "Neg" };
+};
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Not
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#UnaryPlus
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#UnaryMinus
+ */
+type PrefixOperator<
+  TExpression extends string,
+  TOp extends keyof PrefixOperators | null = null
+> = TOp extends null
+  ? {
+      [TOp in keyof PrefixOperators]: PrefixOperator<TExpression, TOp>;
+    }[keyof PrefixOperators]
+  : TExpression extends `${TOp}${infer TBase}`
+  ? Parse<TBase> extends never
+    ? never
+    : {
+        base: Parse<TBase>;
+        type: PrefixOperators[NonNullable<TOp>]["type"];
+      }
   : never;
 
 type Operators = {
@@ -699,8 +719,6 @@ type OperatorCall<TExpression extends string> =
   // TODO Slash
   // TODO Star
   // TODO StarStar
-  // TODO UnaryMinus
-  // TODO UnaryPlus
   // | OpCall<TExpression, "-">
   // | OpCall<TExpression, "*">
   // | OpCall<TExpression, "**">
@@ -713,7 +731,8 @@ type OperatorCall<TExpression extends string> =
   // | OpCall<TExpression, ">=">
   // | OpCall<TExpression, "in">
   // | OpCall<TExpression, "match">
-  | OpCall<TExpression>;
+  | OpCall<TExpression>
+  | PrefixOperator<TExpression>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Expression
@@ -890,10 +909,13 @@ type EvaluateDereference<
     : EvaluateDereferenceElement<Evaluate<TNode["base"], TScope>, TScope>
   : never;
 
-type Negate<
-  TBoolean extends boolean,
-  Enabled extends boolean
-> = Enabled extends false ? TBoolean : TBoolean extends true ? false : true;
+type Not<TBoolean, Enabled extends boolean = true> = TBoolean extends boolean
+  ? Enabled extends false
+    ? TBoolean
+    : TBoolean extends true
+    ? false
+    : true
+  : null;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateEquality()
@@ -902,7 +924,7 @@ type EvaluateEquality<
   TNode extends ExprNode,
   TScope extends Scope<any>
 > = TNode extends { op: "!=" | "=="; type: "OpCall" }
-  ? Negate<
+  ? Not<
       // TODO Test Equality cases in https://sanity-io.github.io/GROQ/GROQ-1.revision1/#PartialCompare()
       Evaluate<TNode["left"], TScope> extends Evaluate<TNode["right"], TScope>
         ? true
@@ -1373,6 +1395,14 @@ type EvaluateFuncCall<
     : never
   : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateNot()
+ */
+type EvaluateNot<
+  TNode extends ExprNode,
+  TScope extends Scope<any>
+> = TNode extends NotNode ? Not<Evaluate<TNode["base"], TScope>> : never;
+
 type EvaluateObjectAttribute<
   TAttribute extends ObjectAttributeNode,
   TScope extends Scope<any>
@@ -1518,6 +1548,7 @@ type EvaluateExpression<TNode extends ExprNode, TScope extends Scope<any>> =
   | EvaluateEverything<TNode, TScope>
   | EvaluateFilter<TNode, TScope>
   | EvaluateFuncCall<TNode, TScope>
+  | EvaluateNot<TNode, TScope>
   | EvaluateObject<TNode, TScope>
   | EvaluateParent<TNode, TScope>
   | EvaluateParenthesis<TNode, TScope>
