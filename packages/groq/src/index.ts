@@ -679,6 +679,7 @@ type PrefixOperator<
 
 type Operators = {
   "!=": true;
+  "+": true;
   "<": true;
   "<=": true;
   "==": true;
@@ -689,7 +690,6 @@ type Operators = {
   // TODO "**": true
   // TODO "/": true
   // TODO "%": true
-  // TODO "+": true
   // TODO "in": true
   // TODO "match": true
 };
@@ -1408,6 +1408,56 @@ type EvaluateFuncCall<
     : never
   : never;
 
+type EmptyObject = { [key: string]: never };
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePlus()
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateMinus()
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateStar()
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateSlash()
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePercent()
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateStarStar()
+ */
+type EvaluateMath<
+  TNode extends ExprNode,
+  TScope extends Scope<any>
+> = TNode extends OpCallNode
+  ? TNode extends { op: "+" }
+    ? Evaluate<TNode["left"], TScope> extends string
+      ? Evaluate<TNode["right"], TScope> extends string
+        ? // @ts-expect-error -- FIXME Type instantiation is excessively deep and possibly infinite.
+          `${Evaluate<TNode["left"], TScope>}${Evaluate<
+            TNode["right"],
+            TScope
+          >}`
+        : null
+      : Evaluate<TNode["left"], TScope> extends number
+      ? Evaluate<TNode["right"], TScope> extends number
+        ? number
+        : null
+      : Evaluate<TNode["left"], TScope> extends any[]
+      ? Evaluate<TNode["right"], TScope> extends any[]
+        ? [
+            ...Evaluate<TNode["left"], TScope>,
+            ...Evaluate<TNode["right"], TScope>
+          ]
+        : null
+      : Evaluate<TNode["left"], TScope> extends object
+      ? Evaluate<TNode["right"], TScope> extends object
+        ? Simplify<
+            EmptyObject extends Evaluate<TNode["right"], TScope>
+              ? Evaluate<TNode["left"], TScope>
+              : Evaluate<TNode["right"], TScope> &
+                  Omit<
+                    Evaluate<TNode["left"], TScope>,
+                    keyof Evaluate<TNode["right"], TScope>
+                  >
+          >
+        : null
+      : null
+    : never
+  : never;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateNeg()
  */
@@ -1448,8 +1498,6 @@ type EvaluateObjectAttribute<
   | (TAttribute extends ObjectSplatNode
       ? Evaluate<TAttribute["value"], TScope>
       : never);
-
-type EmptyObject = { [key: string]: never };
 
 type EvaluateObjectAttributes<
   TAttributes extends ObjectAttributeNode[],
@@ -1596,6 +1644,7 @@ type EvaluateExpression<TNode extends ExprNode, TScope extends Scope<any>> =
   | EvaluateEverything<TNode, TScope>
   | EvaluateFilter<TNode, TScope>
   | EvaluateFuncCall<TNode, TScope>
+  | EvaluateMath<TNode, TScope>
   | EvaluateNeg<TNode, TScope>
   | EvaluateNot<TNode, TScope>
   | EvaluateObject<TNode, TScope>

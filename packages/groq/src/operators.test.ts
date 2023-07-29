@@ -460,4 +460,103 @@ describe("operators", () => {
       >().toStrictEqual<null>();
     });
   });
+
+  describe("+", () => {
+    it('"foo"+"bar"', () => {
+      const query = '"foo"+"bar"';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: { type: "Value"; value: "foo" };
+        op: "+";
+        right: { type: "Value"; value: "bar" };
+        type: "OpCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<"foobar">();
+    });
+
+    it("4+5", () => {
+      const query = "4+5";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: { type: "Value"; value: 4 };
+        op: "+";
+        right: { type: "Value"; value: 5 };
+        type: "OpCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+    });
+
+    it("[1,2]+[3,4]", () => {
+      const query = "[1,2]+[3,4]";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: {
+          elements: [
+            {
+              isSplat: false;
+              type: "ArrayElement";
+              value: { type: "Value"; value: 1 };
+            },
+            {
+              isSplat: false;
+              type: "ArrayElement";
+              value: { type: "Value"; value: 2 };
+            }
+          ];
+          type: "Array";
+        };
+        op: "+";
+        right: {
+          elements: [
+            {
+              isSplat: false;
+              type: "ArrayElement";
+              value: { type: "Value"; value: 3 };
+            },
+            {
+              isSplat: false;
+              type: "ArrayElement";
+              value: { type: "Value"; value: 4 };
+            }
+          ];
+          type: "Array";
+        };
+        type: "OpCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<[1, 2, 3, 4]>();
+    });
+
+    it('{"foo":"bar"}+{"baz":"qux"}', () => {
+      const query = '{"foo":"bar"}+{"baz":"qux"}';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: {
+          attributes: [
+            {
+              name: "foo";
+              type: "ObjectAttributeValue";
+              value: { type: "Value"; value: "bar" };
+            }
+          ];
+          type: "Object";
+        };
+        op: "+";
+        right: {
+          attributes: [
+            {
+              name: "baz";
+              type: "ObjectAttributeValue";
+              value: { type: "Value"; value: "qux" };
+            }
+          ];
+          type: "Object";
+        };
+        type: "OpCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<{
+        baz: "qux";
+        foo: "bar";
+      }>();
+    });
+  });
 });
