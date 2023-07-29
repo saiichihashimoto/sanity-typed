@@ -13,6 +13,7 @@ import type {
   GroqFunction,
   GroupNode,
   MapNode,
+  NegNode,
   NotNode,
   ObjectAttributeNode,
   ObjectAttributeValueNode,
@@ -21,6 +22,7 @@ import type {
   OpCallNode,
   OrNode,
   ParentNode,
+  PosNode,
   ProjectionNode,
   SliceNode,
   ThisNode,
@@ -80,7 +82,12 @@ export type Evaluate<TNode extends ExprNode, TScope extends Scope<any>> =
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Number
  */
 type Primitives<TExpression extends string> =
-  TExpression extends `${infer TValue extends boolean | number | null}`
+  TExpression extends `+${infer TValue extends number}`
+    ? {
+        type: "Value";
+        value: TValue;
+      }
+    : TExpression extends `${infer TValue extends boolean | number | null}`
     ? {
         type: "Value";
         value: TValue;
@@ -636,9 +643,9 @@ type BooleanOperator<
   : never;
 
 type PrefixOperators = {
-  "!": { type: "Not" };
-  // TODO "+": { type: "Pos" };
-  // TODO "-": { type: "Neg" };
+  "!": { excludeNumbers: false; type: "Not" };
+  "+": { excludeNumbers: true; type: "Pos" };
+  "-": { excludeNumbers: true; type: "Neg" };
 };
 
 /**
@@ -654,7 +661,15 @@ type PrefixOperator<
       [TOp in keyof PrefixOperators]: PrefixOperator<TExpression, TOp>;
     }[keyof PrefixOperators]
   : TExpression extends `${TOp}${infer TBase}`
-  ? Parse<TBase> extends never
+  ? (
+      TBase extends `${number}`
+        ? PrefixOperators[NonNullable<TOp>]["excludeNumbers"] extends true
+          ? false
+          : true
+        : true
+    ) extends false
+    ? never
+    : Parse<TBase> extends never
     ? never
     : {
         base: Parse<TBase>;
@@ -1394,6 +1409,28 @@ type EvaluateFuncCall<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateNeg()
+ */
+type EvaluateNeg<
+  TNode extends ExprNode,
+  TScope extends Scope<any>
+> = TNode extends NegNode
+  ? Evaluate<TNode["base"], TScope> extends number
+    ? `-${Evaluate<
+        TNode["base"],
+        TScope
+      >}` extends `${infer TNum extends number}`
+      ? TNum
+      : `${Evaluate<
+          TNode["base"],
+          TScope
+        >}` extends `-${infer TNum extends number}`
+      ? TNum
+      : Evaluate<TNode["base"], TScope>
+    : null
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateNot()
  */
 type EvaluateNot<
@@ -1473,6 +1510,18 @@ type EvaluateParenthesis<
   TScope extends Scope<any>
 > = TNode extends GroupNode ? Evaluate<TNode["base"], TScope> : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePos()
+ */
+type EvaluatePos<
+  TNode extends ExprNode,
+  TScope extends Scope<any>
+> = TNode extends PosNode
+  ? Evaluate<TNode["base"], TScope> extends number
+    ? Evaluate<TNode["base"], TScope>
+    : null
+  : never;
+
 type EvaluateProjectionElement<
   TBase,
   TExpression extends ExprNode,
@@ -1547,10 +1596,12 @@ type EvaluateExpression<TNode extends ExprNode, TScope extends Scope<any>> =
   | EvaluateEverything<TNode, TScope>
   | EvaluateFilter<TNode, TScope>
   | EvaluateFuncCall<TNode, TScope>
+  | EvaluateNeg<TNode, TScope>
   | EvaluateNot<TNode, TScope>
   | EvaluateObject<TNode, TScope>
   | EvaluateParent<TNode, TScope>
   | EvaluateParenthesis<TNode, TScope>
+  | EvaluatePos<TNode, TScope>
   | EvaluateProjection<TNode, TScope>
   | EvaluateSlice<TNode, TScope>
   | EvaluateThis<TNode, TScope>

@@ -346,4 +346,118 @@ describe("operators", () => {
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<boolean>();
     });
   });
+
+  describe("+ (prefix)", () => {
+    it("+5", () => {
+      const query = "+5";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        type: "Value";
+        value: 5;
+      }>();
+      expectType<ExecuteQuery<typeof query, { this: 5 }>>().toStrictEqual<5>();
+    });
+
+    it("+@ (5)", () => {
+      const query = "+@";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { type: "This" };
+        type: "Pos";
+      }>();
+      expectType<ExecuteQuery<typeof query, { this: 5 }>>().toStrictEqual<5>();
+    });
+
+    it("+@ (-5)", () => {
+      const query = "+@";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { type: "This" };
+        type: "Pos";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { this: -5 }>
+      >().toStrictEqual<-5>();
+    });
+
+    it("+@ (number)", () => {
+      const query = "+@";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { type: "This" };
+        type: "Pos";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { this: number }>
+      >().toStrictEqual<number>();
+    });
+
+    it("+@ (string)", () => {
+      const query = "+@";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { type: "This" };
+        type: "Pos";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { this: "foo" }>
+      >().toStrictEqual<null>();
+    });
+  });
+
+  describe("- (prefix)", () => {
+    it("-5", () => {
+      const query = "-5";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        type: "Value";
+        value: -5;
+      }>();
+      expectType<ExecuteQuery<typeof query, { this: 5 }>>().toStrictEqual<-5>();
+    });
+
+    it("-@ (5)", () => {
+      const query = "-@";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { type: "This" };
+        type: "Neg";
+      }>();
+      expectType<ExecuteQuery<typeof query, { this: 5 }>>().toStrictEqual<-5>();
+    });
+
+    it("-@ (-5)", () => {
+      const query = "-@";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { type: "This" };
+        type: "Neg";
+      }>();
+      expectType<ExecuteQuery<typeof query, { this: -5 }>>().toStrictEqual<5>();
+    });
+
+    it("-@ (number)", () => {
+      const query = "-@";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { type: "This" };
+        type: "Neg";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { this: number }>
+      >().toStrictEqual<number>();
+    });
+
+    it("-@ (string)", () => {
+      const query = "-@";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { type: "This" };
+        type: "Neg";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { this: "foo" }>
+      >().toStrictEqual<null>();
+    });
+  });
 });
