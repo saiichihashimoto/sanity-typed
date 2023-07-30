@@ -252,7 +252,9 @@ type ObjectArrayMemberValue<
 type ArrayValue<
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
 > = Simplify<
-  (_InferValue<TMemberDefinition> extends { [key: string]: any }
+  (_InferValue<TMemberDefinition> extends any[]
+    ? _InferValue<TMemberDefinition>
+    : _InferValue<TMemberDefinition> extends { [key: string]: any }
     ? ObjectArrayMemberValue<TMemberDefinition>
     : _InferValue<TMemberDefinition>)[]
 >;
