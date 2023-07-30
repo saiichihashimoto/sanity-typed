@@ -439,47 +439,60 @@ type TypeAliasDefinition<
   }
 >;
 
-export const defineArrayMember = <
-  TType extends string,
-  TName extends string,
-  TAlias extends IntrinsicTypeName,
-  TStrict extends StrictDefinition,
-  TFieldDefinition extends DefinitionBase<any, any, any> & {
-    name: string;
-    [required]?: boolean;
-  },
-  TReferenced extends string
->(
-  arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
-    (TType extends "array"
-      ? never
-      : TType extends IntrinsicTypeName
-      ? // HACK Why can't I just index off of IntrinsicDefinitions?
-        Extract<
-          {
-            [K in IntrinsicTypeName]: Omit<
-              IntrinsicDefinitions<
-                TName,
-                TFieldDefinition,
-                any,
-                TReferenced,
-                any
-              >[K],
-              "name"
-            >;
-          }[IntrinsicTypeName],
-          { type: TType }
-        >
-      : Omit<TypeAliasDefinition<TType, TAlias, any>, "name">) & {
-      name?: TName;
-      type: TType;
+/**
+ * Arrays shouldn't be children of arrays, ever.
+ * https://www.sanity.io/docs/array-type#fNBIr84P
+ *
+ * But we give an option to do so, only so we can test the depth limit
+ *
+ * @private
+ */
+export const makeDefineArrayMember =
+  <AllowArrays extends boolean>() =>
+  <
+    TType extends string,
+    TName extends string,
+    TAlias extends IntrinsicTypeName,
+    TStrict extends StrictDefinition,
+    TFieldDefinition extends DefinitionBase<any, any, any> & {
+      name: string;
+      [required]?: boolean;
     },
-  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
-) =>
-  defineArrayMemberNative(
-    arrayOfSchema as any,
-    defineOptions
-  ) as typeof arrayOfSchema;
+    TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+    TReferenced extends string
+  >(
+    arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
+      ((TType extends "array" ? AllowArrays : true) extends false
+        ? never
+        : TType extends IntrinsicTypeName
+        ? // HACK Why can't I just index off of IntrinsicDefinitions?
+          Extract<
+            {
+              [K in IntrinsicTypeName]: Omit<
+                IntrinsicDefinitions<
+                  TName,
+                  TFieldDefinition,
+                  TMemberDefinition,
+                  TReferenced,
+                  any
+                >[K],
+                "name"
+              >;
+            }[IntrinsicTypeName],
+            { type: TType }
+          >
+        : Omit<TypeAliasDefinition<TType, TAlias, any>, "name">) & {
+        name?: TName;
+        type: TType;
+      },
+    defineOptions?: DefineSchemaOptions<TStrict, TAlias>
+  ) =>
+    defineArrayMemberNative(
+      arrayOfSchema as any,
+      defineOptions
+    ) as typeof arrayOfSchema;
+
+export const defineArrayMember = makeDefineArrayMember<false>();
 
 export const defineField = <
   TType extends string,

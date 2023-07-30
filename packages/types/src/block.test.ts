@@ -21,7 +21,7 @@ describe("block", () => {
 
   describe("defineField", () => {
     it("is a typescript error", () => {
-      // @ts-expect-error -- arrays can't be children of arrays https://www.sanity.io/docs/array-type#fNBIr84P
+      // @ts-expect-error -- blocks can't be fields https://www.sanity.io/docs/block-type
       const field = defineField({
         name: "foo",
         type: "block",
