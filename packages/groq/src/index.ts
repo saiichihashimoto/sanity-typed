@@ -1077,36 +1077,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
       : never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Delta-namespace
-   */
-  delta: {
-    /**
-     * TODO delta::changedAny
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedAny()
-     */
-    changedAny: never;
-    /**
-     * TODO delta::changedOnly
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedOnly()
-     */
-    changedOnly: never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Diff-namespace
-   */
-  diff: {
-    /**
-     * TODO diff::changedAny
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedAny()
-     */
-    changedAny: never;
-    /**
-     * TODO diff::changedOnly
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedOnly()
-     */
-    changedOnly: never;
-  };
-  /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
    */
   global: {
