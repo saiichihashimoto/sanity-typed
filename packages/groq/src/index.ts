@@ -608,7 +608,6 @@ type TraversalExpression<TExpression extends string> =
  */
 type CompoundExpression<TExpression extends string> =
   | Parenthesis<TExpression>
-  // TODO PipeFuncCall
   | TraversalExpression<TExpression>;
 
 type BooleanOperators = {
@@ -1183,11 +1182,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
           : null
         : null
       : never;
-    /**
-     * TODO global::select
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_select()
-     */
-    select: never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_string()
      */
