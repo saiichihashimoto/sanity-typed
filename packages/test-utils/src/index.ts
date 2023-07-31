@@ -1,7 +1,5 @@
 import type { ConditionalExcept, Simplify } from "type-fest";
 
-// TODO Release expect-type as it's own package
-
 declare const EXPECTED: unique symbol;
 declare const RECEIVED: unique symbol;
 
