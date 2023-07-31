@@ -1210,11 +1210,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
      */
     path: never;
     /**
-     * TODO global::pt
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
-     */
-    pt: never;
-    /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_references()
      */
     references: TArgs extends (infer TElement)[]
@@ -1282,13 +1277,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
   /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Portable-Text-Extension
    */
-  pt: {
-    /**
-     * TODO pt::text
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#pt_text()
-     */
-    text: never;
-  };
   /**
    * @link https://www.sanity.io/docs/groq-functions#61e2649fc0d8
    */
