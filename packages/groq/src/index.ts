@@ -791,10 +791,8 @@ type EvaluateAccessElement<
   TScope extends Scope<any>
 > = TNode extends AccessElementNode
   ? Evaluate<TNode["base"], TScope> extends (infer TValue)[]
-    ? // TODO Use TNode["index"] to be more specific
-      TValue
-    : // FIXME ProjectionTraversal ArraySource Should InnerMap https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalArraySource
-      null
+    ? TValue
+    : null
   : never;
 
 type EvaluateArrayElement<
@@ -882,8 +880,7 @@ type EvaluateBooleanOperator<
  */
 type EvaluateComparison<TNode extends ExprNode> = TNode extends OpCallNode
   ? TNode extends { op: "<" | "<=" | ">" | ">=" }
-    ? // TODO comparison can return null
-      boolean
+    ? boolean
     : never
   : never;
 
@@ -933,7 +930,6 @@ type EvaluateEquality<
   TScope extends Scope<any>
 > = TNode extends { op: "!=" | "=="; type: "OpCall" }
   ? Not<
-      // TODO Test Equality cases in https://sanity-io.github.io/GROQ/GROQ-1.revision1/#PartialCompare()
       Evaluate<TNode["left"], TScope> extends Evaluate<TNode["right"], TScope>
         ? true
         : Evaluate<TNode["right"], TScope> extends Evaluate<
@@ -1515,10 +1511,8 @@ type EvaluateSlice<
   TScope extends Scope<any>
 > = TNode extends SliceNode
   ? Evaluate<TNode["base"], TScope> extends any[]
-    ? // TODO Use TNode["left"] & TNode["right"] to be more specific
-      Evaluate<TNode["base"], TScope>
-    : // FIXME ProjectionTraversal ArraySource Should InnerMap https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalArraySource
-      null
+    ? Evaluate<TNode["base"], TScope>
+    : null
   : never;
 
 /**
