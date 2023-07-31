@@ -690,8 +690,6 @@ type Operators = {
   "==": true;
   ">": true;
   ">=": true;
-  // TODO "in": true
-  // TODO "match": true
 };
 
 /**
@@ -732,8 +730,6 @@ type OpCall<
  */
 type OperatorCall<TExpression extends string> =
   | BooleanOperator<TExpression>
-  // TODO Asc
-  // TODO Desc
   | OpCall<TExpression>
   | PrefixOperator<TExpression>;
 
