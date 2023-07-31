@@ -608,7 +608,6 @@ type TraversalExpression<TExpression extends string> =
  */
 type CompoundExpression<TExpression extends string> =
   | Parenthesis<TExpression>
-  // TODO PipeFuncCall
   | TraversalExpression<TExpression>;
 
 type BooleanOperators = {
@@ -690,8 +689,6 @@ type Operators = {
   "==": true;
   ">": true;
   ">=": true;
-  // TODO "in": true
-  // TODO "match": true
 };
 
 /**
@@ -732,8 +729,6 @@ type OpCall<
  */
 type OperatorCall<TExpression extends string> =
   | BooleanOperator<TExpression>
-  // TODO Asc
-  // TODO Desc
   | OpCall<TExpression>
   | PrefixOperator<TExpression>;
 
@@ -796,10 +791,8 @@ type EvaluateAccessElement<
   TScope extends Scope<any>
 > = TNode extends AccessElementNode
   ? Evaluate<TNode["base"], TScope> extends (infer TValue)[]
-    ? // TODO Use TNode["index"] to be more specific
-      TValue
-    : // FIXME ProjectionTraversal ArraySource Should InnerMap https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalArraySource
-      null
+    ? TValue
+    : null
   : never;
 
 type EvaluateArrayElement<
@@ -887,8 +880,7 @@ type EvaluateBooleanOperator<
  */
 type EvaluateComparison<TNode extends ExprNode> = TNode extends OpCallNode
   ? TNode extends { op: "<" | "<=" | ">" | ">=" }
-    ? // TODO comparison can return null
-      boolean
+    ? boolean
     : never
   : never;
 
@@ -938,7 +930,6 @@ type EvaluateEquality<
   TScope extends Scope<any>
 > = TNode extends { op: "!=" | "=="; type: "OpCall" }
   ? Not<
-      // TODO Test Equality cases in https://sanity-io.github.io/GROQ/GROQ-1.revision1/#PartialCompare()
       Evaluate<TNode["left"], TScope> extends Evaluate<TNode["right"], TScope>
         ? true
         : Evaluate<TNode["right"], TScope> extends Evaluate<
@@ -1081,68 +1072,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
       : never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-DateTime-namespace
-   */
-  dateTime: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#dateTime_now()
-     */
-    now: TArgs extends []
-      ? // TODO dateTime type https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Datetime
-        string
-      : never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Delta-namespace
-   */
-  delta: {
-    /**
-     * TODO delta::changedAny
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedAny()
-     */
-    changedAny: never;
-    /**
-     * TODO delta::changedOnly
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedOnly()
-     */
-    changedOnly: never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Diff-namespace
-   */
-  diff: {
-    /**
-     * TODO diff::changedAny
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedAny()
-     */
-    changedAny: never;
-    /**
-     * TODO diff::changedOnly
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedOnly()
-     */
-    changedOnly: never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Geography-Extension
-   */
-  geo: {
-    /**
-     * TODO geo::contains
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_contains()
-     */
-    contains: never;
-    /**
-     * TODO geo::distance
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_distance()
-     */
-    distance: never;
-    /**
-     * TODO geo::intersects
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_intersects()
-     */
-    intersects: never;
-  };
-  /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
    */
   global: {
@@ -1167,11 +1096,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
         : never
       : never;
     /**
-     * TODO global::boost
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_boost()
-     */
-    boost: never;
-    /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_coalesce()
      */
     coalesce: TArgs extends []
@@ -1190,11 +1114,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
         : null
       : never;
     /**
-     * TODO global::dateTime
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_dateTime()
-     */
-    dateTime: never;
-    /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_defined()
      */
     defined: TArgs extends [infer TBase]
@@ -1202,16 +1121,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
         ? false
         : true
       : never;
-    /**
-     * TODO global::geo
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_geo()
-     */
-    geo: never;
-    /**
-     * TODO global::identity
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-identity-
-     */
-    identity: never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_length()
      */
@@ -1247,25 +1156,12 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
         : never
       : never;
     /**
-     * TODO global::path
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_path()
-     */
-    path: never;
-    /**
-     * TODO global::pt
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
-     */
-    pt: never;
-    /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_references()
      */
     references: TArgs extends (infer TElement)[]
       ? Extract<Exclude<TElement, []>, string[] | string> extends never
         ? false
-        : // Once we're certain there's a string or string[] argument, we can't do better
-          // Whether or not the ids exist in a dataset is impossible to figure out
-          // TODO We could check only for docs that have ReferenceValues.
-          boolean
+        : boolean
       : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_round()
@@ -1279,11 +1175,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
           : null
         : null
       : never;
-    /**
-     * TODO global::select
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_select()
-     */
-    select: never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_string()
      */
@@ -1324,13 +1215,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
   /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Portable-Text-Extension
    */
-  pt: {
-    /**
-     * TODO pt::text
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#pt_text()
-     */
-    text: never;
-  };
   /**
    * @link https://www.sanity.io/docs/groq-functions#61e2649fc0d8
    */
@@ -1624,10 +1508,8 @@ type EvaluateSlice<
   TScope extends Scope<any>
 > = TNode extends SliceNode
   ? Evaluate<TNode["base"], TScope> extends any[]
-    ? // TODO Use TNode["left"] & TNode["right"] to be more specific
-      Evaluate<TNode["base"], TScope>
-    : // FIXME ProjectionTraversal ArraySource Should InnerMap https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalArraySource
-      null
+    ? Evaluate<TNode["base"], TScope>
+    : null
   : never;
 
 /**
