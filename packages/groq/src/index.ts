@@ -1161,10 +1161,7 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
     references: TArgs extends (infer TElement)[]
       ? Extract<Exclude<TElement, []>, string[] | string> extends never
         ? false
-        : // Once we're certain there's a string or string[] argument, we can't do better
-          // Whether or not the ids exist in a dataset is impossible to figure out
-          // TODO We could check only for docs that have ReferenceValues.
-          boolean
+        : boolean
       : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_round()
