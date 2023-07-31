@@ -1127,11 +1127,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
         : true
       : never;
     /**
-     * TODO global::identity
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-identity-
-     */
-    identity: never;
-    /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_length()
      */
     length: TArgs extends [infer TBase]
@@ -1165,11 +1160,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
           : "update"
         : never
       : never;
-    /**
-     * TODO global::path
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_path()
-     */
-    path: never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_references()
      */
