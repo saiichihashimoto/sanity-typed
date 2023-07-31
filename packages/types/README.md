@@ -220,6 +220,141 @@ export type Foo = Values["foo"];
  **/
 ```
 
+### `castToTyped(arg: ReturnType<typeof definePluginNative | typeof defineTypeNative | typeof defineFieldNative | typeof defineArrayMemberNative>)`
+
+Types that are defined externally using `sanity` (ie imported plugins) can be included in your typed config. `castToTyped` casts the type to ignore typescript errors. This will make it's best effort at including those types, but won't magically type everything.
+
+```typescript
+import {
+  defineField as defineFieldNative,
+  definePlugin as definePluginNative,
+  defineType as defineTypeNative,
+} from "sanity";
+
+import { expectType } from "@sanity-typed/test-utils";
+
+import { castToTyped, defineConfig, defineField, defineType } from ".";
+import type { InferSchemaValues } from ".";
+
+const config = defineConfig({
+  dataset: "dataset",
+  projectId: "projectId",
+  schema: {
+    types: [
+      defineType({
+        name: "foo",
+        type: "document",
+        fields: [
+          defineField({
+            name: "pluginValue",
+            type: "pluginValue",
+          }),
+        ],
+      }),
+    ],
+  },
+  plugins: [
+    // Plugin dependencies can be included this way!
+    castToTyped(
+      definePluginNative({
+        name: "plugin",
+        schema: {
+          types: [
+            defineTypeNative({
+              name: "pluginValue",
+              type: "object" as const,
+              fields: [
+                defineFieldNative({
+                  name: "baz",
+                  type: "boolean",
+                }),
+              ],
+            }),
+          ],
+        },
+      })()
+    ),
+  ],
+});
+
+type Values = InferSchemaValues<typeof config>;
+
+export type Foo = Values["foo"];
+
+/**
+ *  Foo === {
+ *    _createdAt: string;
+ *    _id: string;
+ *    _rev: string;
+ *    _type: "foo";
+ *    _updatedAt: string;
+ *    pluginValue?: unknown;
+ *  };
+ */
+```
+
+### `castFromTyped(arg: ReturnType<typeof definePlugin | typeof defineType | typeof defineField | typeof defineArrayMember>)`
+
+Types that are defined `@sanity-typed` can be casted back (ie plugin authors wanting to provide the native plugin type). `castFromTyped` casts the type to ignore typescript errors. This will make it's best effort at including those types, but won't magically type everything.
+
+```typescript
+import {
+  defineConfig as defineConfigNative,
+  defineField as defineFieldNative,
+  defineType as defineTypeNative,
+} from "sanity";
+
+import { castFromTyped, defineField, definePlugin, defineType } from ".";
+
+const config = defineConfigNative({
+  dataset: "dataset",
+  projectId: "projectId",
+  schema: {
+    types: [
+      defineTypeNative({
+        name: "foo",
+        type: "document" as const,
+        fields: [
+          defineFieldNative({
+            name: "pluginValue",
+            type: "pluginValue",
+          }),
+        ],
+      }),
+    ],
+  },
+  plugins: [
+    // Plugin authors can export this return value for the natively typed plugin
+    castFromTyped(
+      // They COULD also export this type, for those who use @sanity-typed as well
+      definePlugin({
+        name: "plugin",
+        schema: {
+          types: [
+            defineType({
+              name: "pluginValue",
+              type: "object" as const,
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "boolean",
+                }),
+              ],
+            }),
+          ],
+        },
+      })()
+    ),
+  ],
+});
+
+export { config };
+
+/**
+ *  typeof config === ReturnType<typeof defineConfig>;
+ */
+```
+
 ## Goals
 
 Typescript was an after-the-fact concern with sanity, since the rise of typescript happened after sanity took off. The `define*` methods are a good start, but they only help restrict the schema, not type the document types. There's been attempts, namely [`sanity-codegen`](https://github.com/ricokahler/sanity-codegen) and [`@sanity-typed/schema-builder`](https://github.com/saiichihashimoto/sanity-typed/tree/%40sanity-typed/schema-builder%403.0.1/packages/schema-builder), but they take the approach of creating a new way of building schemas. The drop-in replacement approach allows for zero migration cost.
