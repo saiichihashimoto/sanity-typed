@@ -1111,26 +1111,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
     changedOnly: never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Geography-Extension
-   */
-  geo: {
-    /**
-     * TODO geo::contains
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_contains()
-     */
-    contains: never;
-    /**
-     * TODO geo::distance
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_distance()
-     */
-    distance: never;
-    /**
-     * TODO geo::intersects
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_intersects()
-     */
-    intersects: never;
-  };
-  /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
    */
   global: {
@@ -1185,11 +1165,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
         ? false
         : true
       : never;
-    /**
-     * TODO global::geo
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_geo()
-     */
-    geo: never;
     /**
      * TODO global::identity
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-identity-
