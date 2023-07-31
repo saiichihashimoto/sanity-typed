@@ -1131,11 +1131,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
         : never
       : never;
     /**
-     * TODO global::boost
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_boost()
-     */
-    boost: never;
-    /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_coalesce()
      */
     coalesce: TArgs extends []
