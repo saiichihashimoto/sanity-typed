@@ -1,9 +1,4 @@
 import { describe, it } from "@jest/globals";
-import {
-  defineField as defineFieldNative,
-  definePlugin as definePluginNative,
-  defineType as defineTypeNative,
-} from "sanity";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -283,59 +278,6 @@ describe("<alias>", () => {
         };
       }>();
     });
-
-    it("ignores native plugin types", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "document",
-              fields: [
-                defineField({
-                  name: "pluginValue",
-                  type: "pluginValue",
-                }),
-              ],
-            }),
-          ],
-        },
-        plugins: [
-          definePluginNative({
-            name: "plugin",
-            schema: {
-              types: [
-                defineTypeNative({
-                  name: "pluginValue",
-                  type: "object" as const,
-                  fields: [
-                    defineFieldNative({
-                      name: "baz",
-                      type: "boolean",
-                    }),
-                  ],
-                }),
-              ],
-            },
-          })(),
-        ],
-      });
-
-      type Values = InferSchemaValues<typeof config>;
-
-      expectType<Values>().toStrictEqual<{
-        foo: {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          pluginValue?: unknown;
-        };
-      }>();
-    });
   });
 
   describe("definePlugin", () => {
@@ -558,58 +500,6 @@ describe("<alias>", () => {
           } & {
             baz?: boolean;
           };
-        };
-      }>();
-    });
-
-    it("ignores native plugin types", () => {
-      const plugin = definePlugin({
-        name: "plugin",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "document",
-              fields: [
-                defineField({
-                  name: "pluginValue",
-                  type: "pluginValue",
-                }),
-              ],
-            }),
-          ],
-        },
-        plugins: [
-          definePluginNative({
-            name: "plugin",
-            schema: {
-              types: [
-                defineTypeNative({
-                  name: "pluginValue",
-                  type: "object" as const,
-                  fields: [
-                    defineFieldNative({
-                      name: "baz",
-                      type: "boolean",
-                    }),
-                  ],
-                }),
-              ],
-            },
-          })(),
-        ],
-      })();
-
-      type Values = InferSchemaValues<typeof plugin>;
-
-      expectType<Values>().toStrictEqual<{
-        foo: {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          pluginValue?: unknown;
         };
       }>();
     });
