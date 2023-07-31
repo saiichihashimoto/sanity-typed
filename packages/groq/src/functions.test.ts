@@ -792,20 +792,6 @@ describe("functions", () => {
     });
   });
 
-  describe("dateTime", () => {
-    it("dateTime::now()", () => {
-      const query = "dateTime::now()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "dateTime::now";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<string>();
-    });
-  });
-
   describe("array", () => {
     it('array::join(false,",")', () => {
       const query = 'array::join(false,",")';

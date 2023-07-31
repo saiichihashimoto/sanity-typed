@@ -1081,18 +1081,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
       : never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-DateTime-namespace
-   */
-  dateTime: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#dateTime_now()
-     */
-    now: TArgs extends []
-      ? // TODO dateTime type https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Datetime
-        string
-      : never;
-  };
-  /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Delta-namespace
    */
   delta: {
@@ -1189,11 +1177,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
         ? TBase["length"]
         : null
       : never;
-    /**
-     * TODO global::dateTime
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_dateTime()
-     */
-    dateTime: never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_defined()
      */
