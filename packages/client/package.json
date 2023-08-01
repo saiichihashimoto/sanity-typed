@@ -23,10 +23,10 @@
     "type-fest": "2.19.0"
   },
   "devDependencies": {
-    "@jest/globals": "29.6.1",
+    "@jest/globals": "29.6.2",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@sanity/client": "6.1.7",
+    "@sanity/client": "6.2.0",
     "typescript": "5.1.6"
   },
   "peerDependencies": {
