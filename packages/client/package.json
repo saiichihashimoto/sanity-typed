@@ -1,10 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@sanity-typed/groq",
+  "name": "@sanity-typed/client",
   "version": "0.0.0-development",
   "description": "TODO Description",
-  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/alpha/packages/groq",
-  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Agroq",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/alpha/packages/client",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Aclient",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {
     "type": "individual",
@@ -18,8 +18,8 @@
     "dev": "npm run build -- --no-dts"
   },
   "dependencies": {
+    "@sanity-typed/groq": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
-    "groq-js": "1.1.9",
     "type-fest": "2.19.0"
   },
   "devDependencies": {
