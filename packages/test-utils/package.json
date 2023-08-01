@@ -16,7 +16,7 @@
     "type-fest": "2.19.0"
   },
   "devDependencies": {
-    "@jest/globals": "29.6.1",
+    "@jest/globals": "29.6.2",
     "@sanity-typed/tsconfig": "0.0.0-development"
   }
 }
