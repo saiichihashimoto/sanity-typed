@@ -1812,16 +1812,7 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<
-          typeof query,
-          {
-            client: {
-              dataset: "dataset";
-              identity: never;
-              projectId: "projectId";
-            };
-          }
-        >
+        ExecuteQuery<typeof query, { client: { projectId: "projectId" } }>
       >().toStrictEqual<"projectId">();
     });
 
@@ -1835,16 +1826,7 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<
-          typeof query,
-          {
-            client: {
-              dataset: "dataset";
-              identity: never;
-              projectId: "projectId";
-            };
-          }
-        >
+        ExecuteQuery<typeof query, { client: { dataset: "dataset" } }>
       >().toStrictEqual<"dataset">();
     });
   });

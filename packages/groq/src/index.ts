@@ -1,3 +1,4 @@
+import type { ClientConfig } from "@sanity/client";
 import type {
   AccessAttributeNode,
   AccessElementNode,
@@ -38,7 +39,7 @@ import type { TupleOfLength } from "./utils";
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Query-context
  */
 type Context<Dataset extends any[], DeltaElement extends Dataset[number]> = {
-  client: { dataset: string; identity: string; projectId: string };
+  client: ClientConfig;
   dataset: Dataset;
   delta:
     | { after: DeltaElement; before: DeltaElement }
@@ -1564,10 +1565,7 @@ export type ExecuteQuery<
         {
           context: Merge<
             {
-              client: {
-                dataset: string;
-                projectId: string;
-              };
+              client: ClientConfig;
               dataset: any[];
               delta: null;
             },
@@ -1579,10 +1577,7 @@ export type ExecuteQuery<
       : Merge<
           {
             context: {
-              client: {
-                dataset: string;
-                projectId: string;
-              };
+              client: ClientConfig;
               dataset: any[];
               delta: null;
             };

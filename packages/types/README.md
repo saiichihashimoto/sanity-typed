@@ -387,7 +387,12 @@ const product = defineType({
 });
 ```
 
-This should be easy to identify through typescript errors, follow the suggestions and you should be on your way.
+#### Renamed `DocumentValue` to `SanityDocument`
+
+```diff
+- import type { DocumentValue } from "@sanity-typed/types";
++ import type { SanityDocument } from "@sanity-typed/types";
+```
 
 ### Migrating from 2.x to 3.x
 
