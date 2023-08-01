@@ -32,7 +32,8 @@
     "import/resolver": {
       "node": {
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
-      }
+      },
+      "typescript": true
     },
     "react": {
       "version": "detect"
