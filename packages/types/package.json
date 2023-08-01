@@ -21,11 +21,11 @@
     "type-fest": "2.19.0"
   },
   "devDependencies": {
-    "@jest/globals": "29.6.1",
+    "@jest/globals": "29.6.2",
     "@portabletext/types": "2.0.5",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "sanity": "3.14.3",
+    "sanity": "3.14.4",
     "typescript": "5.1.6"
   },
   "peerDependencies": {
