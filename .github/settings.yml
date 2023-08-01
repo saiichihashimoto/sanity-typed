@@ -4,22 +4,8 @@ repository:
   name: sanity-typed
   description: Monorepo for typing Sanity.io
   private: false
-labels:
-  - name: groq
-    color: "#dd4e3b"
-  - name: schema-builder
-    color: "#f1dd35"
-  - name: types
-    color: "#3178c6"
 branches:
   - name: alpha
-    protection:
-      required_status_checks:
-        contexts:
-          - Build
-          - Lint
-          - Test
-  - name: beta
     protection:
       required_status_checks:
         contexts:
