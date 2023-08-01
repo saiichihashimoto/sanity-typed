@@ -13,7 +13,7 @@
     "dev": "npm run build -- --no-dts"
   },
   "dependencies": {
-    "type-fest": "2.19.0"
+    "type-fest": "4.1.0"
   },
   "devDependencies": {
     "@jest/globals": "29.6.2",
