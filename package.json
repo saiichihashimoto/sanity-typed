@@ -59,6 +59,7 @@
     "ts-node": "10.9.1",
     "tsup": "7.1.0",
     "turbo": "1.10.11",
+    "type-fest": "2.19.0",
     "typescript": "5.1.6"
   },
   "engines": {
