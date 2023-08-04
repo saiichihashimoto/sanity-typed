@@ -1,4 +1,3 @@
-<!-- >>>>>> BEGIN GENERATED FILE (include): SOURCE packages/types/_README.md -->
 # @sanity-typed/types
 
 [![NPM Downloads](https://img.shields.io/npm/dw/@sanity-typed/types?style=flat&logo=npm)](https://www.npmjs.com/package/@sanity-typed/types)
@@ -12,19 +11,7 @@
 
 Infer Sanity types from your config without any explicit typing!
 
-## Page Contents
-- [Install](#install)
-- [Usage](#usage)
-- [Plugins](#plugins)
-  - [Writing typed plugins](#writing-typed-plugins)
-  - [Using external untyped plugins](#using-external-untyped-plugins)
-- [Migrations](#migrations)
-  - [Migrating from 3.x to 4.x](#migrating-from-3x-to-4x)
-    - [Referenced `_type` needs `as const`](#referenced-_type-needs-as-const)
-    - [Renamed `DocumentValue` to `SanityDocument`](#renamed-documentvalue-to-sanitydocument)
-  - [Migrating from 2.x to 3.x](#migrating-from-2x-to-3x)
-    - [InferSchemaValues](#inferschemavalues)
-    - [InferValue](#infervalue)
+@[:page_toc](## Page Contents)
 
 ## Install
 
@@ -36,110 +23,8 @@ npm install sanity @sanity-typed/types
 
 Use `defineConfig`, `defineType`, `defineField`, and `defineArrayMember` from this library exactly as you would from [sanity's own exports](https://www.sanity.io/docs/schema-field-types#e5642a3e8506). Then, use `InferSchemaValues` to get the typescript types!
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
-```product.ts```:
-```typescript
-// import { defineArrayMember, defineField, defineType } from "sanity";
-import {
-  defineArrayMember,
-  defineField,
-  defineType,
-} from "@sanity-typed/types";
-
-import type { SanityValues } from "./schema.config";
-
-/** No changes using defineType, defineField, and defineArrayMember https://www.sanity.io/docs/schema-field-types#e5642a3e8506 */
-export const product = defineType({
-  name: "product",
-  type: "document",
-  title: "Product",
-  fields: [
-    defineField({
-      name: "productName",
-      type: "string",
-      title: "Product name",
-    }),
-    defineField({
-      name: "tags",
-      type: "array",
-      title: "Tags for item",
-      of: [
-        defineArrayMember({
-          type: "object",
-          name: "tag",
-          fields: [
-            { type: "string", name: "label" },
-            { type: "string", name: "value" },
-          ],
-        }),
-      ],
-    }),
-  ],
-});
-
-/** Typescript type of products! */
-export type Product = SanityValues["product"];
-/**
- *  Product === {
- *    _createdAt: string;
- *    _id: string;
- *    _rev: string;
- *    _type: "product";
- *    _updatedAt: string;
- *    productName?: string;
- *    tags?: {
- *      _key: string;
- *      label?: string;
- *      value?: string;
- *    }[];
- *  }
- */
-```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
-```sanity.config.ts```:
-```typescript
-import { deskTool } from "sanity/desk";
-
-// import { defineConfig } from "sanity";
-import { defineConfig } from "@sanity-typed/types";
-import type { InferSchemaValues } from "@sanity-typed/types";
-
-import { product } from "./schemas/product";
-
-/** No changes using defineConfig https://www.sanity.io/docs/config-api-reference#dd1dc18716de */
-const config = defineConfig({
-  projectId: "your-project-id",
-  dataset: "your-dataset-name",
-  plugins: [deskTool()],
-  schema: {
-    types: [product],
-  },
-});
-
-export default config;
-
-/** Typescript type of all types! */
-export type SanityValues = InferSchemaValues<typeof config>;
-/**
- *  SanityValues === {
- *    product: {
- *      _createdAt: string;
- *      _id: string;
- *      _rev: string;
- *      _type: "product";
- *      _updatedAt: string;
- *      productName?: string;
- *      tags?: {
- *        _key: string;
- *        label?: string;
- *        value?: string;
- *      }[];
- *    };
- *  }
- */
-```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
+@[typescript](docs/schemas/product.ts)
+@[typescript](docs/sanity.config.ts)
 
 ## Plugins
 
@@ -358,4 +243,3 @@ const product = defineType({
 - export type Product = InferValue<typeof product>;
 + export type Product = _InferValue<typeof product>;
 ```
-<!-- <<<<<< END GENERATED FILE (include): SOURCE packages/types/_README.md -->

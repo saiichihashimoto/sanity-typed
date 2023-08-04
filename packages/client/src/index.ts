@@ -37,8 +37,8 @@ export interface SanityClient<Client extends ClientConfig, Dataset>
  * https://github.com/microsoft/TypeScript/issues/10571
  */
 export const createClient =
-  <const Config extends ClientConfig>(config: Config) =>
   <Values extends { [type: string]: any }>() =>
+  <const Config extends ClientConfig>(config: Config) =>
     createClientNative(config) as unknown as SanityClient<
       Config,
       {
