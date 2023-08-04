@@ -70,7 +70,7 @@ describe("file", () => {
           defineField({
             name: "bar",
             type: "boolean",
-            validation: (rule) => rule.required(),
+            validation: (Rule) => Rule.required(),
           }),
         ],
       });
@@ -149,7 +149,7 @@ describe("file", () => {
           defineField({
             name: "bar",
             type: "boolean",
-            validation: (rule) => rule.required(),
+            validation: (Rule) => Rule.required(),
           }),
         ],
       });
@@ -228,7 +228,7 @@ describe("file", () => {
           defineField({
             name: "bar",
             type: "boolean",
-            validation: (rule) => rule.required(),
+            validation: (Rule) => Rule.required(),
           }),
         ],
       });

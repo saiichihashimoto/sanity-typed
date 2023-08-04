@@ -59,7 +59,7 @@ describe("object", () => {
           defineField({
             name: "bar",
             type: "boolean",
-            validation: (rule) => rule.required(),
+            validation: (Rule) => Rule.required(),
           }),
         ],
       });
@@ -126,7 +126,7 @@ describe("object", () => {
           defineField({
             name: "bar",
             type: "boolean",
-            validation: (rule) => rule.required(),
+            validation: (Rule) => Rule.required(),
           }),
         ],
       });
@@ -193,7 +193,7 @@ describe("object", () => {
           defineField({
             name: "bar",
             type: "boolean",
-            validation: (rule) => rule.required(),
+            validation: (Rule) => Rule.required(),
           }),
         ],
       });

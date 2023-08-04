@@ -1,4 +1,3 @@
-<!-- >>>>>> BEGIN GENERATED FILE (include): SOURCE packages/groq/_README.md -->
 # @sanity-typed/groq
 
 [![NPM Downloads](https://img.shields.io/npm/dw/@sanity-typed/groq?style=flat&logo=npm)](https://www.npmjs.com/package/@sanity-typed/groq)
@@ -12,9 +11,7 @@
 
 Infer Sanity types from your groq queries without any explicit typing!
 
-## Page Contents
-- [Install](#install)
-- [Usage](#usage)
+@[:page_toc](## Page Contents)
 
 ## Install
 
@@ -59,4 +56,3 @@ type Query = Parse<'*[_type=="foo"]'>;
  *  }
  */
 ```
-<!-- <<<<<< END GENERATED FILE (include): SOURCE packages/groq/_README.md -->

@@ -2,7 +2,7 @@
 _extends: .github
 repository:
   name: sanity-typed
-  description: Monorepo for typing Sanity.io
+  description: Type Sanity from config to fetch with zero schema changes!
   private: false
 branches:
   - name: alpha
