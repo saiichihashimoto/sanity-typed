@@ -767,6 +767,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
           NonNullable<TAlias>,
           TStrict,
           any,
+          any,
           any
         >
       >
@@ -812,6 +813,7 @@ export const castFromTyped = <Untyped>(untyped: Untyped) =>
           infer TName extends string,
           infer TAlias extends IntrinsicTypeName,
           infer TStrict extends StrictDefinition,
+          any,
           any,
           any
         >
