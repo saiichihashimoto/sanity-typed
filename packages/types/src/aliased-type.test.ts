@@ -19,7 +19,9 @@ describe("<alias>", () => {
       });
 
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        AliasValue<"named">
+        AliasValue<"named"> & {
+          _key: string;
+        }
       >();
     });
   });

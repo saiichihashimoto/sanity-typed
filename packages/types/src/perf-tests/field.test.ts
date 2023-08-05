@@ -1518,14 +1518,14 @@ describe("depth test", () => {
       };
     }>();
 
-    const field200Deep = defineField({
+    const field101Deep = defineField({
       name: "foo",
       type: "object",
       fields: [field100Deep],
     });
 
     // @ts-expect-error -- breaks at 101
-    expectType<_InferValue<typeof field200Deep>>().toStrictEqual<{
+    expectType<_InferValue<typeof field101Deep>>().toStrictEqual<{
       foo: {
         foo: {
           foo: {

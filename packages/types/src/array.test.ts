@@ -1,5 +1,4 @@
 import { describe, it } from "@jest/globals";
-import type { Merge } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -69,10 +68,11 @@ describe("array", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<
-        {
+        ({
           _key: string;
+        } & {
           bar?: boolean;
-        }[]
+        })[]
       >();
     });
 
@@ -95,11 +95,13 @@ describe("array", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<
-        {
+        ({
           _key: string;
+        } & {
           _type: "inlineMemberName";
+        } & {
           bar?: boolean;
-        }[]
+        })[]
       >();
     });
 
@@ -133,16 +135,20 @@ describe("array", () => {
 
       expectType<_InferValue<typeof field>>().toStrictEqual<
         (
-          | {
+          | ({
               _key: string;
+            } & {
               _type: "bar";
+            } & {
               bar?: boolean;
-            }
-          | {
+            })
+          | ({
               _key: string;
+            } & {
               _type: "qux";
+            } & {
               qux?: boolean;
-            }
+            })
         )[]
       >();
     });
@@ -160,13 +166,11 @@ describe("array", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<
-        Merge<
-          AliasValue<"named">,
-          {
-            _key: string;
-            _type: "inlineMemberName";
-          }
-        >[]
+        (AliasValue<"named"> & {
+          _key: string;
+        } & {
+          _type: "inlineMemberName";
+        })[]
       >();
     });
   });
@@ -215,10 +219,11 @@ describe("array", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<
-        {
+        ({
           _key: string;
+        } & {
           bar?: boolean;
-        }[]
+        })[]
       >();
     });
 
@@ -241,11 +246,13 @@ describe("array", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<
-        {
+        ({
           _key: string;
+        } & {
           _type: "inlineMemberName";
+        } & {
           bar?: boolean;
-        }[]
+        })[]
       >();
     });
 
@@ -279,16 +286,20 @@ describe("array", () => {
 
       expectType<_InferValue<typeof type>>().toStrictEqual<
         (
-          | {
+          | ({
               _key: string;
+            } & {
               _type: "bar";
+            } & {
               bar?: boolean;
-            }
-          | {
+            })
+          | ({
               _key: string;
+            } & {
               _type: "qux";
+            } & {
               qux?: boolean;
-            }
+            })
         )[]
       >();
     });
@@ -306,13 +317,11 @@ describe("array", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<
-        Merge<
-          AliasValue<"named">,
-          {
-            _key: string;
-            _type: "inlineMemberName";
-          }
-        >[]
+        (AliasValue<"named"> & {
+          _key: string;
+        } & {
+          _type: "inlineMemberName";
+        })[]
       >();
     });
   });
@@ -352,6 +361,7 @@ describe("array", () => {
       expectType<InferSchemaValues<typeof config>["thearr"]>().toStrictEqual<
         ({
           _key: string;
+        } & {
           _type: "foo";
         } & {
           value?: boolean;
@@ -436,6 +446,7 @@ describe("array", () => {
       expectType<InferSchemaValues<typeof plugin>["thearr"]>().toStrictEqual<
         ({
           _key: string;
+        } & {
           _type: "foo";
         } & {
           value?: boolean;
@@ -479,7 +490,7 @@ describe("array", () => {
           _key: string;
           _type: "aliasedMemberName";
         } & {
-          value?: boolean;
+          value?: boolean | undefined;
         })[]
       >();
     });

@@ -17,7 +17,11 @@ describe("image", () => {
         type: "image",
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<ImageValue>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        ImageValue & {
+          _key: string;
+        }
+      >();
     });
 
     it("infers ImageValue with fields", () => {
@@ -35,13 +39,17 @@ describe("image", () => {
         ],
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: ReferenceValueNative;
-        bar?: boolean;
-        crop?: ImageCrop;
-        hotspot?: ImageHotspot;
-        tar?: number;
-      }>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        {
+          _key: string;
+        } & {
+          asset?: ReferenceValueNative;
+          bar?: boolean;
+          crop?: ImageCrop;
+          hotspot?: ImageHotspot;
+          tar?: number;
+        }
+      >();
     });
 
     it("infers nested objects", () => {
@@ -61,14 +69,18 @@ describe("image", () => {
         ],
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: ReferenceValueNative;
-        bar?: {
-          tar?: number;
-        };
-        crop?: ImageCrop;
-        hotspot?: ImageHotspot;
-      }>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        {
+          _key: string;
+        } & {
+          asset?: ReferenceValueNative;
+          bar?: {
+            tar?: number;
+          };
+          crop?: ImageCrop;
+          hotspot?: ImageHotspot;
+        }
+      >();
     });
 
     it("infers required fields", () => {
@@ -83,12 +95,16 @@ describe("image", () => {
         ],
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: ReferenceValueNative;
-        bar: boolean;
-        crop?: ImageCrop;
-        hotspot?: ImageHotspot;
-      }>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        {
+          _key: string;
+        } & {
+          asset?: ReferenceValueNative;
+          bar: boolean;
+          crop?: ImageCrop;
+          hotspot?: ImageHotspot;
+        }
+      >();
     });
   });
 

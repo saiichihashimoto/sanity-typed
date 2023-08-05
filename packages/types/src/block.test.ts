@@ -13,9 +13,11 @@ describe("block", () => {
         type: "block",
       });
 
-      expectType<
-        _InferValue<typeof arrayMember>
-      >().toStrictEqual<PortableTextBlock>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        PortableTextBlock & {
+          _key: string;
+        }
+      >();
     });
   });
 
