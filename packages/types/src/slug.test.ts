@@ -13,7 +13,11 @@ describe("slug", () => {
         type: "slug",
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<SlugValue>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        SlugValue & {
+          _key: string;
+        }
+      >();
     });
   });
 

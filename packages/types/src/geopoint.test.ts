@@ -13,9 +13,11 @@ describe("geopoint", () => {
         type: "geopoint",
       });
 
-      expectType<
-        _InferValue<typeof arrayMember>
-      >().toStrictEqual<GeopointValue>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        GeopointValue & {
+          _key: string;
+        }
+      >();
     });
   });
 

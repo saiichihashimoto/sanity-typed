@@ -236,27 +236,6 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
   DefinitionBase<TRequired, string, UrlRule>
 >;
 
-type ObjectArrayMemberValue<
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
-> = Merge<
-  { _key: string },
-  TMemberDefinition extends {
-    name?: infer TName;
-  }
-    ? string extends TName
-      ? _InferValue<TMemberDefinition>
-      : _InferValue<TMemberDefinition> & { _type: TName }
-    : _InferValue<TMemberDefinition>
->;
-
-type ArrayValue<
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
-> = Simplify<
-  (_InferValue<TMemberDefinition> extends { [key: string]: any }
-    ? ObjectArrayMemberValue<TMemberDefinition>
-    : _InferValue<TMemberDefinition>)[]
->;
-
 export type ArrayDefinition<
   TRequired extends boolean,
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
@@ -264,8 +243,8 @@ export type ArrayDefinition<
   ArrayDefinitionNative,
   DefinitionBase<
     TRequired,
-    ArrayValue<TMemberDefinition>,
-    ArrayRule<ArrayValue<TMemberDefinition>>
+    _InferValue<TMemberDefinition>[],
+    ArrayRule<_InferValue<TMemberDefinition>[]>
   > & {
     of: TupleOfLength<TMemberDefinition, 1>;
   }
@@ -439,59 +418,128 @@ type TypeAliasDefinition<
   }
 >;
 
-export const defineArrayMember = <
-  TType extends string,
-  TName extends string,
-  TAlias extends IntrinsicTypeName,
-  TStrict extends StrictDefinition,
-  TFieldDefinition extends DefinitionBase<any, any, any> & {
-    name: string;
-    [required]?: boolean;
-  },
-  TReferenced extends string
->(
-  arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
-    (TType extends "array"
-      ? never
-      : TType extends IntrinsicTypeName
-      ? // HACK Why can't I just index off of IntrinsicDefinitions?
-        Extract<
-          {
-            [K in IntrinsicTypeName]: Omit<
-              IntrinsicDefinitions<
-                TName,
-                TFieldDefinition,
+/**
+ * Arrays shouldn't be children of arrays, ever.
+ * https://www.sanity.io/docs/array-type#fNBIr84P
+ *
+ * But we give an option to do so, only so we can test the depth limit
+ *
+ * @private
+ */
+export const makeDefineArrayMember =
+  <AllowArrays extends boolean>() =>
+  <
+    TType extends string,
+    TName extends string,
+    TAlias extends IntrinsicTypeName,
+    TStrict extends StrictDefinition,
+    TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+    TReferenced extends string,
+    TFieldDefinition extends DefinitionBase<any, any, any> & {
+      name: string;
+      [required]?: boolean;
+    } = never
+  >(
+    arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
+      ((TType extends "array" ? AllowArrays : true) extends false
+        ? never
+        : TType extends IntrinsicTypeName
+        ? // HACK Why can't I just index off of IntrinsicDefinitions?
+          Extract<
+            {
+              [type in IntrinsicTypeName]: Omit<
+                IntrinsicDefinitions<
+                  TName,
+                  TFieldDefinition,
+                  TMemberDefinition,
+                  TReferenced,
+                  any
+                >[type] extends DefinitionBase<any, infer Value, infer Rule>
+                  ? Merge<
+                      IntrinsicDefinitions<
+                        TName,
+                        TFieldDefinition,
+                        TMemberDefinition,
+                        TReferenced,
+                        any
+                      >[type],
+                      DefinitionBase<
+                        any,
+                        Value &
+                          (Value extends any[]
+                            ? unknown
+                            : Value extends { [key: string]: any }
+                            ? (string extends TName
+                                ? unknown
+                                : Value["_type"] extends TName
+                                ? unknown
+                                : { _type: TName }) & { _key: string }
+                            : unknown),
+                        // @ts-expect-error -- FIXME
+                        RewriteValue<
+                          Value &
+                            (Value extends any[]
+                              ? unknown
+                              : Value extends { [key: string]: any }
+                              ? (string extends TName
+                                  ? unknown
+                                  : Value["_type"] extends TName
+                                  ? unknown
+                                  : { _type: TName }) & { _key: string }
+                              : unknown),
+                          Rule
+                        >
+                      >
+                    >
+                  : IntrinsicDefinitions<
+                      TName,
+                      TFieldDefinition,
+                      TMemberDefinition,
+                      TReferenced,
+                      any
+                    >[type],
+                "name"
+              >;
+            }[IntrinsicTypeName],
+            { type: TType }
+          >
+        : Omit<
+            Merge<
+              TypeAliasDefinition<TType, TAlias, any>,
+              DefinitionBase<
                 any,
-                TReferenced,
+                AliasValue<TType> &
+                  (string extends TName ? unknown : { _type: TName }) & {
+                    _key: string;
+                  },
                 any
-              >[K],
-              "name"
-            >;
-          }[IntrinsicTypeName],
-          { type: TType }
-        >
-      : Omit<TypeAliasDefinition<TType, TAlias, any>, "name">) & {
-      name?: TName;
-      type: TType;
-    },
-  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
-) =>
-  defineArrayMemberNative(
-    arrayOfSchema as any,
-    defineOptions
-  ) as typeof arrayOfSchema;
+              >
+            >,
+            "name"
+          >) & {
+        name?: TName;
+        type: TType;
+      },
+    defineOptions?: DefineSchemaOptions<TStrict, TAlias>
+  ) =>
+    defineArrayMemberNative(
+      arrayOfSchema as any,
+      defineOptions
+    ) as typeof arrayOfSchema;
+
+export const defineArrayMember = makeDefineArrayMember<false>();
 
 export const defineField = <
   TType extends string,
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+  TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  },
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
-  TReferenced extends string,
+  } = never,
   TRequired extends boolean = false
 >(
   schemaField: FieldDefinitionBase &
@@ -502,14 +550,14 @@ export const defineField = <
       ? // HACK Why can't I just index off of IntrinsicDefinitions?
         Extract<
           {
-            [K in IntrinsicTypeName]: Omit<
+            [type in IntrinsicTypeName]: Omit<
               IntrinsicDefinitions<
                 TName,
                 TFieldDefinition,
                 TMemberDefinition,
                 TReferenced,
                 TRequired
-              >[K],
+              >[type],
               "FIXME why does this fail without the omit? we're clearly not using it"
             >;
           }[IntrinsicTypeName],
@@ -539,14 +587,14 @@ type Type<
     ? // HACK Why can't I just index off of IntrinsicDefinitions?
       Extract<
         {
-          [K in IntrinsicTypeName]: Omit<
+          [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
               TName,
               TFieldDefinition,
               TMemberDefinition,
               TReferenced,
               any
-            >[K],
+            >[type],
             "FIXME why does this fail without the omit? we're clearly not using it"
           >;
         }[IntrinsicTypeName],
@@ -562,12 +610,12 @@ export const defineType = <
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+  TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  },
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
-  TReferenced extends string
+  } = never
 >(
   schemaDefinition: Type<
     TType,
@@ -752,6 +800,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
           NonNullable<TAlias>,
           TStrict,
           any,
+          any,
           any
         >
       >
@@ -798,6 +847,7 @@ export const castFromTyped = <Untyped>(untyped: Untyped) =>
           infer TAlias extends IntrinsicTypeName,
           infer TStrict extends StrictDefinition,
           any,
+          any,
           any
         >
       >
@@ -810,53 +860,40 @@ export const castFromTyped = <Untyped>(untyped: Untyped) =>
         [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
       };
 
+type OmitToUnknown<T, K extends number | string | symbol> = Exclude<
+  keyof T,
+  K
+> extends never
+  ? unknown
+  : Omit<T, K>;
+
 type ExpandAliasValues<
   Value,
   TAliasedDefinition extends Type<any, any, any, any, any, any, any>
 > = Value extends AliasValue<infer TType>
-  ? Extract<
-      TAliasedDefinition,
-      Type<any, TType, any, any, any, any, any>
-    > extends never
+  ? Extract<TAliasedDefinition, { name: TType }> extends never
     ? unknown
     : ExpandAliasValues<
-        _InferValue<
-          Extract<TAliasedDefinition, Type<any, TType, any, any, any, any, any>>
-        >,
+        _InferValue<Extract<TAliasedDefinition, { name: TType }>>,
         TAliasedDefinition
       > &
+        OmitToUnknown<Value, keyof AliasValue<TType>> &
         (Extract<
           TAliasedDefinition,
-          Type<"object", TType, any, any, any, any, any>
+          {
+            name: TType;
+            type: "object";
+          }
         > extends never
           ? unknown
-          : {
-              _type: TType;
-            })
+          : OmitToUnknown<
+              {
+                _type: TType;
+              },
+              keyof Value
+            >)
   : Value extends (infer Item)[]
-  ? (Item extends ObjectArrayMemberValue<any>
-      ? Item extends { [key: string]: any }
-        ? // eslint-disable-next-line @typescript-eslint/sort-type-constituents -- it keeps swapping them but still staying mad
-          Simplify<
-            Omit<ExpandAliasValues<Item, TAliasedDefinition>, "_key" | "_type">
-          > &
-            Simplify<
-              // eslint-disable-next-line @typescript-eslint/sort-type-constituents -- it keeps swapping them but still staying mad
-              Pick<
-                Item extends { _key: any }
-                  ? Item
-                  : ExpandAliasValues<Item, TAliasedDefinition>,
-                "_key"
-              > &
-                Pick<
-                  Item extends { _type: any }
-                    ? Item
-                    : ExpandAliasValues<Item, TAliasedDefinition>,
-                  "_type"
-                >
-            >
-        : ExpandAliasValues<Item, TAliasedDefinition>
-      : ExpandAliasValues<Item, TAliasedDefinition>)[]
+  ? ExpandAliasValues<Item, TAliasedDefinition>[]
   : Value extends { [key: string]: any }
   ? {
       [key in keyof Value]: ExpandAliasValues<Value[key], TAliasedDefinition>;

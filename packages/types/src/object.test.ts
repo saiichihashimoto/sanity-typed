@@ -22,10 +22,14 @@ describe("object", () => {
         ],
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        bar?: boolean;
-        tar?: number;
-      }>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        {
+          _key: string;
+        } & {
+          bar?: boolean;
+          tar?: number;
+        }
+      >();
     });
 
     it("infers nested objects", () => {
@@ -45,11 +49,15 @@ describe("object", () => {
         ],
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        bar?: {
-          tar?: number;
-        };
-      }>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        {
+          _key: string;
+        } & {
+          bar?: {
+            tar?: number;
+          };
+        }
+      >();
     });
 
     it("infers required fields", () => {
@@ -64,9 +72,13 @@ describe("object", () => {
         ],
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        bar: boolean;
-      }>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        {
+          _key: string;
+        } & {
+          bar: boolean;
+        }
+      >();
     });
   });
 

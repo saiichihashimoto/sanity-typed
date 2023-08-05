@@ -14,7 +14,9 @@ describe("reference", () => {
       });
 
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        ReferenceValue<"other">
+        ReferenceValue<"other"> & {
+          _key: string;
+        }
       >();
     });
   });
