@@ -47,7 +47,7 @@ import type {
   ReferenceRule,
   ReferenceValue as ReferenceValueNative,
   RuleDef,
-  SanityDocument,
+  SanityDocument as SanityDocumentNative,
   SchemaPluginOptions as SchemaPluginOptionsNative,
   SlugDefinition as SlugDefinitionNative,
   SlugRule,
@@ -193,12 +193,11 @@ export type ReferenceValue<TReferenced extends string> = Merge<
 export type TypeReference<TReferenced extends string> = Merge<
   TypeReferenceNative,
   {
-    // type: string extends TReferenced
-    //   ? TReferenced & {
-    //       [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-    //     }
-    //   : TReferenced;
-    type: TReferenced;
+    type: string extends TReferenced
+      ? TReferenced & {
+          [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+        }
+      : TReferenced;
   }
 >;
 
@@ -286,15 +285,16 @@ export type ObjectDefinition<
   }
 >;
 
-type DocumentValue<
+export type SanityDocument<
   TType extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   }
 > = Simplify<
-  ObjectValue<TFieldDefinition> &
-    RemoveIndexSignature<SanityDocument> & { _type: TType }
+  RemoveIndexSignature<ObjectValue<TFieldDefinition> & SanityDocumentNative> & {
+    _type: TType;
+  }
 >;
 
 export type DocumentDefinition<
@@ -308,8 +308,8 @@ export type DocumentDefinition<
   DocumentDefinitionNative,
   DefinitionBase<
     TRequired,
-    DocumentValue<TName, TFieldDefinition>,
-    RewriteValue<DocumentValue<TName, TFieldDefinition>, DocumentRule>
+    SanityDocument<TName, TFieldDefinition>,
+    RewriteValue<SanityDocument<TName, TFieldDefinition>, DocumentRule>
   > & {
     fields: TupleOfLength<TFieldDefinition, 1>;
   }
