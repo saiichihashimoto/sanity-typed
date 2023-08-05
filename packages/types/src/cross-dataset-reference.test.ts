@@ -15,9 +15,11 @@ describe("crossDatasetReference", () => {
         projectId: "bar",
       });
 
-      expectType<
-        _InferValue<typeof arrayMember>
-      >().toStrictEqual<CrossDatasetReferenceValue>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        CrossDatasetReferenceValue & {
+          _key: string;
+        }
+      >();
     });
   });
 

@@ -29,15 +29,19 @@ describe("document", () => {
         ],
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: "foo";
-        _updatedAt: string;
-        bar?: boolean;
-        tar?: number;
-      }>();
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        {
+          _createdAt: string;
+          _id: string;
+          _rev: string;
+          _type: "foo";
+          _updatedAt: string;
+          bar?: boolean;
+          tar?: number;
+        } & {
+          _key: string;
+        }
+      >();
     });
 
     it("infers nested objects", () => {
@@ -58,16 +62,20 @@ describe("document", () => {
         ],
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: "foo";
-        _updatedAt: string;
-        bar?: {
-          tar?: number;
-        };
-      }>();
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        {
+          _createdAt: string;
+          _id: string;
+          _rev: string;
+          _type: "foo";
+          _updatedAt: string;
+          bar?: {
+            tar?: number;
+          };
+        } & {
+          _key: string;
+        }
+      >();
     });
 
     it("infers required fields", () => {
@@ -83,14 +91,18 @@ describe("document", () => {
         ],
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: "foo";
-        _updatedAt: string;
-        bar: boolean;
-      }>();
+      expectType<_InferValue<typeof field>>().toStrictEqual<
+        {
+          _createdAt: string;
+          _id: string;
+          _rev: string;
+          _type: "foo";
+          _updatedAt: string;
+          bar: boolean;
+        } & {
+          _key: string;
+        }
+      >();
     });
   });
 

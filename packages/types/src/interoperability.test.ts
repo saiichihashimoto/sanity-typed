@@ -228,9 +228,15 @@ describe("interoperability", () => {
         })
       );
 
-      expectType<_InferValue<typeof objectField>>().toStrictEqual<{
-        [x: string]: unknown;
-      }>();
+      expectType<_InferValue<typeof objectField>>().toStrictEqual<
+        {
+          _key: string;
+        } & {
+          _type: "foo";
+        } & {
+          [x: string]: unknown;
+        }
+      >();
     });
   });
 

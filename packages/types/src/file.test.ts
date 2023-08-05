@@ -13,7 +13,11 @@ describe("file", () => {
         type: "file",
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<FileValue>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        FileValue & {
+          _key: string;
+        }
+      >();
     });
 
     it("infers FileValue with fields", () => {
@@ -31,11 +35,15 @@ describe("file", () => {
         ],
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: ReferenceValueNative;
-        bar?: boolean;
-        tar?: number;
-      }>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        {
+          _key: string;
+        } & {
+          asset?: ReferenceValueNative;
+          bar?: boolean;
+          tar?: number;
+        }
+      >();
     });
 
     it("infers nested objects", () => {
@@ -55,12 +63,16 @@ describe("file", () => {
         ],
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: ReferenceValueNative;
-        bar?: {
-          tar?: number;
-        };
-      }>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        {
+          _key: string;
+        } & {
+          asset?: ReferenceValueNative;
+          bar?: {
+            tar?: number;
+          };
+        }
+      >();
     });
 
     it("infers required fields", () => {
@@ -75,10 +87,14 @@ describe("file", () => {
         ],
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<{
-        asset?: ReferenceValueNative;
-        bar: boolean;
-      }>();
+      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
+        {
+          _key: string;
+        } & {
+          asset?: ReferenceValueNative;
+          bar: boolean;
+        }
+      >();
     });
   });
 

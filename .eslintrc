@@ -169,6 +169,12 @@
     "promise/no-multiple-resolved": "error",
     "promise/prefer-await-to-callbacks": "error",
     "promise/prefer-await-to-then": "error",
+    "unicorn/consistent-function-scoping": [
+      "error",
+      {
+        "checkArrowFunctions": false
+      }
+    ],
     "unicorn/import-style": "off",
     "unicorn/no-array-callback-reference": "off",
     "unicorn/no-array-method-this-argument": "off",
