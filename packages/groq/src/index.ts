@@ -1066,6 +1066,15 @@ type EvaluateFuncArgs<TArgs extends ExprNode[], TScope extends Scope<any>> = {
   [key in keyof TArgs]: Evaluate<TArgs[key], TScope>;
 };
 
+declare const dateTime: unique symbol;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Datetime
+ */
+export type DateTime<TString extends string> = TString & {
+  [dateTime]: true;
+};
+
 type Functions<TArgs extends any[], TScope extends Scope<any>> = {
   /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Array-namespace
@@ -1177,6 +1186,16 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
     count: TArgs extends [infer TBase]
       ? TBase extends any[]
         ? TBase["length"]
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_dateTime()
+     */
+    dateTime: TArgs extends [infer TBase]
+      ? TBase extends DateTime<string>
+        ? TBase
+        : TBase extends string
+        ? DateTime<TBase>
         : null
       : never;
     /**

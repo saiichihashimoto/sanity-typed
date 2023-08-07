@@ -4,7 +4,7 @@ import type { GroqFunction } from "groq-js";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { ExecuteQuery, Parse } from ".";
+import type { DateTime, ExecuteQuery, Parse } from ".";
 
 describe("functions", () => {
   describe("global", () => {
@@ -338,6 +338,60 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<4>();
+    });
+
+    it("dateTime(false)", () => {
+      const query = "dateTime(false)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: false }];
+        func: GroqFunction;
+        name: "global::dateTime";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it('dateTime("some date")', () => {
+      const query = 'dateTime("some date")';
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "Value"; value: "some date" }];
+        func: GroqFunction;
+        name: "global::dateTime";
+        type: "FuncCall";
+      }>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        DateTime<"some date">
+      >();
+    });
+
+    it("dateTime(@) (with DateTime)", () => {
+      const query = "dateTime(@)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "This" }];
+        func: GroqFunction;
+        name: "global::dateTime";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { this: DateTime<"some date"> }>
+      >().toStrictEqual<DateTime<"some date">>();
+    });
+
+    it("global::dateTime(@) (with DateTime)", () => {
+      const query = "global::dateTime(@)";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        args: [{ type: "This" }];
+        func: GroqFunction;
+        name: "global::dateTime";
+        type: "FuncCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { this: DateTime<"some date"> }>
+      >().toStrictEqual<DateTime<"some date">>();
     });
 
     it("defined(null)", () => {
