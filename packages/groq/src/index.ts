@@ -1147,6 +1147,15 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
       : never;
   };
   /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Date-time-namespace
+   */
+  dateTime: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#dateTime_now()
+     */
+    now: TArgs extends [] ? DateTime<string> : never;
+  };
+  /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
    */
   global: {
