@@ -1427,7 +1427,11 @@ type EvaluateMath<
             : null
           : never)
       | (TNode extends { op: "+" }
-          ? Evaluate<TNode["left"], TScope> extends string
+          ? Evaluate<TNode["left"], TScope> extends DateTime<string>
+            ? Evaluate<TNode["right"], TScope> extends number
+              ? DateTime<string>
+              : null
+            : Evaluate<TNode["left"], TScope> extends string
             ? Evaluate<TNode["right"], TScope> extends string
               ? // @ts-expect-error -- FIXME Type instantiation is excessively deep and possibly infinite.
                 `${Evaluate<TNode["left"], TScope>}${Evaluate<

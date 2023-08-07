@@ -2,7 +2,7 @@ import { describe, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { ExecuteQuery, Parse } from ".";
+import type { DateTime, ExecuteQuery, Parse } from ".";
 
 describe("operators", () => {
   describe("&&", () => {
@@ -557,6 +557,20 @@ describe("operators", () => {
         baz: "qux";
         foo: "bar";
       }>();
+    });
+
+    it("@+5 (with DateTime)", () => {
+      const query = "@+5";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: { type: "This" };
+        op: "+";
+        right: { type: "Value"; value: 5 };
+        type: "OpCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { this: DateTime<"some date"> }>
+      >().toStrictEqual<DateTime<string>>();
     });
   });
 
