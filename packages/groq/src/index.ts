@@ -66,9 +66,73 @@ type NestedScope<Value, TScope extends Scope<any>> = {
   this: Value;
 };
 
-export type Parse<TExpression extends string> =
+type EscapedDoubleQuote = "__ESCAPED__DOUBLE__QUOTE___";
+
+type EscapedSingleQuote = "__ESCAPED__SINGLE__QUOTE___";
+
+type PrefixWithSpace<TString extends string> =
+  `__PREFIX__WITH_SPACE__${TString}___`;
+
+type SurroundWithSpace<TString extends string> =
+  `__SURROUNDED_WITH_SPACES__${TString}___`;
+
+type AddPlaceholders<TString extends string> =
+  TString extends `${infer TLeft} in ${infer TRight}`
+    ? `${AddPlaceholders<TLeft>}${SurroundWithSpace<"in">}${AddPlaceholders<TRight>}`
+    : TString extends `${infer TLeft} match ${infer TRight}`
+    ? `${AddPlaceholders<TLeft>}${SurroundWithSpace<"match">}${AddPlaceholders<TRight>}`
+    : TString extends `${infer TLeft} asc${infer TRight}`
+    ? `${AddPlaceholders<TLeft>}${PrefixWithSpace<"asc">}${AddPlaceholders<TRight>}`
+    : TString extends `${infer TLeft} desc${infer TRight}`
+    ? `${AddPlaceholders<TLeft>}${PrefixWithSpace<"desc">}${AddPlaceholders<TRight>}`
+    : TString extends `${infer TLeft}\\${infer TRight}`
+    ? `${AddPlaceholders<TLeft>}${TRight extends `${infer TRightHead}${infer TRightRest}`
+        ? `${TRightHead extends '"'
+            ? EscapedDoubleQuote
+            : TRightHead extends "'"
+            ? EscapedSingleQuote
+            : `\\${TRightHead}`}${AddPlaceholders<TRightRest>}`
+        : `\\${TRight}`}`
+    : TString;
+
+type RemovePlaceholders<TString extends string> =
+  TString extends `${infer TLeft}${SurroundWithSpace<infer TOp>}${infer TRight}`
+    ? `${RemovePlaceholders<TLeft>} ${TOp} ${RemovePlaceholders<TRight>}`
+    : TString extends `${infer TLeft}${PrefixWithSpace<
+        infer TOp
+      >}${infer TRight}`
+    ? `${RemovePlaceholders<TLeft>} ${TOp}${RemovePlaceholders<TRight>}`
+    : TString extends `${infer TLeft}${EscapedDoubleQuote}${infer TRight}`
+    ? `${RemovePlaceholders<TLeft>}\\"${RemovePlaceholders<TRight>}`
+    : TString extends `${infer TLeft}${EscapedSingleQuote}${infer TRight}`
+    ? `${RemovePlaceholders<TLeft>}\\'${RemovePlaceholders<TRight>}`
+    : TString;
+
+type RemoveWhitespace<TExpression extends string> =
+  TExpression extends `${infer TLeft}${'"'}${infer TQuoted}${'"'}${infer TRight}`
+    ? `${RemoveWhitespace<TLeft>}${'"'}${TQuoted}${'"'}${RemoveWhitespace<TRight>}`
+    : TExpression extends `${infer TLeft}${"'"}${infer TQuoted}${"'"}${infer TRight}`
+    ? `${RemoveWhitespace<TLeft>}${"'"}${TQuoted}${"'"}${RemoveWhitespace<TRight>}`
+    : TExpression extends `${infer TLeft}${"\n"}${infer TRight}`
+    ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
+    : TExpression extends `${infer TLeft}${"\t"}${infer TRight}`
+    ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
+    : TExpression extends `${infer TLeft}${"     "}${infer TRight}`
+    ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
+    : TExpression extends `${infer TLeft}${" "}${infer TRight}`
+    ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
+    : TExpression;
+
+/** @private */
+export type CleanGROQ<TExpression extends string> = RemovePlaceholders<
+  RemoveWhitespace<AddPlaceholders<TExpression>>
+>;
+
+type _Parse<TExpression extends string> =
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursion
   Expression<TExpression>;
+
+export type Parse<TExpression extends string> = _Parse<CleanGROQ<TExpression>>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Evaluate()
@@ -153,15 +217,15 @@ type StringType<TExpression extends string> =
  */
 type ArrayElement<TArrayElement extends string> =
   TArrayElement extends `...${infer TExpression}`
-    ? Parse<TExpression> extends never
+    ? _Parse<TExpression> extends never
       ? never
-      : { isSplat: true; type: "ArrayElement"; value: Parse<TExpression> }
-    : Parse<TArrayElement> extends never
+      : { isSplat: true; type: "ArrayElement"; value: _Parse<TExpression> }
+    : _Parse<TArrayElement> extends never
     ? never
     : {
         isSplat: false;
         type: "ArrayElement";
-        value: Parse<TArrayElement>;
+        value: _Parse<TArrayElement>;
       };
 
 /**
@@ -225,27 +289,27 @@ type ObjectAttribute<TObjectAttribute extends string> =
   TObjectAttribute extends `...${infer TExpression}`
     ? TExpression extends ""
       ? { type: "ObjectSplat"; value: { type: "This" } }
-      : Parse<TExpression> extends never
+      : _Parse<TExpression> extends never
       ? never
-      : { type: "ObjectSplat"; value: Parse<TExpression> }
+      : { type: "ObjectSplat"; value: _Parse<TExpression> }
     : TObjectAttribute extends `${infer TName}:${infer TExpression}`
     ? StringType<TName> extends never
       ? never
-      : Parse<TExpression> extends never
+      : _Parse<TExpression> extends never
       ? never
       : {
           name: StringType<TName>["value"];
           type: "ObjectAttributeValue";
-          value: Parse<TExpression>;
+          value: _Parse<TExpression>;
         }
-    : Parse<TObjectAttribute> extends never
+    : _Parse<TObjectAttribute> extends never
     ? never
-    : DetermineName<Parse<TObjectAttribute>> extends never
+    : DetermineName<_Parse<TObjectAttribute>> extends never
     ? never
     : {
-        name: DetermineName<Parse<TObjectAttribute>>;
+        name: DetermineName<_Parse<TObjectAttribute>>;
         type: "ObjectAttributeValue";
-        value: Parse<TObjectAttribute>;
+        value: _Parse<TObjectAttribute>;
       };
 
 /**
@@ -387,17 +451,17 @@ type FuncArgs<
 > = `${_Prefix}${TArgs}` extends ""
   ? []
   :
-      | (Parse<`${_Prefix}${TArgs}`> extends never
+      | (_Parse<`${_Prefix}${TArgs}`> extends never
           ? never
-          : [Parse<`${_Prefix}${TArgs}`>])
+          : [_Parse<`${_Prefix}${TArgs}`>])
       | (TArgs extends `${infer TFuncArg},${infer TFuncArgs}`
           ?
               | FuncArgs<TFuncArgs, `${_Prefix}${TFuncArg},`>
-              | (Parse<`${_Prefix}${TFuncArg}`> extends never
+              | (_Parse<`${_Prefix}${TFuncArg}`> extends never
                   ? never
                   : FuncArgs<TFuncArgs> extends never
                   ? never
-                  : [Parse<`${_Prefix}${TFuncArg}`>, ...FuncArgs<TFuncArgs>])
+                  : [_Parse<`${_Prefix}${TFuncArg}`>, ...FuncArgs<TFuncArgs>])
           : never);
 
 /**
@@ -443,7 +507,7 @@ type SimpleExpression<TExpression extends string> =
  */
 type Parenthesis<TExpression extends string> =
   TExpression extends `(${infer TInnerExpression})`
-    ? { base: Parse<TInnerExpression>; type: "Group" }
+    ? { base: _Parse<TInnerExpression>; type: "Group" }
     : never;
 
 /**
@@ -451,9 +515,9 @@ type Parenthesis<TExpression extends string> =
  */
 type ArrayPostfix<TExpression extends string> =
   TExpression extends `${infer TBase}[]`
-    ? Parse<TBase> extends never
+    ? _Parse<TBase> extends never
       ? never
-      : { base: Parse<TBase>; type: "ArrayCoerce" }
+      : { base: _Parse<TBase>; type: "ArrayCoerce" }
     : never;
 
 /**
@@ -475,47 +539,47 @@ type SquareBracketTraversal<
 > = TExpression extends `${infer TBase}[${infer TBracketExpression}]`
   ?
       | SquareBracketTraversal<`${TBracketExpression}]`, `${_Prefix}${TBase}[`>
-      | (Parse<`${_Prefix}${TBase}`> extends never
+      | (_Parse<`${_Prefix}${TBase}`> extends never
           ? never
           :
               | {
                   [TOp in
                     | "..."
                     | ".."]: TBracketExpression extends `${infer TStart}${TOp}${infer TEnd}`
-                    ? ConstantEvaluate<Parse<TStart>> extends never
+                    ? ConstantEvaluate<_Parse<TStart>> extends never
                       ? never
-                      : ConstantEvaluate<Parse<TEnd>> extends never
+                      : ConstantEvaluate<_Parse<TEnd>> extends never
                       ? never
-                      : ConstantEvaluate<Parse<TStart>> extends number
-                      ? ConstantEvaluate<Parse<TEnd>> extends number
+                      : ConstantEvaluate<_Parse<TStart>> extends number
+                      ? ConstantEvaluate<_Parse<TEnd>> extends number
                         ? {
-                            base: Parse<`${_Prefix}${TBase}`>;
+                            base: _Parse<`${_Prefix}${TBase}`>;
                             isInclusive: TOp extends ".." ? true : false;
-                            left: ConstantEvaluate<Parse<TStart>>;
-                            right: ConstantEvaluate<Parse<TEnd>>;
+                            left: ConstantEvaluate<_Parse<TStart>>;
+                            right: ConstantEvaluate<_Parse<TEnd>>;
                             type: "Slice";
                           }
                         : never
                       : never
                     : never;
                 }["..." | ".."]
-              | (ConstantEvaluate<Parse<TBracketExpression>> extends never
+              | (ConstantEvaluate<_Parse<TBracketExpression>> extends never
                   ? never
-                  : ConstantEvaluate<Parse<TBracketExpression>> extends string
+                  : ConstantEvaluate<_Parse<TBracketExpression>> extends string
                   ? {
-                      base: Parse<`${_Prefix}${TBase}`>;
-                      name: ConstantEvaluate<Parse<TBracketExpression>>;
+                      base: _Parse<`${_Prefix}${TBase}`>;
+                      name: ConstantEvaluate<_Parse<TBracketExpression>>;
                       type: "AccessAttribute";
                     }
-                  : ConstantEvaluate<Parse<TBracketExpression>> extends number
+                  : ConstantEvaluate<_Parse<TBracketExpression>> extends number
                   ? {
-                      base: Parse<`${_Prefix}${TBase}`>;
-                      index: ConstantEvaluate<Parse<TBracketExpression>>;
+                      base: _Parse<`${_Prefix}${TBase}`>;
+                      index: ConstantEvaluate<_Parse<TBracketExpression>>;
                       type: "AccessElement";
                     }
                   : {
-                      base: Parse<`${_Prefix}${TBase}`>;
-                      expr: Parse<TBracketExpression>;
+                      base: _Parse<`${_Prefix}${TBase}`>;
+                      expr: _Parse<TBracketExpression>;
                       type: "Filter";
                     }))
   : never;
@@ -529,12 +593,12 @@ type AttributeAccess<
 > = TExpression extends `${infer TBase}.${infer TIdentifier}`
   ?
       | AttributeAccess<TIdentifier, `${_Prefix}${TBase}.`>
-      | (Parse<`${_Prefix}${TBase}`> extends never
+      | (_Parse<`${_Prefix}${TBase}`> extends never
           ? never
           : Identifier<TIdentifier> extends never
           ? never
           : {
-              base: Parse<`${_Prefix}${TBase}`>;
+              base: _Parse<`${_Prefix}${TBase}`>;
               name: TIdentifier;
               type: "AccessAttribute";
             })
@@ -549,24 +613,24 @@ type Projection<
 > = TExpression extends `${infer TBase}|{${infer TProjection}}`
   ?
       | Projection<`${TProjection}}`, `${_Prefix}${TBase}|{`>
-      | (Parse<`${_Prefix}${TBase}`> extends never
+      | (_Parse<`${_Prefix}${TBase}`> extends never
           ? never
           : ObjectType<`{${TProjection}}`> extends never
           ? never
           : {
-              base: Parse<`${_Prefix}${TBase}`>;
+              base: _Parse<`${_Prefix}${TBase}`>;
               expr: ObjectType<`{${TProjection}}`>;
               type: "Projection";
             })
   : TExpression extends `${infer TBase}{${infer TProjection}}`
   ?
       | Projection<`${TProjection}}`, `${_Prefix}${TBase}{`>
-      | (Parse<`${_Prefix}${TBase}`> extends never
+      | (_Parse<`${_Prefix}${TBase}`> extends never
           ? never
           : ObjectType<`{${TProjection}}`> extends never
           ? never
           : {
-              base: Parse<`${_Prefix}${TBase}`>;
+              base: _Parse<`${_Prefix}${TBase}`>;
               expr: ObjectType<`{${TProjection}}`>;
               type: "Projection";
             })
@@ -581,14 +645,14 @@ type Dereference<
 > = TExpression extends `${infer TBase}->${infer TIdentifier}`
   ?
       | Dereference<TIdentifier, `${_Prefix}${TBase}->`>
-      | (Parse<`${_Prefix}${TBase}`> extends never
+      | (_Parse<`${_Prefix}${TBase}`> extends never
           ? never
           : TIdentifier extends ""
-          ? { base: Parse<`${_Prefix}${TBase}`>; type: "Deref" }
+          ? { base: _Parse<`${_Prefix}${TBase}`>; type: "Deref" }
           : Identifier<TIdentifier> extends never
           ? never
           : {
-              base: { base: Parse<`${_Prefix}${TBase}`>; type: "Deref" };
+              base: { base: _Parse<`${_Prefix}${TBase}`>; type: "Deref" };
               name: TIdentifier;
               type: "AccessAttribute";
             })
@@ -631,13 +695,13 @@ type BooleanOperator<
   : TExpression extends `${infer TLeft}${TOp}${infer TRight}`
   ?
       | BooleanOperator<TRight, TOp, `${_Prefix}${TLeft}${TOp}`>
-      | (Parse<`${_Prefix}${TLeft}`> extends never
+      | (_Parse<`${_Prefix}${TLeft}`> extends never
           ? never
-          : Parse<TRight> extends never
+          : _Parse<TRight> extends never
           ? never
           : {
-              left: Parse<`${_Prefix}${TLeft}`>;
-              right: Parse<TRight>;
+              left: _Parse<`${_Prefix}${TLeft}`>;
+              right: _Parse<TRight>;
               type: BooleanOperators[NonNullable<TOp>]["type"];
             })
   : never;
@@ -669,10 +733,10 @@ type PrefixOperator<
         : true
     ) extends false
     ? never
-    : Parse<TBase> extends never
+    : _Parse<TBase> extends never
     ? never
     : {
-        base: Parse<TBase>;
+        base: _Parse<TBase>;
         type: PrefixOperators[NonNullable<TOp>]["type"];
       }
   : never;
@@ -713,14 +777,14 @@ type OpCall<
   : TExpression extends `${infer TLeft}${TOp}${infer TRight}`
   ?
       | OpCall<TRight, TOp, `${_Prefix}${TLeft}${TOp}`>
-      | (Parse<`${_Prefix}${TLeft}`> extends never
+      | (_Parse<`${_Prefix}${TLeft}`> extends never
           ? never
-          : Parse<TRight> extends never
+          : _Parse<TRight> extends never
           ? never
           : {
-              left: Parse<`${_Prefix}${TLeft}`>;
+              left: _Parse<`${_Prefix}${TLeft}`>;
               op: TOp;
-              right: Parse<TRight>;
+              right: _Parse<TRight>;
               type: "OpCall";
             })
   : never;
