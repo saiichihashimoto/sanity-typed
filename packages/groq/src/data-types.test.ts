@@ -66,16 +66,16 @@ describe("data types", () => {
     >().toStrictEqual<"double quoted string">();
   });
 
-  it('"double\\" \\"quoted\\" \\"string\\"', () => {
-    const query = '"double\\" \\"quoted\\" \\"string\\"';
+  it('"double\\" \\"quoted\\" \\"string\\""', () => {
+    const query = '"double\\" \\"quoted\\" \\"string\\""';
 
     expectType<Parse<typeof query>>().toStrictEqual<{
       type: "Value";
-      value: 'double\\" \\"quoted\\" \\"string\\';
+      value: 'double\\" \\"quoted\\" \\"string\\"';
     }>();
     expectType<
       ExecuteQuery<typeof query>
-    >().toStrictEqual<'double\\" \\"quoted\\" \\"string\\'>();
+    >().toStrictEqual<'double\\" \\"quoted\\" \\"string\\"'>();
   });
 
   it('"double" "quoted" "string"', () => {
