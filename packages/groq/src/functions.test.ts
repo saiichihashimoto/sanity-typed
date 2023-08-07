@@ -1857,6 +1857,46 @@ describe("functions", () => {
           ExecuteQuery<typeof query, { this: PortableTextBlock[] }>
         >().toStrictEqual<PortableTextBlock[]>();
       });
+
+      it("pt::text(false)", () => {
+        const query = "pt::text(false)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "Value"; value: false }];
+          func: GroqFunction;
+          name: "pt::text";
+          type: "FuncCall";
+        }>();
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+      });
+
+      it("pt::text(@) (with PortableTextBlock)", () => {
+        const query = "pt::text(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "pt::text";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: PortableTextBlock }>
+        >().toStrictEqual<string>();
+      });
+
+      it("pt::text(@) (with PortableTextBlock[])", () => {
+        const query = "pt::text(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "pt::text";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: PortableTextBlock[] }>
+        >().toStrictEqual<string>();
+      });
     });
   });
 

@@ -1287,6 +1287,19 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
       : never;
   };
   /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Portable-Text-Extension
+   */
+  pt: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#pt_text()
+     */
+    text: TArgs extends (infer TBase)[]
+      ? TBase extends PortableTextBlock | PortableTextBlock[]
+        ? string
+        : null
+      : never;
+  };
+  /**
    * @link https://www.sanity.io/docs/groq-functions#61e2649fc0d8
    */
   sanity: {
