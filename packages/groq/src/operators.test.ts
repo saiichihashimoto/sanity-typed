@@ -586,6 +586,34 @@ describe("operators", () => {
       }>();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
+
+    it("@-@ (with DateTime)", () => {
+      const query = "@-@";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: { type: "This" };
+        op: "-";
+        right: { type: "This" };
+        type: "OpCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { this: DateTime<"some date"> }>
+      >().toStrictEqual<number>();
+    });
+
+    it("@-5 (with DateTime)", () => {
+      const query = "@-5";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        left: { type: "This" };
+        op: "-";
+        right: { type: "Value"; value: 5 };
+        type: "OpCall";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { this: DateTime<"some date"> }>
+      >().toStrictEqual<DateTime<string>>();
+    });
   });
 
   describe("*", () => {

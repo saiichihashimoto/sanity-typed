@@ -1419,7 +1419,20 @@ type EvaluateMath<
   TScope extends Scope<any>
 > = TNode extends OpCallNode
   ?
-      | (TNode extends { op: "-" | "*" | "**" | "/" | "%" }
+      | (TNode extends { op: "-" }
+          ? Evaluate<TNode["left"], TScope> extends DateTime<string>
+            ? Evaluate<TNode["right"], TScope> extends DateTime<string>
+              ? number
+              : Evaluate<TNode["right"], TScope> extends number
+              ? DateTime<string>
+              : null
+            : Evaluate<TNode["left"], TScope> extends number
+            ? Evaluate<TNode["right"], TScope> extends number
+              ? number
+              : null
+            : null
+          : never)
+      | (TNode extends { op: "*" | "**" | "/" | "%" }
           ? Evaluate<TNode["left"], TScope> extends number
             ? Evaluate<TNode["right"], TScope> extends number
               ? number
