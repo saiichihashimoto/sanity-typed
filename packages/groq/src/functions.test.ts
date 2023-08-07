@@ -1,4 +1,5 @@
 import { describe, it } from "@jest/globals";
+import type { PortableTextBlock } from "@portabletext/types";
 import type { GroqFunction } from "groq-js";
 
 import { expectType } from "@sanity-typed/test-utils";
@@ -1798,6 +1799,64 @@ describe("functions", () => {
         type: "FuncCall";
       }>();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+  });
+
+  describe("extensions", () => {
+    describe("portable text extension", () => {
+      it("pt(false)", () => {
+        const query = "pt(false)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "Value"; value: false }];
+          func: GroqFunction;
+          name: "global::pt";
+          type: "FuncCall";
+        }>();
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+      });
+
+      it("pt(@) (with PortableTextBlock)", () => {
+        const query = "pt(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::pt";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: PortableTextBlock }>
+        >().toStrictEqual<PortableTextBlock>();
+      });
+
+      it("pt(@) (with PortableTextBlock[])", () => {
+        const query = "pt(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::pt";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: PortableTextBlock[] }>
+        >().toStrictEqual<PortableTextBlock[]>();
+      });
+
+      it("global::pt(@) (with PortableTextBlock[])", () => {
+        const query = "global::pt(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::pt";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: PortableTextBlock[] }>
+        >().toStrictEqual<PortableTextBlock[]>();
+      });
     });
   });
 

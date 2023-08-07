@@ -1,3 +1,4 @@
+import type { PortableTextBlock } from "@portabletext/types";
 import type { ClientConfig } from "@sanity/client";
 import type {
   AccessAttributeNode,
@@ -1221,6 +1222,14 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
         : never
       : never;
     /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
+     */
+    pt: TArgs extends (infer TBase)[]
+      ? TBase extends PortableTextBlock | PortableTextBlock[]
+        ? TBase
+        : null
+      : never;
+    /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_references()
      */
     references: TArgs extends (infer TElement)[]
@@ -1277,9 +1286,6 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
         : null
       : never;
   };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Portable-Text-Extension
-   */
   /**
    * @link https://www.sanity.io/docs/groq-functions#61e2649fc0d8
    */
