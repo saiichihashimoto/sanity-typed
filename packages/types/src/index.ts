@@ -1,4 +1,8 @@
-import type { PortableTextBlock } from "@portabletext/types";
+import type {
+  PortableTextBlock,
+  PortableTextMarkDefinition,
+  PortableTextSpan,
+} from "@portabletext/types";
 import {
   defineArrayMember as defineArrayMemberNative,
   defineConfig as defineConfigNative,
@@ -125,15 +129,6 @@ type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = Merge<
   }
 >;
 
-export type BlockDefinition<TRequired extends boolean> = Merge<
-  BlockDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    PortableTextBlock,
-    RewriteValue<PortableTextBlock, BlockRule>
-  >
->;
-
 export type BooleanDefinition<TRequired extends boolean> = Merge<
   BooleanDefinitionNative,
   DefinitionBase<TRequired, boolean, BooleanRule>
@@ -247,6 +242,29 @@ export type ArrayDefinition<
     ArrayRule<_InferValue<TMemberDefinition>[]>
   > & {
     of: TupleOfLength<TMemberDefinition, 1>;
+  }
+>;
+
+export type BlockDefinition<
+  TRequired extends boolean,
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
+> = Merge<
+  BlockDefinitionNative,
+  DefinitionBase<
+    TRequired,
+    PortableTextBlock<
+      PortableTextMarkDefinition,
+      _InferValue<TMemberDefinition> | PortableTextSpan
+    >,
+    RewriteValue<
+      PortableTextBlock<
+        PortableTextMarkDefinition,
+        _InferValue<TMemberDefinition> | PortableTextSpan
+      >,
+      BlockRule
+    >
+  > & {
+    of?: (TMemberDefinition & { name: string; type: "object" | "reference" })[];
   }
 >;
 
@@ -378,7 +396,7 @@ type IntrinsicDefinitions<
   TRequired extends boolean
 > = {
   array: ArrayDefinition<TRequired, TMemberDefinition>;
-  block: BlockDefinition<TRequired>;
+  block: BlockDefinition<TRequired, TMemberDefinition>;
   boolean: BooleanDefinition<TRequired>;
   crossDatasetReference: CrossDatasetReferenceDefinition<TRequired>;
   date: DateDefinition<TRequired>;
@@ -433,11 +451,13 @@ export const makeDefineArrayMember =
     TName extends string,
     TAlias extends IntrinsicTypeName,
     TStrict extends StrictDefinition,
-    TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
     TReferenced extends string,
     TFieldDefinition extends DefinitionBase<any, any, any> & {
       name: string;
       [required]?: boolean;
+    } = never,
+    TMemberDefinition extends DefinitionBase<any, any, any> & {
+      name?: string;
     } = never
   >(
     arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
@@ -525,7 +545,8 @@ export const makeDefineArrayMember =
     defineArrayMemberNative(
       arrayOfSchema as any,
       defineOptions
-    ) as typeof arrayOfSchema;
+    ) as typeof arrayOfSchema &
+      (string extends TName ? unknown : { name: TName });
 
 export const defineArrayMember = makeDefineArrayMember<false>();
 
@@ -534,11 +555,13 @@ export const defineField = <
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
+  } = never,
+  TMemberDefinition extends DefinitionBase<any, any, any> & {
+    name?: string;
   } = never,
   TRequired extends boolean = false
 >(
@@ -610,11 +633,13 @@ export const defineType = <
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
+  } = never,
+  TMemberDefinition extends DefinitionBase<any, any, any> & {
+    name?: string;
   } = never
 >(
   schemaDefinition: Type<
