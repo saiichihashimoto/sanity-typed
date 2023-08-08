@@ -2144,6 +2144,20 @@ describe("functions", () => {
           ExecuteQuery<typeof query, { this: Geo }>
         >().toStrictEqual<boolean>();
       });
+
+      it("geo::distance(@,@)", () => {
+        const query = "geo::distance(@,@)";
+
+        expectType<Parse<typeof query>>().toBeAssignableTo<{
+          args: [{ type: "This" }, { type: "This" }];
+          func: GroqFunction;
+          name: "geo::distance";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: Point }>
+        >().toStrictEqual<number>();
+      });
     });
   });
 

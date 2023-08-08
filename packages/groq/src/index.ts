@@ -1190,6 +1190,16 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
         : null
       : never;
     /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_distance()
+     */
+    distance: TArgs extends [infer TFirst, infer TSecond]
+      ? TFirst extends Point
+        ? TSecond extends Point
+          ? number
+          : null
+        : null
+      : never;
+    /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_intersects()
      */
     intersects: TArgs extends [infer TFirst, infer TSecond]
