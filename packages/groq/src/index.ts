@@ -1,6 +1,16 @@
 import type { PortableTextBlock } from "@portabletext/types";
 import type { ClientConfig } from "@sanity/client";
 import type {
+  GeometryCollection,
+  LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Point,
+  Polygon,
+  Position,
+} from "geojson";
+import type {
   AccessAttributeNode,
   AccessElementNode,
   AndNode,
@@ -1075,6 +1085,16 @@ export type DateTime<TString extends string> = TString & {
   [dateTime]: true;
 };
 
+export type Geo =
+  | GeometryCollection
+  | LineString
+  | MultiLineString
+  | MultiPoint
+  | MultiPolygon
+  | Point
+  | Polygon
+  | Position;
+
 type Functions<TArgs extends any[], TScope extends Scope<any>> = {
   /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Array-namespace
@@ -1156,6 +1176,41 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
     now: TArgs extends [] ? DateTime<string> : never;
   };
   /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Geography-Extension
+   */
+  geo: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_contains()
+     */
+    contains: TArgs extends [infer TFirst, infer TSecond]
+      ? TFirst extends Geo
+        ? TSecond extends Geo
+          ? boolean
+          : null
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_distance()
+     */
+    distance: TArgs extends [infer TFirst, infer TSecond]
+      ? TFirst extends Point
+        ? TSecond extends Point
+          ? number
+          : null
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_intersects()
+     */
+    intersects: TArgs extends [infer TFirst, infer TSecond]
+      ? TFirst extends Geo
+        ? TSecond extends Geo
+          ? boolean
+          : null
+        : null
+      : never;
+  };
+  /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
    */
   global: {
@@ -1214,6 +1269,14 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
       ? TBase extends null
         ? false
         : true
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_geo()
+     */
+    geo: TArgs extends [infer TBase]
+      ? TBase extends Geo
+        ? TBase
+        : null
       : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_length()

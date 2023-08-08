@@ -1,10 +1,20 @@
 import { describe, it } from "@jest/globals";
 import type { PortableTextBlock } from "@portabletext/types";
+import type {
+  GeometryCollection,
+  LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Point,
+  Polygon,
+  Position,
+} from "geojson";
 import type { GroqFunction } from "groq-js";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { DateTime, ExecuteQuery, Parse } from ".";
+import type { DateTime, ExecuteQuery, Geo, Parse } from ".";
 
 describe("functions", () => {
   describe("global", () => {
@@ -445,36 +455,35 @@ describe("functions", () => {
     it("length([null,null,null])", () => {
       const query = "length([null,null,null])";
 
-      expectType<
-        Parse<typeof query>
-      >().toStrictEqual<// @ts-expect-error -- FIXME
-      {
-        args: [
-          {
-            elements: [
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "global::length";
-        type: "FuncCall";
-      }>();
+      expectType<Parse<typeof query>>()
+        // FIXME toStrictEqual
+        .toBeAssignableTo<{
+          args: [
+            {
+              elements: [
+                {
+                  isSplat: false;
+                  type: "ArrayElement";
+                  value: { type: "Value"; value: null };
+                },
+                {
+                  isSplat: false;
+                  type: "ArrayElement";
+                  value: { type: "Value"; value: null };
+                },
+                {
+                  isSplat: false;
+                  type: "ArrayElement";
+                  value: { type: "Value"; value: null };
+                }
+              ];
+              type: "Array";
+            }
+          ];
+          func: GroqFunction;
+          name: "global::length";
+          type: "FuncCall";
+        }>();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<3>();
     });
 
@@ -1966,6 +1975,188 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<typeof query, { this: PortableTextBlock[] }>
         >().toStrictEqual<string>();
+      });
+    });
+
+    describe("geojson", () => {
+      it("geo(false)", () => {
+        const query = "geo(false)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "Value"; value: false }];
+          func: GroqFunction;
+          name: "global::geo";
+          type: "FuncCall";
+        }>();
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+      });
+
+      it("geo(@) (with Position)", () => {
+        const query = "geo(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::geo";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: Position }>
+        >().toStrictEqual<Position>();
+      });
+
+      it("geo(@) (with Point)", () => {
+        const query = "geo(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::geo";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: Point }>
+        >().toStrictEqual<Point>();
+      });
+
+      it("geo(@) (with MultiPoint)", () => {
+        const query = "geo(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::geo";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: MultiPoint }>
+        >().toStrictEqual<MultiPoint>();
+      });
+
+      it("geo(@) (with LineString)", () => {
+        const query = "geo(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::geo";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: LineString }>
+        >().toStrictEqual<LineString>();
+      });
+
+      it("geo(@) (with MultiLineString)", () => {
+        const query = "geo(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::geo";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: MultiLineString }>
+        >().toStrictEqual<MultiLineString>();
+      });
+
+      it("geo(@) (with Polygon)", () => {
+        const query = "geo(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::geo";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: Polygon }>
+        >().toStrictEqual<Polygon>();
+      });
+
+      it("geo(@) (with MultiPolygon)", () => {
+        const query = "geo(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::geo";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: MultiPolygon }>
+        >().toStrictEqual<MultiPolygon>();
+      });
+
+      it("geo(@) (with GeometryCollection)", () => {
+        const query = "geo(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::geo";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: GeometryCollection }>
+        >().toStrictEqual<GeometryCollection>();
+      });
+
+      it("global::geo(@) (with GeometryCollection)", () => {
+        const query = "global::geo(@)";
+
+        expectType<Parse<typeof query>>().toStrictEqual<{
+          args: [{ type: "This" }];
+          func: GroqFunction;
+          name: "global::geo";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: GeometryCollection }>
+        >().toStrictEqual<GeometryCollection>();
+      });
+
+      it("geo::contains(@,@)", () => {
+        const query = "geo::contains(@,@)";
+
+        expectType<Parse<typeof query>>().toBeAssignableTo<{
+          args: [{ type: "This" }, { type: "This" }];
+          func: GroqFunction;
+          name: "geo::contains";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: Geo }>
+        >().toStrictEqual<boolean>();
+      });
+
+      it("geo::intersects(@,@)", () => {
+        const query = "geo::intersects(@,@)";
+
+        expectType<Parse<typeof query>>().toBeAssignableTo<{
+          args: [{ type: "This" }, { type: "This" }];
+          func: GroqFunction;
+          name: "geo::intersects";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: Geo }>
+        >().toStrictEqual<boolean>();
+      });
+
+      it("geo::distance(@,@)", () => {
+        const query = "geo::distance(@,@)";
+
+        expectType<Parse<typeof query>>().toBeAssignableTo<{
+          args: [{ type: "This" }, { type: "This" }];
+          func: GroqFunction;
+          name: "geo::distance";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: Point }>
+        >().toStrictEqual<number>();
       });
     });
   });
