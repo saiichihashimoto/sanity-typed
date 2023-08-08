@@ -23,6 +23,7 @@ import type {
   FilterNode,
   FuncCallNode,
   GroqFunction,
+  GroqPipeFunction,
   GroupNode,
   MapNode,
   NegNode,
@@ -35,6 +36,7 @@ import type {
   OrNode,
   ParameterNode,
   ParentNode,
+  PipeFuncCallNode,
   PosNode,
   ProjectionNode,
   SliceNode,
@@ -458,23 +460,52 @@ type Parent<
   ? Parent<TParents, [null, ...Levels]>
   : never;
 
+type Asc<TExpression extends string> = TExpression extends `${infer TBase} asc`
+  ? _Parse<TBase> extends never
+    ? never
+    : {
+        base: _Parse<TBase>;
+        type: "Asc";
+      }
+  : never;
+
+type Desc<TExpression extends string> =
+  TExpression extends `${infer TBase} desc`
+    ? _Parse<TBase> extends never
+      ? never
+      : {
+          base: _Parse<TBase>;
+          type: "Desc";
+        }
+    : never;
+
+type FuncParse<TExpression extends string, TFuncFullName extends string> =
+  | _Parse<TExpression>
+  | (TFuncFullName extends "global::order" | "order"
+      ? Asc<TExpression> | Desc<TExpression>
+      : never);
+
 type FuncArgs<
   TArgs extends string,
+  TFuncFullName extends string = never,
   _Prefix extends string = ""
 > = `${_Prefix}${TArgs}` extends ""
   ? []
   :
-      | (_Parse<`${_Prefix}${TArgs}`> extends never
+      | (FuncParse<`${_Prefix}${TArgs}`, TFuncFullName> extends never
           ? never
-          : [_Parse<`${_Prefix}${TArgs}`>])
+          : [FuncParse<`${_Prefix}${TArgs}`, TFuncFullName>])
       | (TArgs extends `${infer TFuncArg},${infer TFuncArgs}`
           ?
-              | FuncArgs<TFuncArgs, `${_Prefix}${TFuncArg},`>
-              | (_Parse<`${_Prefix}${TFuncArg}`> extends never
+              | FuncArgs<TFuncArgs, TFuncFullName, `${_Prefix}${TFuncArg},`>
+              | (FuncParse<`${_Prefix}${TFuncArg}`, TFuncFullName> extends never
                   ? never
-                  : FuncArgs<TFuncArgs> extends never
+                  : FuncArgs<TFuncArgs, TFuncFullName> extends never
                   ? never
-                  : [_Parse<`${_Prefix}${TFuncArg}`>, ...FuncArgs<TFuncArgs>])
+                  : [
+                      FuncParse<`${_Prefix}${TFuncArg}`, TFuncFullName>,
+                      ...FuncArgs<TFuncArgs, TFuncFullName>
+                    ])
           : never);
 
 /**
@@ -696,10 +727,43 @@ type TraversalExpression<TExpression extends string> =
   | SquareBracketTraversal<TExpression>;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#PipeFuncCall
+ */
+type PipeFuncCall<TExpression extends string> =
+  TExpression extends `${infer TBase}|${infer TFuncFullName}(${infer TFuncCallArgs})`
+    ? Parse<TBase> extends never
+      ? never
+      : FuncArgs<TFuncCallArgs, TFuncFullName> extends never
+      ? never
+      : TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncIdentifier}`
+      ? Identifier<TFuncNamespace> extends never
+        ? never
+        : Identifier<TFuncIdentifier> extends never
+        ? never
+        : {
+            args: Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>;
+            base: Parse<TBase>;
+            func: GroqPipeFunction;
+            name: TFuncFullName;
+            type: "PipeFuncCall";
+          }
+      : Identifier<TFuncFullName> extends never
+      ? never
+      : {
+          args: Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>;
+          base: Parse<TBase>;
+          func: GroqPipeFunction;
+          name: `global::${TFuncFullName}`;
+          type: "PipeFuncCall";
+        }
+    : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#CompoundExpression
  */
 type CompoundExpression<TExpression extends string> =
   | Parenthesis<TExpression>
+  | PipeFuncCall<TExpression>
   | TraversalExpression<TExpression>;
 
 type BooleanOperators = {
@@ -1088,10 +1152,6 @@ type EvaluateFilter<
     : Evaluate<TNode["base"], TScope>
   : never;
 
-type EvaluateFuncArgs<TArgs extends ExprNode[], TScope extends Scope<any>> = {
-  [key in keyof TArgs]: Evaluate<TArgs[key], TScope>;
-};
-
 declare const dateTime: unique symbol;
 
 /**
@@ -1101,6 +1161,9 @@ export type DateTime<TString extends string> = TString & {
   [dateTime]: true;
 };
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-geo-type
+ */
 export type Geo =
   | GeometryCollection
   | LineString
@@ -1462,6 +1525,10 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
   };
 };
 
+type EvaluateFuncArgs<TArgs extends ExprNode[], TScope extends Scope<any>> = {
+  [key in keyof TArgs]: Evaluate<TArgs[key], TScope>;
+};
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateFuncCall()
  */
@@ -1667,6 +1734,39 @@ type EvaluateParenthesis<
   TScope extends Scope<any>
 > = TNode extends GroupNode ? Evaluate<TNode["base"], TScope> : never;
 
+type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
+  global: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#order()
+     */
+    order: TArgs extends [] ? never : TBase[number][];
+  };
+};
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePipeFuncCall()
+ */
+type EvaluatePipeFuncCall<
+  TNode extends ExprNode,
+  TScope extends Scope<any>
+> = TNode extends PipeFuncCallNode
+  ? TNode["name"] extends `${infer TFuncNamespace}::${infer TFuncIdentifier}`
+    ? TFuncNamespace extends keyof PipeFunctions<any, any>
+      ? TFuncIdentifier extends keyof PipeFunctions<any, any>[TFuncNamespace]
+        ? EvaluateFuncArgs<TNode["args"], TScope> extends any[]
+          ? Evaluate<TNode["base"], TScope> extends any[]
+            ? // @ts-expect-error -- FIXME Type instantiation is excessively deep and possibly infinite.
+              PipeFunctions<
+                Evaluate<TNode["base"], TScope>,
+                EvaluateFuncArgs<TNode["args"], TScope>
+              >[TFuncNamespace][TFuncIdentifier]
+            : null
+          : never
+        : never
+      : never
+    : never
+  : never;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePos()
  */
@@ -1758,6 +1858,7 @@ type EvaluateExpression<TNode extends ExprNode, TScope extends Scope<any>> =
   | EvaluateParameter<TNode, TScope>
   | EvaluateParent<TNode, TScope>
   | EvaluateParenthesis<TNode, TScope>
+  | EvaluatePipeFuncCall<TNode, TScope>
   | EvaluatePos<TNode, TScope>
   | EvaluateProjection<TNode, TScope>
   | EvaluateSlice<TNode, TScope>
