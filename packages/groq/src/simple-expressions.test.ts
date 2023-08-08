@@ -101,4 +101,16 @@ describe("simple expressions", () => {
       >
     >().toStrictEqual<Foo>();
   });
+
+  it("$param", () => {
+    const query = "$param";
+
+    expectType<Parse<typeof query>>().toStrictEqual<{
+      name: "param";
+      type: "Parameter";
+    }>();
+    expectType<
+      ExecuteQuery<typeof query, { parameters: { param: Foo } }>
+    >().toStrictEqual<Foo>();
+  });
 });

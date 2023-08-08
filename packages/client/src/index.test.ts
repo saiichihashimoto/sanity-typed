@@ -37,10 +37,7 @@ describe("createClient", () => {
 
     it("uses the client in queries", () => {
       const exec = async () => {
-        const client = createClient<{
-          bar: { _type: "bar"; bar: "bar" };
-          foo: SanityDocument<"foo", any>;
-        }>()({
+        const client = createClient()({
           projectId: "projectId",
         });
 
@@ -50,6 +47,18 @@ describe("createClient", () => {
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<"projectId">
       >();
+    });
+
+    it("uses the params in queries", () => {
+      const exec = async () => {
+        const client = createClient()({
+          projectId: "projectId",
+        });
+
+        return client.fetch("$param", { param: "foo" });
+      };
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<Promise<"foo">>();
     });
   });
 

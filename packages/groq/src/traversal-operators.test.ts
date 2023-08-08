@@ -660,11 +660,11 @@ describe("traversal operators", () => {
     >();
   });
 
-  it("@->", () => {
-    const query = "@->";
+  it("$param->", () => {
+    const query = "$param->";
 
     expectType<Parse<typeof query>>().toStrictEqual<{
-      base: { type: "This" };
+      base: { name: "param"; type: "Parameter" };
       type: "Deref";
     }>();
     expectType<
@@ -676,18 +676,18 @@ describe("traversal operators", () => {
               | { _type: "bar"; value: Bar }
               | { _type: "foo"; value: Foo }
             )[];
+            parameters: { param: ReferenceValue<"foo"> };
           };
-          this: ReferenceValue<"foo">;
         }
       >
     >().toStrictEqual<{ _type: "foo"; value: Foo }>();
   });
 
-  it("@->value", () => {
-    const query = "@->value";
+  it("$param->value", () => {
+    const query = "$param->value";
 
     expectType<Parse<typeof query>>().toStrictEqual<{
-      base: { base: { type: "This" }; type: "Deref" };
+      base: { base: { name: "param"; type: "Parameter" }; type: "Deref" };
       name: "value";
       type: "AccessAttribute";
     }>();
@@ -700,19 +700,22 @@ describe("traversal operators", () => {
               | { _type: "bar"; value: Bar }
               | { _type: "foo"; value: Foo }
             )[];
+            parameters: { param: ReferenceValue<"foo"> };
           };
-          this: ReferenceValue<"foo">;
         }
       >
     >().toStrictEqual<Foo>();
   });
 
-  it("@[]->value", () => {
-    const query = "@[]->value";
+  it("$param[]->value", () => {
+    const query = "$param[]->value";
 
     expectType<Parse<typeof query>>().toStrictEqual<{
       base: {
-        base: { base: { type: "This" }; type: "ArrayCoerce" };
+        base: {
+          base: { name: "param"; type: "Parameter" };
+          type: "ArrayCoerce";
+        };
         type: "Deref";
       };
       name: "value";
@@ -727,18 +730,18 @@ describe("traversal operators", () => {
               | { _type: "bar"; value: Bar }
               | { _type: "foo"; value: Foo }
             )[];
+            parameters: { param: ReferenceValue<"foo">[] };
           };
-          this: ReferenceValue<"foo">[];
         }
       >
     >().toStrictEqual<Foo[]>();
   });
 
-  it("@-> (weak)", () => {
-    const query = "@->";
+  it("$param-> (weak)", () => {
+    const query = "$param->";
 
     expectType<Parse<typeof query>>().toStrictEqual<{
-      base: { type: "This" };
+      base: { name: "param"; type: "Parameter" };
       type: "Deref";
     }>();
     expectType<
@@ -750,18 +753,18 @@ describe("traversal operators", () => {
               | { _type: "bar"; value: Bar }
               | { _type: "foo"; value: Foo }
             )[];
+            parameters: { param: ReferenceValue<"foo"> & { weak: true } };
           };
-          this: ReferenceValue<"foo"> & { weak: true };
         }
       >
     >().toStrictEqual<{ _type: "foo"; value: Foo } | null>();
   });
 
-  it("@->value (weak)", () => {
-    const query = "@->value";
+  it("$param->value (weak)", () => {
+    const query = "$param->value";
 
     expectType<Parse<typeof query>>().toStrictEqual<{
-      base: { base: { type: "This" }; type: "Deref" };
+      base: { base: { name: "param"; type: "Parameter" }; type: "Deref" };
       name: "value";
       type: "AccessAttribute";
     }>();
@@ -774,19 +777,22 @@ describe("traversal operators", () => {
               | { _type: "bar"; value: Bar }
               | { _type: "foo"; value: Foo }
             )[];
+            parameters: { param: ReferenceValue<"foo"> & { weak: true } };
           };
-          this: ReferenceValue<"foo"> & { weak: true };
         }
       >
     >().toStrictEqual<Foo | null>();
   });
 
-  it("@[]->value (weak)", () => {
-    const query = "@[]->value";
+  it("$param[]->value (weak)", () => {
+    const query = "$param[]->value";
 
     expectType<Parse<typeof query>>().toStrictEqual<{
       base: {
-        base: { base: { type: "This" }; type: "ArrayCoerce" };
+        base: {
+          base: { name: "param"; type: "Parameter" };
+          type: "ArrayCoerce";
+        };
         type: "Deref";
       };
       name: "value";
@@ -801,8 +807,8 @@ describe("traversal operators", () => {
               | { _type: "bar"; value: Bar }
               | { _type: "foo"; value: Foo }
             )[];
+            parameters: { param: (ReferenceValue<"foo"> & { weak: true })[] };
           };
-          this: (ReferenceValue<"foo"> & { weak: true })[];
         }
       >
     >().toStrictEqual<(Foo | null)[]>();

@@ -355,48 +355,52 @@ describe("operators", () => {
         type: "Value";
         value: 5;
       }>();
-      expectType<ExecuteQuery<typeof query, { this: 5 }>>().toStrictEqual<5>();
+      expectType<
+        ExecuteQuery<typeof query, { parameters: { param: 5 } }>
+      >().toStrictEqual<5>();
     });
 
-    it("+@ (5)", () => {
-      const query = "+@";
+    it("+$param (5)", () => {
+      const query = "+$param";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        base: { type: "This" };
-        type: "Pos";
-      }>();
-      expectType<ExecuteQuery<typeof query, { this: 5 }>>().toStrictEqual<5>();
-    });
-
-    it("+@ (-5)", () => {
-      const query = "+@";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        base: { type: "This" };
+        base: { name: "param"; type: "Parameter" };
         type: "Pos";
       }>();
       expectType<
-        ExecuteQuery<typeof query, { this: -5 }>
+        ExecuteQuery<typeof query, { parameters: { param: 5 } }>
+      >().toStrictEqual<5>();
+    });
+
+    it("+$param (-5)", () => {
+      const query = "+$param";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { name: "param"; type: "Parameter" };
+        type: "Pos";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { parameters: { param: -5 } }>
       >().toStrictEqual<-5>();
     });
 
-    it("+@ (number)", () => {
-      const query = "+@";
+    it("+$param (number)", () => {
+      const query = "+$param";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        base: { type: "This" };
+        base: { name: "param"; type: "Parameter" };
         type: "Pos";
       }>();
       expectType<
-        ExecuteQuery<typeof query, { this: number }>
+        ExecuteQuery<typeof query, { parameters: { param: number } }>
       >().toStrictEqual<number>();
     });
 
-    it("+@ (string)", () => {
-      const query = "+@";
+    it("+$param (string)", () => {
+      const query = "+$param";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        base: { type: "This" };
+        base: { name: "param"; type: "Parameter" };
         type: "Pos";
       }>();
       expectType<
@@ -413,46 +417,52 @@ describe("operators", () => {
         type: "Value";
         value: -5;
       }>();
-      expectType<ExecuteQuery<typeof query, { this: 5 }>>().toStrictEqual<-5>();
+      expectType<
+        ExecuteQuery<typeof query, { parameters: { param: 5 } }>
+      >().toStrictEqual<-5>();
     });
 
-    it("-@ (5)", () => {
-      const query = "-@";
+    it("-$param (5)", () => {
+      const query = "-$param";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        base: { type: "This" };
-        type: "Neg";
-      }>();
-      expectType<ExecuteQuery<typeof query, { this: 5 }>>().toStrictEqual<-5>();
-    });
-
-    it("-@ (-5)", () => {
-      const query = "-@";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        base: { type: "This" };
-        type: "Neg";
-      }>();
-      expectType<ExecuteQuery<typeof query, { this: -5 }>>().toStrictEqual<5>();
-    });
-
-    it("-@ (number)", () => {
-      const query = "-@";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        base: { type: "This" };
+        base: { name: "param"; type: "Parameter" };
         type: "Neg";
       }>();
       expectType<
-        ExecuteQuery<typeof query, { this: number }>
+        ExecuteQuery<typeof query, { parameters: { param: 5 } }>
+      >().toStrictEqual<-5>();
+    });
+
+    it("-$param (-5)", () => {
+      const query = "-$param";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { name: "param"; type: "Parameter" };
+        type: "Neg";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { parameters: { param: -5 } }>
+      >().toStrictEqual<5>();
+    });
+
+    it("-$param (number)", () => {
+      const query = "-$param";
+
+      expectType<Parse<typeof query>>().toStrictEqual<{
+        base: { name: "param"; type: "Parameter" };
+        type: "Neg";
+      }>();
+      expectType<
+        ExecuteQuery<typeof query, { parameters: { param: number } }>
       >().toStrictEqual<number>();
     });
 
-    it("-@ (string)", () => {
-      const query = "-@";
+    it("-$param (string)", () => {
+      const query = "-$param";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        base: { type: "This" };
+        base: { name: "param"; type: "Parameter" };
         type: "Neg";
       }>();
       expectType<
@@ -559,17 +569,20 @@ describe("operators", () => {
       }>();
     });
 
-    it("@+5 (with DateTime)", () => {
-      const query = "@+5";
+    it("$param+5 (with DateTime)", () => {
+      const query = "$param+5";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        left: { type: "This" };
+        left: { name: "param"; type: "Parameter" };
         op: "+";
         right: { type: "Value"; value: 5 };
         type: "OpCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, { this: DateTime<"some date"> }>
+        ExecuteQuery<
+          typeof query,
+          { parameters: { param: DateTime<"some date"> } }
+        >
       >().toStrictEqual<DateTime<string>>();
     });
   });
@@ -587,31 +600,42 @@ describe("operators", () => {
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("@-@ (with DateTime)", () => {
-      const query = "@-@";
+    it("$param1-$param2 (with DateTime)", () => {
+      const query = "$param1-$param2";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        left: { type: "This" };
+        left: { name: "param1"; type: "Parameter" };
         op: "-";
-        right: { type: "This" };
+        right: { name: "param2"; type: "Parameter" };
         type: "OpCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, { this: DateTime<"some date"> }>
+        ExecuteQuery<
+          typeof query,
+          {
+            parameters: {
+              param1: DateTime<"some date">;
+              param2: DateTime<"some date">;
+            };
+          }
+        >
       >().toStrictEqual<number>();
     });
 
-    it("@-5 (with DateTime)", () => {
-      const query = "@-5";
+    it("$param-5 (with DateTime)", () => {
+      const query = "$param-5";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        left: { type: "This" };
+        left: { name: "param"; type: "Parameter" };
         op: "-";
         right: { type: "Value"; value: 5 };
         type: "OpCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, { this: DateTime<"some date"> }>
+        ExecuteQuery<
+          typeof query,
+          { parameters: { param: DateTime<"some date"> } }
+        >
       >().toStrictEqual<DateTime<string>>();
     });
   });

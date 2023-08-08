@@ -376,31 +376,37 @@ describe("functions", () => {
       >();
     });
 
-    it("dateTime(@) (with DateTime)", () => {
-      const query = "dateTime(@)";
+    it("dateTime($param) (with DateTime)", () => {
+      const query = "dateTime($param)";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "This" }];
+        args: [{ name: "param"; type: "Parameter" }];
         func: GroqFunction;
         name: "global::dateTime";
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, { this: DateTime<"some date"> }>
+        ExecuteQuery<
+          typeof query,
+          { parameters: { param: DateTime<"some date"> } }
+        >
       >().toStrictEqual<DateTime<"some date">>();
     });
 
-    it("global::dateTime(@) (with DateTime)", () => {
-      const query = "global::dateTime(@)";
+    it("global::dateTime($param) (with DateTime)", () => {
+      const query = "global::dateTime($param)";
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "This" }];
+        args: [{ name: "param"; type: "Parameter" }];
         func: GroqFunction;
         name: "global::dateTime";
         type: "FuncCall";
       }>();
       expectType<
-        ExecuteQuery<typeof query, { this: DateTime<"some date"> }>
+        ExecuteQuery<
+          typeof query,
+          { parameters: { param: DateTime<"some date"> } }
+        >
       >().toStrictEqual<DateTime<"some date">>();
     });
 
@@ -1284,32 +1290,38 @@ describe("functions", () => {
       >();
     });
 
-    it('string::split(@,"")', () => {
-      const query = 'string::split(@,"")';
+    it('string::split($param,"")', () => {
+      const query = 'string::split($param,"")';
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "This" }, { type: "Value"; value: "" }];
+        args: [
+          { name: "param"; type: "Parameter" },
+          { type: "Value"; value: "" }
+        ];
         func: GroqFunction;
         name: "string::split";
         type: "FuncCall";
       }>();
-      expectType<ExecuteQuery<typeof query, { this: string }>>().toStrictEqual<
-        string[]
-      >();
+      expectType<
+        ExecuteQuery<typeof query, { parameters: { param: string } }>
+      >().toStrictEqual<string[]>();
     });
 
-    it('string::split("this is a string",@)', () => {
-      const query = 'string::split("this is a string",@)';
+    it('string::split("this is a string",$param)', () => {
+      const query = 'string::split("this is a string",$param)';
 
       expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: "this is a string" }, { type: "This" }];
+        args: [
+          { type: "Value"; value: "this is a string" },
+          { name: "param"; type: "Parameter" }
+        ];
         func: GroqFunction;
         name: "string::split";
         type: "FuncCall";
       }>();
-      expectType<ExecuteQuery<typeof query, { this: string }>>().toStrictEqual<
-        string[]
-      >();
+      expectType<
+        ExecuteQuery<typeof query, { parameters: { param: string } }>
+      >().toStrictEqual<string[]>();
     });
 
     it('string::startsWith("A String","A Str")', () => {
@@ -1895,45 +1907,54 @@ describe("functions", () => {
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
       });
 
-      it("pt(@) (with PortableTextBlock)", () => {
-        const query = "pt(@)";
+      it("pt($param) (with PortableTextBlock)", () => {
+        const query = "pt($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::pt";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: PortableTextBlock }>
+          ExecuteQuery<
+            typeof query,
+            { parameters: { param: PortableTextBlock } }
+          >
         >().toStrictEqual<PortableTextBlock>();
       });
 
-      it("pt(@) (with PortableTextBlock[])", () => {
-        const query = "pt(@)";
+      it("pt($param) (with PortableTextBlock[])", () => {
+        const query = "pt($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::pt";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: PortableTextBlock[] }>
+          ExecuteQuery<
+            typeof query,
+            { parameters: { param: PortableTextBlock[] } }
+          >
         >().toStrictEqual<PortableTextBlock[]>();
       });
 
-      it("global::pt(@) (with PortableTextBlock[])", () => {
-        const query = "global::pt(@)";
+      it("global::pt($param) (with PortableTextBlock[])", () => {
+        const query = "global::pt($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::pt";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: PortableTextBlock[] }>
+          ExecuteQuery<
+            typeof query,
+            { parameters: { param: PortableTextBlock[] } }
+          >
         >().toStrictEqual<PortableTextBlock[]>();
       });
 
@@ -1949,31 +1970,37 @@ describe("functions", () => {
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
       });
 
-      it("pt::text(@) (with PortableTextBlock)", () => {
-        const query = "pt::text(@)";
+      it("pt::text($param) (with PortableTextBlock)", () => {
+        const query = "pt::text($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "pt::text";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: PortableTextBlock }>
+          ExecuteQuery<
+            typeof query,
+            { parameters: { param: PortableTextBlock } }
+          >
         >().toStrictEqual<string>();
       });
 
-      it("pt::text(@) (with PortableTextBlock[])", () => {
-        const query = "pt::text(@)";
+      it("pt::text($param) (with PortableTextBlock[])", () => {
+        const query = "pt::text($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "pt::text";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: PortableTextBlock[] }>
+          ExecuteQuery<
+            typeof query,
+            { parameters: { param: PortableTextBlock[] } }
+          >
         >().toStrictEqual<string>();
       });
     });
@@ -1991,171 +2018,195 @@ describe("functions", () => {
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
       });
 
-      it("geo(@) (with Position)", () => {
-        const query = "geo(@)";
+      it("geo($param) (with Position)", () => {
+        const query = "geo($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: Position }>
+          ExecuteQuery<typeof query, { parameters: { param: Position } }>
         >().toStrictEqual<Position>();
       });
 
-      it("geo(@) (with Point)", () => {
-        const query = "geo(@)";
+      it("geo($param) (with Point)", () => {
+        const query = "geo($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: Point }>
+          ExecuteQuery<typeof query, { parameters: { param: Point } }>
         >().toStrictEqual<Point>();
       });
 
-      it("geo(@) (with MultiPoint)", () => {
-        const query = "geo(@)";
+      it("geo($param) (with MultiPoint)", () => {
+        const query = "geo($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: MultiPoint }>
+          ExecuteQuery<typeof query, { parameters: { param: MultiPoint } }>
         >().toStrictEqual<MultiPoint>();
       });
 
-      it("geo(@) (with LineString)", () => {
-        const query = "geo(@)";
+      it("geo($param) (with LineString)", () => {
+        const query = "geo($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: LineString }>
+          ExecuteQuery<typeof query, { parameters: { param: LineString } }>
         >().toStrictEqual<LineString>();
       });
 
-      it("geo(@) (with MultiLineString)", () => {
-        const query = "geo(@)";
+      it("geo($param) (with MultiLineString)", () => {
+        const query = "geo($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: MultiLineString }>
+          ExecuteQuery<typeof query, { parameters: { param: MultiLineString } }>
         >().toStrictEqual<MultiLineString>();
       });
 
-      it("geo(@) (with Polygon)", () => {
-        const query = "geo(@)";
+      it("geo($param) (with Polygon)", () => {
+        const query = "geo($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: Polygon }>
+          ExecuteQuery<typeof query, { parameters: { param: Polygon } }>
         >().toStrictEqual<Polygon>();
       });
 
-      it("geo(@) (with MultiPolygon)", () => {
-        const query = "geo(@)";
+      it("geo($param) (with MultiPolygon)", () => {
+        const query = "geo($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: MultiPolygon }>
+          ExecuteQuery<typeof query, { parameters: { param: MultiPolygon } }>
         >().toStrictEqual<MultiPolygon>();
       });
 
-      it("geo(@) (with GeometryCollection)", () => {
-        const query = "geo(@)";
+      it("geo($param) (with GeometryCollection)", () => {
+        const query = "geo($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: GeometryCollection }>
+          ExecuteQuery<
+            typeof query,
+            { parameters: { param: GeometryCollection } }
+          >
         >().toStrictEqual<GeometryCollection>();
       });
 
-      it("global::geo(@) (with GeometryCollection)", () => {
-        const query = "global::geo(@)";
+      it("global::geo($param) (with GeometryCollection)", () => {
+        const query = "global::geo($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "This" }];
+          args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
           name: "global::geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: GeometryCollection }>
+          ExecuteQuery<
+            typeof query,
+            { parameters: { param: GeometryCollection } }
+          >
         >().toStrictEqual<GeometryCollection>();
       });
 
-      it("geo::contains(@,@)", () => {
-        const query = "geo::contains(@,@)";
+      it("geo::contains($param1,$param2)", () => {
+        const query = "geo::contains($param1,$param2)";
 
         expectType<Parse<typeof query>>().toBeAssignableTo<{
-          args: [{ type: "This" }, { type: "This" }];
+          args: [
+            { name: "param1"; type: "Parameter" },
+            { name: "param2"; type: "Parameter" }
+          ];
           func: GroqFunction;
           name: "geo::contains";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: Geo }>
+          ExecuteQuery<
+            typeof query,
+            { parameters: { param1: Geo; param2: Geo } }
+          >
         >().toStrictEqual<boolean>();
       });
 
-      it("geo::intersects(@,@)", () => {
-        const query = "geo::intersects(@,@)";
+      it("geo::intersects($param1,$param2)", () => {
+        const query = "geo::intersects($param1,$param2)";
 
         expectType<Parse<typeof query>>().toBeAssignableTo<{
-          args: [{ type: "This" }, { type: "This" }];
+          args: [
+            { name: "param1"; type: "Parameter" },
+            { name: "param2"; type: "Parameter" }
+          ];
           func: GroqFunction;
           name: "geo::intersects";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: Geo }>
+          ExecuteQuery<
+            typeof query,
+            { parameters: { param1: Geo; param2: Geo } }
+          >
         >().toStrictEqual<boolean>();
       });
 
-      it("geo::distance(@,@)", () => {
-        const query = "geo::distance(@,@)";
+      it("geo::distance($param1,$param2)", () => {
+        const query = "geo::distance($param1,$param2)";
 
         expectType<Parse<typeof query>>().toBeAssignableTo<{
-          args: [{ type: "This" }, { type: "This" }];
+          args: [
+            { name: "param1"; type: "Parameter" },
+            { name: "param2"; type: "Parameter" }
+          ];
           func: GroqFunction;
           name: "geo::distance";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { this: Point }>
+          ExecuteQuery<
+            typeof query,
+            { parameters: { param1: Point; param2: Point } }
+          >
         >().toStrictEqual<number>();
       });
     });

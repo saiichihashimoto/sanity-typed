@@ -33,6 +33,7 @@ import type {
   ObjectSplatNode,
   OpCallNode,
   OrNode,
+  ParameterNode,
   ParentNode,
   PosNode,
   ProjectionNode,
@@ -57,6 +58,7 @@ type Context<Dataset extends any[], DeltaElement extends Dataset[number]> = {
     | { after: DeltaElement; before: null }
     | { after: null; before: DeltaElement }
     | null;
+  parameters: { [param: string]: any };
 };
 
 /**
@@ -504,11 +506,25 @@ type FuncCall<TExpression extends string> =
     : never;
 
 /**
+ * @link https://www.sanity.io/docs/groq-parameters
+ */
+type Parameter<TExpression extends string> =
+  TExpression extends `$${infer TIdentifier}`
+    ? Identifier<TIdentifier> extends never
+      ? never
+      : {
+          name: TIdentifier;
+          type: "Parameter";
+        }
+    : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SimpleExpression
  */
 type SimpleExpression<TExpression extends string> =
   | Everything<TExpression>
   | FuncCall<TExpression>
+  | Parameter<TExpression>
   | Parent<TExpression>
   | This<TExpression>
   | ThisAttribute<TExpression>;
@@ -1614,6 +1630,15 @@ type EvaluateObject<
 >;
 
 /**
+ * @link https://www.sanity.io/docs/groq-parameters
+ */
+type EvaluateParameter<
+  TNode extends ExprNode,
+  TScope extends Scope<any>
+> = TNode extends ParameterNode
+  ? TScope["context"]["parameters"][TNode["name"]]
+  : never;
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateParent()
  */
 type EvaluateParent<
@@ -1730,6 +1755,7 @@ type EvaluateExpression<TNode extends ExprNode, TScope extends Scope<any>> =
   | EvaluateNeg<TNode, TScope>
   | EvaluateNot<TNode, TScope>
   | EvaluateObject<TNode, TScope>
+  | EvaluateParameter<TNode, TScope>
   | EvaluateParent<TNode, TScope>
   | EvaluateParenthesis<TNode, TScope>
   | EvaluatePos<TNode, TScope>
