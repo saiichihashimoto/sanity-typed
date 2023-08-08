@@ -1,3 +1,4 @@
+import type { PortableTextBlock } from "@portabletext/types";
 import type { ClientConfig } from "@sanity/client";
 import type {
   AccessAttributeNode,
@@ -1065,6 +1066,15 @@ type EvaluateFuncArgs<TArgs extends ExprNode[], TScope extends Scope<any>> = {
   [key in keyof TArgs]: Evaluate<TArgs[key], TScope>;
 };
 
+declare const dateTime: unique symbol;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Datetime
+ */
+export type DateTime<TString extends string> = TString & {
+  [dateTime]: true;
+};
+
 type Functions<TArgs extends any[], TScope extends Scope<any>> = {
   /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Array-namespace
@@ -1137,6 +1147,15 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
       : never;
   };
   /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Date-time-namespace
+   */
+  dateTime: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#dateTime_now()
+     */
+    now: TArgs extends [] ? DateTime<string> : never;
+  };
+  /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
    */
   global: {
@@ -1176,6 +1195,16 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
     count: TArgs extends [infer TBase]
       ? TBase extends any[]
         ? TBase["length"]
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_dateTime()
+     */
+    dateTime: TArgs extends [infer TBase]
+      ? TBase extends DateTime<string>
+        ? TBase
+        : TBase extends string
+        ? DateTime<TBase>
         : null
       : never;
     /**
@@ -1219,6 +1248,14 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
           ? "delete"
           : "update"
         : never
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
+     */
+    pt: TArgs extends (infer TBase)[]
+      ? TBase extends PortableTextBlock | PortableTextBlock[]
+        ? TBase
+        : null
       : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_references()
@@ -1280,6 +1317,16 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
   /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Portable-Text-Extension
    */
+  pt: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#pt_text()
+     */
+    text: TArgs extends (infer TBase)[]
+      ? TBase extends PortableTextBlock | PortableTextBlock[]
+        ? string
+        : null
+      : never;
+  };
   /**
    * @link https://www.sanity.io/docs/groq-functions#61e2649fc0d8
    */
@@ -1372,7 +1419,20 @@ type EvaluateMath<
   TScope extends Scope<any>
 > = TNode extends OpCallNode
   ?
-      | (TNode extends { op: "-" | "*" | "**" | "/" | "%" }
+      | (TNode extends { op: "-" }
+          ? Evaluate<TNode["left"], TScope> extends DateTime<string>
+            ? Evaluate<TNode["right"], TScope> extends DateTime<string>
+              ? number
+              : Evaluate<TNode["right"], TScope> extends number
+              ? DateTime<string>
+              : null
+            : Evaluate<TNode["left"], TScope> extends number
+            ? Evaluate<TNode["right"], TScope> extends number
+              ? number
+              : null
+            : null
+          : never)
+      | (TNode extends { op: "*" | "**" | "/" | "%" }
           ? Evaluate<TNode["left"], TScope> extends number
             ? Evaluate<TNode["right"], TScope> extends number
               ? number
@@ -1380,7 +1440,11 @@ type EvaluateMath<
             : null
           : never)
       | (TNode extends { op: "+" }
-          ? Evaluate<TNode["left"], TScope> extends string
+          ? Evaluate<TNode["left"], TScope> extends DateTime<string>
+            ? Evaluate<TNode["right"], TScope> extends number
+              ? DateTime<string>
+              : null
+            : Evaluate<TNode["left"], TScope> extends string
             ? Evaluate<TNode["right"], TScope> extends string
               ? // @ts-expect-error -- FIXME Type instantiation is excessively deep and possibly infinite.
                 `${Evaluate<TNode["left"], TScope>}${Evaluate<
