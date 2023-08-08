@@ -15,7 +15,7 @@ import type { SanityDocument } from "@sanity-typed/types";
 export interface SanityClient<Client extends ClientConfig, Dataset>
   extends Omit<SanityClientNative, "clone" | "fetch" | "withConfig"> {
   clone: () => SanityClient<Client, Dataset>;
-  fetch: <Query extends string, Q = QueryParams>(
+  fetch: <Query extends string, const Q = QueryParams>(
     query: Query,
     params?: Q,
     options?: FilteredResponseQueryOptions | UnfilteredResponseQueryOptions
@@ -25,6 +25,7 @@ export interface SanityClient<Client extends ClientConfig, Dataset>
       {
         client: Client;
         dataset: Dataset;
+        parameters: NonNullable<Q>;
       }
     >
   >;
