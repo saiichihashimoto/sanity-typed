@@ -1176,6 +1176,21 @@ type Functions<TArgs extends any[], TScope extends Scope<any>> = {
     now: TArgs extends [] ? DateTime<string> : never;
   };
   /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Geography-Extension
+   */
+  geo: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_contains()
+     */
+    contains: TArgs extends [infer TFirst, infer TSecond]
+      ? TFirst extends Geo
+        ? TSecond extends Geo
+          ? boolean
+          : null
+        : null
+      : never;
+  };
+  /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
    */
   global: {

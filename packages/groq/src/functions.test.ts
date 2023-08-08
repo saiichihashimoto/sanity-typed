@@ -14,7 +14,7 @@ import type { GroqFunction } from "groq-js";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { DateTime, ExecuteQuery, Parse } from ".";
+import type { DateTime, ExecuteQuery, Geo, Parse } from ".";
 
 describe("functions", () => {
   describe("global", () => {
@@ -455,36 +455,35 @@ describe("functions", () => {
     it("length([null,null,null])", () => {
       const query = "length([null,null,null])";
 
-      expectType<
-        Parse<typeof query>
-      >().toStrictEqual<// @ts-expect-error -- FIXME
-      {
-        args: [
-          {
-            elements: [
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "global::length";
-        type: "FuncCall";
-      }>();
+      expectType<Parse<typeof query>>()
+        // FIXME toStrictEqual
+        .toBeAssignableTo<{
+          args: [
+            {
+              elements: [
+                {
+                  isSplat: false;
+                  type: "ArrayElement";
+                  value: { type: "Value"; value: null };
+                },
+                {
+                  isSplat: false;
+                  type: "ArrayElement";
+                  value: { type: "Value"; value: null };
+                },
+                {
+                  isSplat: false;
+                  type: "ArrayElement";
+                  value: { type: "Value"; value: null };
+                }
+              ];
+              type: "Array";
+            }
+          ];
+          func: GroqFunction;
+          name: "global::length";
+          type: "FuncCall";
+        }>();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<3>();
     });
 
@@ -2116,6 +2115,20 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<typeof query, { this: GeometryCollection }>
         >().toStrictEqual<GeometryCollection>();
+      });
+
+      it("geo::contains(@,@) (with GeometryCollection)", () => {
+        const query = "geo::contains(@,@)";
+
+        expectType<Parse<typeof query>>().toBeAssignableTo<{
+          args: [{ type: "This" }, { type: "This" }];
+          func: GroqFunction;
+          name: "geo::contains";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: Geo }>
+        >().toStrictEqual<boolean>();
       });
     });
   });
