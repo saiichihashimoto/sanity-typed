@@ -2117,13 +2117,27 @@ describe("functions", () => {
         >().toStrictEqual<GeometryCollection>();
       });
 
-      it("geo::contains(@,@) (with GeometryCollection)", () => {
+      it("geo::contains(@,@)", () => {
         const query = "geo::contains(@,@)";
 
         expectType<Parse<typeof query>>().toBeAssignableTo<{
           args: [{ type: "This" }, { type: "This" }];
           func: GroqFunction;
           name: "geo::contains";
+          type: "FuncCall";
+        }>();
+        expectType<
+          ExecuteQuery<typeof query, { this: Geo }>
+        >().toStrictEqual<boolean>();
+      });
+
+      it("geo::intersects(@,@)", () => {
+        const query = "geo::intersects(@,@)";
+
+        expectType<Parse<typeof query>>().toBeAssignableTo<{
+          args: [{ type: "This" }, { type: "This" }];
+          func: GroqFunction;
+          name: "geo::intersects";
           type: "FuncCall";
         }>();
         expectType<
