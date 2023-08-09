@@ -8,7 +8,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-Infer Sanity types from config to fetch without any explicit typing!
+End to end Sanity types without any explicit typing, from config to fetch!
 
 ## Page Contents
 - [Install](#install)

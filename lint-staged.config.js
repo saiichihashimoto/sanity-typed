@@ -30,7 +30,7 @@ const config = {
     "manypkg check",
     ...(process.env.NO_FIX ? [] : ["git add **/package.json"]),
   ],
-  "_README.md": (filenames) =>
+  "{_README.md,README.md}": (filenames) =>
     process.env.NO_FIX
       ? []
       : filenames.flatMap((filename) => [

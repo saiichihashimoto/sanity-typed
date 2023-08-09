@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/client",
   "version": "0.0.0-development",
-  "description": "TODO Description",
+  "description": "Infer Sanity types from your client without any explicit typing!",
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/client",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Aclient",
   "repository": "github:saiichihashimoto/sanity-typed",
