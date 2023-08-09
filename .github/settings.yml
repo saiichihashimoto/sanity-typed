@@ -2,7 +2,7 @@
 _extends: .github
 repository:
   name: sanity-typed
-  description: Type Sanity from config to fetch with zero schema changes!
+  description: End to end Sanity types without any explicit typing, from config to fetch!
   private: false
 branches:
   - name: alpha
