@@ -3,6 +3,16 @@
   "name": "@sanity-typed/types",
   "version": "0.0.0-development",
   "description": "Infer Sanity types from your config without any explicit typing!",
+  "keywords": [
+    "sanity",
+    "sanity-io",
+    "types",
+    "typescript",
+    "cms",
+    "headless",
+    "realtime",
+    "content"
+  ],
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Atypes",
   "repository": "github:saiichihashimoto/sanity-typed",
