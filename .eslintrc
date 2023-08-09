@@ -32,7 +32,8 @@
     "import/resolver": {
       "node": {
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
-      }
+      },
+      "typescript": true
     },
     "react": {
       "version": "detect"
@@ -189,7 +190,8 @@
     "unicorn/prefer-json-parse-buffer": "error",
     "unicorn/prefer-node-protocol": "off",
     "unicorn/prefer-string-replace-all": "error",
-    "unicorn/prevent-abbreviations": "off"
+    "unicorn/prevent-abbreviations": "off",
+    "unicorn/require-array-join-separator": "off"
   },
   "overrides": [
     {
@@ -387,6 +389,23 @@
             "peerDependencies": true
           }
         ]
+      }
+    },
+    {
+      "files": ["**/docs/**/*.ts"],
+      "plugins": ["@typescript-eslint"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": [
+          "./tsconfig.json",
+          "./@types/tsconfig.json",
+          "./packages/*/tsconfig.json"
+        ]
+      },
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off",
+        "import/extensions": "off",
+        "import/no-extraneous-dependencies": "off"
       }
     },
     {
