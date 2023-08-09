@@ -4,14 +4,11 @@ repository:
   name: sanity-typed
   description: End to end Sanity types without any explicit typing, from config to fetch!
   private: false
+labels:
+  - name: "released on @alpha"
+    color: "#1f883d"
+    description: Automatically merges the PR if all status checks pass. Applied by semantic-release.
 branches:
-  - name: alpha
-    protection:
-      required_status_checks:
-        contexts:
-          - Build
-          - Lint
-          - Test
   - name: main
     protection:
       required_status_checks:
