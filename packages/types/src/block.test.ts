@@ -39,7 +39,7 @@ describe("block", () => {
           defineArrayMember({
             name: "bar",
             type: "reference",
-            to: [{ type: "qux" }],
+            to: [{ type: "qux" as const }],
           }),
         ],
       });
@@ -55,7 +55,7 @@ describe("block", () => {
             } & {
               baz?: boolean;
             })
-          | (ReferenceValue<string> & {
+          | (ReferenceValue<"qux"> & {
               _key: string;
             } & {
               _type: "bar";
@@ -106,7 +106,7 @@ describe("block", () => {
           defineArrayMember({
             name: "bar",
             type: "reference",
-            to: [{ type: "qux" }],
+            to: [{ type: "qux" as const }],
           }),
         ],
       });
@@ -122,7 +122,7 @@ describe("block", () => {
             } & {
               baz?: boolean;
             })
-          | (ReferenceValue<string> & {
+          | (ReferenceValue<"qux"> & {
               _key: string;
             } & {
               _type: "bar";

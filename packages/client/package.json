@@ -1,10 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@sanity-typed/types",
+  "name": "@sanity-typed/client",
   "version": "0.0.0-development",
-  "description": "Infer Sanity types from your config without any explicit typing!",
-  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types",
-  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Atypes",
+  "description": "Infer Sanity types from your client without any explicit typing!",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/client",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Aclient",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {
     "type": "individual",
@@ -18,19 +18,19 @@
     "dev": "npm run build -- --no-dts"
   },
   "dependencies": {
+    "@sanity-typed/groq": "0.0.0-development",
+    "@sanity-typed/types": "0.0.0-development",
     "type-fest": "2.19.0"
   },
   "devDependencies": {
     "@jest/globals": "29.6.2",
-    "@portabletext/types": "2.0.5",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "sanity": "3.14.4",
+    "@sanity/client": "6.2.0",
     "typescript": "5.1.6"
   },
   "peerDependencies": {
-    "@portabletext/types": "^2.0.2",
-    "sanity": "^3.12.0",
+    "@sanity/client": "^6.1.7",
     "typescript": "^5.0.4"
   }
 }

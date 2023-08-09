@@ -1,3 +1,5 @@
+const path = require("path");
+
 const eslintCmd = `cross-env TIMING=1 eslint --quiet --ext .js,.jsx,.ts,.tsx ${
   process.env.NO_FIX ? "" : "--fix"
 }`;
@@ -15,13 +17,29 @@ const config = {
   "*.{gif,jpeg,jpg,png,svg}": ["imagemin-lint-staged"],
   "*.{js,jsx,ts,tsx}": [eslintCmd],
   "*.*": [prettierCmd],
-  "{.eslint*,package.json}": () => [`${eslintCmd} .`],
-  "{.prettier*,package.json}": () => [`${prettierCmd} .`],
+  "{.eslint*,package.json}": () => [
+    `${eslintCmd} .`,
+    ...(process.env.NO_FIX ? [] : ["git add ."]),
+  ],
+  "{.prettier*,package.json}": () => [
+    `${prettierCmd} .`,
+    ...(process.env.NO_FIX ? [] : ["git add ."]),
+  ],
   "package.json": () => [
     ...(process.env.NO_FIX ? [] : ["manypkg fix"]),
-    // `manypkg fix` doesn't fail
     "manypkg check",
+    ...(process.env.NO_FIX ? [] : ["git add **/package.json"]),
   ],
+  "{_README.md,README.md}": (filenames) =>
+    process.env.NO_FIX
+      ? []
+      : filenames.flatMap((filename) => [
+          `markdown_helper include ${path.resolve(
+            path.dirname(filename),
+            "_README.md"
+          )} ${path.resolve(path.dirname(filename), "README.md")}`,
+          `git add ${path.resolve(path.dirname(filename), "README.md")}`,
+        ]),
   ...(process.env.NO_FIX
     ? {}
     : {
