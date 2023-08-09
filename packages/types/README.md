@@ -18,11 +18,11 @@ Infer Sanity types from your config without any explicit typing!
 - [Plugins](#plugins)
   - [Writing typed plugins](#writing-typed-plugins)
   - [Using external untyped plugins](#using-external-untyped-plugins)
-- [Migrations](#migrations)
-  - [Migrating from 3.x to 4.x](#migrating-from-3x-to-4x)
+- [Breaking Changes](#breaking-changes)
+  - [3 to 4](#3-to-4)
     - [Referenced `_type` needs `as const`](#referenced-_type-needs-as-const)
     - [Renamed `DocumentValue` to `SanityDocument`](#renamed-documentvalue-to-sanitydocument)
-  - [Migrating from 2.x to 3.x](#migrating-from-2x-to-3x)
+  - [2 to 3](#2-to-3)
     - [InferSchemaValues](#inferschemavalues)
     - [InferValue](#infervalue)
 
@@ -244,9 +244,9 @@ const nav = defineType({
 });
 ```
 
-## Migrations
+## Breaking Changes
 
-### Migrating from 3.x to 4.x
+### 3 to 4
 
 #### Referenced `_type` needs `as const`
 
@@ -275,7 +275,7 @@ const product = defineType({
 + import type { SanityDocument } from "@sanity-typed/types";
 ```
 
-### Migrating from 2.x to 3.x
+### 2 to 3
 
 #### InferSchemaValues
 

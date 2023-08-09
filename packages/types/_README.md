@@ -149,9 +149,9 @@ const nav = defineType({
 });
 ```
 
-## Migrations
+## Breaking Changes
 
-### Migrating from 3.x to 4.x
+### 3 to 4
 
 #### Referenced `_type` needs `as const`
 
@@ -180,7 +180,7 @@ const product = defineType({
 + import type { SanityDocument } from "@sanity-typed/types";
 ```
 
-### Migrating from 2.x to 3.x
+### 2 to 3
 
 #### InferSchemaValues
 
