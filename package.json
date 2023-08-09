@@ -15,9 +15,8 @@
     "dev": "concurrently --prefix-colors \"auto\" npm:dev:*",
     "dev:build": "turbo run dev --color --parallel --concurrency 50",
     "dev:test": "npm run test -- --watch",
-    "lint": "git add . && cross-env NO_FIX=1 lint-staged --shell --verbose --no-stash --diff \"4b825dc642cb6eb9a060e54bf8d69288fbee4904\"",
+    "lint": "lint-staged --shell --verbose --diff \"4b825dc642cb6eb9a060e54bf8d69288fbee4904\"",
     "prepare": "is-ci || concurrently --timings --prefix-colors \"auto\" npm:prepare:*",
-    "prepare:brew": "brew bundle",
     "prepare:gem": "bundle install",
     "prepare:husky": "husky install",
     "test": "jest --color"

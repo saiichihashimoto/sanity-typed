@@ -16,8 +16,19 @@ while read local_ref local_oid remote_ref remote_oid; do
       range="$remote_oid"
     fi
 
+    git stash
+
     echo "$range...$local_oid"
-    npx cross-env NO_FIX=1 npx lint-staged --shell --verbose --no-stash --diff "$range...$local_oid"
+    npx lint-staged --shell --verbose --diff "$range...$local_oid"
+
+    if ! git diff-index --quiet HEAD -- ; then
+      git --no-pager diff --text HEAD
+      git reset --hard
+      git stash pop || true
+      exit 1
+    fi
+    
+    git stash pop || true
   fi
 done
 
