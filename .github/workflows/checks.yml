@@ -28,13 +28,17 @@ jobs:
         with:
           node-version-file: "package.json"
           cache: "npm"
-      # TODO https://github.com/Homebrew/actions/tree/master/setup-homebrew
+      - run: npm ci
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - run: npm ci
 
       - run: npm run lint
+      - run: |
+          if ! git diff-index --quiet HEAD -- ; then
+            git --no-pager diff --text HEAD
+            exit 1
+          fi
   test:
     name: Test
     runs-on: ubuntu-latest

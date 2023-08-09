@@ -22,8 +22,7 @@ while read local_ref local_oid remote_ref remote_oid; do
     npx lint-staged --shell --verbose --diff "$range...$local_oid"
 
     if ! git diff-index --quiet HEAD -- ; then
-      git reset
-      git --no-pager diff --text
+      git --no-pager diff --text HEAD
       git reset --hard
       git stash pop || true
       exit 1

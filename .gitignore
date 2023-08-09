@@ -1,7 +1,9 @@
 .DS_Store
+.bundle
 .turbo
 Brewfile.lock.json
 Gemfile.lock
 dist
 node_modules
 tsup.config.bundled_*.mjs
+vendor/bundle

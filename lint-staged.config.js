@@ -25,7 +25,7 @@ const config = {
   ],
   "{_README.md,README.md}": (filenames) =>
     filenames.flatMap((filename) => [
-      `markdown_helper include ${path.resolve(
+      `bundle exec markdown_helper include ${path.resolve(
         path.dirname(filename),
         "_README.md"
       )} ${path.resolve(path.dirname(filename), "README.md")}`,
