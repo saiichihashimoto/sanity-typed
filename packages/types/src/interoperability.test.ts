@@ -267,7 +267,7 @@ describe("interoperability", () => {
                 types: [
                   defineType({
                     name: "pluginValue",
-                    type: "object" as const,
+                    type: "object",
                     fields: [
                       defineField({
                         name: "baz",
