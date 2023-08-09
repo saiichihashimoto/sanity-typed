@@ -33,22 +33,6 @@ const config = {
     ]),
   "{.env*,.gitattributes}": (files) =>
     files.map((file) => `sort -o ${file} ${file}`),
-  "Brewfile": (files) =>
-    files.map((file) =>
-      [
-        `cat ${file}`,
-        `awk 'BEGIN{FS=OFS=" "}
-                /^tap/  {print 1 "\t" $0; next}
-                /^brew/ {print 2 "\t" $0; next}
-                /^cask/ {print 3 "\t" $0; next}
-                /^mas/  {print 4 "\t" $0; next}
-                        {print 9 "\t" $0}'`,
-        "sort -u",
-        `awk 'BEGIN{FS="\t";OFS=""}{$1=""; print $0}'`,
-        "sed '/^ *$/d'",
-        `sponge ${file}`,
-      ].join(" | ")
-    ),
 };
 
 module.exports = config;
