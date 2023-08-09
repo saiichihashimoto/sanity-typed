@@ -52,12 +52,10 @@ type NeverTypeMatchers = {
   toBeNever: () => void;
 };
 
-type NonNeverTypeMatchers<
-  Expected,
-  Inverted extends boolean = false
-> = (Inverted extends true ? { toBeNever: () => void } : unknown) & {
+type TypeMatchers<Expected, Inverted extends boolean = false> = {
+  [inverted]: Inverted;
   /** Inverse next matcher. If you know how to test something, .not lets you test its opposite. */
-  not: NonNeverTypeMatchers<Expected, Negate<Inverted>>;
+  not: TypeMatchers<Expected, Negate<Inverted>>;
   /**
    * Checks if Expected is assignable to Received.
    *
@@ -82,13 +80,9 @@ type NonNeverTypeMatchers<
   >() => void;
 };
 
-type TypeMatchers<Expected> = StrictEqual<Expected, never> extends true
-  ? NeverTypeMatchers
-  : NonNeverTypeMatchers<Expected>;
-
 export const expectType = <Expected>() => {
   const valWithoutNot: Omit<
-    NeverTypeMatchers & NonNeverTypeMatchers<Expected>,
+    NeverTypeMatchers & TypeMatchers<Expected>,
     typeof inverted | "not"
   > = {
     toBeAssignableTo: () => {},
@@ -96,11 +90,12 @@ export const expectType = <Expected>() => {
     toStrictEqual: () => {},
   };
 
-  const val = valWithoutNot as NeverTypeMatchers &
-    NonNeverTypeMatchers<Expected>;
+  const val = valWithoutNot as NeverTypeMatchers & TypeMatchers<Expected>;
 
   // eslint-disable-next-line fp/no-mutation -- recursion requires mutation
   val.not = val as unknown as typeof val.not;
 
-  return val as TypeMatchers<Expected>;
+  return val as StrictEqual<Expected, never> extends true
+    ? NeverTypeMatchers
+    : TypeMatchers<Expected>;
 };
