@@ -7,7 +7,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-End to end Sanity types without any explicit typing, from config to fetch!
+Typed Sanity Documents and GROQ Results, all inferred, no config or client changes!
 
 @[:page_toc](## Page Contents)
 
@@ -25,9 +25,9 @@ npm install sanity @sanity-typed/client @sanity-typed/types
 
 ## Packages
 
-- [`@sanity-typed/types`](packages/types): Infer Sanity types from your config without any explicit typing!
-- [`@sanity-typed/client`](packages/client): Infer Sanity types from your client without any explicit typing!
-- [`@sanity-typed/groq`](packages/groq): Infer Sanity types from your groq queries without any explicit typing!
+- [`@sanity-typed/types`](packages/types): Typed Sanity Documents, all inferred, no config changes!
+- [`@sanity-typed/groq`](packages/groq): Typed GROQ Results, all inferred, no query changes!
+- [`@sanity-typed/client`](packages/client): Typed Sanity Cllient Results, all inferred, no client changes!
 
 ## Goals
 

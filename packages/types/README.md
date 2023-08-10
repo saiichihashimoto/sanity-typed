@@ -10,7 +10,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-Infer Sanity types from your config without any explicit typing!
+Typed Sanity Documents, all inferred, no config changes!
 
 ## Page Contents
 - [Install](#install)

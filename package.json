@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/monorepo",
-  "description": "End to end Sanity types without any explicit typing, from config to fetch!",
+  "description": "Typed Sanity Documents and GROQ Results, all inferred, no config or client changes!",
   "homepage": "https://github.com/saiichihashimoto/sanity-typed",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",

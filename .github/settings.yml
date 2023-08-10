@@ -2,7 +2,7 @@
 _extends: .github
 repository:
   name: sanity-typed
-  description: End to end Sanity types without any explicit typing, from config to fetch!
+  description: Typed Sanity Documents and GROQ Results, all inferred, no config or client changes!
   topics: sanity, sanity-io, types, typescript, cms, groq
   private: false
 labels:
