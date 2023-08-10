@@ -23,6 +23,12 @@ npm install sanity @sanity-typed/client @sanity-typed/types
 @[typescript](packages/types/docs/sanity.config.ts)
 @[typescript](packages/client/docs/your-super-cool-application.ts)
 
+## Packages
+
+- [`@sanity-typed/types`](packages/types): Infer Sanity types from your config without any explicit typing!
+- [`@sanity-typed/client`](packages/client): Infer Sanity types from your client without any explicit typing!
+- [`@sanity-typed/groq`](packages/groq): Infer Sanity types from your groq queries without any explicit typing!
+
 ## Goals
 
 The popularity of typescript happened after sanity took off and the typescript values haven't found their way in. The `define*` methods are a good start, but they type the schema, not the values. There's been attempts (ie [`sanity-codegen`](https://github.com/ricokahler/sanity-codegen), [`@sanity-typed/schema-builder`](https://github.com/saiichihashimoto/sanity-typed/tree/%40sanity-typed/schema-builder%403.0.1/packages/schema-builder)) but they take the approach of creating a new way of building schemas. The drop-in replacement approach allows for (close to) zero migration cost.

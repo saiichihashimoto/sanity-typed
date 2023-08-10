@@ -13,6 +13,7 @@ End to end Sanity types without any explicit typing, from config to fetch!
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
+- [Packages](#packages)
 - [Goals](#goals)
 
 ## Install
@@ -144,6 +145,12 @@ const data = await client.fetch('*[_type=="product"]');
  */
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/client/docs/your-super-cool-application.ts -->
+
+## Packages
+
+- [`@sanity-typed/types`](packages/types): Infer Sanity types from your config without any explicit typing!
+- [`@sanity-typed/client`](packages/client): Infer Sanity types from your client without any explicit typing!
+- [`@sanity-typed/groq`](packages/groq): Infer Sanity types from your groq queries without any explicit typing!
 
 ## Goals
 
