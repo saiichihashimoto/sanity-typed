@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx lint-staged --shell --verbose
+git stash --quiet --include-untracked --keep-index --message "lint-staged automatic backup"
+npx lint-staged --shell --verbose --no-stash
+git add .
+git stash pop --quiet --index
