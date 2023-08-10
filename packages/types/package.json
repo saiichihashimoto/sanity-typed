@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/types",
   "version": "0.0.0-development",
-  "description": "Infer Sanity types from your config without any explicit typing!",
+  "description": "Typed Sanity Documents, all inferred, no config changes!",
   "keywords": [
     "sanity",
     "sanity-io",

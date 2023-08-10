@@ -35,7 +35,7 @@ jobs:
 
       - run: npm run lint
       - run: |
-          if ! git diff-index --quiet HEAD -- ; then
+          if [[ $(git status --porcelain) != "" ]]; then
             git --no-pager diff --text HEAD
             exit 1
           fi

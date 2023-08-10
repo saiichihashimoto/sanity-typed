@@ -8,11 +8,12 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-End to end Sanity types without any explicit typing, from config to fetch!
+Typed Sanity Documents and GROQ Results, all inferred, no config or client changes!
 
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
+- [Packages](#packages)
 - [Goals](#goals)
 
 ## Install
@@ -144,6 +145,12 @@ const data = await client.fetch('*[_type=="product"]');
  */
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/client/docs/your-super-cool-application.ts -->
+
+## Packages
+
+- [`@sanity-typed/types`](packages/types): Typed Sanity Documents, all inferred, no config changes!
+- [`@sanity-typed/groq`](packages/groq): Typed GROQ Results, all inferred, no query changes!
+- [`@sanity-typed/client`](packages/client): Typed Sanity Cllient Results, all inferred, no client changes!
 
 ## Goals
 

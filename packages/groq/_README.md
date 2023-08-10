@@ -9,7 +9,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-Infer Sanity types from your groq queries without any explicit typing!
+Typed GROQ Results, all inferred, no query changes!
 
 @[:page_toc](## Page Contents)
 

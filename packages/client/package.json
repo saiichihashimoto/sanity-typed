@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/client",
   "version": "0.0.0-development",
-  "description": "Infer Sanity types from your client without any explicit typing!",
+  "description": "Typed Sanity Cllient Results, all inferred, no client changes!",
   "keywords": [
     "sanity",
     "sanity-io",

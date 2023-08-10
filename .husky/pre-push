@@ -16,19 +16,24 @@ while read local_ref local_oid remote_ref remote_oid; do
       range="$remote_oid"
     fi
 
-    git stash
+    git stash --quiet --include-untracked --message "lint-staged automatic backup"
 
     echo "$range...$local_oid"
-    npx lint-staged --shell --verbose --diff "$range...$local_oid"
 
-    if ! git diff-index --quiet HEAD -- ; then
+    if ! npx lint-staged --shell --verbose --diff "$range...$local_oid" ; then
+      git reset --hard
+      git stash pop --quiet
+      exit 1
+    fi
+
+    if [[ $(git status --porcelain) != "" ]]; then
       git --no-pager diff --text HEAD
       git reset --hard
-      git stash pop || true
+      git stash pop --quiet
       exit 1
     fi
     
-    git stash pop || true
+    git stash pop --quiet || true
   fi
 done
 

@@ -9,7 +9,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-Infer Sanity types from your client without any explicit typing!
+Typed Sanity Cllient Results, all inferred, no client changes!
 
 @[:page_toc](## Page Contents)
 
