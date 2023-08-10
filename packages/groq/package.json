@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@sanity-typed/types": "0.0.0-development",
-    "groq-js": "1.1.9",
+    "groq-js": "1.1.12",
     "type-fest": "2.19.0"
   },
   "devDependencies": {
