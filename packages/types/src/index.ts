@@ -180,9 +180,10 @@ export type NumberDefinition<TRequired extends boolean> = Merge<
 
 declare const referenced: unique symbol;
 
+// FIXME Does this really omit _type???
 export type ReferenceValue<TReferenced extends string> = Merge<
-  Omit<ReferenceValueNative, "_type">,
-  { [referenced]: TReferenced[] }
+  Omit<ReferenceValueNative, "_key" | "_type">,
+  { [referenced]: TReferenced }
 >;
 
 export type TypeReference<TReferenced extends string> = Merge<
