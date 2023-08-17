@@ -48,7 +48,6 @@
     "dot-notation": "error",
     "eqeqeq": "error",
     "func-style": ["error", "expression"],
-    "id-length": "error",
     "no-buffer-constructor": "off",
     "no-caller": "error",
     "no-constant-binary-expression": "error",
@@ -359,7 +358,6 @@
         "jest/prefer-to-contain": "error",
         "jest/prefer-to-have-length": "error",
         "jest/prefer-todo": "error",
-        "jest/require-to-throw-message": "error",
         "jest/require-top-level-describe": "error",
         "lodash-fp/no-unused-result": "off",
         "unicorn/consistent-function-scoping": "off"
