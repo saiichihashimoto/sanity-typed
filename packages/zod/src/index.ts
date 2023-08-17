@@ -4,7 +4,6 @@ const zods = {
   // TODO aliasedType
   // TODO array
   // TODO block
-  // TODO crossDatasetReference
   // TODO document
   // TODO file
   // TODO image
@@ -17,6 +16,14 @@ const zods = {
   string: (z: typeof Z) => z.string(),
   text: (z: typeof Z) => z.string(),
   url: (z: typeof Z) => z.string(),
+  crossDatasetReference: (z: typeof Z) =>
+    z.object({
+      _dataset: z.string(),
+      _projectId: z.string(),
+      _ref: z.string(),
+      _type: z.literal("crossDatasetReference"),
+      _weak: z.optional(z.boolean()),
+    }),
   geopoint: (z: typeof Z) =>
     z.object({
       _type: z.literal("geopoint"),

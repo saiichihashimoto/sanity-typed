@@ -135,7 +135,7 @@ export type BooleanDefinition<TRequired extends boolean> = Merge<
 >;
 
 export type CrossDatasetReferenceValue = Merge<
-  CrossDatasetReferenceValueNative,
+  Omit<CrossDatasetReferenceValueNative, "_key">,
   { _type: "crossDatasetReference" }
 >;
 

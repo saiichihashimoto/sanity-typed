@@ -14,7 +14,7 @@ import { sanityZod } from ".";
 
 describe("reference", () => {
   describe("defineArrayMember", () => {
-    it("builds parser for SlugValue", () => {
+    it("builds parser for Reference", () => {
       const arrayMember = defineArrayMember({
         type: "reference",
         to: [{ type: "other" as const }],
@@ -36,7 +36,7 @@ describe("reference", () => {
   });
 
   describe("defineField", () => {
-    it("builds parser for SlugValue", () => {
+    it("builds parser for Reference", () => {
       const field = defineField({
         name: "foo",
         type: "reference",
@@ -53,7 +53,7 @@ describe("reference", () => {
   });
 
   describe("defineType", () => {
-    it("builds parser for SlugValue", () => {
+    it("builds parser for Reference", () => {
       const type = defineType({
         name: "foo",
         type: "reference",
