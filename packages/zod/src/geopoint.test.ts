@@ -18,7 +18,7 @@ describe("geopoint", () => {
       const arrayMember = defineArrayMember({
         type: "geopoint",
       });
-      const zod = sanityZod(z)(arrayMember);
+      const zod = sanityZod(z, arrayMember);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<
@@ -42,7 +42,7 @@ describe("geopoint", () => {
         name: "foo",
         type: "geopoint",
       });
-      const zod = sanityZod(z)(field);
+      const zod = sanityZod(z, field);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<_InferValue<typeof field>>
@@ -65,7 +65,7 @@ describe("geopoint", () => {
         name: "foo",
         type: "geopoint",
       });
-      const zod = sanityZod(z)(type);
+      const zod = sanityZod(z, type);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<_InferValue<typeof type>>

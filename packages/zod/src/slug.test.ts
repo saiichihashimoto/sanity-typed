@@ -18,7 +18,7 @@ describe("slug", () => {
       const arrayMember = defineArrayMember({
         type: "slug",
       });
-      const zod = sanityZod(z)(arrayMember);
+      const zod = sanityZod(z, arrayMember);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<
@@ -43,7 +43,7 @@ describe("slug", () => {
         name: "foo",
         type: "slug",
       });
-      const zod = sanityZod(z)(field);
+      const zod = sanityZod(z, field);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<_InferValue<typeof field>>
@@ -62,7 +62,7 @@ describe("slug", () => {
         name: "foo",
         type: "slug",
       });
-      const zod = sanityZod(z)(type);
+      const zod = sanityZod(z, type);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<_InferValue<typeof type>>

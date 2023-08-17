@@ -29,7 +29,7 @@ const zods = {
     z.object({ _type: z.literal("slug"), current: z.string() }),
 };
 
-export const sanityZod =
-  (z: typeof Z) =>
-  <TType extends keyof typeof zods>({ type }: { type: TType }) =>
-    zods[type](z) as unknown as ReturnType<(typeof zods)[TType]>;
+export const sanityZod = <TType extends keyof typeof zods>(
+  z: typeof Z,
+  { type }: { type: TType }
+) => zods[type](z) as unknown as ReturnType<(typeof zods)[TType]>;
