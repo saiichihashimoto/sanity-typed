@@ -1,10 +1,9 @@
 import { describe, it } from "@jest/globals";
-import type { SlugValue } from "sanity";
 
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineField, defineType } from ".";
-import type { _InferValue } from ".";
+import type { SlugValue, _InferValue } from ".";
 
 describe("slug", () => {
   describe("defineArrayMember", () => {

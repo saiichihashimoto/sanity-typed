@@ -55,7 +55,7 @@ import type {
   SchemaPluginOptions as SchemaPluginOptionsNative,
   SlugDefinition as SlugDefinitionNative,
   SlugRule,
-  SlugValue,
+  SlugValue as SlugValueNative,
   StrictDefinition,
   StringDefinition as StringDefinitionNative,
   StringRule,
@@ -210,9 +210,11 @@ export type ReferenceDefinition<
   }
 >;
 
+export type SlugValue = Required<SlugValueNative>;
+
 export type SlugDefinition<TRequired extends boolean> = Merge<
   SlugDefinitionNative,
-  DefinitionBase<TRequired, SlugValue, SlugRule>
+  DefinitionBase<TRequired, SlugValue, RewriteValue<SlugValue, SlugRule>>
 >;
 
 export type StringDefinition<TRequired extends boolean> = Merge<

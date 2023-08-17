@@ -432,7 +432,7 @@ describe("depth test", () => {
         _key: string;
       } & {
         _type: "slug";
-        current?: string;
+        current: string;
       })[][][][][][][][][][][][][][][][][][][][][][][]
     >();
 
@@ -572,7 +572,7 @@ describe("depth test", () => {
         _key: string;
       } & {
         _type: "slug";
-        current?: string;
+        current: string;
       })[][][][][][][][][][][][][][][][][][][][][][]
     >();
   });

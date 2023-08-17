@@ -12,50 +12,65 @@ import type { _InferValue } from "@sanity-typed/types";
 
 import { sanityZod } from ".";
 
-describe("email", () => {
+describe("slug", () => {
   describe("defineArrayMember", () => {
-    it("builds parser for string", () => {
+    it("builds parser for SlugValue", () => {
       const arrayMember = defineArrayMember({
-        type: "email",
+        type: "slug",
       });
       const zod = sanityZod(z)(arrayMember);
 
       expectType<typeof zod>().toBeAssignableTo<
-        ZodType<_InferValue<typeof arrayMember>>
+        ZodType<
+          Omit<
+            _InferValue<typeof arrayMember>,
+            // FIXME defineArrayMember would have to return a runtime value to determine _key
+            "_key"
+          >
+        >
       >();
-      expect(zod.parse("foo")).toBe("foo");
+      expect(zod.parse({ _type: "slug", current: "foo" })).toStrictEqual({
+        _type: "slug",
+        current: "foo",
+      });
       expect(() => zod.parse(true)).toThrow();
     });
   });
 
   describe("defineField", () => {
-    it("builds parser for string", () => {
+    it("builds parser for SlugValue", () => {
       const field = defineField({
         name: "foo",
-        type: "email",
+        type: "slug",
       });
       const zod = sanityZod(z)(field);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<_InferValue<typeof field>>
       >();
-      expect(zod.parse("foo")).toBe("foo");
+      expect(zod.parse({ _type: "slug", current: "foo" })).toStrictEqual({
+        _type: "slug",
+        current: "foo",
+      });
       expect(() => zod.parse(true)).toThrow();
     });
   });
 
   describe("defineType", () => {
-    it("builds parser for string", () => {
+    it("builds parser for SlugValue", () => {
       const type = defineType({
         name: "foo",
-        type: "email",
+        type: "slug",
       });
       const zod = sanityZod(z)(type);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<_InferValue<typeof type>>
       >();
-      expect(zod.parse("foo")).toBe("foo");
+      expect(zod.parse({ _type: "slug", current: "foo" })).toStrictEqual({
+        _type: "slug",
+        current: "foo",
+      });
       expect(() => zod.parse(true)).toThrow();
     });
   });

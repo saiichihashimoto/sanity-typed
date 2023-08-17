@@ -11,7 +11,6 @@ const zods = {
   // TODO image
   // TODO object
   // TODO reference
-  // TODO slug
   boolean: (z: typeof Z) => z.boolean(),
   date: (z: typeof Z) => z.string(),
   datetime: (z: typeof Z) => z.string(),
@@ -20,6 +19,8 @@ const zods = {
   string: (z: typeof Z) => z.string(),
   text: (z: typeof Z) => z.string(),
   url: (z: typeof Z) => z.string(),
+  slug: (z: typeof Z) =>
+    z.object({ _type: z.literal("slug"), current: z.string() }),
 };
 
 export const sanityZod =

@@ -14,7 +14,7 @@ import { sanityZod } from ".";
 
 describe("boolean", () => {
   describe("defineArrayMember", () => {
-    it("infers boolean", () => {
+    it("builds parser for boolean", () => {
       const arrayMember = defineArrayMember({
         type: "boolean",
       });
@@ -29,7 +29,7 @@ describe("boolean", () => {
   });
 
   describe("defineField", () => {
-    it("infers boolean", () => {
+    it("builds parser for boolean", () => {
       const field = defineField({
         name: "foo",
         type: "boolean",
@@ -45,7 +45,7 @@ describe("boolean", () => {
   });
 
   describe("defineType", () => {
-    it("infers boolean", () => {
+    it("builds parser for boolean", () => {
       const type = defineType({
         name: "foo",
         type: "boolean",

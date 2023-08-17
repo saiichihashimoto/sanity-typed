@@ -14,7 +14,7 @@ import { sanityZod } from ".";
 
 describe("text", () => {
   describe("defineArrayMember", () => {
-    it("infers string", () => {
+    it("builds parser for string", () => {
       const arrayMember = defineArrayMember({
         type: "text",
       });
@@ -29,7 +29,7 @@ describe("text", () => {
   });
 
   describe("defineField", () => {
-    it("infers string", () => {
+    it("builds parser for string", () => {
       const field = defineField({
         name: "foo",
         type: "text",
@@ -45,7 +45,7 @@ describe("text", () => {
   });
 
   describe("defineType", () => {
-    it("infers string", () => {
+    it("builds parser for string", () => {
       const type = defineType({
         name: "foo",
         type: "text",
