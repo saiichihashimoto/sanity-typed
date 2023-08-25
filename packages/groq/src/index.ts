@@ -1705,6 +1705,7 @@ type EvaluateParameter<
 > = TNode extends ParameterNode
   ? TScope["context"]["parameters"][TNode["name"]]
   : never;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateParent()
  */
