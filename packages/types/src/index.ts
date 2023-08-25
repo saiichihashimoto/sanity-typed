@@ -1,7 +1,8 @@
 import type {
-  PortableTextBlock,
+  PortableTextBlock as PortableTextBlockNative,
   PortableTextMarkDefinition,
   PortableTextSpan,
+  TypedObject,
 } from "@portabletext/types";
 import {
   defineArrayMember as defineArrayMemberNative,
@@ -246,6 +247,13 @@ export type ArrayDefinition<
     of: TupleOfLength<TMemberDefinition, 1>;
   }
 >;
+
+export type PortableTextBlock<
+  M extends PortableTextMarkDefinition = PortableTextMarkDefinition,
+  C extends TypedObject = PortableTextSpan,
+  S extends string = string,
+  L extends string = string
+> = Omit<PortableTextBlockNative<M, C, S, L> & { _type: "block" }, "_key">;
 
 export type BlockDefinition<
   TRequired extends boolean,

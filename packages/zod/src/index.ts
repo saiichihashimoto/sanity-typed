@@ -3,7 +3,6 @@ import type { z as Z } from "zod";
 const zods = {
   // TODO aliasedType
   // TODO array
-  // TODO block
   // TODO document
   // TODO file
   // TODO image
@@ -16,6 +15,29 @@ const zods = {
   string: (z: typeof Z) => z.string(),
   text: (z: typeof Z) => z.string(),
   url: (z: typeof Z) => z.string(),
+  block: (z: typeof Z) =>
+    z.object({
+      _type: z.literal("block"),
+      level: z.optional(z.number()),
+      listItem: z.optional(z.string()),
+      style: z.optional(z.string()),
+      children: z.array(
+        z.object({
+          _key: z.optional(z.string()),
+          _type: z.literal("span"),
+          marks: z.optional(z.array(z.string())),
+          text: z.string(),
+        })
+      ),
+      markDefs: z.optional(
+        z.array(
+          z.object({
+            _key: z.string(),
+            _type: z.string(),
+          })
+        )
+      ),
+    }),
   crossDatasetReference: (z: typeof Z) =>
     z.object({
       _dataset: z.string(),
@@ -52,7 +74,10 @@ const zods = {
       ),
     }),
   slug: (z: typeof Z) =>
-    z.object({ _type: z.literal("slug"), current: z.string() }),
+    z.object({
+      _type: z.literal("slug"),
+      current: z.string(),
+    }),
 };
 
 export const sanityZod = <TType extends keyof typeof zods>(
