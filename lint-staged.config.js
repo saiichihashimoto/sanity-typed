@@ -17,12 +17,19 @@ const config = {
   "{.prettier*,package.json}": () => [`${prettierCmd} .`],
   "{package-lock.json,package.json}": () => ["npm install"],
   "package.json": () => ["manypkg fix", "manypkg check"],
-  "{_README.md,README.md}": (filenames) =>
+  "*.md": (filenames) =>
     filenames.flatMap((filename) => [
       `bundle exec markdown_helper include ${path.resolve(
         path.dirname(filename),
-        "_README.md"
-      )} ${path.resolve(path.dirname(filename), "README.md")}`,
+        path.basename(filename).startsWith("_")
+          ? path.basename(filename)
+          : `_${path.basename(filename)}`
+      )} ${path.resolve(
+        path.dirname(filename),
+        path.basename(filename).startsWith("_")
+          ? path.basename(filename).slice(1)
+          : path.basename(filename)
+      )}`,
     ]),
   "{.env*,.gitattributes}": (files) =>
     files.map((file) => `sort -o ${file} ${file}`),
