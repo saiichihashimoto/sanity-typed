@@ -83,7 +83,6 @@ type SanityZodBlockReturn = z.ZodObject<{
       }>
     >
   >;
-
   style: z.ZodOptional<z.ZodString>;
 }>;
 
@@ -119,16 +118,24 @@ export const sanityZod = <
     ? constantZods[schema.type as Schema["type"] & keyof typeof constantZods]
     : schema.type === "array"
     ? z.array(
-        sanityZod(
-          (
-            schema as Extract<
-              Schema,
-              | _ArrayMember<"array", any, any, any, any, any, any, any>
-              | _Field<"array", any, any, any, any, any, any, any>
-              | _Type<"array", any, any, any, any, any, any>
-            >
-          ).of[0]
-        )
+        (() => {
+          const { of } = schema as Extract<
+            Schema,
+            | _ArrayMember<"array", any, any, any, any, any, any, any>
+            | _Field<"array", any, any, any, any, any, any, any>
+            | _Type<"array", any, any, any, any, any, any>
+          >;
+
+          return of.length === 1
+            ? sanityZod(of[0])
+            : z.union(
+                of.map((member) => sanityZod(member)) as [
+                  z.ZodTypeAny,
+                  z.ZodTypeAny,
+                  ...z.ZodTypeAny[]
+                ]
+              );
+        })()
       )
     : schema.type === "block"
     ? z.object({
@@ -153,9 +160,9 @@ export const sanityZod = <
           )
         ),
       })
-    : //     // TODO object: () =>
-      //     // TODO document: () =>
-      //     // TODO file: () =>
-      //     // TODO image: () =>
-      //     // TODO aliasedType: () =>
+    : // TODO object: () =>
+      // TODO document: () =>
+      // TODO file: () =>
+      // TODO image: () =>
+      // TODO aliasedType: () =>
       (undefined as never)) as SanityZodReturn<Schema>;

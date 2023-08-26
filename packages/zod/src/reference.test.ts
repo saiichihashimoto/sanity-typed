@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import type { ZodType } from "zod";
+import type { z } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -20,13 +20,11 @@ describe("reference", () => {
       });
       const zod = sanityZod(arrayMember);
 
-      expectType<typeof zod>().toBeAssignableTo<
-        ZodType<
-          Omit<
-            _InferValue<typeof arrayMember>,
-            // FIXME defineArrayMember would have to return a runtime value to determine _key
-            symbol | "_key"
-          >
+      expectType<z.infer<typeof zod>>().toStrictEqual<
+        Omit<
+          _InferValue<typeof arrayMember>,
+          // FIXME defineArrayMember would have to return a runtime value to determine _key
+          symbol | "_key"
         >
       >();
       expect(zod.parse({ _ref: "foo" })).toStrictEqual({ _ref: "foo" });
@@ -43,8 +41,8 @@ describe("reference", () => {
       });
       const zod = sanityZod(field);
 
-      expectType<typeof zod>().toBeAssignableTo<
-        ZodType<Omit<_InferValue<typeof field>, symbol>>
+      expectType<z.infer<typeof zod>>().toStrictEqual<
+        Omit<_InferValue<typeof field>, symbol>
       >();
       expect(zod.parse({ _ref: "foo" })).toStrictEqual({ _ref: "foo" });
       expect(() => zod.parse(true)).toThrow();
@@ -60,8 +58,8 @@ describe("reference", () => {
       });
       const zod = sanityZod(type);
 
-      expectType<typeof zod>().toBeAssignableTo<
-        ZodType<Omit<_InferValue<typeof type>, symbol>>
+      expectType<z.infer<typeof zod>>().toStrictEqual<
+        Omit<_InferValue<typeof type>, symbol>
       >();
       expect(zod.parse({ _ref: "foo" })).toStrictEqual({ _ref: "foo" });
       expect(() => zod.parse(true)).toThrow();

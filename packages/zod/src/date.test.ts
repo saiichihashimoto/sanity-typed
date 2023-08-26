@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import type { ZodType } from "zod";
+import type { z } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -19,8 +19,8 @@ describe("date", () => {
       });
       const zod = sanityZod(arrayMember);
 
-      expectType<typeof zod>().toBeAssignableTo<
-        ZodType<_InferValue<typeof arrayMember>>
+      expectType<z.infer<typeof zod>>().toStrictEqual<
+        _InferValue<typeof arrayMember>
       >();
       expect(zod.parse("foo")).toBe("foo");
       expect(() => zod.parse(true)).toThrow();
@@ -35,8 +35,8 @@ describe("date", () => {
       });
       const zod = sanityZod(field);
 
-      expectType<typeof zod>().toBeAssignableTo<
-        ZodType<_InferValue<typeof field>>
+      expectType<z.infer<typeof zod>>().toStrictEqual<
+        _InferValue<typeof field>
       >();
       expect(zod.parse("foo")).toBe("foo");
       expect(() => zod.parse(true)).toThrow();
@@ -51,8 +51,8 @@ describe("date", () => {
       });
       const zod = sanityZod(type);
 
-      expectType<typeof zod>().toBeAssignableTo<
-        ZodType<_InferValue<typeof type>>
+      expectType<z.infer<typeof zod>>().toStrictEqual<
+        _InferValue<typeof type>
       >();
       expect(zod.parse("foo")).toBe("foo");
       expect(() => zod.parse(true)).toThrow();

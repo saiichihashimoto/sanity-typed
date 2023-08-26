@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import type { ZodType } from "zod";
+import type { z } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -22,13 +22,11 @@ describe("crossDatasetReference", () => {
       });
       const zod = sanityZod(arrayMember);
 
-      expectType<typeof zod>().toBeAssignableTo<
-        ZodType<
-          Omit<
-            _InferValue<typeof arrayMember>,
-            // FIXME defineArrayMember would have to return a runtime value to determine _key
-            "_key"
-          >
+      expectType<z.infer<typeof zod>>().toStrictEqual<
+        Omit<
+          _InferValue<typeof arrayMember>,
+          // FIXME defineArrayMember would have to return a runtime value to determine _key
+          "_key"
         >
       >();
       expect(
@@ -59,8 +57,8 @@ describe("crossDatasetReference", () => {
       });
       const zod = sanityZod(field);
 
-      expectType<typeof zod>().toBeAssignableTo<
-        ZodType<_InferValue<typeof field>>
+      expectType<z.infer<typeof zod>>().toStrictEqual<
+        _InferValue<typeof field>
       >();
       expect(
         zod.parse({
@@ -90,8 +88,8 @@ describe("crossDatasetReference", () => {
       });
       const zod = sanityZod(type);
 
-      expectType<typeof zod>().toBeAssignableTo<
-        ZodType<_InferValue<typeof type>>
+      expectType<z.infer<typeof zod>>().toStrictEqual<
+        _InferValue<typeof type>
       >();
       expect(
         zod.parse({

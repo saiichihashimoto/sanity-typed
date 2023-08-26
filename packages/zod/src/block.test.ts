@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import type { ZodType } from "zod";
+import type { z } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
 import { defineArrayMember, defineType } from "@sanity-typed/types";
@@ -15,13 +15,11 @@ describe("block", () => {
       });
       const zod = sanityZod(arrayMember);
 
-      expectType<typeof zod>().toBeAssignableTo<
-        ZodType<
-          Omit<
-            _InferValue<typeof arrayMember>,
-            // FIXME defineArrayMember would have to return a runtime value to determine _key
-            "_key"
-          >
+      expectType<z.infer<typeof zod>>().toBeAssignableTo<
+        Omit<
+          _InferValue<typeof arrayMember>,
+          // FIXME defineArrayMember would have to return a runtime value to determine _key
+          "_key"
         >
       >();
       expect(
@@ -47,8 +45,8 @@ describe("block", () => {
       });
       const zod = sanityZod(type);
 
-      expectType<typeof zod>().toBeAssignableTo<
-        ZodType<_InferValue<typeof type>>
+      expectType<z.infer<typeof zod>>().toBeAssignableTo<
+        _InferValue<typeof type>
       >();
       expect(
         zod.parse({
