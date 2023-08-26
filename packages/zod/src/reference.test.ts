@@ -1,5 +1,4 @@
 import { describe, expect, it } from "@jest/globals";
-import { z } from "zod";
 import type { ZodType } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
@@ -19,7 +18,7 @@ describe("reference", () => {
         type: "reference",
         to: [{ type: "other" as const }],
       });
-      const zod = sanityZod(z, arrayMember);
+      const zod = sanityZod(arrayMember);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<
@@ -42,7 +41,7 @@ describe("reference", () => {
         type: "reference",
         to: [{ type: "other" as const }],
       });
-      const zod = sanityZod(z, field);
+      const zod = sanityZod(field);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<Omit<_InferValue<typeof field>, symbol>>
@@ -59,7 +58,7 @@ describe("reference", () => {
         type: "reference",
         to: [{ type: "other" as const }],
       });
-      const zod = sanityZod(z, type);
+      const zod = sanityZod(type);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<Omit<_InferValue<typeof type>, symbol>>

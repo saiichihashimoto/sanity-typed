@@ -447,6 +447,102 @@ type TypeAliasDefinition<
   }
 >;
 
+/** @private */
+export type _ArrayMember<
+  TType extends string,
+  TName extends string,
+  TAlias extends IntrinsicTypeName,
+  TStrict extends StrictDefinition,
+  TReferenced extends string,
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [required]?: boolean;
+  },
+  TMemberDefinition extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
+  AllowArrays extends boolean
+> = MaybeAllowUnknownProps<TStrict> &
+  ((TType extends "array" ? AllowArrays : true) extends false
+    ? never
+    : TType extends IntrinsicTypeName
+    ? // HACK Why can't I just index off of IntrinsicDefinitions?
+      Extract<
+        {
+          [type in IntrinsicTypeName]: Omit<
+            IntrinsicDefinitions<
+              TName,
+              TFieldDefinition,
+              TMemberDefinition,
+              TReferenced,
+              any
+            >[type] extends DefinitionBase<any, infer Value, infer Rule>
+              ? Merge<
+                  IntrinsicDefinitions<
+                    TName,
+                    TFieldDefinition,
+                    TMemberDefinition,
+                    TReferenced,
+                    any
+                  >[type],
+                  DefinitionBase<
+                    any,
+                    Value &
+                      (Value extends any[]
+                        ? unknown
+                        : Value extends { [key: string]: any }
+                        ? (string extends TName
+                            ? unknown
+                            : Value["_type"] extends TName
+                            ? unknown
+                            : { _type: TName }) & { _key: string }
+                        : unknown),
+                    // @ts-expect-error -- FIXME
+                    RewriteValue<
+                      Value &
+                        (Value extends any[]
+                          ? unknown
+                          : Value extends { [key: string]: any }
+                          ? (string extends TName
+                              ? unknown
+                              : Value["_type"] extends TName
+                              ? unknown
+                              : { _type: TName }) & { _key: string }
+                          : unknown),
+                      Rule
+                    >
+                  >
+                >
+              : IntrinsicDefinitions<
+                  TName,
+                  TFieldDefinition,
+                  TMemberDefinition,
+                  TReferenced,
+                  any
+                >[type],
+            "name"
+          >;
+        }[IntrinsicTypeName],
+        { type: TType }
+      >
+    : Omit<
+        Merge<
+          TypeAliasDefinition<TType, TAlias, any>,
+          DefinitionBase<
+            any,
+            AliasValue<TType> &
+              (string extends TName ? unknown : { _type: TName }) & {
+                _key: string;
+              },
+            any
+          >
+        >,
+        "name"
+      >) & {
+    name?: TName;
+    type: TType;
+  };
+
 /**
  * Arrays shouldn't be children of arrays, ever.
  * https://www.sanity.io/docs/array-type#fNBIr84P
@@ -455,7 +551,7 @@ type TypeAliasDefinition<
  *
  * @private
  */
-export const makeDefineArrayMember =
+export const _makeDefineArrayMember =
   <AllowArrays extends boolean>() =>
   <
     TType extends string,
@@ -471,86 +567,16 @@ export const makeDefineArrayMember =
       name?: string;
     } = never
   >(
-    arrayOfSchema: MaybeAllowUnknownProps<TStrict> &
-      ((TType extends "array" ? AllowArrays : true) extends false
-        ? never
-        : TType extends IntrinsicTypeName
-        ? // HACK Why can't I just index off of IntrinsicDefinitions?
-          Extract<
-            {
-              [type in IntrinsicTypeName]: Omit<
-                IntrinsicDefinitions<
-                  TName,
-                  TFieldDefinition,
-                  TMemberDefinition,
-                  TReferenced,
-                  any
-                >[type] extends DefinitionBase<any, infer Value, infer Rule>
-                  ? Merge<
-                      IntrinsicDefinitions<
-                        TName,
-                        TFieldDefinition,
-                        TMemberDefinition,
-                        TReferenced,
-                        any
-                      >[type],
-                      DefinitionBase<
-                        any,
-                        Value &
-                          (Value extends any[]
-                            ? unknown
-                            : Value extends { [key: string]: any }
-                            ? (string extends TName
-                                ? unknown
-                                : Value["_type"] extends TName
-                                ? unknown
-                                : { _type: TName }) & { _key: string }
-                            : unknown),
-                        // @ts-expect-error -- FIXME
-                        RewriteValue<
-                          Value &
-                            (Value extends any[]
-                              ? unknown
-                              : Value extends { [key: string]: any }
-                              ? (string extends TName
-                                  ? unknown
-                                  : Value["_type"] extends TName
-                                  ? unknown
-                                  : { _type: TName }) & { _key: string }
-                              : unknown),
-                          Rule
-                        >
-                      >
-                    >
-                  : IntrinsicDefinitions<
-                      TName,
-                      TFieldDefinition,
-                      TMemberDefinition,
-                      TReferenced,
-                      any
-                    >[type],
-                "name"
-              >;
-            }[IntrinsicTypeName],
-            { type: TType }
-          >
-        : Omit<
-            Merge<
-              TypeAliasDefinition<TType, TAlias, any>,
-              DefinitionBase<
-                any,
-                AliasValue<TType> &
-                  (string extends TName ? unknown : { _type: TName }) & {
-                    _key: string;
-                  },
-                any
-              >
-            >,
-            "name"
-          >) & {
-        name?: TName;
-        type: TType;
-      },
+    arrayOfSchema: _ArrayMember<
+      TType,
+      TName,
+      TAlias,
+      TStrict,
+      TReferenced,
+      TFieldDefinition,
+      TMemberDefinition,
+      AllowArrays
+    >,
     defineOptions?: DefineSchemaOptions<TStrict, TAlias>
   ) =>
     defineArrayMemberNative(
@@ -559,7 +585,49 @@ export const makeDefineArrayMember =
     ) as typeof arrayOfSchema &
       (string extends TName ? unknown : { name: TName });
 
-export const defineArrayMember = makeDefineArrayMember<false>();
+export const defineArrayMember = _makeDefineArrayMember<false>();
+
+/** @private */
+export type _Field<
+  TType extends string,
+  TName extends string,
+  TAlias extends IntrinsicTypeName,
+  TStrict extends StrictDefinition,
+  TReferenced extends string,
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [required]?: boolean;
+  },
+  TMemberDefinition extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
+  TRequired extends boolean
+> = FieldDefinitionBase &
+  MaybeAllowUnknownProps<TStrict> &
+  (TType extends "block"
+    ? never
+    : TType extends IntrinsicTypeName
+    ? // HACK Why can't I just index off of IntrinsicDefinitions?
+      Extract<
+        {
+          [type in IntrinsicTypeName]: Omit<
+            IntrinsicDefinitions<
+              TName,
+              TFieldDefinition,
+              TMemberDefinition,
+              TReferenced,
+              TRequired
+            >[type],
+            "FIXME why does this fail without the omit? we're clearly not using it"
+          >;
+        }[IntrinsicTypeName],
+        { type: TType }
+      >
+    : TypeAliasDefinition<TType, TAlias, TRequired>) & {
+    name: TName;
+    [required]?: TRequired;
+    type: TType;
+  };
 
 export const defineField = <
   TType extends string,
@@ -576,36 +644,21 @@ export const defineField = <
   } = never,
   TRequired extends boolean = false
 >(
-  schemaField: FieldDefinitionBase &
-    MaybeAllowUnknownProps<TStrict> &
-    (TType extends "block"
-      ? never
-      : TType extends IntrinsicTypeName
-      ? // HACK Why can't I just index off of IntrinsicDefinitions?
-        Extract<
-          {
-            [type in IntrinsicTypeName]: Omit<
-              IntrinsicDefinitions<
-                TName,
-                TFieldDefinition,
-                TMemberDefinition,
-                TReferenced,
-                TRequired
-              >[type],
-              "FIXME why does this fail without the omit? we're clearly not using it"
-            >;
-          }[IntrinsicTypeName],
-          { type: TType }
-        >
-      : TypeAliasDefinition<TType, TAlias, TRequired>) & {
-      name: TName;
-      [required]?: TRequired;
-      type: TType;
-    },
+  schemaField: _Field<
+    TType,
+    TName,
+    TAlias,
+    TStrict,
+    TReferenced,
+    TFieldDefinition,
+    TMemberDefinition,
+    TRequired
+  >,
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) => defineFieldNative(schemaField as any, defineOptions) as typeof schemaField;
 
-type Type<
+/** @private */
+export type _Type<
   TType extends string,
   TName extends string,
   TAlias extends IntrinsicTypeName,
@@ -653,7 +706,7 @@ export const defineType = <
     name?: string;
   } = never
 >(
-  schemaDefinition: Type<
+  schemaDefinition: _Type<
     TType,
     TName,
     TAlias,
@@ -670,8 +723,8 @@ export const defineType = <
   ) as typeof schemaDefinition;
 
 type ConfigBase<
-  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any>
+  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _Type<any, any, any, any, any, any, any>
 > = {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive type
   plugins?: (PluginOptions<TPluginTypeDefinition, any> | PluginOptionsNative)[];
@@ -692,30 +745,30 @@ type ConfigBase<
 };
 
 export type PluginOptions<
-  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any> = Type<
-    string,
+  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _Type<
+    any,
     any,
     any,
     any,
     any,
     any,
     any
-  >
+  > = _Type<string, any, any, any, any, any, any>
 > = ConfigBase<TTypeDefinition, TPluginTypeDefinition> &
   Omit<PluginOptionsNative, "plugins" | "schema">;
 
 export const definePlugin = <
-  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any> = Type<
-    string,
+  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _Type<
+    any,
     any,
     any,
     any,
     any,
     any,
     any
-  >,
+  > = _Type<string, any, any, any, any, any, any>,
   TOptions = void
 >(
   arg:
@@ -729,24 +782,24 @@ export const definePlugin = <
   ) => PluginOptions<TTypeDefinition, TPluginTypeDefinition>;
 
 type WorkspaceOptions<
-  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any>
+  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _Type<any, any, any, any, any, any, any>
 > = Merge<
   WorkspaceOptionsNative,
   ConfigBase<TTypeDefinition, TPluginTypeDefinition>
 >;
 
 export type Config<
-  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any> = Type<
-    string,
+  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _Type<
+    any,
     any,
     any,
     any,
     any,
     any,
     any
-  >
+  > = _Type<string, any, any, any, any, any, any>
 > =
   | WorkspaceOptions<TTypeDefinition, TPluginTypeDefinition>[]
   | (Omit<
@@ -758,16 +811,16 @@ export type Config<
     });
 
 export const defineConfig = <
-  TTypeDefinition extends Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends Type<any, any, any, any, any, any, any> = Type<
-    string,
+  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _Type<
+    any,
     any,
     any,
     any,
     any,
     any,
     any
-  >
+  > = _Type<string, any, any, any, any, any, any>
 >(
   config: Config<TTypeDefinition, TPluginTypeDefinition>
 ) =>
@@ -786,17 +839,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
       infer TStrict extends StrictDefinition
     >
   >
-    ? ReturnType<
-        typeof defineType<
-          TType,
-          TName,
-          NonNullable<TAlias>,
-          TStrict,
-          any,
-          any,
-          any
-        >
-      >
+    ? _Type<TType, TName, NonNullable<TAlias>, TStrict, any, any, any>
     : Untyped extends ReturnType<
         typeof defineFieldNative<
           infer TType extends string,
@@ -807,18 +850,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
           infer TStrict extends StrictDefinition
         >
       >
-    ? ReturnType<
-        typeof defineField<
-          TType,
-          TName,
-          NonNullable<TAlias>,
-          TStrict,
-          any,
-          any,
-          any,
-          any
-        >
-      >
+    ? _Field<TType, TName, NonNullable<TAlias>, TStrict, any, any, any, any>
     : Untyped extends ReturnType<
         typeof defineArrayMemberNative<
           infer TType extends string,
@@ -829,16 +861,15 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
           infer TStrict extends StrictDefinition
         >
       >
-    ? ReturnType<
-        typeof defineArrayMember<
-          TType,
-          TName,
-          NonNullable<TAlias>,
-          TStrict,
-          any,
-          any,
-          any
-        >
+    ? _ArrayMember<
+        TType,
+        TName,
+        NonNullable<TAlias>,
+        TStrict,
+        any,
+        any,
+        any,
+        any
       >
     : Untyped extends PluginOptionsNative
     ? ReturnType<typeof definePlugin<any, any>>
@@ -847,45 +878,40 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
       };
 
 export const castFromTyped = <Untyped>(untyped: Untyped) =>
-  untyped as Untyped extends ReturnType<
-    typeof defineField<
-      infer TType extends string,
-      infer TName extends string,
-      infer TAlias extends IntrinsicTypeName,
-      infer TStrict extends StrictDefinition,
-      any,
-      any,
-      any,
-      any
-    >
+  untyped as Untyped extends _Field<
+    infer TType extends string,
+    infer TName extends string,
+    infer TAlias extends IntrinsicTypeName,
+    infer TStrict extends StrictDefinition,
+    any,
+    any,
+    any,
+    any
   >
     ? ReturnType<
         typeof defineFieldNative<TType, TName, any, any, TAlias, TStrict>
       >
-    : Untyped extends ReturnType<
-        typeof defineType<
-          infer TType extends string,
-          infer TName extends string,
-          infer TAlias extends IntrinsicTypeName,
-          infer TStrict extends StrictDefinition,
-          any,
-          any,
-          any
-        >
+    : Untyped extends _Type<
+        infer TType extends string,
+        infer TName extends string,
+        infer TAlias extends IntrinsicTypeName,
+        infer TStrict extends StrictDefinition,
+        any,
+        any,
+        any
       >
     ? ReturnType<
         typeof defineTypeNative<TType, TName, any, any, TAlias, TStrict>
       >
-    : Untyped extends ReturnType<
-        typeof defineArrayMember<
-          infer TType extends string,
-          infer TName extends string,
-          infer TAlias extends IntrinsicTypeName,
-          infer TStrict extends StrictDefinition,
-          any,
-          any,
-          any
-        >
+    : Untyped extends _ArrayMember<
+        infer TType extends string,
+        infer TName extends string,
+        infer TAlias extends IntrinsicTypeName,
+        infer TStrict extends StrictDefinition,
+        any,
+        any,
+        any,
+        any
       >
     ? ReturnType<
         typeof defineArrayMemberNative<TType, TName, any, any, TAlias, TStrict>
@@ -905,7 +931,7 @@ type OmitToUnknown<T, K extends number | string | symbol> = Exclude<
 
 type ExpandAliasValues<
   Value,
-  TAliasedDefinition extends Type<any, any, any, any, any, any, any>
+  TAliasedDefinition extends _Type<any, any, any, any, any, any, any>
 > = Value extends AliasValue<infer TType>
   ? Extract<TAliasedDefinition, { name: TType }> extends never
     ? unknown
@@ -942,7 +968,7 @@ export type InferSchemaValues<
   ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
 >
   ? {
-      [TName in TTypeDefinition extends Type<
+      [TName in TTypeDefinition extends _Type<
         any,
         infer TName extends string,
         any,
@@ -953,16 +979,24 @@ export type InferSchemaValues<
       >
         ? TName
         : never]: ExpandAliasValues<
-        TTypeDefinition extends Type<"object", TName, any, any, any, any, any>
+        TTypeDefinition extends _Type<"object", TName, any, any, any, any, any>
           ? _InferValue<TTypeDefinition> & { _type: TName }
-          : TTypeDefinition extends Type<any, TName, any, any, any, any, any>
+          : TTypeDefinition extends _Type<any, TName, any, any, any, any, any>
           ? _InferValue<TTypeDefinition>
           : never,
         // TPluginTypeDefinition | TTypeDefinition
-        | (Type<any, any, any, any, any, any, any> extends TPluginTypeDefinition
+        | (_Type<
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any
+          > extends TPluginTypeDefinition
             ? never
             : TPluginTypeDefinition)
-        | (Type<any, any, any, any, any, any, any> extends TTypeDefinition
+        | (_Type<any, any, any, any, any, any, any> extends TTypeDefinition
             ? never
             : TTypeDefinition)
       >;

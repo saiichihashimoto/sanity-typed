@@ -1,83 +1,161 @@
-import type { z as Z } from "zod";
+import { z } from "zod";
 
-const zods = {
-  boolean: (z: typeof Z) => z.boolean(),
-  crossDatasetReference: (z: typeof Z) =>
-    z.object({
-      _dataset: z.string(),
-      _projectId: z.string(),
-      _ref: z.string(),
-      _type: z.literal("crossDatasetReference"),
-      _weak: z.optional(z.boolean()),
-    }),
-  date: (z: typeof Z) => z.string(),
-  datetime: (z: typeof Z) => z.string(),
-  email: (z: typeof Z) => z.string(),
-  geopoint: (z: typeof Z) =>
-    z.object({
-      _type: z.literal("geopoint"),
-      alt: z.optional(z.number()),
-      lat: z.number(),
-      lng: z.number(),
-    }),
-  number: (z: typeof Z) => z.number(),
-  reference: (z: typeof Z) =>
-    z.object({
-      _ref: z.string(),
-      _weak: z.optional(z.boolean()),
-      _strengthenOnPublish: z.optional(
-        z.object({
-          type: z.string(),
-          weak: z.optional(z.boolean()),
-          template: z.optional(
-            z.object({
-              id: z.string(),
-              params: z.record(z.union([z.string(), z.number(), z.boolean()])),
-            })
-          ),
-        })
-      ),
-    }),
-  slug: (z: typeof Z) =>
-    z.object({
-      _type: z.literal("slug"),
-      current: z.string(),
-    }),
-  string: (z: typeof Z) => z.string(),
-  text: (z: typeof Z) => z.string(),
-  url: (z: typeof Z) => z.string(),
-  // TODO array
-  block: (z: typeof Z) =>
-    z.object({
-      _type: z.literal("block"),
-      level: z.optional(z.number()),
-      listItem: z.optional(z.string()),
-      style: z.optional(z.string()),
-      children: z.array(
-        z.object({
-          _key: z.optional(z.string()),
-          _type: z.literal("span"),
-          marks: z.optional(z.array(z.string())),
-          text: z.string(),
-        })
-      ),
-      markDefs: z.optional(
-        z.array(
+import type { _ArrayMember, _Field, _Type } from "@sanity-typed/types";
+
+const constantZods = {
+  boolean: z.boolean(),
+  crossDatasetReference: z.object({
+    _dataset: z.string(),
+    _projectId: z.string(),
+    _ref: z.string(),
+    _type: z.literal("crossDatasetReference"),
+    _weak: z.optional(z.boolean()),
+  }),
+  date: z.string(),
+  datetime: z.string(),
+  email: z.string(),
+  geopoint: z.object({
+    _type: z.literal("geopoint"),
+    alt: z.optional(z.number()),
+    lat: z.number(),
+    lng: z.number(),
+  }),
+  number: z.number(),
+  reference: z.object({
+    _ref: z.string(),
+    _weak: z.optional(z.boolean()),
+    _strengthenOnPublish: z.optional(
+      z.object({
+        type: z.string(),
+        weak: z.optional(z.boolean()),
+        template: z.optional(
           z.object({
-            _key: z.string(),
-            _type: z.string(),
+            id: z.string(),
+            params: z.record(z.union([z.string(), z.number(), z.boolean()])),
           })
-        )
-      ),
-    }),
-  // TODO object
-  // TODO document
-  // TODO file
-  // TODO image
-  // TODO aliasedType
+        ),
+      })
+    ),
+  }),
+  slug: z.object({
+    _type: z.literal("slug"),
+    current: z.string(),
+  }),
+  string: z.string(),
+  text: z.string(),
+  url: z.string(),
 };
 
-export const sanityZod = <TType extends keyof typeof zods>(
-  z: typeof Z,
-  { type }: { type: TType }
-) => zods[type](z) as unknown as ReturnType<(typeof zods)[TType]>;
+type SanityZodArrayReturn<
+  Schema extends
+    | _ArrayMember<"array", any, any, any, any, any, any, any>
+    | _Field<"array", any, any, any, any, any, any, any>
+    | _Type<"array", any, any, any, any, any, any>
+> = z.ZodArray<
+  Schema extends {
+    of?: (infer TMemberDefinition extends
+      | _ArrayMember<any, any, any, any, any, any, any, any>
+      | _Field<any, any, any, any, any, any, any, any>
+      | _Type<any, any, any, any, any, any, any>)[];
+  }
+    ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+      SanityZodReturn<TMemberDefinition>
+    : never
+>;
+
+type SanityZodBlockReturn = z.ZodObject<{
+  _type: z.ZodLiteral<"block">;
+  children: z.ZodArray<
+    z.ZodObject<{
+      _key: z.ZodOptional<z.ZodString>;
+      _type: z.ZodLiteral<"span">;
+      marks: z.ZodOptional<z.ZodArray<z.ZodString>>;
+      text: z.ZodString;
+    }>
+  >;
+  level: z.ZodOptional<z.ZodNumber>;
+  listItem: z.ZodOptional<z.ZodString>;
+  markDefs: z.ZodOptional<
+    z.ZodArray<
+      z.ZodObject<{
+        _key: z.ZodString;
+        _type: z.ZodString;
+      }>
+    >
+  >;
+
+  style: z.ZodOptional<z.ZodString>;
+}>;
+
+type SanityZodReturn<
+  Schema extends
+    | _ArrayMember<any, any, any, any, any, any, any, any>
+    | _Field<any, any, any, any, any, any, any, any>
+    | _Type<any, any, any, any, any, any, any>
+> = Schema["type"] extends keyof typeof constantZods
+  ? (typeof constantZods)[Schema["type"]]
+  : Schema["type"] extends "array"
+  ? SanityZodArrayReturn<
+      Extract<
+        Schema,
+        | _ArrayMember<"array", any, any, any, any, any, any, any>
+        | _Field<"array", any, any, any, any, any, any, any>
+        | _Type<"array", any, any, any, any, any, any>
+      >
+    >
+  : Schema["type"] extends "block"
+  ? SanityZodBlockReturn
+  : never;
+
+export const sanityZod = <
+  Schema extends
+    | _ArrayMember<any, any, any, any, any, any, any, any>
+    | _Field<any, any, any, any, any, any, any, any>
+    | _Type<any, any, any, any, any, any, any>
+>(
+  schema: Schema
+): SanityZodReturn<Schema> =>
+  (schema.type in constantZods
+    ? constantZods[schema.type as Schema["type"] & keyof typeof constantZods]
+    : schema.type === "array"
+    ? z.array(
+        sanityZod(
+          (
+            schema as Extract<
+              Schema,
+              | _ArrayMember<"array", any, any, any, any, any, any, any>
+              | _Field<"array", any, any, any, any, any, any, any>
+              | _Type<"array", any, any, any, any, any, any>
+            >
+          ).of[0]
+        )
+      )
+    : schema.type === "block"
+    ? z.object({
+        _type: z.literal("block"),
+        level: z.optional(z.number()),
+        listItem: z.optional(z.string()),
+        style: z.optional(z.string()),
+        children: z.array(
+          z.object({
+            _key: z.optional(z.string()),
+            _type: z.literal("span"),
+            marks: z.optional(z.array(z.string())),
+            text: z.string(),
+          })
+        ),
+        markDefs: z.optional(
+          z.array(
+            z.object({
+              _key: z.string(),
+              _type: z.string(),
+            })
+          )
+        ),
+      })
+    : //     // TODO object: () =>
+      //     // TODO document: () =>
+      //     // TODO file: () =>
+      //     // TODO image: () =>
+      //     // TODO aliasedType: () =>
+      (undefined as never)) as SanityZodReturn<Schema>;

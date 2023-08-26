@@ -23,5 +23,8 @@
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
     "zod": "3.21.4"
+  },
+  "peerDependencies": {
+    "zod": "^3.21.4"
   }
 }

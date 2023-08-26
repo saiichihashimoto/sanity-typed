@@ -139,7 +139,7 @@ type RemoveWhitespace<TExpression extends string> =
     : TExpression;
 
 /** @private */
-export type CleanGROQ<TExpression extends string> = RemovePlaceholders<
+export type _CleanGROQ<TExpression extends string> = RemovePlaceholders<
   RemoveWhitespace<AddPlaceholders<TExpression>>
 >;
 
@@ -147,7 +147,7 @@ type _Parse<TExpression extends string> =
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursion
   Expression<TExpression>;
 
-export type Parse<TExpression extends string> = _Parse<CleanGROQ<TExpression>>;
+export type Parse<TExpression extends string> = _Parse<_CleanGROQ<TExpression>>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Evaluate()

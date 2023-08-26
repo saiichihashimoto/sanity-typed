@@ -1,5 +1,4 @@
 import { describe, expect, it } from "@jest/globals";
-import { z } from "zod";
 import type { ZodType } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
@@ -14,7 +13,7 @@ describe("block", () => {
       const arrayMember = defineArrayMember({
         type: "block",
       });
-      const zod = sanityZod(z, arrayMember);
+      const zod = sanityZod(arrayMember);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<
@@ -46,7 +45,7 @@ describe("block", () => {
         name: "foo",
         type: "block",
       });
-      const zod = sanityZod(z, type);
+      const zod = sanityZod(type);
 
       expectType<typeof zod>().toBeAssignableTo<
         ZodType<_InferValue<typeof type>>

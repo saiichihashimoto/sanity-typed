@@ -2,12 +2,12 @@ import { describe, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { CleanGROQ, Parse } from ".";
+import type { Parse, _CleanGROQ } from ".";
 
 describe("whitespace", () => {
   it("removes whitespace from queries", () => {
     expectType<
-      CleanGROQ<`
+      _CleanGROQ<`
         *[ _type == "director" && birthYear >= 1970 ]{
             name,
             birthYear,
@@ -18,49 +18,49 @@ describe("whitespace", () => {
 
   it("ignores whitespace in double quoted strings", () => {
     expectType<
-      CleanGROQ<'"   this     has     spaces  "'>
+      _CleanGROQ<'"   this     has     spaces  "'>
     >().toStrictEqual<'"   this     has     spaces  "'>();
   });
 
   it("ignores escaped double quotes in double quoted strings", () => {
     expectType<
-      CleanGROQ<'"   this  \\"   has  \\"   spaces  "'>
+      _CleanGROQ<'"   this  \\"   has  \\"   spaces  "'>
     >().toStrictEqual<'"   this  \\"   has  \\"   spaces  "'>();
   });
 
   it("ignores whitespace in single quoted strings", () => {
     expectType<
-      CleanGROQ<"'   this     has     spaces  '">
+      _CleanGROQ<"'   this     has     spaces  '">
     >().toStrictEqual<"'   this     has     spaces  '">();
   });
 
   it("ignores escaped single quotes in single quoted strings", () => {
     expectType<
-      CleanGROQ<"'   this  \\'   has  \\'   spaces  '">
+      _CleanGROQ<"'   this  \\'   has  \\'   spaces  '">
     >().toStrictEqual<"'   this  \\'   has  \\'   spaces  '">();
   });
 
   it('leave whitespace for "in"', () => {
     expectType<
-      CleanGROQ<"   value       in   values     ">
+      _CleanGROQ<"   value       in   values     ">
     >().toStrictEqual<"value in values">();
   });
 
   it('leave whitespace for "match"', () => {
     expectType<
-      CleanGROQ<"   value       match   values     ">
+      _CleanGROQ<"   value       match   values     ">
     >().toStrictEqual<"value match values">();
   });
 
   it('leave whitespace for "asc"', () => {
     expectType<
-      CleanGROQ<"   value       asc     ">
+      _CleanGROQ<"   value       asc     ">
     >().toStrictEqual<"value asc">();
   });
 
   it('leave whitespace for "desc"', () => {
     expectType<
-      CleanGROQ<"   value       desc     ">
+      _CleanGROQ<"   value       desc     ">
     >().toStrictEqual<"value desc">();
   });
 
@@ -72,7 +72,7 @@ describe("whitespace", () => {
 
   it("avoids space excessive type instantiation issues", () => {
     expectType<
-      CleanGROQ<`
+      _CleanGROQ<`
                                                                                                                                      *[ _type == "director" && birthYear >= 1970 ]{
                                                                                                                                          name,
                                                                                                                                          birthYear,

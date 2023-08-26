@@ -73,6 +73,7 @@
     "no-shadow": "off",
     "no-template-curly-in-string": "error",
     "no-throw-literal": "error",
+    "no-underscore-dangle": "off",
     "no-unneeded-ternary": "error",
     "no-unreachable-loop": "error",
     "no-unused-expressions": "error",
@@ -168,6 +169,7 @@
     "promise/no-multiple-resolved": "error",
     "promise/prefer-await-to-callbacks": "error",
     "promise/prefer-await-to-then": "error",
+    "react/forbid-prop-types": "off",
     "unicorn/consistent-function-scoping": [
       "error",
       {

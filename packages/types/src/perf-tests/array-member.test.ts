@@ -3,10 +3,10 @@ import type { ImageCrop, ImageHotspot, ReferenceValue } from "sanity";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import { defineArrayMember, defineField, makeDefineArrayMember } from "..";
+import { _makeDefineArrayMember, defineArrayMember, defineField } from "..";
 import type { _InferValue } from "..";
 
-const defineArrayMember2 = makeDefineArrayMember<true>();
+const defineArrayMember2 = _makeDefineArrayMember<true>();
 
 describe("depth test", () => {
   it("defineArrayMember 22 deep works", () => {
