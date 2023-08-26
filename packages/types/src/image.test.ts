@@ -43,6 +43,7 @@ describe("image", () => {
         {
           _key: string;
         } & {
+          _type: "image";
           asset?: ReferenceValueNative;
           bar?: boolean;
           crop?: ImageCrop;
@@ -73,6 +74,7 @@ describe("image", () => {
         {
           _key: string;
         } & {
+          _type: "image";
           asset?: ReferenceValueNative;
           bar?: {
             tar?: number;
@@ -99,6 +101,7 @@ describe("image", () => {
         {
           _key: string;
         } & {
+          _type: "image";
           asset?: ReferenceValueNative;
           bar: boolean;
           crop?: ImageCrop;
@@ -135,6 +138,7 @@ describe("image", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
+        _type: "image";
         asset?: ReferenceValueNative;
         bar?: boolean;
         crop?: ImageCrop;
@@ -162,6 +166,7 @@ describe("image", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
+        _type: "image";
         asset?: ReferenceValueNative;
         bar?: {
           tar?: number;
@@ -185,6 +190,7 @@ describe("image", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
+        _type: "image";
         asset?: ReferenceValueNative;
         bar: boolean;
         crop?: ImageCrop;
@@ -220,6 +226,7 @@ describe("image", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
+        _type: "image";
         asset?: ReferenceValueNative;
         bar?: boolean;
         crop?: ImageCrop;
@@ -247,6 +254,7 @@ describe("image", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
+        _type: "image";
         asset?: ReferenceValueNative;
         bar?: {
           tar?: number;
@@ -270,6 +278,7 @@ describe("image", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
+        _type: "image";
         asset?: ReferenceValueNative;
         bar: boolean;
         crop?: ImageCrop;
