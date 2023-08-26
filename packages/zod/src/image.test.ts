@@ -26,9 +26,10 @@ describe("image", () => {
           "_key"
         >
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "image" })).toStrictEqual({ _type: "image" });
       expect(
         zod.parse({
+          _type: "image",
           asset: { _ref: "ref", _type: "type" },
           crop: {
             _type: "sanity.imageCrop",
@@ -46,6 +47,7 @@ describe("image", () => {
           },
         })
       ).toStrictEqual({
+        _type: "image",
         asset: { _ref: "ref", _type: "type" },
         crop: {
           _type: "sanity.imageCrop",
@@ -88,9 +90,10 @@ describe("image", () => {
           "_key"
         >
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "image" })).toStrictEqual({ _type: "image" });
       expect(
         zod.parse({
+          _type: "image",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
           crop: {
@@ -110,6 +113,7 @@ describe("image", () => {
           tar: 5,
         })
       ).toStrictEqual({
+        _type: "image",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
         crop: {
@@ -137,7 +141,7 @@ describe("image", () => {
         fields: [
           defineField({
             name: "bar",
-            type: "image",
+            type: "object",
             fields: [
               defineField({
                 name: "tar",
@@ -156,9 +160,10 @@ describe("image", () => {
           "_key"
         >
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "image" })).toStrictEqual({ _type: "image" });
       expect(
         zod.parse({
+          _type: "image",
           asset: { _ref: "ref", _type: "type" },
           bar: { tar: 5 },
           crop: {
@@ -177,6 +182,7 @@ describe("image", () => {
           },
         })
       ).toStrictEqual({
+        _type: "image",
         asset: { _ref: "ref", _type: "type" },
         bar: { tar: 5 },
         crop: {
@@ -219,6 +225,7 @@ describe("image", () => {
       >();
       expect(
         zod.parse({
+          _type: "image",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
           crop: {
@@ -237,6 +244,7 @@ describe("image", () => {
           },
         })
       ).toStrictEqual({
+        _type: "image",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
         crop: {
@@ -254,7 +262,7 @@ describe("image", () => {
           y: 0,
         },
       });
-      expect(() => zod.parse({})).toThrow();
+      expect(() => zod.parse({ _type: "image" })).toThrow();
     });
   });
 
@@ -279,9 +287,10 @@ describe("image", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof field>
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "image" })).toStrictEqual({ _type: "image" });
       expect(
         zod.parse({
+          _type: "image",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
           crop: {
@@ -301,6 +310,7 @@ describe("image", () => {
           tar: 5,
         })
       ).toStrictEqual({
+        _type: "image",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
         crop: {
@@ -329,7 +339,7 @@ describe("image", () => {
         fields: [
           defineField({
             name: "bar",
-            type: "image",
+            type: "object",
             fields: [
               defineField({
                 name: "tar",
@@ -344,9 +354,10 @@ describe("image", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof field>
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "image" })).toStrictEqual({ _type: "image" });
       expect(
         zod.parse({
+          _type: "image",
           asset: { _ref: "ref", _type: "type" },
           bar: { tar: 5 },
           crop: {
@@ -365,6 +376,7 @@ describe("image", () => {
           },
         })
       ).toStrictEqual({
+        _type: "image",
         asset: { _ref: "ref", _type: "type" },
         bar: { tar: 5 },
         crop: {
@@ -404,6 +416,7 @@ describe("image", () => {
       >();
       expect(
         zod.parse({
+          _type: "image",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
           crop: {
@@ -422,6 +435,7 @@ describe("image", () => {
           },
         })
       ).toStrictEqual({
+        _type: "image",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
         crop: {
@@ -439,7 +453,7 @@ describe("image", () => {
           y: 0,
         },
       });
-      expect(() => zod.parse({})).toThrow();
+      expect(() => zod.parse({ _type: "image" })).toThrow();
     });
   });
 
@@ -464,9 +478,10 @@ describe("image", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof type>
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "image" })).toStrictEqual({ _type: "image" });
       expect(
         zod.parse({
+          _type: "image",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
           crop: {
@@ -486,6 +501,7 @@ describe("image", () => {
           tar: 5,
         })
       ).toStrictEqual({
+        _type: "image",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
         crop: {
@@ -514,7 +530,7 @@ describe("image", () => {
         fields: [
           defineField({
             name: "bar",
-            type: "image",
+            type: "object",
             fields: [
               defineField({
                 name: "tar",
@@ -529,9 +545,10 @@ describe("image", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof type>
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "image" })).toStrictEqual({ _type: "image" });
       expect(
         zod.parse({
+          _type: "image",
           asset: { _ref: "ref", _type: "type" },
           bar: { tar: 5 },
           crop: {
@@ -550,6 +567,7 @@ describe("image", () => {
           },
         })
       ).toStrictEqual({
+        _type: "image",
         asset: { _ref: "ref", _type: "type" },
         bar: { tar: 5 },
         crop: {
@@ -589,6 +607,7 @@ describe("image", () => {
       >();
       expect(
         zod.parse({
+          _type: "image",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
           crop: {
@@ -607,6 +626,7 @@ describe("image", () => {
           },
         })
       ).toStrictEqual({
+        _type: "image",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
         crop: {
@@ -624,7 +644,7 @@ describe("image", () => {
           y: 0,
         },
       });
-      expect(() => zod.parse({})).toThrow();
+      expect(() => zod.parse({ _type: "image" })).toThrow();
     });
   });
 });

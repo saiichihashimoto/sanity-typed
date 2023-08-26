@@ -294,27 +294,28 @@ const sanityZodDocument = <
     ...sanityZodDocumentFields(schema),
   }) as unknown as SanityZodDocumentReturn<TSchema>;
 
-const sanityZodFileFields = {
-  asset: z.optional(
+const assetZod = z.object({
+  _key: z.optional(z.string()),
+  _ref: z.string(),
+  _type: z.string(),
+  _weak: z.optional(z.boolean()),
+  _strengthenOnPublish: z.optional(
     z.object({
-      _key: z.optional(z.string()),
-      _ref: z.string(),
-      _type: z.string(),
-      _weak: z.optional(z.boolean()),
-      _strengthenOnPublish: z.optional(
+      type: z.string(),
+      weak: z.optional(z.boolean()),
+      template: z.optional(
         z.object({
-          type: z.string(),
-          weak: z.optional(z.boolean()),
-          template: z.optional(
-            z.object({
-              id: z.string(),
-              params: z.record(z.union([z.string(), z.number(), z.boolean()])),
-            })
-          ),
+          id: z.string(),
+          params: z.record(z.union([z.string(), z.number(), z.boolean()])),
         })
       ),
     })
   ),
+});
+
+const sanityZodFileFields = {
+  _type: z.literal("file"),
+  asset: z.optional(assetZod),
 };
 
 type SanityZodFileReturn<
@@ -338,6 +339,8 @@ const sanityZodFile = <
   }) as unknown as SanityZodFileReturn<TSchema>;
 
 const sanityZodImageFields = {
+  _type: z.literal("image"),
+  asset: z.optional(assetZod),
   crop: z.optional(
     z.object({
       _type: z.optional(z.literal("sanity.imageCrop")),
@@ -363,11 +366,7 @@ type SanityZodImageReturn<
     | _ArrayMember<"image", any, any, any, any, any, any, any>
     | _Field<"image", any, any, any, any, any, any, any>
     | _Type<"image", any, any, any, any, any, any>
-> = z.ZodObject<
-  SanityZodFields<TSchema> &
-    typeof sanityZodFileFields &
-    typeof sanityZodImageFields
->;
+> = z.ZodObject<SanityZodFields<TSchema> & typeof sanityZodImageFields>;
 
 const sanityZodImage = <
   TSchema extends
@@ -379,7 +378,6 @@ const sanityZodImage = <
 ) =>
   z.object({
     ...sanityZodFields(schema),
-    ...sanityZodFileFields,
     ...sanityZodImageFields,
   }) as unknown as SanityZodImageReturn<TSchema>;
 

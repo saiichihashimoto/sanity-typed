@@ -26,12 +26,14 @@ describe("file", () => {
           "_key"
         >
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
         zod.parse({
+          _type: "file",
           asset: { _ref: "ref", _type: "type" },
         })
       ).toStrictEqual({
+        _type: "file",
         asset: { _ref: "ref", _type: "type" },
       });
       expect(() => zod.parse(true)).toThrow();
@@ -60,14 +62,16 @@ describe("file", () => {
           "_key"
         >
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
         zod.parse({
+          _type: "file",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
           tar: 5,
         })
       ).toStrictEqual({
+        _type: "file",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
         tar: 5,
@@ -81,7 +85,7 @@ describe("file", () => {
         fields: [
           defineField({
             name: "bar",
-            type: "file",
+            type: "object",
             fields: [
               defineField({
                 name: "tar",
@@ -100,13 +104,15 @@ describe("file", () => {
           "_key"
         >
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
         zod.parse({
+          _type: "file",
           asset: { _ref: "ref", _type: "type" },
           bar: { tar: 5 },
         })
       ).toStrictEqual({
+        _type: "file",
         asset: { _ref: "ref", _type: "type" },
         bar: { tar: 5 },
       });
@@ -135,14 +141,16 @@ describe("file", () => {
       >();
       expect(
         zod.parse({
+          _type: "file",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
         })
       ).toStrictEqual({
+        _type: "file",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
       });
-      expect(() => zod.parse({})).toThrow();
+      expect(() => zod.parse({ _type: "file" })).toThrow();
     });
   });
 
@@ -167,14 +175,16 @@ describe("file", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof field>
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
         zod.parse({
+          _type: "file",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
           tar: 5,
         })
       ).toStrictEqual({
+        _type: "file",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
         tar: 5,
@@ -189,7 +199,7 @@ describe("file", () => {
         fields: [
           defineField({
             name: "bar",
-            type: "file",
+            type: "object",
             fields: [
               defineField({
                 name: "tar",
@@ -204,13 +214,15 @@ describe("file", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof field>
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
         zod.parse({
+          _type: "file",
           asset: { _ref: "ref", _type: "type" },
           bar: { tar: 5 },
         })
       ).toStrictEqual({
+        _type: "file",
         asset: { _ref: "ref", _type: "type" },
         bar: { tar: 5 },
       });
@@ -236,14 +248,16 @@ describe("file", () => {
       >();
       expect(
         zod.parse({
+          _type: "file",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
         })
       ).toStrictEqual({
+        _type: "file",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
       });
-      expect(() => zod.parse({})).toThrow();
+      expect(() => zod.parse({ _type: "file" })).toThrow();
     });
   });
 
@@ -268,14 +282,16 @@ describe("file", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof type>
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
         zod.parse({
+          _type: "file",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
           tar: 5,
         })
       ).toStrictEqual({
+        _type: "file",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
         tar: 5,
@@ -290,7 +306,7 @@ describe("file", () => {
         fields: [
           defineField({
             name: "bar",
-            type: "file",
+            type: "object",
             fields: [
               defineField({
                 name: "tar",
@@ -305,13 +321,15 @@ describe("file", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof type>
       >();
-      expect(zod.parse({})).toStrictEqual({});
+      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
         zod.parse({
+          _type: "file",
           asset: { _ref: "ref", _type: "type" },
           bar: { tar: 5 },
         })
       ).toStrictEqual({
+        _type: "file",
         asset: { _ref: "ref", _type: "type" },
         bar: { tar: 5 },
       });
@@ -337,14 +355,16 @@ describe("file", () => {
       >();
       expect(
         zod.parse({
+          _type: "file",
           asset: { _ref: "ref", _type: "type" },
           bar: true,
         })
       ).toStrictEqual({
+        _type: "file",
         asset: { _ref: "ref", _type: "type" },
         bar: true,
       });
-      expect(() => zod.parse({})).toThrow();
+      expect(() => zod.parse({ _type: "file" })).toThrow();
     });
   });
 });

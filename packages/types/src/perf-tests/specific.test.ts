@@ -57,6 +57,7 @@ describe("depth test", () => {
             _key: string;
           } & {
             foo?: {
+              _type: "image";
               asset?: ReferenceValue;
               crop?: ImageCrop;
               hotspot?: ImageHotspot;

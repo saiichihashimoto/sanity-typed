@@ -39,6 +39,7 @@ describe("file", () => {
         {
           _key: string;
         } & {
+          _type: "file";
           asset?: ReferenceValueNative;
           bar?: boolean;
           tar?: number;
@@ -67,6 +68,7 @@ describe("file", () => {
         {
           _key: string;
         } & {
+          _type: "file";
           asset?: ReferenceValueNative;
           bar?: {
             tar?: number;
@@ -90,10 +92,7 @@ describe("file", () => {
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
         {
           _key: string;
-        } & {
-          asset?: ReferenceValueNative;
-          bar: boolean;
-        }
+        } & { _type: "file"; asset?: ReferenceValueNative; bar: boolean }
       >();
     });
   });
@@ -125,6 +124,7 @@ describe("file", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
+        _type: "file";
         asset?: ReferenceValueNative;
         bar?: boolean;
         tar?: number;
@@ -150,6 +150,7 @@ describe("file", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
+        _type: "file";
         asset?: ReferenceValueNative;
         bar?: {
           tar?: number;
@@ -171,6 +172,7 @@ describe("file", () => {
       });
 
       expectType<_InferValue<typeof field>>().toStrictEqual<{
+        _type: "file";
         asset?: ReferenceValueNative;
         bar: boolean;
       }>();
@@ -204,6 +206,7 @@ describe("file", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
+        _type: "file";
         asset?: ReferenceValueNative;
         bar?: boolean;
         tar?: number;
@@ -229,6 +232,7 @@ describe("file", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
+        _type: "file";
         asset?: ReferenceValueNative;
         bar?: {
           tar?: number;
@@ -250,6 +254,7 @@ describe("file", () => {
       });
 
       expectType<_InferValue<typeof type>>().toStrictEqual<{
+        _type: "file";
         asset?: ReferenceValueNative;
         bar: boolean;
       }>();
