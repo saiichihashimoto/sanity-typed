@@ -1,6 +1,5 @@
 import { describe, it } from "@jest/globals";
 import type {
-  PortableTextBlock,
   PortableTextMarkDefinition,
   PortableTextSpan,
 } from "@portabletext/types";
@@ -8,7 +7,7 @@ import type {
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineField, defineType } from ".";
-import type { ReferenceValue, _InferValue } from ".";
+import type { PortableTextBlock, ReferenceValue, _InferValue } from ".";
 
 describe("block", () => {
   describe("defineArrayMember", () => {
@@ -16,7 +15,7 @@ describe("block", () => {
       const arrayMember = defineArrayMember({ type: "block" });
 
       expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        PortableTextBlock<PortableTextMarkDefinition, PortableTextSpan> & {
+        PortableTextBlock & {
           _key: string;
         }
       >();
@@ -83,9 +82,7 @@ describe("block", () => {
     it("infers PortableTextBlock", () => {
       const type = defineType({ name: "foo", type: "block" });
 
-      expectType<_InferValue<typeof type>>().toStrictEqual<
-        PortableTextBlock<PortableTextMarkDefinition, PortableTextSpan>
-      >();
+      expectType<_InferValue<typeof type>>().toStrictEqual<PortableTextBlock>();
     });
 
     it("infers children", () => {
