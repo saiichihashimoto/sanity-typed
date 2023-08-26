@@ -336,6 +336,52 @@ const sanityZodFile = <
     ...sanityZodFileFields,
   }) as unknown as SanityZodFileReturn<TSchema>;
 
+const sanityZodImageFields = {
+  crop: z.optional(
+    z.object({
+      _type: z.optional(z.literal("sanity.imageCrop")),
+      bottom: z.number(),
+      left: z.number(),
+      right: z.number(),
+      top: z.number(),
+    })
+  ),
+  hotspot: z.optional(
+    z.object({
+      _type: z.optional(z.literal("sanity.imageHotspot")),
+      height: z.number(),
+      width: z.number(),
+      x: z.number(),
+      y: z.number(),
+    })
+  ),
+};
+
+type SanityZodImageReturn<
+  TSchema extends
+    | _ArrayMember<"image", any, any, any, any, any, any, any>
+    | _Field<"image", any, any, any, any, any, any, any>
+    | _Type<"image", any, any, any, any, any, any>
+> = z.ZodObject<
+  SanityZodFields<TSchema> &
+    typeof sanityZodFileFields &
+    typeof sanityZodImageFields
+>;
+
+const sanityZodImage = <
+  TSchema extends
+    | _ArrayMember<"image", any, any, any, any, any, any, any>
+    | _Field<"image", any, any, any, any, any, any, any>
+    | _Type<"image", any, any, any, any, any, any>
+>(
+  schema: TSchema
+) =>
+  z.object({
+    ...sanityZodFields(schema),
+    ...sanityZodFileFields,
+    ...sanityZodImageFields,
+  }) as unknown as SanityZodImageReturn<TSchema>;
+
 type SanityZodReturn<
   TSchema extends
     | _ArrayMember<any, any, any, any, any, any, any, any>
@@ -379,6 +425,15 @@ type SanityZodReturn<
         | _ArrayMember<"file", any, any, any, any, any, any, any>
         | _Field<"file", any, any, any, any, any, any, any>
         | _Type<"file", any, any, any, any, any, any>
+      >
+    >
+  : TSchema["type"] extends "image"
+  ? SanityZodImageReturn<
+      Extract<
+        TSchema,
+        | _ArrayMember<"image", any, any, any, any, any, any, any>
+        | _Field<"image", any, any, any, any, any, any, any>
+        | _Type<"image", any, any, any, any, any, any>
       >
     >
   : never;
@@ -431,6 +486,14 @@ export const sanityZod = <
           | _Type<"file", any, any, any, any, any, any>
         >
       )
-    : // TODO image: () =>
-      // TODO aliasedType: () =>
+    : schema.type === "image"
+    ? sanityZodImage(
+        schema as Extract<
+          TSchema,
+          | _ArrayMember<"image", any, any, any, any, any, any, any>
+          | _Field<"image", any, any, any, any, any, any, any>
+          | _Type<"image", any, any, any, any, any, any>
+        >
+      )
+    : // TODO aliasedType: () =>
       (undefined as never)) as SanityZodReturn<TSchema>;
