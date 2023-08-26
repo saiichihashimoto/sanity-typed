@@ -341,13 +341,18 @@ export type DocumentDefinition<
   }
 >;
 
+// HACK Not sure why, but without this, the #108 specific test fails 🤷
+type FileValueNativeWithType = FileValueNative & {
+  _type: "file";
+};
+
 export type FileValue<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   } = never
 > = Simplify<
-  ObjectValue<TFieldDefinition> & RemoveIndexSignature<FileValueNative>
+  ObjectValue<TFieldDefinition> & RemoveIndexSignature<FileValueNativeWithType>
 >;
 
 type FileDefinition<
@@ -367,13 +372,18 @@ type FileDefinition<
   }
 >;
 
+// HACK Not sure why, but without this, the #108 specific test fails 🤷
+type ImageValueNativeWithType = ImageValueNative & {
+  _type: "image";
+};
+
 export type ImageValue<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   } = never
 > = Simplify<
-  ObjectValue<TFieldDefinition> & RemoveIndexSignature<ImageValueNative>
+  ObjectValue<TFieldDefinition> & RemoveIndexSignature<ImageValueNativeWithType>
 >;
 
 type ImageDefinition<
