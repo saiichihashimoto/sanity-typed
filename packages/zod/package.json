@@ -26,5 +26,8 @@
   },
   "peerDependencies": {
     "zod": "^3.21.4"
+  },
+  "engines": {
+    "node": "^18.15.0"
   }
 }
