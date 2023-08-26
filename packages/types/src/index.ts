@@ -183,7 +183,7 @@ declare const referenced: unique symbol;
 
 // FIXME Does this really omit _type???
 export type ReferenceValue<TReferenced extends string> = Merge<
-  Omit<ReferenceValueNative, "_key" | "_type">,
+  Omit<ReferenceValueNative, "_key"> & { _type: "reference" },
   { [referenced]: TReferenced }
 >;
 

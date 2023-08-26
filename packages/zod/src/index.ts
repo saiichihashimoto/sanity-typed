@@ -26,6 +26,7 @@ const constantZods = {
   number: z.number(),
   reference: z.object({
     _ref: z.string(),
+    _type: z.literal("reference"),
     _weak: z.optional(z.boolean()),
     _strengthenOnPublish: z.optional(
       z.object({

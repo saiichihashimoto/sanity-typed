@@ -27,7 +27,10 @@ describe("reference", () => {
           symbol | "_key"
         >
       >();
-      expect(zod.parse({ _ref: "foo" })).toStrictEqual({ _ref: "foo" });
+      expect(zod.parse({ _ref: "foo", _type: "reference" })).toStrictEqual({
+        _ref: "foo",
+        _type: "reference",
+      });
       expect(() => zod.parse(true)).toThrow();
     });
   });
@@ -44,7 +47,10 @@ describe("reference", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         Omit<_InferValue<typeof field>, symbol>
       >();
-      expect(zod.parse({ _ref: "foo" })).toStrictEqual({ _ref: "foo" });
+      expect(zod.parse({ _ref: "foo", _type: "reference" })).toStrictEqual({
+        _ref: "foo",
+        _type: "reference",
+      });
       expect(() => zod.parse(true)).toThrow();
     });
   });
@@ -61,7 +67,10 @@ describe("reference", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         Omit<_InferValue<typeof type>, symbol>
       >();
-      expect(zod.parse({ _ref: "foo" })).toStrictEqual({ _ref: "foo" });
+      expect(zod.parse({ _ref: "foo", _type: "reference" })).toStrictEqual({
+        _ref: "foo",
+        _type: "reference",
+      });
       expect(() => zod.parse(true)).toThrow();
     });
   });
