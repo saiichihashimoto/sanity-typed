@@ -182,8 +182,8 @@ export type NumberDefinition<TRequired extends boolean> = Merge<
 declare const referenced: unique symbol;
 
 export type ReferenceValue<TReferenced extends string> = Merge<
-  Omit<ReferenceValueNative, "_type">,
-  { [referenced]: TReferenced[] }
+  Omit<ReferenceValueNative, "_key"> & { _type: "reference" },
+  { [referenced]: TReferenced }
 >;
 
 export type TypeReference<TReferenced extends string> = Merge<
