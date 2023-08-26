@@ -11,12 +11,35 @@ import type { _InferValue } from "@sanity-typed/types";
 
 import { sanityZod } from ".";
 
-describe("document", () => {
+describe("file", () => {
   describe("defineArrayMember", () => {
-    it("builds parser for SanityDocument with fields", () => {
+    it("builds parser for FileValue", () => {
       const arrayMember = defineArrayMember({
-        name: "foo",
-        type: "document",
+        type: "file",
+      });
+      const zod = sanityZod(arrayMember);
+
+      expectType<z.infer<typeof zod>>().toStrictEqual<
+        Omit<
+          _InferValue<typeof arrayMember>,
+          // FIXME defineArrayMember would have to return a runtime value to determine _key
+          "_key"
+        >
+      >();
+      expect(zod.parse({})).toStrictEqual({});
+      expect(
+        zod.parse({
+          asset: { _ref: "ref", _type: "type" },
+        })
+      ).toStrictEqual({
+        asset: { _ref: "ref", _type: "type" },
+      });
+      expect(() => zod.parse(true)).toThrow();
+    });
+
+    it("builds parser for FileValue with fields", () => {
+      const arrayMember = defineArrayMember({
+        type: "file",
         fields: [
           defineField({
             name: "bar",
@@ -37,37 +60,15 @@ describe("document", () => {
           "_key"
         >
       >();
+      expect(zod.parse({})).toStrictEqual({});
       expect(
         zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
-        })
-      ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
-      });
-      expect(
-        zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
+          asset: { _ref: "ref", _type: "type" },
           bar: true,
           tar: 5,
         })
       ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
+        asset: { _ref: "ref", _type: "type" },
         bar: true,
         tar: 5,
       });
@@ -76,12 +77,11 @@ describe("document", () => {
 
     it("infers nested objects", () => {
       const arrayMember = defineArrayMember({
-        name: "foo",
-        type: "document",
+        type: "file",
         fields: [
           defineField({
             name: "bar",
-            type: "object",
+            type: "file",
             fields: [
               defineField({
                 name: "tar",
@@ -100,36 +100,14 @@ describe("document", () => {
           "_key"
         >
       >();
+      expect(zod.parse({})).toStrictEqual({});
       expect(
         zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
-        })
-      ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
-      });
-      expect(
-        zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
+          asset: { _ref: "ref", _type: "type" },
           bar: { tar: 5 },
         })
       ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
+        asset: { _ref: "ref", _type: "type" },
         bar: { tar: 5 },
       });
       expect(() => zod.parse(true)).toThrow();
@@ -137,8 +115,7 @@ describe("document", () => {
 
     it("infers required fields", () => {
       const arrayMember = defineArrayMember({
-        name: "foo",
-        type: "document",
+        type: "file",
         fields: [
           defineField({
             name: "bar",
@@ -158,38 +135,22 @@ describe("document", () => {
       >();
       expect(
         zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
+          asset: { _ref: "ref", _type: "type" },
           bar: true,
         })
       ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
+        asset: { _ref: "ref", _type: "type" },
         bar: true,
       });
-      expect(() =>
-        zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
-        })
-      ).toThrow();
+      expect(() => zod.parse({})).toThrow();
     });
   });
 
   describe("defineField", () => {
-    it("builds parser for SanityDocument with fields", () => {
+    it("builds parser for FileValue with fields", () => {
       const field = defineField({
         name: "foo",
-        type: "document",
+        type: "file",
         fields: [
           defineField({
             name: "bar",
@@ -206,37 +167,15 @@ describe("document", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof field>
       >();
+      expect(zod.parse({})).toStrictEqual({});
       expect(
         zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
-        })
-      ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
-      });
-      expect(
-        zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
+          asset: { _ref: "ref", _type: "type" },
           bar: true,
           tar: 5,
         })
       ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
+        asset: { _ref: "ref", _type: "type" },
         bar: true,
         tar: 5,
       });
@@ -246,11 +185,11 @@ describe("document", () => {
     it("infers nested objects", () => {
       const field = defineField({
         name: "foo",
-        type: "document",
+        type: "file",
         fields: [
           defineField({
             name: "bar",
-            type: "object",
+            type: "file",
             fields: [
               defineField({
                 name: "tar",
@@ -265,36 +204,14 @@ describe("document", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof field>
       >();
+      expect(zod.parse({})).toStrictEqual({});
       expect(
         zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
-        })
-      ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
-      });
-      expect(
-        zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
+          asset: { _ref: "ref", _type: "type" },
           bar: { tar: 5 },
         })
       ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
+        asset: { _ref: "ref", _type: "type" },
         bar: { tar: 5 },
       });
       expect(() => zod.parse(true)).toThrow();
@@ -303,7 +220,7 @@ describe("document", () => {
     it("infers required fields", () => {
       const field = defineField({
         name: "foo",
-        type: "document",
+        type: "file",
         fields: [
           defineField({
             name: "bar",
@@ -319,38 +236,22 @@ describe("document", () => {
       >();
       expect(
         zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
+          asset: { _ref: "ref", _type: "type" },
           bar: true,
         })
       ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
+        asset: { _ref: "ref", _type: "type" },
         bar: true,
       });
-      expect(() =>
-        zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
-        })
-      ).toThrow();
+      expect(() => zod.parse({})).toThrow();
     });
   });
 
   describe("defineType", () => {
-    it("builds parser for SanityDocument with fields", () => {
+    it("builds parser for FileValue with fields", () => {
       const type = defineType({
         name: "foo",
-        type: "document",
+        type: "file",
         fields: [
           defineField({
             name: "bar",
@@ -367,37 +268,15 @@ describe("document", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof type>
       >();
+      expect(zod.parse({})).toStrictEqual({});
       expect(
         zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
-        })
-      ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
-      });
-      expect(
-        zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
+          asset: { _ref: "ref", _type: "type" },
           bar: true,
           tar: 5,
         })
       ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
+        asset: { _ref: "ref", _type: "type" },
         bar: true,
         tar: 5,
       });
@@ -407,11 +286,11 @@ describe("document", () => {
     it("infers nested objects", () => {
       const type = defineType({
         name: "foo",
-        type: "document",
+        type: "file",
         fields: [
           defineField({
             name: "bar",
-            type: "object",
+            type: "file",
             fields: [
               defineField({
                 name: "tar",
@@ -426,36 +305,14 @@ describe("document", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof type>
       >();
+      expect(zod.parse({})).toStrictEqual({});
       expect(
         zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
-        })
-      ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
-      });
-      expect(
-        zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
+          asset: { _ref: "ref", _type: "type" },
           bar: { tar: 5 },
         })
       ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
+        asset: { _ref: "ref", _type: "type" },
         bar: { tar: 5 },
       });
       expect(() => zod.parse(true)).toThrow();
@@ -464,7 +321,7 @@ describe("document", () => {
     it("infers required fields", () => {
       const type = defineType({
         name: "foo",
-        type: "document",
+        type: "file",
         fields: [
           defineField({
             name: "bar",
@@ -480,38 +337,14 @@ describe("document", () => {
       >();
       expect(
         zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
+          asset: { _ref: "ref", _type: "type" },
           bar: true,
         })
       ).toStrictEqual({
-        _createdAt: "createdAt",
-        _id: "id",
-        _rev: "rev",
-        _type: "foo",
-        _updatedAt: "updatedAt",
+        asset: { _ref: "ref", _type: "type" },
         bar: true,
       });
-      expect(() =>
-        zod.parse({
-          _createdAt: "createdAt",
-          _id: "id",
-          _rev: "rev",
-          _type: "foo",
-          _updatedAt: "updatedAt",
-        })
-      ).toThrow();
+      expect(() => zod.parse({})).toThrow();
     });
-  });
-
-  describe("defineConfig", () => {
-    it.todo("builds parser for SanityDocument with fields");
-  });
-
-  describe("definePlugin", () => {
-    it.todo("builds parser for SanityDocument with fields");
   });
 });

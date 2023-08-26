@@ -198,7 +198,7 @@ const sanityZodFields = <
     }
   >
 >({
-  fields,
+  fields = [],
 }: TSchema) =>
   Object.fromEntries(
     (fields as _Field<any, any, any, any, any, any, any, any>[]).map(
@@ -293,6 +293,49 @@ const sanityZodDocument = <
     ...sanityZodDocumentFields(schema),
   }) as unknown as SanityZodDocumentReturn<TSchema>;
 
+const sanityZodFileFields = {
+  asset: z.optional(
+    z.object({
+      _key: z.optional(z.string()),
+      _ref: z.string(),
+      _type: z.string(),
+      _weak: z.optional(z.boolean()),
+      _strengthenOnPublish: z.optional(
+        z.object({
+          type: z.string(),
+          weak: z.optional(z.boolean()),
+          template: z.optional(
+            z.object({
+              id: z.string(),
+              params: z.record(z.union([z.string(), z.number(), z.boolean()])),
+            })
+          ),
+        })
+      ),
+    })
+  ),
+};
+
+type SanityZodFileReturn<
+  TSchema extends
+    | _ArrayMember<"file", any, any, any, any, any, any, any>
+    | _Field<"file", any, any, any, any, any, any, any>
+    | _Type<"file", any, any, any, any, any, any>
+> = z.ZodObject<SanityZodFields<TSchema> & typeof sanityZodFileFields>;
+
+const sanityZodFile = <
+  TSchema extends
+    | _ArrayMember<"file", any, any, any, any, any, any, any>
+    | _Field<"file", any, any, any, any, any, any, any>
+    | _Type<"file", any, any, any, any, any, any>
+>(
+  schema: TSchema
+) =>
+  z.object({
+    ...sanityZodFields(schema),
+    ...sanityZodFileFields,
+  }) as unknown as SanityZodFileReturn<TSchema>;
+
 type SanityZodReturn<
   TSchema extends
     | _ArrayMember<any, any, any, any, any, any, any, any>
@@ -327,6 +370,15 @@ type SanityZodReturn<
         | _ArrayMember<"document", any, any, any, any, any, any, any>
         | _Field<"document", any, any, any, any, any, any, any>
         | _Type<"document", any, any, any, any, any, any>
+      >
+    >
+  : TSchema["type"] extends "file"
+  ? SanityZodFileReturn<
+      Extract<
+        TSchema,
+        | _ArrayMember<"file", any, any, any, any, any, any, any>
+        | _Field<"file", any, any, any, any, any, any, any>
+        | _Type<"file", any, any, any, any, any, any>
       >
     >
   : never;
@@ -370,7 +422,15 @@ export const sanityZod = <
           | _Type<"document", any, any, any, any, any, any>
         >
       )
-    : // TODO file: () =>
-      // TODO image: () =>
+    : schema.type === "file"
+    ? sanityZodFile(
+        schema as Extract<
+          TSchema,
+          | _ArrayMember<"file", any, any, any, any, any, any, any>
+          | _Field<"file", any, any, any, any, any, any, any>
+          | _Type<"file", any, any, any, any, any, any>
+        >
+      )
+    : // TODO image: () =>
       // TODO aliasedType: () =>
       (undefined as never)) as SanityZodReturn<TSchema>;
