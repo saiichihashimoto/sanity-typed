@@ -671,13 +671,11 @@ describe("traversal operators", () => {
       ExecuteQuery<
         typeof query,
         {
-          context: {
-            dataset: (
-              | { _type: "bar"; value: Bar }
-              | { _type: "foo"; value: Foo }
-            )[];
-            parameters: { param: ReferenceValue<"foo"> };
-          };
+          dataset: (
+            | { _type: "bar"; value: Bar }
+            | { _type: "foo"; value: Foo }
+          )[];
+          parameters: { param: ReferenceValue<"foo"> };
         }
       >
     >().toStrictEqual<{ _type: "foo"; value: Foo }>();
@@ -695,13 +693,11 @@ describe("traversal operators", () => {
       ExecuteQuery<
         typeof query,
         {
-          context: {
-            dataset: (
-              | { _type: "bar"; value: Bar }
-              | { _type: "foo"; value: Foo }
-            )[];
-            parameters: { param: ReferenceValue<"foo"> };
-          };
+          dataset: (
+            | { _type: "bar"; value: Bar }
+            | { _type: "foo"; value: Foo }
+          )[];
+          parameters: { param: ReferenceValue<"foo"> };
         }
       >
     >().toStrictEqual<Foo>();
@@ -725,13 +721,11 @@ describe("traversal operators", () => {
       ExecuteQuery<
         typeof query,
         {
-          context: {
-            dataset: (
-              | { _type: "bar"; value: Bar }
-              | { _type: "foo"; value: Foo }
-            )[];
-            parameters: { param: ReferenceValue<"foo">[] };
-          };
+          dataset: (
+            | { _type: "bar"; value: Bar }
+            | { _type: "foo"; value: Foo }
+          )[];
+          parameters: { param: ReferenceValue<"foo">[] };
         }
       >
     >().toStrictEqual<Foo[]>();
@@ -748,13 +742,11 @@ describe("traversal operators", () => {
       ExecuteQuery<
         typeof query,
         {
-          context: {
-            dataset: (
-              | { _type: "bar"; value: Bar }
-              | { _type: "foo"; value: Foo }
-            )[];
-            parameters: { param: ReferenceValue<"foo"> & { weak: true } };
-          };
+          dataset: (
+            | { _type: "bar"; value: Bar }
+            | { _type: "foo"; value: Foo }
+          )[];
+          parameters: { param: ReferenceValue<"foo"> & { weak: true } };
         }
       >
     >().toStrictEqual<{ _type: "foo"; value: Foo } | null>();
@@ -772,13 +764,11 @@ describe("traversal operators", () => {
       ExecuteQuery<
         typeof query,
         {
-          context: {
-            dataset: (
-              | { _type: "bar"; value: Bar }
-              | { _type: "foo"; value: Foo }
-            )[];
-            parameters: { param: ReferenceValue<"foo"> & { weak: true } };
-          };
+          dataset: (
+            | { _type: "bar"; value: Bar }
+            | { _type: "foo"; value: Foo }
+          )[];
+          parameters: { param: ReferenceValue<"foo"> & { weak: true } };
         }
       >
     >().toStrictEqual<Foo | null>();
@@ -802,13 +792,11 @@ describe("traversal operators", () => {
       ExecuteQuery<
         typeof query,
         {
-          context: {
-            dataset: (
-              | { _type: "bar"; value: Bar }
-              | { _type: "foo"; value: Foo }
-            )[];
-            parameters: { param: (ReferenceValue<"foo"> & { weak: true })[] };
-          };
+          dataset: (
+            | { _type: "bar"; value: Bar }
+            | { _type: "foo"; value: Foo }
+          )[];
+          parameters: { param: (ReferenceValue<"foo"> & { weak: true })[] };
         }
       >
     >().toStrictEqual<(Foo | null)[]>();

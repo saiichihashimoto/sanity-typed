@@ -19,7 +19,7 @@
     "string"
   ],
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/groq",
-  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Agroq",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {
     "type": "individual",
