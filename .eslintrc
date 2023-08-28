@@ -49,6 +49,7 @@
     "eqeqeq": "error",
     "func-style": ["error", "expression"],
     "id-length": "error",
+    "max-classes-per-file": "off",
     "no-buffer-constructor": "off",
     "no-caller": "error",
     "no-constant-binary-expression": "error",

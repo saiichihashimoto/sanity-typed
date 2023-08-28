@@ -6,7 +6,7 @@ import type { InferSchemaValues } from "@sanity-typed/types";
 
 import { product } from "./schemas/product";
 
-/** No changes using defineConfig https://www.sanity.io/docs/config-api-reference#dd1dc18716de */
+/** No changes using defineConfig */
 const config = defineConfig({
   projectId: "your-project-id",
   dataset: "your-dataset-name",
@@ -19,6 +19,7 @@ const config = defineConfig({
 export default config;
 
 /** Typescript type of all types! */
+/** Provide this to @sanity-typed/client! */
 export type SanityValues = InferSchemaValues<typeof config>;
 /**
  *  SanityValues === {

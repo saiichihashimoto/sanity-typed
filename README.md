@@ -14,6 +14,7 @@ Typed Sanity Documents and GROQ Results, all inferred, no config or client chang
 - [Install](#install)
 - [Usage](#usage)
 - [Packages](#packages)
+  - [Other](#other)
 - [Goals](#goals)
 
 ## Install
@@ -34,7 +35,7 @@ import {
   defineType,
 } from "@sanity-typed/types";
 
-/** No changes using defineType, defineField, and defineArrayMember https://www.sanity.io/docs/schema-field-types#e5642a3e8506 */
+/** No changes using defineType, defineField, and defineArrayMember */
 export const product = defineType({
   name: "product",
   type: "document",
@@ -75,7 +76,7 @@ import type { InferSchemaValues } from "@sanity-typed/types";
 
 import { product } from "./schemas/product";
 
-/** No changes using defineConfig https://www.sanity.io/docs/config-api-reference#dd1dc18716de */
+/** No changes using defineConfig */
 const config = defineConfig({
   projectId: "your-project-id",
   dataset: "your-dataset-name",
@@ -88,6 +89,7 @@ const config = defineConfig({
 export default config;
 
 /** Typescript type of all types! */
+/** Provide this to @sanity-typed/client! */
 export type SanityValues = InferSchemaValues<typeof config>;
 /**
  *  SanityValues === {
@@ -114,10 +116,10 @@ export type SanityValues = InferSchemaValues<typeof config>;
 // import { createClient } from "@sanity/client";
 import { createClient } from "@sanity-typed/client";
 
-// See the API for this in https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types
+// Get this from @sanity-typed/types!
 import type { SanityValues } from "./sanity.schema";
 
-/** Small change using createClient https://www.sanity.io/docs/config-api-reference#dd1dc18716de */
+/** Small change using createClient */
 // const client = createClient({
 const client = createClient<SanityValues>()({
   projectId: "your-project-id",
@@ -149,8 +151,13 @@ const data = await client.fetch('*[_type=="product"]');
 ## Packages
 
 - [`@sanity-typed/types`](packages/types): Typed Sanity Documents, all inferred, no config changes!
-- [`@sanity-typed/groq`](packages/groq): Typed GROQ Results, all inferred, no query changes!
 - [`@sanity-typed/client`](packages/client): Typed Sanity Cllient Results, all inferred, no client changes!
+
+### Other
+
+- [`@sanity-typed/groq-js`](packages/groq-js): Typed [GROQ-JS](https://github.com/sanity-io/groq-js) Results, all inferred, no query changes!
+- [`@sanity-typed/groq`](packages/groq): Typed GROQ Results, all inferred, no query changes!
+  - Typically, this isn't used directly, but via [`@sanity-typed/client`'s](packages/client) and [`@sanity-typed/groq-js`'s](packages/groq-js) methods that use groq strings.
 
 ## Goals
 

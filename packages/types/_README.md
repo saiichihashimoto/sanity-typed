@@ -21,7 +21,7 @@ npm install sanity @sanity-typed/types
 
 ## Usage
 
-Use `defineConfig`, `defineType`, `defineField`, and `defineArrayMember` from this library exactly as you would from [sanity's own exports](https://www.sanity.io/docs/schema-field-types#e5642a3e8506). Then, use `InferSchemaValues` to get the typescript types!
+Use `defineConfig`, `defineType`, `defineField`, and `defineArrayMember` from this library exactly as you would from [`sanity`](https://www.sanity.io/docs/schema-field-types#e5642a3e8506). Then, use `InferSchemaValues` to get the typescript types!
 
 @[typescript](docs/schemas/product.ts)
 @[typescript](docs/sanity.config.ts)
@@ -38,7 +38,7 @@ Use `definePlugin` from this library exactly as you would from [sanity's own exp
 // import { defineField, definePlugin, defineType } from "sanity";
 import { defineField, definePlugin, defineType } from "@sanity-typed/types";
 
-// No changes using definePlugin https://www.sanity.io/docs/developing-plugins
+/** No changes using definePlugin */
 export const myPlugin = definePlugin({
   name: "plugin",
   schema: {

@@ -39,7 +39,9 @@ describe("functions", () => {
         name: "global::after";
         type: "FuncCall";
       }>();
-      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
+      expectType<
+        ExecuteQuery<typeof query, { delta: { after: null; before: null } }>
+      >().toBeNever();
     });
 
     it("after() (with null after)", () => {
@@ -56,7 +58,7 @@ describe("functions", () => {
           typeof query,
           { delta: { after: null; before: { _type: "foo" } } }
         >
-      >().toStrictEqual<null>();
+      >().toBeNever();
     });
 
     it("after()", () => {
@@ -114,7 +116,9 @@ describe("functions", () => {
         name: "global::before";
         type: "FuncCall";
       }>();
-      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
+      expectType<
+        ExecuteQuery<typeof query, { delta: { after: null; before: null } }>
+      >().toBeNever();
     });
 
     it("before() (with null before)", () => {
@@ -131,7 +135,7 @@ describe("functions", () => {
           typeof query,
           { delta: { after: { _type: "foo" }; before: null } }
         >
-      >().toStrictEqual<null>();
+      >().toBeNever();
     });
 
     it("before()", () => {
@@ -562,7 +566,9 @@ describe("functions", () => {
         name: "global::operation";
         type: "FuncCall";
       }>();
-      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
+      expectType<
+        ExecuteQuery<typeof query, { delta: { after: null; before: null } }>
+      >().toBeNever();
     });
 
     it("operation() (with create)", () => {

@@ -21,7 +21,7 @@ npm install @sanity-typed/client
 
 ## Usage
 
-Use `createClient` from this library like you would from [sanity's own exports](https://www.sanity.io/docs/config-api-reference#dd1dc18716de) with a minor change for proper type inference.
+Use `createClient` exactly as you would from [`@sanity/client`](https://github.com/sanity-io/client) with a minor change for proper type inference.
 
 @[typescript](docs/your-super-cool-application.ts)
 
