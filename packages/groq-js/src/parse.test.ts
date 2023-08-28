@@ -9,15 +9,15 @@ import { parse } from ".";
 describe("parse", () => {
   it("returns same value as groq-js", () => {
     const query = '*[_type == "foo"]';
-    const node = parse(query);
+    const tree = parse(query);
 
-    expect(node).toStrictEqual(parseNative(query));
+    expect(tree).toStrictEqual(parseNative(query));
   });
 
   it("returns same type as @sanity-typed/groq", () => {
     const query = '*[_type == "foo"]';
-    const node = parse(query);
+    const tree = parse(query);
 
-    expectType<typeof node>().toStrictEqual<Parse<typeof query>>();
+    expectType<typeof tree>().toStrictEqual<Parse<typeof query>>();
   });
 });

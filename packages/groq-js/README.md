@@ -10,7 +10,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-TODO
+Typed [GROQ-JS](https://github.com/sanity-io/groq-js) Results, all inferred, no query changes!
 
 ## Page Contents
 - [Install](#install)
@@ -18,9 +18,68 @@ TODO
 
 ## Install
 
-TODO
+```bash
+npm install groq-js @sanity-typed/groq-js
+```
 
 ## Usage
 
-TODO
+Use `parse` and `evaluate` exactly as you would from [`groq-js`](https://github.com/sanity-io/groq-js). Then, use the results with the typescript types!
+
+```typescript
+// import { evaluate, parse } from "groq-js";
+import { evaluate, parse } from "@sanity-typed/groq-js";
+
+const input = '*[_type == "user"]{name}';
+
+const tree = parse(input);
+/**
+ *  typeof tree === {
+ *    type: "Projection";
+ *    base: {
+ *      type: "Filter";
+ *      base: {
+ *        type: "Everything";
+ *      };
+ *      expr: {
+ *        type: "OpCall";
+ *        op: "==";
+ *        left: {
+ *          name: "_type";
+ *          type: "AccessAttribute";
+ *        };
+ *        right: {
+ *          type: "Value";
+ *          value: "user";
+ *        };
+ *      };
+ *    };
+ *    expr: {
+ *      type: "Object";
+ *      attributes: [{
+ *        type: "ObjectAttributeValue";
+ *        name: "name";
+ *        value: {
+ *          type: "AccessAttribute";
+ *          name: "name";
+ *        };
+ *      }];
+ *    };
+ *  }
+ */
+
+const dataset = [
+  { _type: "user", name: "Michael" },
+  { _type: "company", name: "Bluth Company" },
+] as const;
+
+const value = await evaluate(tree, { dataset });
+
+const result = await value.get();
+/**
+ *  typeof result === {
+ *    name: "Michael";
+ *  }[]
+ */
+```
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/groq-js/_README.md -->

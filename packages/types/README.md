@@ -34,7 +34,7 @@ npm install sanity @sanity-typed/types
 
 ## Usage
 
-Use `defineConfig`, `defineType`, `defineField`, and `defineArrayMember` from this library exactly as you would from [sanity's own exports](https://www.sanity.io/docs/schema-field-types#e5642a3e8506). Then, use `InferSchemaValues` to get the typescript types!
+Use `defineConfig`, `defineType`, `defineField`, and `defineArrayMember` from this library exactly as you would from [`sanity`](https://www.sanity.io/docs/schema-field-types#e5642a3e8506). Then, use `InferSchemaValues` to get the typescript types!
 
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
 ```product.ts```:
@@ -46,7 +46,7 @@ import {
   defineType,
 } from "@sanity-typed/types";
 
-/** No changes using defineType, defineField, and defineArrayMember https://www.sanity.io/docs/schema-field-types#e5642a3e8506 */
+/** No changes using defineType, defineField, and defineArrayMember */
 export const product = defineType({
   name: "product",
   type: "document",
@@ -87,7 +87,7 @@ import type { InferSchemaValues } from "@sanity-typed/types";
 
 import { product } from "./schemas/product";
 
-/** No changes using defineConfig https://www.sanity.io/docs/config-api-reference#dd1dc18716de */
+/** No changes using defineConfig */
 const config = defineConfig({
   projectId: "your-project-id",
   dataset: "your-dataset-name",
@@ -100,6 +100,7 @@ const config = defineConfig({
 export default config;
 
 /** Typescript type of all types! */
+/** Provide this to @sanity-typed/client! */
 export type SanityValues = InferSchemaValues<typeof config>;
 /**
  *  SanityValues === {
@@ -133,7 +134,7 @@ Use `definePlugin` from this library exactly as you would from [sanity's own exp
 // import { defineField, definePlugin, defineType } from "sanity";
 import { defineField, definePlugin, defineType } from "@sanity-typed/types";
 
-// No changes using definePlugin https://www.sanity.io/docs/developing-plugins
+/** No changes using definePlugin */
 export const myPlugin = definePlugin({
   name: "plugin",
   schema: {

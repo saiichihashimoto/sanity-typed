@@ -21,7 +21,7 @@ npm install @sanity-typed/groq
 
 ## Usage
 
-Typically, this isn't used directly, but via [`@sanity-typed/client`'s](../client/README.md) methods that use groq strings. But it can be done directly:
+Typically, this isn't used directly, but via [`@sanity-typed/client`'s](../client) and [`@sanity-typed/groq-js`'s](../groq-js) methods that use groq strings. But it can be done directly:
 
 ```typescript
 import { ExecuteQuery } from "@sanity-typed/groq";
@@ -37,22 +37,31 @@ type Foo = ExecuteQuery<
  */
 ```
 
-There is also a `Parse` if you need the AST:
+There is also a `Parse` and `Evaluate` if you need the AST:
 
 ```typescript
-import { Parse } from "@sanity-typed/groq";
+import { Evaluate, Parse } from "@sanity-typed/groq";
 
-type Query = Parse<'*[_type=="foo"]'>;
+type Tree = Parse<'*[_type=="foo"]'>;
 /**
- *  Foo === {
+ *  Tree === {
+ *    type: "Filter";
  *    base: { type: "Everything" };
  *    expr: {
- *      left: { name: "_type"; type: "AccessAttribute" };
- *      op: "==";
- *      right: { type: "Value"; value: "foo" };
  *      type: "OpCall";
+ *      op: "==";
+ *      left: { type: "AccessAttribute"; name: "_type" };
+ *      right: { type: "Value"; value: "foo" };
  *    };
- *    type: "Filter";
  *  }
  */
+
+type Foo = Evaluate<Tree, { dataset: ({ _type: "bar" } | { _type: "foo" })[] }>;
+/**
+ *  Foo === {
+ *    _type: "foo";
+ *  }[]
+ */
 ```
+
+Chances are, you don't need this package directly.

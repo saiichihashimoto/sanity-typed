@@ -2,8 +2,22 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/groq-js",
   "version": "0.0.0-development",
-  "description": "TODO",
-  "keywords": ["TODO"],
+  "description": "Typed GROQ-JS Results, all inferred, no query changes!",
+  "keywords": [
+    "sanity",
+    "sanity-io",
+    "types",
+    "typescript",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "api",
+    "json",
+    "groq",
+    "query",
+    "groq-js"
+  ],
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/groq-js",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
@@ -20,16 +34,17 @@
   },
   "dependencies": {
     "@sanity-typed/groq": "0.0.0-development",
-    "groq-js": "1.1.12",
     "type-fest": "2.19.0"
   },
   "devDependencies": {
     "@jest/globals": "29.6.2",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
+    "groq-js": "1.1.12",
     "typescript": "5.1.6"
   },
   "peerDependencies": {
+    "groq-js": "^1.1.12",
     "typescript": "^5.0.4"
   }
 }
