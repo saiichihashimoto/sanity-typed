@@ -76,8 +76,8 @@ describe("evaluate", () => {
   });
 
   it.failing("`operation()` should be never", async () => {
-    // FIXME Is operation() under delta or global? https://github.com/sanity-io/groq-js/issues/140
     const query = "operation()";
+    // TODO https://github.com/sanity-io/groq-js/issues/140
     const tree = parse(query, { mode: "delta" });
     const result = await (await evaluate(tree)).get();
 
@@ -86,8 +86,8 @@ describe("evaluate", () => {
   });
 
   it.failing("`operation()` should be `delete` when `before`", async () => {
-    // FIXME Is operation() under delta or global? https://github.com/sanity-io/groq-js/issues/140
     const query = "operation()";
+    // TODO https://github.com/sanity-io/groq-js/issues/140
     const tree = parse(query, { mode: "delta" });
     const result = await (await evaluate(tree, { before: FOO })).get();
 
@@ -96,8 +96,8 @@ describe("evaluate", () => {
   });
 
   it.failing("`operation()` should be `create` when `after`", async () => {
-    // FIXME Is operation() under delta or global? https://github.com/sanity-io/groq-js/issues/140
     const query = "operation()";
+    // TODO https://github.com/sanity-io/groq-js/issues/140
     const tree = parse(query, { mode: "delta" });
     const result = await (await evaluate(tree, { after: FOO })).get();
 
@@ -108,9 +108,9 @@ describe("evaluate", () => {
   it.failing(
     "`operation()` should be `update` when both `before` and `after`",
     async () => {
-      // FIXME Is operation() under delta or global? https://github.com/sanity-io/groq-js/issues/140
       const query = "operation()";
-      const tree = parse(query);
+      // TODO https://github.com/sanity-io/groq-js/issues/140
+      const tree = parse(query, { mode: "delta" });
       const result = await (
         await evaluate(tree, { before: FOO, after: FOO })
       ).get();

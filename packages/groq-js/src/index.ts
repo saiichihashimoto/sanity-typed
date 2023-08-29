@@ -40,7 +40,7 @@ type StaticOrStreamValue<P, T extends GroqType> =
 
 export const evaluate = <
   const Node extends ExprNode,
-  Dataset extends any[] | readonly any[],
+  Dataset extends readonly any[],
   Parameters extends { [param: string]: unknown },
   SanityProjectId extends string,
   SanityDataset extends string,
