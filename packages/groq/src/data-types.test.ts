@@ -115,26 +115,25 @@ describe("data types", () => {
     >().toStrictEqual<"double quoted string">();
   });
 
-  it.failing('"double\\" \\"quoted\\" \\"string\\""', async () => {
+  it('"double\\" \\"quoted\\" \\"string\\""', async () => {
     const query = '"double\\" \\"quoted\\" \\"string\\""';
     const tree = parse(query);
     const result = await (await evaluate(tree)).get();
 
     const desiredTree = {
       type: "Value",
-      value: 'double\\" \\"quoted\\" \\"string\\"',
+      value: 'double" "quoted" "string"',
     } as const;
 
-    // FIXME
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
     >();
 
-    expect(result).toBe('double\\" \\"quoted\\" \\"string\\"');
+    expect(result).toBe('double" "quoted" "string"');
     expectType<
       ExecuteQuery<typeof query>
-    >().toStrictEqual<'double\\" \\"quoted\\" \\"string\\"'>();
+    >().toStrictEqual<'double" "quoted" "string"'>();
   });
 
   it('"double" "quoted" "string"', async () => {
@@ -167,26 +166,25 @@ describe("data types", () => {
     >().toStrictEqual<"single quoted string">();
   });
 
-  it.failing("'single\\' \\'quoted\\' \\'string'", async () => {
+  it("'single\\' \\'quoted\\' \\'string'", async () => {
     const query = "'single\\' \\'quoted\\' \\'string'";
     const tree = parse(query);
     const result = await (await evaluate(tree)).get();
 
     const desiredTree = {
       type: "Value",
-      value: "single\\' \\'quoted\\' \\'string",
+      value: "single' 'quoted' 'string",
     } as const;
 
-    // FIXME
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
     >();
 
-    expect(result).toBe("single\\' \\'quoted\\' \\'string");
+    expect(result).toBe("single' 'quoted' 'string");
     expectType<
       ExecuteQuery<typeof query>
-    >().toStrictEqual<"single\\' \\'quoted\\' \\'string">();
+    >().toStrictEqual<"single' 'quoted' 'string">();
   });
 
   it("'single' 'quoted' 'string'", async () => {
