@@ -181,7 +181,6 @@ export type NumberDefinition<TRequired extends boolean> = Merge<
 
 declare const referenced: unique symbol;
 
-// FIXME Does this really omit _type???
 export type ReferenceValue<TReferenced extends string> = Merge<
   Omit<ReferenceValueNative, "_key"> & { _type: "reference" },
   { [referenced]: TReferenced }
@@ -507,7 +506,7 @@ export type _ArrayMember<
                             ? unknown
                             : { _type: TName }) & { _key: string }
                         : unknown),
-                    // @ts-expect-error -- FIXME
+                    // @ts-expect-error -- TODO Doesn't match the rule for some reason
                     RewriteValue<
                       Value &
                         (Value extends any[]
@@ -628,7 +627,7 @@ export type _Field<
               TReferenced,
               TRequired
             >[type],
-            "FIXME why does this fail without the omit? we're clearly not using it"
+            "TODO why does this fail without the omit? we're clearly not using it"
           >;
         }[IntrinsicTypeName],
         { type: TType }
@@ -692,7 +691,7 @@ export type _Type<
               TReferenced,
               any
             >[type],
-            "FIXME why does this fail without the omit? we're clearly not using it"
+            "TODO why does this fail without the omit? we're clearly not using it"
           >;
         }[IntrinsicTypeName],
         { type: TType }

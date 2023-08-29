@@ -85,6 +85,13 @@
     "no-useless-concat": "error",
     "no-useless-return": "error",
     "no-var": "error",
+    "no-warning-comments": [
+      "error",
+      {
+        "terms": ["fixme"],
+        "location": "anywhere"
+      }
+    ],
     "prefer-arrow-callback": "error",
     "prefer-const": "error",
     "prefer-destructuring": "error",

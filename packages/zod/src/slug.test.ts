@@ -22,7 +22,7 @@ describe("slug", () => {
       expectType<z.infer<typeof zod>>().toStrictEqual<
         Omit<
           _InferValue<typeof arrayMember>,
-          // FIXME defineArrayMember would have to return a runtime value to determine _key
+          // TODO defineArrayMember would have to return a runtime value to determine _key
           "_key"
         >
       >();

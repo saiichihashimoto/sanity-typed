@@ -123,12 +123,12 @@ describe("document", () => {
         ],
       });
 
+      // TODO documents as field have _type: "document";
       expectType<_InferValue<typeof field>>().toStrictEqual<{
         _createdAt: string;
         _id: string;
         _rev: string;
         _type: "foo";
-        // FIXME documents as field have _type: "document";
         _updatedAt: string;
         bar?: boolean;
         tar?: number;

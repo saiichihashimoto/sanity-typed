@@ -276,7 +276,7 @@ describe("expectType", () => {
 
     it.skip("expectType<null>().not.toBeAssignableTo<never>()", () => {
       expectType<null>().not.toBeAssignableTo<never>();
-      expectType<null>().toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
+      expectType<null>().toBeAssignableTo<// TODO can't @ts-expect-error when the second type is never
       never>();
 
       // @ts-expect-error
@@ -329,7 +329,7 @@ describe("expectType", () => {
 
     it.skip("expectType<undefined>().not.toBeAssignableTo<never>()", () => {
       expectType<undefined>().not.toBeAssignableTo<never>();
-      expectType<undefined>().toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
+      expectType<undefined>().toBeAssignableTo<// TODO can't @ts-expect-error when the second type is never
       never>();
 
       // @ts-expect-error
@@ -378,7 +378,7 @@ describe("expectType", () => {
 
     it.skip("expectType<any>().not.toBeAssignableTo<never>()", () => {
       expectType<any>().not.toBeAssignableTo<never>();
-      expectType<any>().toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
+      expectType<any>().toBeAssignableTo<// TODO can't @ts-expect-error when the second type is never
       never>();
 
       // @ts-expect-error
@@ -429,7 +429,7 @@ describe("expectType", () => {
 
     it.skip("expectType<unknown>().not.toBeAssignableTo<never>()", () => {
       expectType<unknown>().not.toBeAssignableTo<never>();
-      expectType<unknown>().toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
+      expectType<unknown>().toBeAssignableTo<// TODO can't @ts-expect-error when the second type is never
       never>();
 
       // @ts-expect-error
@@ -489,7 +489,7 @@ describe("expectType", () => {
 
     it.skip("expectType<void>().not.toBeAssignableTo<never>()", () => {
       expectType<void>().not.toBeAssignableTo<never>();
-      expectType<void>().toBeAssignableTo<// FIXME can't @ts-expect-error when the second type is never
+      expectType<void>().toBeAssignableTo<// TODO can't @ts-expect-error when the second type is never
       never>();
 
       // @ts-expect-error
@@ -683,7 +683,7 @@ describe("expectType", () => {
 
     it.skip("expectType<null>().not.toStrictEqual<never>()", () => {
       expectType<null>().not.toStrictEqual<never>();
-      expectType<null>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is never
+      expectType<null>().toStrictEqual<// TODO can't @ts-expect-error when the second type is never
       never>();
     });
 
@@ -721,7 +721,7 @@ describe("expectType", () => {
 
     it.skip("expectType<undefined>().not.toStrictEqual<never>()", () => {
       expectType<undefined>().not.toStrictEqual<never>();
-      expectType<undefined>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is never
+      expectType<undefined>().toStrictEqual<// TODO can't @ts-expect-error when the second type is never
       never>();
     });
 
@@ -757,7 +757,7 @@ describe("expectType", () => {
 
     it.skip("expectType<any>().not.toStrictEqual<never>()", () => {
       expectType<any>().not.toStrictEqual<never>();
-      expectType<any>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is never
+      expectType<any>().toStrictEqual<// TODO can't @ts-expect-error when the second type is never
       never>();
     });
 
@@ -793,7 +793,7 @@ describe("expectType", () => {
 
     it.skip("expectType<unknown>().not.toStrictEqual<never>()", () => {
       expectType<unknown>().not.toStrictEqual<never>();
-      expectType<unknown>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is never
+      expectType<unknown>().toStrictEqual<// TODO can't @ts-expect-error when the second type is never
       never>();
     });
 
@@ -835,7 +835,7 @@ describe("expectType", () => {
 
     it.skip("expectType<void>().not.toStrictEqual<never>()", () => {
       expectType<void>().not.toStrictEqual<never>();
-      expectType<void>().toStrictEqual<// FIXME can't @ts-expect-error when the second type is never
+      expectType<void>().toStrictEqual<// TODO can't @ts-expect-error when the second type is never
       never>();
     });
 
