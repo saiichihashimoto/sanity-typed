@@ -513,7 +513,7 @@ export const makeDefineArrayMember =
                                 ? unknown
                                 : { _type: TName }) & { _key: string }
                             : unknown),
-                        // @ts-expect-error -- FIXME
+                        // @ts-expect-error -- TODO Doesn't match the rule for some reason
                         RewriteValue<
                           Value &
                             (Value extends any[]
@@ -599,7 +599,7 @@ export const defineField = <
                 TReferenced,
                 TRequired
               >[type],
-              "FIXME why does this fail without the omit? we're clearly not using it"
+              "TODO why does this fail without the omit? we're clearly not using it"
             >;
           }[IntrinsicTypeName],
           { type: TType }
@@ -636,7 +636,7 @@ type Type<
               TReferenced,
               any
             >[type],
-            "FIXME why does this fail without the omit? we're clearly not using it"
+            "TODO why does this fail without the omit? we're clearly not using it"
           >;
         }[IntrinsicTypeName],
         { type: TType }

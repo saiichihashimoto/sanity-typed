@@ -764,7 +764,7 @@ describe("functions", () => {
         func: expect.any(Function),
       });
       expectType<ReadonlyDeep<Parse<typeof query>>>()
-        // FIXME toStrictEqual
+        // TODO toStrictEqual
         .toBeAssignableTo<typeof desiredTree>();
 
       expect(result).toBe(3);
@@ -2024,12 +2024,12 @@ describe("functions", () => {
         name: "unique",
       });
       expectType<ReadonlyDeep<Parse<typeof query>>>()
-        // FIXME toStrictEqual
+        // TODO toStrictEqual
         .toBeAssignableTo<typeof desiredTree>();
 
       expect(result).toStrictEqual([{}, {}]);
       expectType<ExecuteQuery<typeof query>>()
-        // FIXME toStrictEqual
+        // TODO toStrictEqual
         .toBeAssignableTo<[{ [x: string]: never }, { [x: string]: never }]>();
     });
 
