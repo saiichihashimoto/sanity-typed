@@ -5,7 +5,7 @@ import {
   defineType,
 } from "@sanity-typed/types";
 
-/** No changes using defineType, defineField, and defineArrayMember https://www.sanity.io/docs/schema-field-types#e5642a3e8506 */
+/** No changes using defineType, defineField, and defineArrayMember */
 export const product = defineType({
   name: "product",
   type: "document",

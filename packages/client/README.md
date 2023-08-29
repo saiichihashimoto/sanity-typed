@@ -24,7 +24,7 @@ npm install @sanity-typed/client
 
 ## Usage
 
-Use `createClient` from this library like you would from [sanity's own exports](https://www.sanity.io/docs/config-api-reference#dd1dc18716de) with a minor change for proper type inference.
+Use `createClient` exactly as you would from [`@sanity/client`](https://github.com/sanity-io/client) with a minor change for proper type inference.
 
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/client/docs/your-super-cool-application.ts -->
 ```your-super-cool-application.ts```:
@@ -32,10 +32,10 @@ Use `createClient` from this library like you would from [sanity's own exports](
 // import { createClient } from "@sanity/client";
 import { createClient } from "@sanity-typed/client";
 
-// See the API for this in https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types
+// Get this from @sanity-typed/types!
 import type { SanityValues } from "./sanity.schema";
 
-/** Small change using createClient https://www.sanity.io/docs/config-api-reference#dd1dc18716de */
+/** Small change using createClient */
 // const client = createClient({
 const client = createClient<SanityValues>()({
   projectId: "your-project-id",

@@ -48,6 +48,7 @@
     "dot-notation": "error",
     "eqeqeq": "error",
     "func-style": ["error", "expression"],
+    "max-classes-per-file": "off",
     "no-buffer-constructor": "off",
     "no-caller": "error",
     "no-constant-binary-expression": "error",

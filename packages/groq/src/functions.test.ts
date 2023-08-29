@@ -1,4 +1,4 @@
-import { describe, it } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import type { PortableTextBlock } from "@portabletext/types";
 import type {
   GeometryCollection,
@@ -10,1110 +10,1857 @@ import type {
   Polygon,
   Position,
 } from "geojson";
-import type { GroqFunction } from "groq-js";
+import { evaluate, parse } from "groq-js";
+import type { DateTime, GroqFunction } from "groq-js";
+import type { ReadonlyDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { DateTime, ExecuteQuery, Geo, Parse } from ".";
+import type {
+  ExecuteQuery,
+  Geo,
+  Parse,
+  _ScopeFromPartialContext,
+  _ScopeFromPartialScope,
+} from ".";
 
 describe("functions", () => {
   describe("global", () => {
-    it("after() (without delta)", () => {
+    it.failing("after() (without delta)", async () => {
       const query = "after()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::after";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toBeNever();
-    });
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "after",
+        type: "FuncCall",
+      } as const;
 
-    it("after() (with null delta)", () => {
-      const query = "after()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::after";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
-    });
-
-    it("after() (with null after)", () => {
-      const query = "after()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::after";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<
-          typeof query,
-          { delta: { after: null; before: { _type: "foo" } } }
-        >
-      >().toStrictEqual<null>();
-    });
-
-    it("after()", () => {
-      const query = "after()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::after";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<
-          typeof query,
-          { delta: { after: { _type: "foo" }; before: null } }
-        >
-      >().toStrictEqual<{ _type: "foo" }>();
-    });
-
-    it("global::after()", () => {
-      const query = "global::after()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::after";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<
-          typeof query,
-          { delta: { after: { _type: "foo" }; before: null } }
-        >
-      >().toStrictEqual<{ _type: "foo" }>();
-    });
-
-    it("before() (without delta)", () => {
-      const query = "before()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::before";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toBeNever();
-    });
-
-    it("before() (with null delta)", () => {
-      const query = "before()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::before";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
-    });
-
-    it("before() (with null before)", () => {
-      const query = "before()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::before";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<
-          typeof query,
-          { delta: { after: { _type: "foo" }; before: null } }
-        >
-      >().toStrictEqual<null>();
-    });
-
-    it("before()", () => {
-      const query = "before()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::before";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<
-          typeof query,
-          { delta: { after: null; before: { _type: "foo" } } }
-        >
-      >().toStrictEqual<{ _type: "foo" }>();
-    });
-
-    it("global::before()", () => {
-      const query = "global::before()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::before";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<
-          typeof query,
-          { delta: { after: null; before: { _type: "foo" } } }
-        >
-      >().toStrictEqual<{ _type: "foo" }>();
-    });
-
-    it("coalesce()", () => {
-      const query = "coalesce()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::coalesce";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
-    });
-
-    it("coalesce(1)", () => {
-      const query = "coalesce(1)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: 1 }];
-        func: GroqFunction;
-        name: "global::coalesce";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<1>();
-    });
-
-    it("coalesce(null)", () => {
-      const query = "coalesce(null)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: null }];
-        func: GroqFunction;
-        name: "global::coalesce";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
-    });
-
-    it("coalesce(1,null)", () => {
-      const query = "coalesce(1,null)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: 1 }, { type: "Value"; value: null }];
-        func: GroqFunction;
-        name: "global::coalesce";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<1>();
-    });
-
-    it("coalesce(null,1)", () => {
-      const query = "coalesce(null,1)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: null }, { type: "Value"; value: 1 }];
-        func: GroqFunction;
-        name: "global::coalesce";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<1>();
-    });
-
-    it("coalesce(key,2)", () => {
-      const query = "coalesce(key,2)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [
-          { name: "key"; type: "AccessAttribute" },
-          { type: "Value"; value: 2 }
-        ];
-        func: GroqFunction;
-        name: "global::coalesce";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<typeof query, { this: { key: 1 | null } }>
-      >().toStrictEqual<1 | 2>();
-    });
-
-    it("global::coalesce(key,2)", () => {
-      const query = "global::coalesce(key,2)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [
-          { name: "key"; type: "AccessAttribute" },
-          { type: "Value"; value: 2 }
-        ];
-        func: GroqFunction;
-        name: "global::coalesce";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<typeof query, { this: { key: 1 | null } }>
-      >().toStrictEqual<1 | 2>();
-    });
-
-    it("count(5)", () => {
-      const query = "count(5)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: 5 }];
-        func: GroqFunction;
-        name: "global::count";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
-    });
-
-    it("count([1,2,3,4])", () => {
-      const query = "count([1,2,3,4])";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [
-          {
-            elements: [
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 2 };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 4 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "global::count";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<4>();
-    });
-
-    it("global::count([1,2,3,4])", () => {
-      const query = "global::count([1,2,3,4])";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [
-          {
-            elements: [
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 2 };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              },
-              {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 4 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "global::count";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<4>();
-    });
-
-    it("dateTime(false)", () => {
-      const query = "dateTime(false)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: false }];
-        func: GroqFunction;
-        name: "global::dateTime";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
-    });
-
-    it('dateTime("some date")', () => {
-      const query = 'dateTime("some date")';
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: "some date" }];
-        func: GroqFunction;
-        name: "global::dateTime";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
-        DateTime<"some date">
+      // TODO before() and after() create ContextNode
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
       >();
+
+      expect(result).toBeNull();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("dateTime($param) (with DateTime)", () => {
+    it("after() (with null after)", async () => {
+      const query = "after()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, { after: null, before: { _type: "foo" } })
+      ).get();
+
+      expect(result).toBeNull();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            delta: { after: null; before: { _type: "foo" } };
+          }>
+        >
+      >().toStrictEqual<null>();
+    });
+
+    it("after()", async () => {
+      const query = "after()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, { after: { _type: "foo" }, before: null })
+      ).get();
+
+      expect(result).toStrictEqual({ _type: "foo" });
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            delta: { after: { _type: "foo" }; before: null };
+          }>
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
+    it("global::after()", async () => {
+      const query = "global::after()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, { after: { _type: "foo" }, before: null })
+      ).get();
+
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "after",
+        type: "FuncCall",
+      } as const;
+
+      // expect(tree).toStrictEqual({
+      //   ...desiredTree,
+      //   func: expect.any(Function),
+      // });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual({ _type: "foo" });
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            delta: { after: { _type: "foo" }; before: null };
+          }>
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
+    it("before() (without delta)", async () => {
+      const query = "before()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "before",
+        type: "FuncCall",
+      } as const;
+
+      // expect(tree).toStrictEqual({
+      //   ...desiredTree,
+      //   func: expect.any(Function),
+      // });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it("before() (with null before)", async () => {
+      const query = "before()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, { after: { _type: "foo" }, before: null })
+      ).get();
+
+      expect(result).toBeNull();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            delta: { after: { _type: "foo" }; before: null };
+          }>
+        >
+      >().toStrictEqual<null>();
+    });
+
+    it("before()", async () => {
+      const query = "before()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, { after: null, before: { _type: "foo" } })
+      ).get();
+
+      expect(result).toStrictEqual({ _type: "foo" });
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            delta: { after: null; before: { _type: "foo" } };
+          }>
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
+    it("global::before()", async () => {
+      const query = "global::before()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, { after: null, before: { _type: "foo" } })
+      ).get();
+
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "before",
+        type: "FuncCall",
+      } as const;
+
+      // expect(tree).toStrictEqual({
+      //   ...desiredTree,
+      //   func: expect.any(Function),
+      // });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual({ _type: "foo" });
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            delta: { after: null; before: { _type: "foo" } };
+          }>
+        >
+      >().toStrictEqual<{ _type: "foo" }>();
+    });
+
+    it("coalesce()", async () => {
+      const query = "coalesce()";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "coalesce",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it("coalesce(1)", async () => {
+      const query = "coalesce(1)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [{ type: "Value", value: 1 }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "coalesce",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(1);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<1>();
+    });
+
+    it("coalesce(null)", async () => {
+      const query = "coalesce(null)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [{ type: "Value", value: null }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "coalesce",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it("coalesce(1,null)", async () => {
+      const query = "coalesce(1,null)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [
+          { type: "Value", value: 1 },
+          { type: "Value", value: null },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "coalesce",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(1);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<1>();
+    });
+
+    it("coalesce(null,1)", async () => {
+      const query = "coalesce(null,1)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [
+          { type: "Value", value: null },
+          { type: "Value", value: 1 },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "coalesce",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(1);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<1>();
+    });
+
+    it("coalesce(key,2)", async () => {
+      const query = "coalesce(key,2)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree, { root: { key: 1 } })).get();
+
+      const desiredTree = {
+        args: [
+          { name: "key", type: "AccessAttribute" },
+          { type: "Value", value: 2 },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "coalesce",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(1);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialScope<{ this: { key: 1 | null } }>
+        >
+      >().toStrictEqual<1 | 2>();
+    });
+
+    it("global::coalesce(key,2)", async () => {
+      const query = "global::coalesce(key,2)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree, { root: { key: 1 } })).get();
+
+      const desiredTree = {
+        args: [
+          { name: "key", type: "AccessAttribute" },
+          { type: "Value", value: 2 },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "coalesce",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(1);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialScope<{ this: { key: 1 | null } }>
+        >
+      >().toStrictEqual<1 | 2>();
+    });
+
+    it("count(5)", async () => {
+      const query = "count(5)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [{ type: "Value", value: 5 }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "count",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it("count([1,2,3,4])", async () => {
+      const query = "count([1,2,3,4])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
+              },
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 2 },
+              },
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 4 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "count",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(4);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<4>();
+    });
+
+    it("global::count([1,2,3,4])", async () => {
+      const query = "global::count([1,2,3,4])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
+              },
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 2 },
+              },
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 4 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "count",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(4);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<4>();
+    });
+
+    it("dateTime(false)", async () => {
+      const query = "dateTime(false)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [{ type: "Value", value: false }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "dateTime",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it('dateTime("2023-08-29T03:16:25.883Z")', async () => {
+      const query = 'dateTime("2023-08-29T03:16:25.883Z")';
+      const tree = parse(query);
+      // TODO https://github.com/sanity-io/groq-js/issues/144
+
+      const desiredTree = {
+        args: [{ type: "Value", value: "2023-08-29T03:16:25.883Z" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "dateTime",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<DateTime>();
+    });
+
+    it("dateTime($param) (with DateTime)", async () => {
       const query = "dateTime($param)";
+      const tree = parse(query);
+      // TODO https://github.com/sanity-io/groq-js/issues/144
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ name: "param"; type: "Parameter" }];
-        func: GroqFunction;
-        name: "global::dateTime";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ name: "param", type: "Parameter" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "dateTime",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
       expectType<
         ExecuteQuery<
           typeof query,
-          { parameters: { param: DateTime<"some date"> } }
+          _ScopeFromPartialContext<{ parameters: { param: DateTime } }>
         >
-      >().toStrictEqual<DateTime<"some date">>();
+      >().toStrictEqual<DateTime>();
     });
 
-    it("global::dateTime($param) (with DateTime)", () => {
+    it("global::dateTime($param) (with DateTime)", async () => {
       const query = "global::dateTime($param)";
+      const tree = parse(query);
+      // TODO https://github.com/sanity-io/groq-js/issues/144
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ name: "param"; type: "Parameter" }];
-        func: GroqFunction;
-        name: "global::dateTime";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ name: "param", type: "Parameter" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "dateTime",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
       expectType<
         ExecuteQuery<
           typeof query,
-          { parameters: { param: DateTime<"some date"> } }
+          _ScopeFromPartialContext<{ parameters: { param: DateTime } }>
         >
-      >().toStrictEqual<DateTime<"some date">>();
+      >().toStrictEqual<DateTime>();
     });
 
-    it("defined(null)", () => {
+    it("defined(null)", async () => {
       const query = "defined(null)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: null }];
-        func: GroqFunction;
-        name: "global::defined";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: null }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "defined",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(false);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
     });
 
-    it("defined(5)", () => {
+    it("defined(5)", async () => {
       const query = "defined(5)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: 5 }];
-        func: GroqFunction;
-        name: "global::defined";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: 5 }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "defined",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(true);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
     });
 
-    it("global::defined(5)", () => {
+    it("global::defined(5)", async () => {
       const query = "global::defined(5)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: 5 }];
-        func: GroqFunction;
-        name: "global::defined";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: 5 }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "defined",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(true);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
     });
 
-    it("length(10)", () => {
+    it("length(10)", async () => {
       const query = "length(10)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: 10 }];
-        func: GroqFunction;
-        name: "global::length";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: 10 }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "length",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("length([null,null,null])", () => {
+    it("length([null,null,null])", async () => {
       const query = "length([null,null,null])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>()
+      const desiredTree = {
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
+              },
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
+              },
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "length",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>()
         // FIXME toStrictEqual
-        .toBeAssignableTo<{
-          args: [
-            {
-              elements: [
-                {
-                  isSplat: false;
-                  type: "ArrayElement";
-                  value: { type: "Value"; value: null };
-                },
-                {
-                  isSplat: false;
-                  type: "ArrayElement";
-                  value: { type: "Value"; value: null };
-                },
-                {
-                  isSplat: false;
-                  type: "ArrayElement";
-                  value: { type: "Value"; value: null };
-                }
-              ];
-              type: "Array";
-            }
-          ];
-          func: GroqFunction;
-          name: "global::length";
-          type: "FuncCall";
-        }>();
+        .toBeAssignableTo<typeof desiredTree>();
+
+      expect(result).toBe(3);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<3>();
     });
 
-    it('length("string")', () => {
+    it('length("string")', async () => {
       const query = 'length("string")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: "string" }];
-        func: GroqFunction;
-        name: "global::length";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: "string" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "length",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(6);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it('global::length("string")', () => {
+    it('global::length("string")', async () => {
       const query = 'global::length("string")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: "string" }];
-        func: GroqFunction;
-        name: "global::length";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: "string" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "length",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(6);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("now()", () => {
+    it("now()", async () => {
       const query = "now()";
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, {
+          timestamp: new Date("2023-08-29T03:25:14.355Z"),
+        })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::now";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "now",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("2023-08-29T03:25:14.355Z");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<string>();
     });
 
-    it("global::now()", () => {
+    it("global::now()", async () => {
       const query = "global::now()";
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, {
+          timestamp: new Date("2023-08-29T03:25:14.355Z"),
+        })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::now";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "now",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("2023-08-29T03:25:14.355Z");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<string>();
     });
 
-    it("operation() (without delta)", () => {
+    it.failing("operation() (without delta)", async () => {
       const query = "operation()";
+      // TODO https://github.com/sanity-io/groq-js/issues/140
+      const tree = parse(query, { mode: "delta" });
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::operation";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "operation",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toBeNever();
     });
 
-    it("operation() (with null delta)", () => {
+    it.failing("operation() (with create)", async () => {
       const query = "operation()";
+      // TODO https://github.com/sanity-io/groq-js/issues/140
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, { after: { _type: "foo" }, before: null })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::operation";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query, { delta: null }>>().toBeNever();
-    });
-
-    it("operation() (with create)", () => {
-      const query = "operation()";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::operation";
-        type: "FuncCall";
-      }>();
+      expect(result).toBe("create");
       expectType<
         ExecuteQuery<
           typeof query,
-          { delta: { after: { _type: "foo" }; before: null } }
+          _ScopeFromPartialContext<{
+            delta: { after: { _type: "foo" }; before: null };
+          }>
         >
       >().toStrictEqual<"create">();
     });
 
-    it("operation() (with delete)", () => {
+    it.failing("operation() (with delete)", async () => {
       const query = "operation()";
+      // TODO https://github.com/sanity-io/groq-js/issues/140
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, { after: null, before: { _type: "foo" } })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::operation";
-        type: "FuncCall";
-      }>();
+      expect(result).toBe("delete");
       expectType<
         ExecuteQuery<
           typeof query,
-          { delta: { after: null; before: { _type: "foo" } } }
+          _ScopeFromPartialContext<{
+            delta: { after: null; before: { _type: "foo" } };
+          }>
         >
       >().toStrictEqual<"delete">();
     });
 
-    it("operation() (with update)", () => {
+    it.failing("operation() (with update)", async () => {
       const query = "operation()";
+      // TODO https://github.com/sanity-io/groq-js/issues/140
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, {
+          after: { _type: "foo" },
+          before: { _type: "foo" },
+        })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::operation";
-        type: "FuncCall";
-      }>();
+      expect(result).toBe("update");
       expectType<
         ExecuteQuery<
           typeof query,
-          { delta: { after: { _type: "foo" }; before: { _type: "foo" } } }
+          _ScopeFromPartialContext<{
+            delta: { after: { _type: "foo" }; before: { _type: "foo" } };
+          }>
         >
       >().toStrictEqual<"update">();
     });
 
-    it("global::operation()", () => {
+    it.failing("global::operation()", async () => {
       const query = "global::operation()";
+      // TODO https://github.com/sanity-io/groq-js/issues/140
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, {
+          after: { _type: "foo" },
+          before: { _type: "foo" },
+        })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "global::operation";
-        type: "FuncCall";
-      }>();
+      expect(result).toBe("update");
       expectType<
         ExecuteQuery<
           typeof query,
-          { delta: { after: { _type: "foo" }; before: { _type: "foo" } } }
+          _ScopeFromPartialContext<{
+            delta: { after: { _type: "foo" }; before: { _type: "foo" } };
+          }>
         >
       >().toStrictEqual<"update">();
     });
 
-    it("references([])", () => {
+    it("references([])", async () => {
       const query = "references([])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }];
-        func: GroqFunction;
-        name: "global::references";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ elements: [], type: "Array" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "references",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(false);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
     });
 
-    it('references("id")', () => {
+    it('references("id")', async () => {
       const query = 'references("id")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: "id" }];
-        func: GroqFunction;
-        name: "global::references";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: "id" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "references",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(false);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<boolean>();
     });
 
-    it('references("id",["id2"])', () => {
+    it('references("id",["id2"])', async () => {
       const query = 'references("id",["id2"])';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
-          { type: "Value"; value: "id" },
+          { type: "Value", value: "id" },
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: "id2" };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "global::references";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: "id2" },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "references",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(false);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<boolean>();
     });
 
-    it('global::references("id",["id2"])', () => {
+    it('global::references("id",["id2"])', async () => {
       const query = 'global::references("id",["id2"])';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
-          { type: "Value"; value: "id" },
+          { type: "Value", value: "id" },
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: "id2" };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "global::references";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: "id2" },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "references",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(false);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<boolean>();
     });
 
-    it("round(3.14)", () => {
+    it("round(3.14)", async () => {
       const query = "round(3.14)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: 3.14 }];
-        func: GroqFunction;
-        name: "global::round";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: 3.14 }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "round",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(3);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("round(3.14,1)", () => {
+    it("round(3.14,1)", async () => {
       const query = "round(3.14,1)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: 3.14 }, { type: "Value"; value: 1 }];
-        func: GroqFunction;
-        name: "global::round";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [
+          { type: "Value", value: 3.14 },
+          { type: "Value", value: 1 },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "round",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(3.1);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("global::round(3.14,1)", () => {
+    it("global::round(3.14,1)", async () => {
       const query = "global::round(3.14,1)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: 3.14 }, { type: "Value"; value: 1 }];
-        func: GroqFunction;
-        name: "global::round";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [
+          { type: "Value", value: 3.14 },
+          { type: "Value", value: 1 },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "round",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(3.1);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("string(true)", () => {
+    it("string(true)", async () => {
       const query = "string(true)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: true }];
-        func: GroqFunction;
-        name: "global::string";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: true }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("true");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"true">();
     });
 
-    it("string(false)", () => {
+    it("string(false)", async () => {
       const query = "string(false)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: false }];
-        func: GroqFunction;
-        name: "global::string";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: false }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("false");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"false">();
     });
 
-    it('string("a string")', () => {
+    it('string("a string")', async () => {
       const query = 'string("a string")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: "a string" }];
-        func: GroqFunction;
-        name: "global::string";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: "a string" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("a string");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"a string">();
     });
 
-    it("string(3.14)", () => {
+    it("string(3.14)", async () => {
       const query = "string(3.14)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: 3.14 }];
-        func: GroqFunction;
-        name: "global::string";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: 3.14 }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("3.14");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"3.14">();
     });
 
-    it("string([])", () => {
+    it("string([])", async () => {
       const query = "string([])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }];
-        func: GroqFunction;
-        name: "global::string";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ elements: [], type: "Array" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("global::string(3.14)", () => {
+    it("global::string(3.14)", async () => {
       const query = "global::string(3.14)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: 3.14 }];
-        func: GroqFunction;
-        name: "global::string";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: 3.14 }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("3.14");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"3.14">();
     });
 
-    it('lower("String")', () => {
+    it('lower("String")', async () => {
       const query = 'lower("String")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: "String" }];
-        func: GroqFunction;
-        name: "global::lower";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: "String" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "lower",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("string");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"string">();
     });
 
-    it('global::lower("String")', () => {
+    it('global::lower("String")', async () => {
       const query = 'global::lower("String")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: "String" }];
-        func: GroqFunction;
-        name: "global::lower";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: "String" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "lower",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("string");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"string">();
     });
 
-    it('upper("String")', () => {
+    it('upper("String")', async () => {
       const query = 'upper("String")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: "String" }];
-        func: GroqFunction;
-        name: "global::upper";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: "String" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "upper",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("STRING");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"STRING">();
     });
 
-    it('global::upper("String")', () => {
+    it('global::upper("String")', async () => {
       const query = 'global::upper("String")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: "String" }];
-        func: GroqFunction;
-        name: "global::upper";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: "String" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "upper",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("STRING");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"STRING">();
     });
   });
 
-  describe("dateTime", () => {
-    it("dateTime::now()", () => {
-      const query = "dateTime::now()";
+  // TODO https://github.com/sanity-io/groq-js/issues/145
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "dateTime::now";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
-        DateTime<string>
+  describe("dateTime", () => {
+    it.failing("dateTime::now()", async () => {
+      const query = "dateTime::now()";
+      const tree = parse(query);
+      // TODO https://github.com/sanity-io/groq-js/issues/144
+      // TODO https://github.com/sanity-io/groq-js/issues/143
+
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "dateTime::now",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
       >();
+
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<DateTime>();
     });
   });
 
   describe("array", () => {
-    it('array::join(false,",")', () => {
+    it('array::join(false,",")', async () => {
       const query = 'array::join(false,",")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: false }, { type: "Value"; value: "," }];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
-    });
-
-    it("array::join([],false)", () => {
-      const query = "array::join([],false)";
-
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
-          { elements: []; type: "Array" },
-          { type: "Value"; value: false }
-        ];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
+          { type: "Value", value: false },
+          { type: "Value", value: "," },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::join",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "join",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it('array::join([],",")', () => {
-      const query = 'array::join([],",")';
+    it("array::join([],false)", async () => {
+      const query = "array::join([],false)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }, { type: "Value"; value: "," }];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [
+          { elements: [], type: "Array" },
+          { type: "Value", value: false },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::join",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "join",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    });
+
+    it('array::join([],",")', async () => {
+      const query = 'array::join([],",")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [
+          { elements: [], type: "Array" },
+          { type: "Value", value: "," },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::join",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "join",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"">();
     });
 
-    it('array::join([5],",")', () => {
+    it('array::join([5],",")', async () => {
       const query = 'array::join([5],",")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 5 };
-              }
-            ];
-            type: "Array";
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 5 },
+              },
+            ],
+            type: "Array",
           },
-          { type: "Value"; value: "," }
-        ];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
+          { type: "Value", value: "," },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::join",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "join",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("5");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"5">();
     });
 
-    it('array::join([{}],",")', () => {
+    it('array::join([{}],",")', async () => {
       const query = 'array::join([{}],",")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { attributes: []; type: "Object" };
-              }
-            ];
-            type: "Array";
+                isSplat: false,
+                type: "ArrayElement",
+                value: { attributes: [], type: "Object" },
+              },
+            ],
+            type: "Array",
           },
-          { type: "Value"; value: "," }
-        ];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
+          { type: "Value", value: "," },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::join",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "join",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it('array::join([5,true,"foo"],",")', () => {
+    it('array::join([5,true,"foo"],",")', async () => {
       const query = 'array::join([5,true,"foo"],",")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 5 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 5 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: true };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: true },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: "foo" };
-              }
-            ];
-            type: "Array";
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: "foo" },
+              },
+            ],
+            type: "Array",
           },
-          { type: "Value"; value: "," }
-        ];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<typeof query>
-      >().not.toStrictEqual<// FIXME This SHOULD be what returns, but it hits the maximum call stack
-      "5,true,foo">();
+          { type: "Value", value: "," },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::join",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "join",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("5,true,foo");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<string>();
     });
 
-    it('array::join($param,",")', () => {
+    it('array::join($param,",")', async () => {
       const query = 'array::join($param,",")';
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, { params: { param: [1, 2] } })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
-          { name: "param"; type: "Parameter" },
-          { type: "Value"; value: "," }
-        ];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
-      expectType<
-        ExecuteQuery<typeof query, { parameters: { param: (1 | 2)[] } }>
-      >().toStrictEqual<string>();
-    });
+          { name: "param", type: "Parameter" },
+          { type: "Value", value: "," },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::join",
+        type: "FuncCall",
+      } as const;
 
-    it('array::join($param,",") (with {})', () => {
-      const query = 'array::join($param,",")';
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "join",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [
-          { name: "param"; type: "Parameter" },
-          { type: "Value"; value: "," }
-        ];
-        func: GroqFunction;
-        name: "array::join";
-        type: "FuncCall";
-      }>();
+      expect(result).toBe("1,2");
       expectType<
         ExecuteQuery<
           typeof query,
-          { parameters: { param: (1 | 2 | { [key: string]: never })[] } }
+          _ScopeFromPartialContext<{ parameters: { param: (1 | 2)[] } }>
+        >
+      >().toStrictEqual<string>();
+    });
+
+    it('array::join($param,",") (with {})', async () => {
+      const query = 'array::join($param,",")';
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, { params: { param: [1, 2, {}] } })
+      ).get();
+
+      const desiredTree = {
+        args: [
+          { name: "param", type: "Parameter" },
+          { type: "Value", value: "," },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::join",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "join",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            parameters: { param: (1 | 2 | { [key: string]: never })[] };
+          }>
         >
       >().toStrictEqual<null>();
     });
 
-    it("array::compact(false)", () => {
+    it("array::compact(false)", async () => {
       const query = "array::compact(false)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: false }];
-        func: GroqFunction;
-        name: "array::compact";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: false }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::compact",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "compact",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("array::compact([])", () => {
+    it("array::compact([])", async () => {
       const query = "array::compact([])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }];
-        func: GroqFunction;
-        name: "array::compact";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ elements: [], type: "Array" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::compact",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "compact",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual([]);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<[]>();
     });
 
-    it("array::compact([1,null,2])", () => {
+    it("array::compact([1,null,2])", async () => {
       const query = "array::compact([1,null,2])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 2 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "array::compact";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 2 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::compact",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "compact",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual([1, 2]);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<[1, 2]>();
     });
 
-    it("array::compact($param)", () => {
+    it("array::compact($param)", async () => {
       const query = "array::compact($param)";
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, { params: { param: [1, 2, null] } })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ name: "param"; type: "Parameter" }];
-        func: GroqFunction;
-        name: "array::compact";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ name: "param", type: "Parameter" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::compact",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "compact",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual([1, 2]);
       expectType<
-        ExecuteQuery<typeof query, { parameters: { param: (1 | 2 | null)[] } }>
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{ parameters: { param: (1 | 2 | null)[] } }>
+        >
       >().toStrictEqual<(1 | 2)[]>();
     });
 
-    it("array::compact($param) (only null)", () => {
+    it("array::compact($param) (only null)", async () => {
       const query = "array::compact($param)";
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, { params: { param: [null] } })
+      ).get();
 
       expectType<Parse<typeof query>>().toStrictEqual<{
         args: [{ name: "param"; type: "Parameter" }];
@@ -1121,880 +1868,1427 @@ describe("functions", () => {
         name: "array::compact";
         type: "FuncCall";
       }>();
+
+      const desiredTree = {
+        args: [{ name: "param", type: "Parameter" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::compact",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "compact",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual([]);
       expectType<
-        ExecuteQuery<typeof query, { parameters: { param: null[] } }>
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{ parameters: { param: null[] } }>
+        >
       >().toStrictEqual<[]>();
     });
 
-    it("array::unique(false)", () => {
+    it("array::unique(false)", async () => {
       const query = "array::unique(false)";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: false }];
-        func: GroqFunction;
-        name: "array::unique";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ type: "Value", value: false }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::unique",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "unique",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("array::unique([])", () => {
+    it("array::unique([])", async () => {
       const query = "array::unique([])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }];
-        func: GroqFunction;
-        name: "array::unique";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ elements: [], type: "Array" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::unique",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "unique",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual([]);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<[]>();
     });
 
-    it("array::unique([1,2,1])", () => {
+    it("array::unique([1,2,1])", async () => {
       const query = "array::unique([1,2,1])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 2 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 2 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "array::unique";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::unique",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "unique",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual([1, 2]);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<[1, 2]>();
     });
 
-    it("array::unique([{},{}])", () => {
+    it("array::unique([{},{}])", async () => {
       const query = "array::unique([{},{}])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>()
+      const desiredTree = {
+        args: [
+          {
+            elements: [
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { attributes: [], type: "Object" },
+              },
+              {
+                isSplat: false,
+                type: "ArrayElement",
+                value: { attributes: [], type: "Object" },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::unique",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "unique",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>()
         // FIXME toStrictEqual
-        .toBeAssignableTo<{
-          args: [
-            {
-              elements: [
-                {
-                  isSplat: false;
-                  type: "ArrayElement";
-                  value: { attributes: []; type: "Object" };
-                },
-                {
-                  isSplat: false;
-                  type: "ArrayElement";
-                  value: { attributes: []; type: "Object" };
-                }
-              ];
-              type: "Array";
-            }
-          ];
-          func: GroqFunction;
-          name: "array::unique";
-          type: "FuncCall";
-        }>();
+        .toBeAssignableTo<typeof desiredTree>();
+
+      expect(result).toStrictEqual([{}, {}]);
       expectType<ExecuteQuery<typeof query>>()
         // FIXME toStrictEqual
         .toBeAssignableTo<[{ [x: string]: never }, { [x: string]: never }]>();
     });
 
-    it("array::unique($param)", () => {
+    it("array::unique($param)", async () => {
       const query = "array::unique($param)";
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, { params: { param: [1, 2, 1, 2] } })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ name: "param"; type: "Parameter" }];
-        func: GroqFunction;
-        name: "array::unique";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [{ name: "param", type: "Parameter" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "array::unique",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "unique",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual([1, 2]);
       expectType<
-        ExecuteQuery<typeof query, { parameters: { param: (1 | 1 | 2)[] } }>
-      >().toStrictEqual<(1 | 2)[]>();
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{ parameters: { param: [1, 2, 1, 2] } }>
+        >
+      >().toStrictEqual<[1, 2]>();
     });
   });
 
   describe("string", () => {
-    it('string::split("this is a string","not in there")', () => {
+    it('string::split("this is a string","not in there")', async () => {
       const query = 'string::split("this is a string","not in there")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
-          { type: "Value"; value: "this is a string" },
-          { type: "Value"; value: "not in there" }
-        ];
-        func: GroqFunction;
-        name: "string::split";
-        type: "FuncCall";
-      }>();
+          { type: "Value", value: "this is a string" },
+          { type: "Value", value: "not in there" },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string::split",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "split",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual(["this is a string"]);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<
         ["this is a string"]
       >();
     });
 
-    it('string::split("this is a string"," ")', () => {
+    it('string::split("this is a string"," ")', async () => {
       const query = 'string::split("this is a string"," ")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
-          { type: "Value"; value: "this is a string" },
-          { type: "Value"; value: " " }
-        ];
-        func: GroqFunction;
-        name: "string::split";
-        type: "FuncCall";
-      }>();
+          { type: "Value", value: "this is a string" },
+          { type: "Value", value: " " },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string::split",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "split",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual(["this", "is", "a", "string"]);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<
         ["this", "is", "a", "string"]
       >();
     });
 
-    it('string::split(" this is a string "," ")', () => {
+    it('string::split(" this is a string "," ")', async () => {
       const query = 'string::split(" this is a string "," ")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
-          { type: "Value"; value: " this is a string " },
-          { type: "Value"; value: " " }
-        ];
-        func: GroqFunction;
-        name: "string::split";
-        type: "FuncCall";
-      }>();
+          { type: "Value", value: " this is a string " },
+          { type: "Value", value: " " },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string::split",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "split",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual(["", "this", "is", "a", "string", ""]);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<
         ["", "this", "is", "a", "string", ""]
       >();
     });
 
-    it('string::split("test","")', () => {
+    it('string::split("test","")', async () => {
       const query = 'string::split("test","")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ type: "Value"; value: "test" }, { type: "Value"; value: "" }];
-        func: GroqFunction;
-        name: "string::split";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [
+          { type: "Value", value: "test" },
+          { type: "Value", value: "" },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string::split",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "split",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual(["t", "e", "s", "t"]);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<
         ["t", "e", "s", "t"]
       >();
     });
 
-    it('string::split($param,"")', () => {
+    it('string::split($param,"")', async () => {
       const query = 'string::split($param,"")';
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, { params: { param: "test" } })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
-          { name: "param"; type: "Parameter" },
-          { type: "Value"; value: "" }
-        ];
-        func: GroqFunction;
-        name: "string::split";
-        type: "FuncCall";
-      }>();
+          { name: "param", type: "Parameter" },
+          { type: "Value", value: "" },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string::split",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "split",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual(["t", "e", "s", "t"]);
       expectType<
-        ExecuteQuery<typeof query, { parameters: { param: string } }>
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{ parameters: { param: string } }>
+        >
       >().toStrictEqual<string[]>();
     });
 
-    it('string::split("this is a string",$param)', () => {
+    it('string::split("this is a string",$param)', async () => {
       const query = 'string::split("this is a string",$param)';
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, { params: { param: " " } })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
-          { type: "Value"; value: "this is a string" },
-          { name: "param"; type: "Parameter" }
-        ];
-        func: GroqFunction;
-        name: "string::split";
-        type: "FuncCall";
-      }>();
+          { type: "Value", value: "this is a string" },
+          { name: "param", type: "Parameter" },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string::split",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "split",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual(["this", "is", "a", "string"]);
       expectType<
-        ExecuteQuery<typeof query, { parameters: { param: string } }>
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{ parameters: { param: string } }>
+        >
       >().toStrictEqual<string[]>();
     });
 
-    it('string::startsWith("A String","A Str")', () => {
+    it('string::startsWith("A String","A Str")', async () => {
       const query = 'string::startsWith("A String","A Str")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
-          { type: "Value"; value: "A String" },
-          { type: "Value"; value: "A Str" }
-        ];
-        func: GroqFunction;
-        name: "string::startsWith";
-        type: "FuncCall";
-      }>();
+          { type: "Value", value: "A String" },
+          { type: "Value", value: "A Str" },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string::startsWith",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "startsWith",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(true);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
     });
 
-    it('string::startsWith("A String","O Str")', () => {
+    it('string::startsWith("A String","O Str")', async () => {
       const query = 'string::startsWith("A String","O Str")';
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
-          { type: "Value"; value: "A String" },
-          { type: "Value"; value: "O Str" }
-        ];
-        func: GroqFunction;
-        name: "string::startsWith";
-        type: "FuncCall";
-      }>();
+          { type: "Value", value: "A String" },
+          { type: "Value", value: "O Str" },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "string::startsWith",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "startsWith",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(false);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
     });
   });
 
   describe("math", () => {
-    it("math::sum([1,2,3])", () => {
+    it("math::sum([1,2,3])", async () => {
       const query = "math::sum([1,2,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 2 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 2 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::sum";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::sum",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "sum",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(6);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("math::sum([1,null,3])", () => {
+    it("math::sum([1,null,3])", async () => {
       const query = "math::sum([1,null,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::sum";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::sum",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "sum",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(4);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("math::sum([1,false,3])", () => {
+    it("math::sum([1,false,3])", async () => {
       const query = "math::sum([1,false,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: false };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: false },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::sum";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::sum",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "sum",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("math::sum([null])", () => {
+    it("math::sum([null])", async () => {
       const query = "math::sum([null])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::sum";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::sum",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "sum",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(0);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<0>();
     });
 
-    it("math::sum([])", () => {
+    it("math::sum([])", async () => {
       const query = "math::sum([])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }];
-        func: GroqFunction;
-        name: "math::sum";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [
+          {
+            elements: [],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::sum",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "sum",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(0);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<0>();
     });
 
-    it("math::avg([1,2,3])", () => {
+    it("math::avg([1,2,3])", async () => {
       const query = "math::avg([1,2,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 2 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 2 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::avg";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::avg",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "avg",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(2);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("math::avg([1,null,3])", () => {
+    it("math::avg([1,null,3])", async () => {
       const query = "math::avg([1,null,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::avg";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::avg",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "avg",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(2);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("math::avg([1,false,3])", () => {
+    it("math::avg([1,false,3])", async () => {
       const query = "math::avg([1,false,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: false };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: false },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::avg";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::avg",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "avg",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("math::avg([null])", () => {
+    it("math::avg([null])", async () => {
       const query = "math::avg([null])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::avg";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::avg",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "avg",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("math::avg([])", () => {
+    it("math::avg([])", async () => {
       const query = "math::avg([])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }];
-        func: GroqFunction;
-        name: "math::avg";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [
+          {
+            elements: [],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::avg",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "avg",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("math::min([1,2,3])", () => {
+    it("math::min([1,2,3])", async () => {
       const query = "math::min([1,2,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 2 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 2 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::min";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::min",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "min",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(1);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("math::min([1,null,3])", () => {
+    it("math::min([1,null,3])", async () => {
       const query = "math::min([1,null,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::min";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::min",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "min",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(1);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("math::min([1,false,3])", () => {
+    it("math::min([1,false,3])", async () => {
       const query = "math::min([1,false,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: false };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: false },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::min";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::min",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "min",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("math::min([null])", () => {
+    it("math::min([null])", async () => {
       const query = "math::min([null])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::min";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::min",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "min",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("math::min([])", () => {
+    it("math::min([])", async () => {
       const query = "math::min([])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }];
-        func: GroqFunction;
-        name: "math::min";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [
+          {
+            elements: [],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::min",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "min",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("math::max([1,2,3])", () => {
+    it("math::max([1,2,3])", async () => {
       const query = "math::max([1,2,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 2 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 2 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::max";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::max",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "max",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(3);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("math::max([1,null,3])", () => {
+    it("math::max([1,null,3])", async () => {
       const query = "math::max([1,null,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::max";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::max",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "max",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(3);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
     });
 
-    it("math::max([1,false,3])", () => {
+    it("math::max([1,false,3])", async () => {
       const query = "math::max([1,false,3])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 1 };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 1 },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: false };
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: false },
               },
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: 3 };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::max";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: 3 },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::max",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "max",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("math::max([null])", () => {
+    it("math::max([null])", async () => {
       const query = "math::max([null])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
+      const desiredTree = {
         args: [
           {
             elements: [
               {
-                isSplat: false;
-                type: "ArrayElement";
-                value: { type: "Value"; value: null };
-              }
-            ];
-            type: "Array";
-          }
-        ];
-        func: GroqFunction;
-        name: "math::max";
-        type: "FuncCall";
-      }>();
+                isSplat: false,
+                type: "ArrayElement",
+                value: { type: "Value", value: null },
+              },
+            ],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::max",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "max",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
 
-    it("math::max([])", () => {
+    it("math::max([])", async () => {
       const query = "math::max([])";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [{ elements: []; type: "Array" }];
-        func: GroqFunction;
-        name: "math::max";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [
+          {
+            elements: [],
+            type: "Array",
+          },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "math::max",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "max",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBeNull();
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
     });
   });
 
   describe("extensions", () => {
     describe("portable text extension", () => {
-      it("pt(false)", () => {
+      // TODO https://github.com/sanity-io/groq-js/issues/142
+      it("pt(false)", async () => {
         const query = "pt(false)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ type: "Value"; value: false }];
           func: GroqFunction;
-          name: "global::pt";
+          name: "pt";
           type: "FuncCall";
         }>();
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
       });
 
-      it("pt($param) (with PortableTextBlock)", () => {
+      it("pt($param) (with PortableTextBlock)", async () => {
         const query = "pt($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::pt";
+          name: "pt";
           type: "FuncCall";
         }>();
         expectType<
           ExecuteQuery<
             typeof query,
-            { parameters: { param: PortableTextBlock } }
+            _ScopeFromPartialContext<{
+              parameters: { param: PortableTextBlock };
+            }>
           >
         >().toStrictEqual<PortableTextBlock>();
       });
 
-      it("pt($param) (with PortableTextBlock[])", () => {
+      it("pt($param) (with PortableTextBlock[])", async () => {
         const query = "pt($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::pt";
+          name: "pt";
           type: "FuncCall";
         }>();
         expectType<
           ExecuteQuery<
             typeof query,
-            { parameters: { param: PortableTextBlock[] } }
+            _ScopeFromPartialContext<{
+              parameters: { param: PortableTextBlock[] };
+            }>
           >
         >().toStrictEqual<PortableTextBlock[]>();
       });
 
-      it("global::pt($param) (with PortableTextBlock[])", () => {
+      it("global::pt($param) (with PortableTextBlock[])", async () => {
         const query = "global::pt($param)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::pt";
+          name: "pt";
           type: "FuncCall";
         }>();
         expectType<
           ExecuteQuery<
             typeof query,
-            { parameters: { param: PortableTextBlock[] } }
+            _ScopeFromPartialContext<{
+              parameters: { param: PortableTextBlock[] };
+            }>
           >
         >().toStrictEqual<PortableTextBlock[]>();
       });
 
-      it("pt::text(false)", () => {
+      it("pt::text(false)", async () => {
         const query = "pt::text(false)";
+        const tree = parse(query);
+        const result = await (await evaluate(tree)).get();
 
-        expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ type: "Value"; value: false }];
-          func: GroqFunction;
-          name: "pt::text";
-          type: "FuncCall";
-        }>();
+        const desiredTree = {
+          args: [{ type: "Value", value: false }],
+          func: (() => {}) as unknown as GroqFunction,
+          name: "pt::text",
+          type: "FuncCall",
+        } as const;
+
+        expect(tree).toStrictEqual({
+          ...desiredTree,
+          func: expect.any(Function),
+          name: "text",
+        });
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBeNull();
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
       });
 
-      it("pt::text($param) (with PortableTextBlock)", () => {
+      it("pt::text($param) (with PortableTextBlock)", async () => {
         const query = "pt::text($param)";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            params: {
+              param: {
+                _type: "block",
+                children: [{ _type: "span", text: "foo" }],
+              },
+            },
+          })
+        ).get();
 
-        expectType<Parse<typeof query>>().toStrictEqual<{
-          args: [{ name: "param"; type: "Parameter" }];
-          func: GroqFunction;
-          name: "pt::text";
-          type: "FuncCall";
-        }>();
+        const desiredTree = {
+          args: [{ name: "param", type: "Parameter" }],
+          func: (() => {}) as unknown as GroqFunction,
+          name: "pt::text",
+          type: "FuncCall",
+        } as const;
+
+        expect(tree).toStrictEqual({
+          ...desiredTree,
+          func: expect.any(Function),
+          name: "text",
+        });
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe("foo");
         expectType<
           ExecuteQuery<
             typeof query,
-            { parameters: { param: PortableTextBlock } }
+            _ScopeFromPartialContext<{
+              parameters: { param: PortableTextBlock };
+            }>
           >
         >().toStrictEqual<string>();
       });
 
-      it("pt::text($param) (with PortableTextBlock[])", () => {
+      it("pt::text($param) (with PortableTextBlock[])", async () => {
         const query = "pt::text($param)";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            params: {
+              param: [
+                {
+                  _type: "block",
+                  children: [{ _type: "span", text: "foo" }],
+                },
+                {
+                  _type: "block",
+                  children: [{ _type: "span", text: "bar" }],
+                },
+              ],
+            },
+          })
+        ).get();
 
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
@@ -2002,23 +3296,44 @@ describe("functions", () => {
           name: "pt::text";
           type: "FuncCall";
         }>();
+
+        const desiredTree = {
+          args: [{ name: "param", type: "Parameter" }],
+          func: (() => {}) as unknown as GroqFunction,
+          name: "pt::text",
+          type: "FuncCall",
+        } as const;
+
+        expect(tree).toStrictEqual({
+          ...desiredTree,
+          func: expect.any(Function),
+          name: "text",
+        });
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe("foo\n\nbar");
         expectType<
           ExecuteQuery<
             typeof query,
-            { parameters: { param: PortableTextBlock[] } }
+            _ScopeFromPartialContext<{
+              parameters: { param: PortableTextBlock[] };
+            }>
           >
         >().toStrictEqual<string>();
       });
     });
 
     describe("geojson", () => {
-      it("geo(false)", () => {
+      // TODO https://github.com/sanity-io/groq-js/issues/141
+      it("geo(false)", async () => {
         const query = "geo(false)";
 
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ type: "Value"; value: false }];
           func: GroqFunction;
-          name: "global::geo";
+          name: "geo";
           type: "FuncCall";
         }>();
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
@@ -2030,11 +3345,14 @@ describe("functions", () => {
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::geo";
+          name: "geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { parameters: { param: Position } }>
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialContext<{ parameters: { param: Position } }>
+          >
         >().toStrictEqual<Position>();
       });
 
@@ -2044,11 +3362,14 @@ describe("functions", () => {
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::geo";
+          name: "geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { parameters: { param: Point } }>
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialContext<{ parameters: { param: Point } }>
+          >
         >().toStrictEqual<Point>();
       });
 
@@ -2058,11 +3379,14 @@ describe("functions", () => {
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::geo";
+          name: "geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { parameters: { param: MultiPoint } }>
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialContext<{ parameters: { param: MultiPoint } }>
+          >
         >().toStrictEqual<MultiPoint>();
       });
 
@@ -2072,11 +3396,14 @@ describe("functions", () => {
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::geo";
+          name: "geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { parameters: { param: LineString } }>
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialContext<{ parameters: { param: LineString } }>
+          >
         >().toStrictEqual<LineString>();
       });
 
@@ -2086,11 +3413,14 @@ describe("functions", () => {
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::geo";
+          name: "geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { parameters: { param: MultiLineString } }>
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialContext<{ parameters: { param: MultiLineString } }>
+          >
         >().toStrictEqual<MultiLineString>();
       });
 
@@ -2100,11 +3430,14 @@ describe("functions", () => {
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::geo";
+          name: "geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { parameters: { param: Polygon } }>
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialContext<{ parameters: { param: Polygon } }>
+          >
         >().toStrictEqual<Polygon>();
       });
 
@@ -2114,11 +3447,14 @@ describe("functions", () => {
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::geo";
+          name: "geo";
           type: "FuncCall";
         }>();
         expectType<
-          ExecuteQuery<typeof query, { parameters: { param: MultiPolygon } }>
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialContext<{ parameters: { param: MultiPolygon } }>
+          >
         >().toStrictEqual<MultiPolygon>();
       });
 
@@ -2128,13 +3464,15 @@ describe("functions", () => {
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::geo";
+          name: "geo";
           type: "FuncCall";
         }>();
         expectType<
           ExecuteQuery<
             typeof query,
-            { parameters: { param: GeometryCollection } }
+            _ScopeFromPartialContext<{
+              parameters: { param: GeometryCollection };
+            }>
           >
         >().toStrictEqual<GeometryCollection>();
       });
@@ -2145,13 +3483,15 @@ describe("functions", () => {
         expectType<Parse<typeof query>>().toStrictEqual<{
           args: [{ name: "param"; type: "Parameter" }];
           func: GroqFunction;
-          name: "global::geo";
+          name: "geo";
           type: "FuncCall";
         }>();
         expectType<
           ExecuteQuery<
             typeof query,
-            { parameters: { param: GeometryCollection } }
+            _ScopeFromPartialContext<{
+              parameters: { param: GeometryCollection };
+            }>
           >
         >().toStrictEqual<GeometryCollection>();
       });
@@ -2171,7 +3511,9 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            { parameters: { param1: Geo; param2: Geo } }
+            _ScopeFromPartialContext<{
+              parameters: { param1: Geo; param2: Geo };
+            }>
           >
         >().toStrictEqual<boolean>();
       });
@@ -2191,7 +3533,9 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            { parameters: { param1: Geo; param2: Geo } }
+            _ScopeFromPartialContext<{
+              parameters: { param1: Geo; param2: Geo };
+            }>
           >
         >().toStrictEqual<boolean>();
       });
@@ -2211,7 +3555,9 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            { parameters: { param1: Point; param2: Point } }
+            _ScopeFromPartialContext<{
+              parameters: { param1: Point; param2: Point };
+            }>
           >
         >().toStrictEqual<number>();
       });
@@ -2219,31 +3565,75 @@ describe("functions", () => {
   });
 
   describe("sanity", () => {
-    it("sanity::projectId()", () => {
+    it("sanity::projectId()", async () => {
       const query = "sanity::projectId()";
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, {
+          sanity: { dataset: "dataset", projectId: "projectId" },
+        })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "sanity::projectId";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "sanity::projectId",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "projectId",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("projectId");
       expectType<
-        ExecuteQuery<typeof query, { client: { projectId: "projectId" } }>
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            client: { dataset: "dataset"; projectId: "projectId" };
+          }>
+        >
       >().toStrictEqual<"projectId">();
     });
 
-    it("sanity::dataset()", () => {
+    it("sanity::dataset()", async () => {
       const query = "sanity::dataset()";
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, {
+          sanity: { dataset: "dataset", projectId: "projectId" },
+        })
+      ).get();
 
-      expectType<Parse<typeof query>>().toStrictEqual<{
-        args: [];
-        func: GroqFunction;
-        name: "sanity::dataset";
-        type: "FuncCall";
-      }>();
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "sanity::dataset",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "dataset",
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe("dataset");
       expectType<
-        ExecuteQuery<typeof query, { client: { dataset: "dataset" } }>
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            client: { dataset: "dataset"; projectId: "projectId" };
+          }>
+        >
       >().toStrictEqual<"dataset">();
     });
   });

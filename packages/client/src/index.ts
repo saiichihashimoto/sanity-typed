@@ -8,12 +8,14 @@ import type {
 } from "@sanity/client";
 import type { Merge } from "type-fest";
 
-import type { ExecuteQuery } from "@sanity-typed/groq";
+import type { ExecuteQuery, RootScope } from "@sanity-typed/groq";
 import type { SanityDocument } from "@sanity-typed/types";
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- recursive type
-export interface SanityClient<Client extends ClientConfig, Dataset>
-  extends Omit<SanityClientNative, "clone" | "fetch" | "withConfig"> {
+export interface SanityClient<
+  Client extends ClientConfig,
+  Dataset extends any[]
+> extends Omit<SanityClientNative, "clone" | "fetch" | "withConfig"> {
   clone: () => SanityClient<Client, Dataset>;
   fetch: <Query extends string, const Q = QueryParams>(
     query: Query,
@@ -22,11 +24,12 @@ export interface SanityClient<Client extends ClientConfig, Dataset>
   ) => Promise<
     ExecuteQuery<
       Query,
-      {
+      RootScope<{
         client: Client;
         dataset: Dataset;
+        delta: { after: null; before: null };
         parameters: NonNullable<Q>;
-      }
+      }>
     >
   >;
   withConfig: <const NewConfig extends Partial<ClientConfig>>(

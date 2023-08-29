@@ -17,7 +17,7 @@
     "api"
   ],
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/client",
-  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Aclient",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {
     "type": "individual",
