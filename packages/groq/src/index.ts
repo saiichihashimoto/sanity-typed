@@ -195,11 +195,12 @@ type SingleEscapeSequence =
 type EscapeSequence = // TODO UnicodeEscapeSequence
   SingleEscapeSequence;
 
-type ExcludeFromString<
+type ReplaceInString<
   TString extends string,
-  TExclude extends string
-> = TString extends `${infer TLeft}${TExclude}${infer TRight}`
-  ? ExcludeFromString<`${TLeft}${TRight}`, TExclude>
+  TReplace extends string,
+  TReplaceWith extends string = ""
+> = TString extends `${infer TLeft}${TReplace}${infer TRight}`
+  ? `${TLeft}${TReplaceWith}${ReplaceInString<TRight, TReplace, TReplaceWith>}`
   : TString;
 
 type IfStringHas<
@@ -213,24 +214,32 @@ type IfStringHas<
 type StringType<TExpression extends string> =
   | (TExpression extends `'${infer TString}'`
       ? IfStringHas<
-          ExcludeFromString<TString, `\\${EscapeSequence}`>,
+          ReplaceInString<TString, `\\${EscapeSequence}`>,
           "'"
         > extends true
         ? never
         : {
             type: "Value";
-            value: TString;
+            value: ReplaceInString<
+              TString,
+              `\\'`, // TODO Replace all EscapeSequences
+              "'"
+            >;
           }
       : never)
   | (TExpression extends `"${infer TString}"`
       ? IfStringHas<
-          ExcludeFromString<TString, `\\${EscapeSequence}`>,
+          ReplaceInString<TString, `\\${EscapeSequence}`>,
           '"'
         > extends true
         ? never
         : {
             type: "Value";
-            value: TString;
+            value: ReplaceInString<
+              TString,
+              `\\"`, // TODO Replace all EscapeSequences
+              '"'
+            >;
           }
       : never);
 
