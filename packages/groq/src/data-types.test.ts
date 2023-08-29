@@ -449,7 +449,7 @@ describe("data types", () => {
 
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>()
-      // FIXME toStrictEqual
+      // TODO toStrictEqual
       .toBeAssignableTo<typeof desiredTree>();
 
     expect(result).toStrictEqual([

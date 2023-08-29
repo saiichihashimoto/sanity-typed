@@ -213,7 +213,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute",
     } as const;
 
-    // FIXME
+    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
@@ -241,7 +241,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute",
     } as const;
 
-    // FIXME
+    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
@@ -929,7 +929,7 @@ describe("traversal operators", () => {
       type: "Projection",
     } as const;
 
-    // FIXME
+    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
@@ -979,7 +979,7 @@ describe("traversal operators", () => {
       type: "Projection",
     } as const;
 
-    // FIXME
+    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
@@ -1096,7 +1096,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute",
     } as const;
 
-    // FIXME
+    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
@@ -1222,7 +1222,7 @@ describe("traversal operators", () => {
       type: "AccessAttribute",
     } as const;
 
-    // FIXME
+    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
