@@ -503,7 +503,7 @@ describe("traversal operators", () => {
       typeof desiredTree
     >();
 
-    // FIXME
+    // TODO https://github.com/sanity-io/groq-js/issues/146
     expect(result).toBe(false);
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
   });
