@@ -30,7 +30,9 @@ jobs:
           cache: "npm"
       - run: npm ci
 
-      - run: npm run build
+      - env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+        run: npm run build
 
       - run: npm config set workspaces-update false
       - env:
