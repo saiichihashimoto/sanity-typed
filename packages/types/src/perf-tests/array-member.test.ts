@@ -7,7 +7,7 @@ import type { _InferValue } from "..";
 
 const defineArrayMember2 = _makeDefineArrayMember<true>();
 
-describe("depth test", () => {
+describe("array member depth test", () => {
   it("defineArrayMember 101 deep works", () => {
     const array101Deep = defineArrayMember2({
       type: "array",
