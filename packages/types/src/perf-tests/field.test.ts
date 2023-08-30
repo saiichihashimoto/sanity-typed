@@ -5,7 +5,7 @@ import { expectType } from "@sanity-typed/test-utils";
 import { defineField } from "..";
 import type { _InferValue } from "..";
 
-describe("depth test", () => {
+describe("field depth test", () => {
   it("defineField 100 deep works", () => {
     const field100Deep = defineField({
       name: "foo",
