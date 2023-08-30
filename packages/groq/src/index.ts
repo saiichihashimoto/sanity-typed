@@ -606,6 +606,36 @@ type ConstantEvaluate<TNode extends ExprNode> =
   // HACK Not sure if giving a never scope works! https://github.com/sanity-io/groq-js/blob/main/src/evaluator/constantEvaluate.ts#L48
   Evaluate<TNode, never>;
 
+type KnownArrayNode =
+  | ArrayCoerceNode
+  | ArrayNode
+  | EverythingNode
+  | FilterNode
+  | MapNode
+  | PipeFuncCallNode
+  | SliceNode;
+
+type MaybeMapBase<TBase extends ExprNode> = TBase extends never
+  ? never
+  : TBase extends KnownArrayNode
+  ? { type: "This" }
+  : TBase;
+
+type MaybeMap<
+  TBase extends ExprNode,
+  TNode extends ExprNode
+> = TBase extends never
+  ? never
+  : TNode extends never
+  ? never
+  : TBase extends KnownArrayNode
+  ? {
+      base: TBase;
+      expr: TNode;
+      type: "Map";
+    }
+  : TNode;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SquareBracketTraversal
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#AttributeAccess
@@ -645,11 +675,15 @@ type SquareBracketTraversal<
               | (ConstantEvaluate<_Parse<TBracketExpression>> extends never
                   ? never
                   : ConstantEvaluate<_Parse<TBracketExpression>> extends string
-                  ? {
-                      base: _Parse<`${_Prefix}${TBase}`>;
-                      name: ConstantEvaluate<_Parse<TBracketExpression>>;
-                      type: "AccessAttribute";
-                    }
+                  ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+                    MaybeMap<
+                      _Parse<`${_Prefix}${TBase}`>,
+                      {
+                        base: MaybeMapBase<_Parse<`${_Prefix}${TBase}`>>;
+                        name: ConstantEvaluate<_Parse<TBracketExpression>>;
+                        type: "AccessAttribute";
+                      }
+                    >
                   : ConstantEvaluate<_Parse<TBracketExpression>> extends number
                   ? {
                       base: _Parse<`${_Prefix}${TBase}`>;
@@ -676,12 +710,31 @@ type AttributeAccess<
           ? never
           : Identifier<TIdentifier> extends never
           ? never
-          : {
-              base: _Parse<`${_Prefix}${TBase}`>;
-              name: TIdentifier;
-              type: "AccessAttribute";
-            })
+          : MaybeMap<
+              _Parse<`${_Prefix}${TBase}`>,
+              {
+                base: MaybeMapBase<_Parse<`${_Prefix}${TBase}`>>;
+                name: TIdentifier;
+                type: "AccessAttribute";
+              }
+            >)
   : never;
+
+type ProjectionInner<
+  TBase extends string,
+  TProjection extends string
+> = _Parse<TBase> extends never
+  ? never
+  : ObjectType<`{${TProjection}}`> extends never
+  ? never
+  : MaybeMap<
+      _Parse<TBase>,
+      {
+        base: MaybeMapBase<_Parse<TBase>>;
+        expr: ObjectType<`{${TProjection}}`>;
+        type: "Projection";
+      }
+    >;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Projection
@@ -692,27 +745,11 @@ type Projection<
 > = TExpression extends `${infer TBase}|{${infer TProjection}}`
   ?
       | Projection<`${TProjection}}`, `${_Prefix}${TBase}|{`>
-      | (_Parse<`${_Prefix}${TBase}`> extends never
-          ? never
-          : ObjectType<`{${TProjection}}`> extends never
-          ? never
-          : {
-              base: _Parse<`${_Prefix}${TBase}`>;
-              expr: ObjectType<`{${TProjection}}`>;
-              type: "Projection";
-            })
+      | ProjectionInner<`${_Prefix}${TBase}`, TProjection>
   : TExpression extends `${infer TBase}{${infer TProjection}}`
   ?
       | Projection<`${TProjection}}`, `${_Prefix}${TBase}{`>
-      | (_Parse<`${_Prefix}${TBase}`> extends never
-          ? never
-          : ObjectType<`{${TProjection}}`> extends never
-          ? never
-          : {
-              base: _Parse<`${_Prefix}${TBase}`>;
-              expr: ObjectType<`{${TProjection}}`>;
-              type: "Projection";
-            })
+      | ProjectionInner<`${_Prefix}${TBase}`, TProjection>
   : never;
 
 /**
@@ -730,11 +767,17 @@ type Dereference<
           ? { base: _Parse<`${_Prefix}${TBase}`>; type: "Deref" }
           : Identifier<TIdentifier> extends never
           ? never
-          : {
-              base: { base: _Parse<`${_Prefix}${TBase}`>; type: "Deref" };
-              name: TIdentifier;
-              type: "AccessAttribute";
-            })
+          : MaybeMap<
+              _Parse<`${_Prefix}${TBase}`>,
+              {
+                base: {
+                  base: MaybeMapBase<_Parse<`${_Prefix}${TBase}`>>;
+                  type: "Deref";
+                };
+                name: TIdentifier;
+                type: "AccessAttribute";
+              }
+            >)
   : never;
 
 /**
@@ -919,22 +962,6 @@ type EvaluateBaseOrThis<
   ? Evaluate<TBase, TScope>
   : TScope["this"];
 
-type EvaluateAccessAttributeElement<
-  TBase,
-  TName extends string
-> = TBase extends {
-  [key in TName]: infer TValue;
-}
-  ? TValue
-  : null;
-
-type EvaluateAccessAttributeElements<
-  TBases extends any[],
-  TName extends string
-> = {
-  [index in keyof TBases]: EvaluateAccessAttributeElement<TBases[index], TName>;
-};
-
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateAttributeAccess()
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateThisAttribute()
@@ -943,15 +970,13 @@ type EvaluateAccessAttribute<
   TNode extends ExprNode,
   TScope extends Scope<Context<readonly any[], any>>
 > = TNode extends AccessAttributeNode
-  ? EvaluateBaseOrThis<TNode, TScope> extends any[]
-    ? EvaluateAccessAttributeElements<
-        EvaluateBaseOrThis<TNode, TScope>,
-        TNode["name"]
-      >
-    : EvaluateAccessAttributeElement<
-        EvaluateBaseOrThis<TNode, TScope>,
-        TNode["name"]
-      >
+  ?
+      | (NonNullable<EvaluateBaseOrThis<TNode, TScope>> extends {
+          [name in TNode["name"]]: infer TValue;
+        }
+          ? TValue
+          : null)
+      | (null extends EvaluateBaseOrThis<TNode, TScope> ? null : never)
   : never;
 
 /**
@@ -1056,24 +1081,6 @@ type EvaluateComparison<TNode extends ExprNode> = TNode extends OpCallNode
     : never
   : never;
 
-type EvaluateDereferenceElement<
-  TRef,
-  TScope extends Scope<Context<readonly any[], any>>
-> = TRef extends ReferenceValue<infer TReferenced>
-  ? TScope["context"]["dataset"] extends (infer TDataset)[]
-    ?
-        | Extract<TDataset, { _type: TReferenced }>
-        | (TRef extends { weak: true } ? null : never)
-    : null
-  : null;
-
-type EvaluateDereferenceElements<
-  TRefs extends any[],
-  TScope extends Scope<Context<readonly any[], any>>
-> = {
-  [index in keyof TRefs]: EvaluateDereferenceElement<TRefs[index], TScope>;
-};
-
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateDereference()
  */
@@ -1081,9 +1088,15 @@ type EvaluateDereference<
   TNode extends ExprNode,
   TScope extends Scope<Context<readonly any[], any>>
 > = TNode extends DerefNode
-  ? Evaluate<TNode["base"], TScope> extends any[]
-    ? EvaluateDereferenceElements<Evaluate<TNode["base"], TScope>, TScope>
-    : EvaluateDereferenceElement<Evaluate<TNode["base"], TScope>, TScope>
+  ? Evaluate<TNode["base"], TScope> extends ReferenceValue<infer TReferenced>
+    ? TScope["context"]["dataset"] extends (infer TDataset)[]
+      ?
+          | Extract<TDataset, { _type: TReferenced }>
+          | (Evaluate<TNode["base"], TScope> extends { weak: true }
+              ? null
+              : never)
+      : null
+    : null
   : never;
 
 type Not<TBoolean, Enabled extends boolean = true> = TBoolean extends boolean
@@ -1573,6 +1586,30 @@ type EvaluateFuncCall<
 
 type EmptyObject = { [key: string]: never };
 
+type EvaluateMapElements<
+  TBases extends any[],
+  TExpression extends ExprNode,
+  TScope extends Scope<Context<readonly any[], any>>
+> = {
+  [index in keyof TBases]: Evaluate<
+    TExpression,
+    NestedScope<TBases[index], TScope>
+  >;
+};
+
+type EvaluateMap<
+  TNode extends ExprNode,
+  TScope extends Scope<Context<readonly any[], any>>
+> = TNode extends MapNode
+  ? Evaluate<TNode["base"], TScope> extends any[]
+    ? EvaluateMapElements<
+        Evaluate<TNode["base"], TScope>,
+        TNode["expr"],
+        TScope
+      >
+    : null
+  : never;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePlus()
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateMinus()
@@ -1810,24 +1847,6 @@ type EvaluatePos<
     : null
   : never;
 
-type EvaluateProjectionElement<
-  TBase,
-  TExpression extends ExprNode,
-  TScope extends Scope<Context<readonly any[], any>>
-> = Evaluate<TExpression, NestedScope<TBase, TScope>>;
-
-type EvaluateProjectionElements<
-  TBases extends any[],
-  TExpression extends ExprNode,
-  TScope extends Scope<Context<readonly any[], any>>
-> = {
-  [index in keyof TBases]: EvaluateProjectionElement<
-    TBases[index],
-    TExpression,
-    TScope
-  >;
-};
-
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateProjection()
  */
@@ -1835,17 +1854,10 @@ type EvaluateProjection<
   TNode extends ExprNode,
   TScope extends Scope<Context<readonly any[], any>>
 > = TNode extends ProjectionNode
-  ? Evaluate<TNode["base"], TScope> extends any[]
-    ? EvaluateProjectionElements<
-        Evaluate<TNode["base"], TScope>,
-        TNode["expr"],
-        TScope
-      >
-    : EvaluateProjectionElement<
-        Evaluate<TNode["base"], TScope>,
-        TNode["expr"],
-        TScope
-      >
+  ? Evaluate<
+      TNode["expr"],
+      NestedScope<Evaluate<TNode["base"], TScope>, TScope>
+    >
   : never;
 
 /**
@@ -1885,6 +1897,7 @@ type EvaluateExpression<
   | EvaluateEverything<TNode, TScope>
   | EvaluateFilter<TNode, TScope>
   | EvaluateFuncCall<TNode, TScope>
+  | EvaluateMap<TNode, TScope>
   | EvaluateMath<TNode, TScope>
   | EvaluateNeg<TNode, TScope>
   | EvaluateNot<TNode, TScope>
