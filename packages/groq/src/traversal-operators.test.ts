@@ -200,7 +200,7 @@ describe("traversal operators", () => {
     >().toStrictEqual<Baz>();
   });
 
-  it.failing("*.key", async () => {
+  it("*.key", async () => {
     const query = "*.key";
     const tree = parse(query);
     const result = await (
@@ -209,11 +209,14 @@ describe("traversal operators", () => {
 
     const desiredTree = {
       base: { type: "Everything" },
-      name: "key",
-      type: "AccessAttribute",
+      expr: {
+        base: { type: "This" },
+        name: "key",
+        type: "AccessAttribute",
+      },
+      type: "Map",
     } as const;
 
-    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
@@ -228,7 +231,7 @@ describe("traversal operators", () => {
     >().toStrictEqual<(Bar | Foo)[]>();
   });
 
-  it.failing('*["key"]', async () => {
+  it('*["key"]', async () => {
     const query = '*["key"]';
     const tree = parse(query);
     const result = await (
@@ -237,11 +240,14 @@ describe("traversal operators", () => {
 
     const desiredTree = {
       base: { type: "Everything" },
-      name: "key",
-      type: "AccessAttribute",
+      expr: {
+        base: { type: "This" },
+        name: "key",
+        type: "AccessAttribute",
+      },
+      type: "Map",
     } as const;
 
-    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
@@ -891,7 +897,7 @@ describe("traversal operators", () => {
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<{ key: "value" }>();
   });
 
-  it.failing('[{"key":"value"}]{key}', async () => {
+  it('[{"key":"value"}]{key}', async () => {
     const query = '[{"key":"value"}]{key}';
     const tree = parse(query);
     const result = await (await evaluate(tree)).get();
@@ -917,19 +923,24 @@ describe("traversal operators", () => {
         type: "Array",
       },
       expr: {
-        attributes: [
-          {
-            name: "key",
-            type: "ObjectAttributeValue",
-            value: { name: "key", type: "AccessAttribute" },
-          },
-        ],
-        type: "Object",
+        base: {
+          type: "This",
+        },
+        expr: {
+          attributes: [
+            {
+              name: "key",
+              type: "ObjectAttributeValue",
+              value: { name: "key", type: "AccessAttribute" },
+            },
+          ],
+          type: "Object",
+        },
+        type: "Projection",
       },
-      type: "Projection",
+      type: "Map",
     } as const;
 
-    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
@@ -941,7 +952,7 @@ describe("traversal operators", () => {
     >();
   });
 
-  it.failing('[{"key":"value"}]|{key}', async () => {
+  it('[{"key":"value"}]|{key}', async () => {
     const query = '[{"key":"value"}]|{key}';
     const tree = parse(query);
     const result = await (await evaluate(tree)).get();
@@ -967,19 +978,24 @@ describe("traversal operators", () => {
         type: "Array",
       },
       expr: {
-        attributes: [
-          {
-            name: "key",
-            type: "ObjectAttributeValue",
-            value: { name: "key", type: "AccessAttribute" },
-          },
-        ],
-        type: "Object",
+        base: {
+          type: "This",
+        },
+        expr: {
+          attributes: [
+            {
+              name: "key",
+              type: "ObjectAttributeValue",
+              value: { name: "key", type: "AccessAttribute" },
+            },
+          ],
+          type: "Object",
+        },
+        type: "Projection",
       },
-      type: "Projection",
+      type: "Map",
     } as const;
 
-    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
@@ -989,6 +1005,71 @@ describe("traversal operators", () => {
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<
       [{ key: "value" }]
     >();
+  });
+
+  it('*[_type == "foo"]{name}', async () => {
+    const query = '*[_type == "foo"]{name}';
+    const tree = parse(query);
+    const dataset = [
+      { _type: "foo", name: "Foo" },
+      { _type: "bar", name: "Bar" },
+    ] as const;
+    const result = await (await evaluate(tree, { dataset })).get();
+
+    const desiredTree = {
+      base: {
+        base: { type: "Everything" },
+        expr: {
+          left: {
+            name: "_type",
+            type: "AccessAttribute",
+          },
+          op: "==",
+          right: {
+            type: "Value",
+            value: "foo",
+          },
+          type: "OpCall",
+        },
+        type: "Filter",
+      },
+      expr: {
+        base: { type: "This" },
+        expr: {
+          attributes: [
+            {
+              name: "name",
+              type: "ObjectAttributeValue",
+              value: {
+                name: "name",
+                type: "AccessAttribute",
+              },
+            },
+          ],
+          type: "Object",
+        },
+        type: "Projection",
+      },
+      type: "Map",
+    } as const;
+
+    expect(tree).toStrictEqual(desiredTree);
+    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+      typeof desiredTree
+    >();
+
+    expect(result).toStrictEqual([{ name: "Foo" }]);
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        _ScopeFromPartialContext<{
+          dataset: [
+            { _type: "foo"; name: "Foo" },
+            { _type: "bar"; name: "Bar" }
+          ];
+        }>
+      >
+    >().toStrictEqual<[{ name: "Foo" }]>();
   });
 
   it("$param->", async () => {
@@ -1070,7 +1151,7 @@ describe("traversal operators", () => {
     >().toStrictEqual<Foo>();
   });
 
-  it.failing("$param[]->value", async () => {
+  it("$param[]->value", async () => {
     const query = "$param[]->value";
     const tree = parse(query);
     const dataset = [
@@ -1087,16 +1168,22 @@ describe("traversal operators", () => {
     const desiredTree = {
       base: {
         base: {
-          base: { name: "param", type: "Parameter" },
-          type: "ArrayCoerce",
+          name: "param",
+          type: "Parameter",
         },
-        type: "Deref",
+        type: "ArrayCoerce",
       },
-      name: "value",
-      type: "AccessAttribute",
+      expr: {
+        base: {
+          base: { type: "This" },
+          type: "Deref",
+        },
+        name: "value",
+        type: "AccessAttribute",
+      },
+      type: "Map",
     } as const;
 
-    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
@@ -1196,13 +1283,10 @@ describe("traversal operators", () => {
     >().toStrictEqual<Foo | null>();
   });
 
-  it.failing("$param[]->value (weak)", async () => {
+  it("$param[]->value (weak)", async () => {
     const query = "$param[]->value";
     const tree = parse(query);
-    const dataset = [
-      { _id: "bar", _type: "bar", value: BAR },
-      { _id: "foo", _type: "foo", value: FOO },
-    ] as const;
+    const dataset = [{ _id: "bar", _type: "bar", value: BAR }] as const;
     const result = await (
       await evaluate(tree, {
         dataset,
@@ -1213,22 +1297,28 @@ describe("traversal operators", () => {
     const desiredTree = {
       base: {
         base: {
-          base: { name: "param", type: "Parameter" },
-          type: "ArrayCoerce",
+          name: "param",
+          type: "Parameter",
         },
-        type: "Deref",
+        type: "ArrayCoerce",
       },
-      name: "value",
-      type: "AccessAttribute",
+      expr: {
+        base: {
+          base: { type: "This" },
+          type: "Deref",
+        },
+        name: "value",
+        type: "AccessAttribute",
+      },
+      type: "Map",
     } as const;
 
-    // TODO
     expect(tree).toStrictEqual(desiredTree);
     expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
       typeof desiredTree
     >();
 
-    expect(result).toStrictEqual([FOO]);
+    expect(result).toStrictEqual([null]);
     expectType<
       ExecuteQuery<
         typeof query,

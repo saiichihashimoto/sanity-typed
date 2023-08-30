@@ -145,18 +145,4 @@ describe("evaluate", () => {
     expect(result).toBe("dataset");
     expectType<typeof result>().toStrictEqual<"dataset">();
   });
-
-  it.failing("groq-js readme example", async () => {
-    const query = '*[_type == "user"]{name}';
-    const tree = parse(query);
-    const dataset = [
-      { _type: "user", name: "Michael" },
-      { _type: "company", name: "Bluth Company" },
-    ] as const;
-    const result = await (await evaluate(tree, { dataset })).get();
-
-    // TODO
-    expect(result).toStrictEqual({ name: null });
-    expectType<typeof result>().toStrictEqual<{ name: null }>();
-  });
 });
