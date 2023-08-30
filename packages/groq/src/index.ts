@@ -17,8 +17,10 @@ import type {
   ArrayCoerceNode,
   ArrayElementNode,
   ArrayNode,
+  AscNode,
   DateTime,
   DerefNode,
+  DescNode,
   EverythingNode,
   ExprNode,
   FilterNode,
@@ -832,9 +834,48 @@ type CompoundExpression<TExpression extends string> =
   | PipeFuncCall<TExpression>
   | TraversalExpression<TExpression>;
 
+type Level1 =
+  // TODO Pair
+  { _TODO: "Pair" };
+
+type Level2 = Level1 | OrNode;
+
+type Level3 = AndNode | Level2;
+
+type Level4 =
+  | AscNode
+  | DescNode
+  | Level3
+  | (OpCallNode & { op: "!=" | "<" | "<=" | "==" | ">" | ">=" });
+
+type Level5 = // TODO https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Precedence-and-associativity
+  Level4;
+
+type Level6 = Level5 | (OpCallNode & { op: "-" | "+" });
+
+type Level7 = Level6 | (OpCallNode & { op: "*" | "/" | "%" });
+
+type Level8 = Level7 | NegNode;
+
+type Level9 = Level8 | (OpCallNode & { op: "**" });
+
+// type Level10 = Level9 | NotNode | PosNode;
+
 type BooleanOperators = {
-  "&&": { stronger: false; type: "And"; weaker: true };
-  "||": { stronger: true; type: "Or"; weaker: false };
+  "&&": {
+    leftLevel: Level2;
+    rightLevel: Level3;
+    stronger: false;
+    type: "And";
+    weaker: true;
+  };
+  "||": {
+    leftLevel: Level1;
+    rightLevel: Level2;
+    stronger: true;
+    type: "Or";
+    weaker: false;
+  };
 };
 
 /**
@@ -852,21 +893,33 @@ type BooleanOperator<
   : TExpression extends `${infer TLeft}${TOp}${infer TRight}`
   ?
       | BooleanOperator<TRight, TOp, `${_Prefix}${TLeft}${TOp}`>
-      | (_Parse<`${_Prefix}${TLeft}`> extends never
+      | (Exclude<
+          _Parse<`${_Prefix}${TLeft}`>,
+          BooleanOperators[NonNullable<TOp>]["leftLevel"]
+        > extends never
           ? never
-          : _Parse<TRight> extends never
+          : Exclude<
+              _Parse<TRight>,
+              BooleanOperators[NonNullable<TOp>]["rightLevel"]
+            > extends never
           ? never
           : {
-              left: _Parse<`${_Prefix}${TLeft}`>;
-              right: _Parse<TRight>;
+              left: Exclude<
+                _Parse<`${_Prefix}${TLeft}`>,
+                BooleanOperators[NonNullable<TOp>]["leftLevel"]
+              >;
+              right: Exclude<
+                _Parse<TRight>,
+                BooleanOperators[NonNullable<TOp>]["rightLevel"]
+              >;
               type: BooleanOperators[NonNullable<TOp>]["type"];
             })
   : never;
 
 type PrefixOperators = {
-  "!": "Not";
-  "+": "Pos";
-  "-": "Neg";
+  "!": { level: Exclude<Level9, NegNode>; type: "Not" };
+  "+": { level: Exclude<Level9, NegNode>; type: "Pos" };
+  "-": { level: Level7; type: "Neg" };
 };
 
 /**
@@ -882,27 +935,41 @@ type PrefixOperator<
       [TOp in keyof PrefixOperators]: PrefixOperator<TExpression, TOp>;
     }[keyof PrefixOperators]
   : TExpression extends `${TOp}${infer TBase}`
-  ? _Parse<TBase> extends never
+  ? Exclude<
+      _Parse<TBase>,
+      PrefixOperators[NonNullable<TOp>]["level"]
+    > extends never
     ? never
     : {
-        base: _Parse<TBase>;
-        type: PrefixOperators[NonNullable<TOp>];
+        base: Exclude<
+          _Parse<TBase>,
+          PrefixOperators[NonNullable<TOp>]["level"]
+        >;
+        type: PrefixOperators[NonNullable<TOp>]["type"];
       }
   : never;
 
 type Operators = {
-  "!=": true;
-  "%": true;
-  "*": true;
-  "**": true;
-  "+": true;
-  "-": true;
-  "/": true;
-  "<": true;
-  "<=": true;
-  "==": true;
-  ">": true;
-  ">=": true;
+  "!=": { leftLevel: Level4; rightLevel: Level4 };
+  "%": { leftLevel: Level6; rightLevel: Level7 };
+  "*": {
+    leftLevel: Level6;
+    rightLevel: // HACK https://github.com/sanity-io/GROQ/issues/112
+    EverythingNode | Level7;
+  };
+  "**": {
+    leftLevel: Level9;
+    rightLevel: // HACK Should be Level8, but NegNode on the right is fine
+    Level7;
+  };
+  "+": { leftLevel: Level5; rightLevel: Level6 };
+  "-": { leftLevel: Level5; rightLevel: Level6 };
+  "/": { leftLevel: Level6; rightLevel: Level7 };
+  "<": { leftLevel: Level4; rightLevel: Level4 };
+  "<=": { leftLevel: Level4; rightLevel: Level4 };
+  "==": { leftLevel: Level4; rightLevel: Level4 };
+  ">": { leftLevel: Level4; rightLevel: Level4 };
+  ">=": { leftLevel: Level4; rightLevel: Level4 };
 };
 
 /**
@@ -926,14 +993,26 @@ type OpCall<
   : TExpression extends `${infer TLeft}${TOp}${infer TRight}`
   ?
       | OpCall<TRight, TOp, `${_Prefix}${TLeft}${TOp}`>
-      | (_Parse<`${_Prefix}${TLeft}`> extends never
+      | (Exclude<
+          _Parse<`${_Prefix}${TLeft}`>,
+          Operators[NonNullable<TOp>]["leftLevel"]
+        > extends never
           ? never
-          : _Parse<TRight> extends never
+          : Exclude<
+              _Parse<TRight>,
+              Operators[NonNullable<TOp>]["rightLevel"]
+            > extends never
           ? never
           : {
-              left: _Parse<`${_Prefix}${TLeft}`>;
+              left: Exclude<
+                _Parse<`${_Prefix}${TLeft}`>,
+                Operators[NonNullable<TOp>]["leftLevel"]
+              >;
               op: TOp;
-              right: _Parse<TRight>;
+              right: Exclude<
+                _Parse<TRight>,
+                Operators[NonNullable<TOp>]["rightLevel"]
+              >;
               type: "OpCall";
             })
   : never;
