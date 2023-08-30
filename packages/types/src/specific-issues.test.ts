@@ -3,10 +3,10 @@ import type { ImageCrop, ImageHotspot, ReferenceValue } from "sanity";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import { defineArrayMember, defineField } from "..";
-import type { _InferValue } from "..";
+import { defineArrayMember, defineField } from ".";
+import type { _InferValue } from ".";
 
-describe("depth test", () => {
+describe("specific issues", () => {
   it("#108 object -> array -> object -> object -> array -> object -> image", () => {
     // https://github.com/saiichihashimoto/sanity-typed/issues/108
     const type = defineField({
