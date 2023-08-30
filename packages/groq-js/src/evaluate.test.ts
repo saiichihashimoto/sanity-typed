@@ -55,6 +55,22 @@ describe("evaluate", () => {
     expectType<typeof result>().toStrictEqual<symbol>();
   });
 
+  it("requires the correct params in queries", async () => {
+    const query = "$param";
+    const tree = parse(query);
+    const result = await (
+      await evaluate(tree, {
+        params: {
+          // @ts-expect-error -- expected error!
+          param2: FOO,
+        },
+      })
+    ).get();
+
+    expect(result).toStrictEqual(FOO);
+    expectType<typeof result>().not.toStrictEqual<symbol>();
+  });
+
   it.todo("uses `identity` as `identity()`");
 
   it("uses `before` as `before()`", async () => {

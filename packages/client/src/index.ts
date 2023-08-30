@@ -2,13 +2,17 @@ import { createClient as createClientNative } from "@sanity/client";
 import type {
   ClientConfig,
   FilteredResponseQueryOptions,
-  QueryParams,
   SanityClient as SanityClientNative,
   UnfilteredResponseQueryOptions,
 } from "@sanity/client";
 import type { Merge } from "type-fest";
 
-import type { ExecuteQuery, RootScope } from "@sanity-typed/groq";
+import type {
+  ExecuteQuery,
+  Parse,
+  QueryParams,
+  RootScope,
+} from "@sanity-typed/groq";
 import type { SanityDocument } from "@sanity-typed/types";
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- recursive type
@@ -17,9 +21,12 @@ export interface SanityClient<
   Dataset extends any[]
 > extends Omit<SanityClientNative, "clone" | "fetch" | "withConfig"> {
   clone: () => SanityClient<Client, Dataset>;
-  fetch: <Query extends string, const Q = QueryParams>(
+  fetch: <
+    Query extends string,
+    const Parameters extends QueryParams<Parse<Query>>
+  >(
     query: Query,
-    params?: Q,
+    params?: Parameters,
     options?: FilteredResponseQueryOptions | UnfilteredResponseQueryOptions
   ) => Promise<
     ExecuteQuery<
@@ -28,7 +35,7 @@ export interface SanityClient<
         client: Client;
         dataset: Dataset;
         delta: { after: null; before: null };
-        parameters: NonNullable<Q>;
+        parameters: Parameters;
       }>
     >
   >;

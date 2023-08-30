@@ -12,7 +12,7 @@ import type {
 } from "groq-js";
 import type { Merge } from "type-fest";
 
-import type { Evaluate, Parse } from "@sanity-typed/groq";
+import type { Evaluate, Parse, QueryParams } from "@sanity-typed/groq";
 
 export const parse = <const Query extends string>(
   input: Query,
@@ -41,7 +41,7 @@ type StaticOrStreamValue<P, T extends GroqType> =
 export const evaluate = <
   const Node extends ExprNode,
   Dataset extends readonly any[],
-  Parameters extends { [param: string]: unknown },
+  const Parameters extends QueryParams<Node>,
   SanityProjectId extends string,
   SanityDataset extends string,
   Before extends Dataset[number] | null = null,

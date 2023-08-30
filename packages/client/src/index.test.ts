@@ -60,6 +60,21 @@ describe("createClient", () => {
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<Promise<"foo">>();
     });
+
+    it("requires the correct params in queries", () => {
+      const exec = async () => {
+        const client = createClient()({
+          projectId: "projectId",
+        });
+
+        return client.fetch("$param", {
+          // @ts-expect-error -- expected error!
+          param2: "foo",
+        });
+      };
+
+      expectType<ReturnType<typeof exec>>().not.toStrictEqual<Promise<"foo">>();
+    });
   });
 
   describe("clone", () => {

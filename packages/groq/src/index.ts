@@ -60,7 +60,7 @@ type Context<
   client: ClientConfig;
   dataset: Dataset;
   delta: { after: DeltaElement | null; before: DeltaElement | null };
-  parameters: { [param: string]: any };
+  parameters: object;
 };
 
 /**
@@ -1761,8 +1761,11 @@ type EvaluateParameter<
   TNode extends ExprNode,
   TScope extends Scope<Context<readonly any[], any>>
 > = TNode extends ParameterNode
-  ? TScope["context"]["parameters"][TNode["name"]]
+  ? TNode["name"] extends keyof TScope["context"]["parameters"]
+    ? TScope["context"]["parameters"][TNode["name"]]
+    : null
   : never;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateParent()
  */
@@ -1935,6 +1938,34 @@ type Defaults<Value, PartialValue extends Partial<Value>> = {
     ? NonNullable<PartialValue[Key]>
     : Value[Key];
 };
+
+export type QueryParams<TNode extends ExprNode> = TNode extends ParameterNode
+  ? { [Name in TNode["name"]]: unknown }
+  : object &
+      (TNode extends { args: (infer TArg extends ExprNode)[] }
+        ? QueryParams<TArg>
+        : unknown) &
+      (TNode extends { base: infer TBase extends ExprNode }
+        ? QueryParams<TBase>
+        : unknown) &
+      (TNode extends { condition: infer TCondition extends ExprNode }
+        ? QueryParams<TCondition>
+        : unknown) &
+      (TNode extends { expr: infer TExpr extends ExprNode }
+        ? QueryParams<TExpr>
+        : unknown) &
+      (TNode extends { fallback: infer TFallback extends ExprNode }
+        ? QueryParams<TFallback>
+        : unknown) &
+      (TNode extends { left: infer TLeft extends ExprNode }
+        ? QueryParams<TLeft>
+        : unknown) &
+      (TNode extends { right: infer TRight extends ExprNode }
+        ? QueryParams<TRight>
+        : unknown) &
+      (TNode extends { value: infer TValue extends ExprNode }
+        ? QueryParams<TValue>
+        : unknown);
 
 /** @private */
 export type _ScopeFromPartialContext<
