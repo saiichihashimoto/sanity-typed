@@ -158,6 +158,7 @@ const data = await client.fetch('*[_type=="product"]');
 - [`@sanity-typed/groq-js`](packages/groq-js): Typed [GROQ-JS](https://github.com/sanity-io/groq-js) Results, all inferred, no query changes!
 - [`@sanity-typed/groq`](packages/groq): Typed GROQ Results, all inferred, no query changes!
   - Typically, this isn't used directly, but via [`@sanity-typed/client`'s](packages/client) and [`@sanity-typed/groq-js`'s](packages/groq-js) methods that use groq strings.
+- [`@sanity-typed/zod`](packages/zod): FIXME
 
 ## Goals
 

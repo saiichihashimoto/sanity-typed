@@ -494,5 +494,5 @@ export const sanityZod = <
           | _Type<"image", any, any, any, any, any, any>
         >
       )
-    : // TODO aliasedType: () =>
+    : // FIXME aliasedType: () =>
       (undefined as never)) as SanityZodReturn<TSchema>;

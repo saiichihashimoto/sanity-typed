@@ -10,7 +10,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-TODO
+FIXME
 
 ## Page Contents
 - [Install](#install)
@@ -24,5 +24,5 @@ npm install @sanity-typed/zod
 
 ## Usage
 
-TODO
+FIXME
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/zod/_README.md -->

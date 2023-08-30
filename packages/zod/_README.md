@@ -9,7 +9,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-TODO
+FIXME
 
 @[:page_toc](## Page Contents)
 
@@ -21,4 +21,4 @@ npm install @sanity-typed/zod
 
 ## Usage
 
-TODO
+FIXME
