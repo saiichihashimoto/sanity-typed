@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { _InferValue } from "@sanity-typed/types";
 
-import { sanityZod } from ".";
+import { _sanityTypeToZod } from ".";
 
 describe("crossDatasetReference", () => {
   describe("defineArrayMember", () => {
@@ -20,7 +20,7 @@ describe("crossDatasetReference", () => {
         dataset: "foo",
         projectId: "bar",
       });
-      const zod = sanityZod(arrayMember);
+      const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
         Omit<
@@ -55,7 +55,7 @@ describe("crossDatasetReference", () => {
         dataset: "foo",
         projectId: "bar",
       });
-      const zod = sanityZod(field);
+      const zod = _sanityTypeToZod(field);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof field>
@@ -86,7 +86,7 @@ describe("crossDatasetReference", () => {
         dataset: "foo",
         projectId: "bar",
       });
-      const zod = sanityZod(type);
+      const zod = _sanityTypeToZod(type);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof type>

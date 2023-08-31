@@ -435,7 +435,13 @@ type IntrinsicDefinitions<
   url: UrlDefinition<TRequired>;
 };
 
-type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any, any>;
+export type IntrinsicTypeName = keyof IntrinsicDefinitions<
+  any,
+  any,
+  any,
+  any,
+  any
+>;
 
 declare const aliasedType: unique symbol;
 
@@ -457,7 +463,7 @@ type TypeAliasDefinition<
 >;
 
 /** @private */
-export type _ArrayMember<
+export type _ArrayMemberDefinition<
   TType extends string,
   TName extends string,
   TAlias extends IntrinsicTypeName,
@@ -576,7 +582,7 @@ export const _makeDefineArrayMember =
       name?: string;
     } = never
   >(
-    arrayOfSchema: _ArrayMember<
+    arrayOfSchema: _ArrayMemberDefinition<
       TType,
       TName,
       TAlias,
@@ -597,7 +603,7 @@ export const _makeDefineArrayMember =
 export const defineArrayMember = _makeDefineArrayMember<false>();
 
 /** @private */
-export type _Field<
+export type _FieldDefinition<
   TType extends string,
   TName extends string,
   TAlias extends IntrinsicTypeName,
@@ -653,7 +659,7 @@ export const defineField = <
   } = never,
   TRequired extends boolean = false
 >(
-  schemaField: _Field<
+  schemaField: _FieldDefinition<
     TType,
     TName,
     TAlias,
@@ -667,17 +673,17 @@ export const defineField = <
 ) => defineFieldNative(schemaField as any, defineOptions) as typeof schemaField;
 
 /** @private */
-export type _Type<
+export type _TypeDefinition<
   TType extends string,
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
+  TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   },
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
-  TReferenced extends string
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
 > = MaybeAllowUnknownProps<TStrict> &
   (TType extends IntrinsicTypeName
     ? // HACK Why can't I just index off of IntrinsicDefinitions?
@@ -715,14 +721,14 @@ export const defineType = <
     name?: string;
   } = never
 >(
-  schemaDefinition: _Type<
+  schemaDefinition: _TypeDefinition<
     TType,
     TName,
     TAlias,
     TStrict,
+    TReferenced,
     TFieldDefinition,
-    TMemberDefinition,
-    TReferenced
+    TMemberDefinition
   >,
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) =>
@@ -732,8 +738,16 @@ export const defineType = <
   ) as typeof schemaDefinition;
 
 type ConfigBase<
-  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends _Type<any, any, any, any, any, any, any>
+  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >
 > = {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive type
   plugins?: (PluginOptions<TPluginTypeDefinition, any> | PluginOptionsNative)[];
@@ -754,8 +768,8 @@ type ConfigBase<
 };
 
 export type PluginOptions<
-  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends _Type<
+  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _TypeDefinition<
     any,
     any,
     any,
@@ -763,13 +777,13 @@ export type PluginOptions<
     any,
     any,
     any
-  > = _Type<string, any, any, any, any, any, any>
+  > = _TypeDefinition<string, any, any, any, any, any, any>
 > = ConfigBase<TTypeDefinition, TPluginTypeDefinition> &
   Omit<PluginOptionsNative, "plugins" | "schema">;
 
 export const definePlugin = <
-  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends _Type<
+  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _TypeDefinition<
     any,
     any,
     any,
@@ -777,7 +791,7 @@ export const definePlugin = <
     any,
     any,
     any
-  > = _Type<string, any, any, any, any, any, any>,
+  > = _TypeDefinition<string, any, any, any, any, any, any>,
   TOptions = void
 >(
   arg:
@@ -791,16 +805,8 @@ export const definePlugin = <
   ) => PluginOptions<TTypeDefinition, TPluginTypeDefinition>;
 
 type WorkspaceOptions<
-  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends _Type<any, any, any, any, any, any, any>
-> = Merge<
-  WorkspaceOptionsNative,
-  ConfigBase<TTypeDefinition, TPluginTypeDefinition>
->;
-
-export type Config<
-  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends _Type<
+  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _TypeDefinition<
     any,
     any,
     any,
@@ -808,7 +814,23 @@ export type Config<
     any,
     any,
     any
-  > = _Type<string, any, any, any, any, any, any>
+  >
+> = Merge<
+  WorkspaceOptionsNative,
+  ConfigBase<TTypeDefinition, TPluginTypeDefinition>
+>;
+
+export type Config<
+  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  > = _TypeDefinition<string, any, any, any, any, any, any>
 > =
   | WorkspaceOptions<TTypeDefinition, TPluginTypeDefinition>[]
   | (Omit<
@@ -820,8 +842,8 @@ export type Config<
     });
 
 export const defineConfig = <
-  TTypeDefinition extends _Type<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends _Type<
+  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
+  TPluginTypeDefinition extends _TypeDefinition<
     any,
     any,
     any,
@@ -829,7 +851,7 @@ export const defineConfig = <
     any,
     any,
     any
-  > = _Type<string, any, any, any, any, any, any>
+  > = _TypeDefinition<string, any, any, any, any, any, any>
 >(
   config: Config<TTypeDefinition, TPluginTypeDefinition>
 ) =>
@@ -848,7 +870,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
       infer TStrict extends StrictDefinition
     >
   >
-    ? _Type<TType, TName, NonNullable<TAlias>, TStrict, any, any, any>
+    ? _TypeDefinition<TType, TName, NonNullable<TAlias>, TStrict, any, any, any>
     : Untyped extends ReturnType<
         typeof defineFieldNative<
           infer TType extends string,
@@ -859,7 +881,16 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
           infer TStrict extends StrictDefinition
         >
       >
-    ? _Field<TType, TName, NonNullable<TAlias>, TStrict, any, any, any, any>
+    ? _FieldDefinition<
+        TType,
+        TName,
+        NonNullable<TAlias>,
+        TStrict,
+        any,
+        any,
+        any,
+        any
+      >
     : Untyped extends ReturnType<
         typeof defineArrayMemberNative<
           infer TType extends string,
@@ -870,7 +901,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
           infer TStrict extends StrictDefinition
         >
       >
-    ? _ArrayMember<
+    ? _ArrayMemberDefinition<
         TType,
         TName,
         NonNullable<TAlias>,
@@ -887,7 +918,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
       };
 
 export const castFromTyped = <Untyped>(untyped: Untyped) =>
-  untyped as Untyped extends _Field<
+  untyped as Untyped extends _FieldDefinition<
     infer TType extends string,
     infer TName extends string,
     infer TAlias extends IntrinsicTypeName,
@@ -900,7 +931,7 @@ export const castFromTyped = <Untyped>(untyped: Untyped) =>
     ? ReturnType<
         typeof defineFieldNative<TType, TName, any, any, TAlias, TStrict>
       >
-    : Untyped extends _Type<
+    : Untyped extends _TypeDefinition<
         infer TType extends string,
         infer TName extends string,
         infer TAlias extends IntrinsicTypeName,
@@ -912,7 +943,7 @@ export const castFromTyped = <Untyped>(untyped: Untyped) =>
     ? ReturnType<
         typeof defineTypeNative<TType, TName, any, any, TAlias, TStrict>
       >
-    : Untyped extends _ArrayMember<
+    : Untyped extends _ArrayMemberDefinition<
         infer TType extends string,
         infer TName extends string,
         infer TAlias extends IntrinsicTypeName,
@@ -940,7 +971,7 @@ type OmitToUnknown<T, K extends number | string | symbol> = Exclude<
 
 type ExpandAliasValues<
   Value,
-  TAliasedDefinition extends _Type<any, any, any, any, any, any, any>
+  TAliasedDefinition extends _TypeDefinition<any, any, any, any, any, any, any>
 > = Value extends AliasValue<infer TType>
   ? Extract<TAliasedDefinition, { name: TType }> extends never
     ? unknown
@@ -977,7 +1008,7 @@ export type InferSchemaValues<
   ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
 >
   ? {
-      [TName in TTypeDefinition extends _Type<
+      [TName in TTypeDefinition extends _TypeDefinition<
         any,
         infer TName extends string,
         any,
@@ -988,13 +1019,29 @@ export type InferSchemaValues<
       >
         ? TName
         : never]: ExpandAliasValues<
-        TTypeDefinition extends _Type<"object", TName, any, any, any, any, any>
+        TTypeDefinition extends _TypeDefinition<
+          "object",
+          TName,
+          any,
+          any,
+          any,
+          any,
+          any
+        >
           ? _InferValue<TTypeDefinition> & { _type: TName }
-          : TTypeDefinition extends _Type<any, TName, any, any, any, any, any>
+          : TTypeDefinition extends _TypeDefinition<
+              any,
+              TName,
+              any,
+              any,
+              any,
+              any,
+              any
+            >
           ? _InferValue<TTypeDefinition>
           : never,
         // TPluginTypeDefinition | TTypeDefinition
-        | (_Type<
+        | (_TypeDefinition<
             any,
             any,
             any,
@@ -1005,7 +1052,15 @@ export type InferSchemaValues<
           > extends TPluginTypeDefinition
             ? never
             : TPluginTypeDefinition)
-        | (_Type<any, any, any, any, any, any, any> extends TTypeDefinition
+        | (_TypeDefinition<
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any
+          > extends TTypeDefinition
             ? never
             : TTypeDefinition)
       >;

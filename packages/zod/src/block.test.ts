@@ -5,7 +5,7 @@ import { expectType } from "@sanity-typed/test-utils";
 import { defineArrayMember, defineType } from "@sanity-typed/types";
 import type { _InferValue } from "@sanity-typed/types";
 
-import { sanityZod } from ".";
+import { _sanityTypeToZod } from ".";
 
 describe("block", () => {
   describe("defineArrayMember", () => {
@@ -13,7 +13,7 @@ describe("block", () => {
       const arrayMember = defineArrayMember({
         type: "block",
       });
-      const zod = sanityZod(arrayMember);
+      const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toBeAssignableTo<
         Omit<
@@ -43,7 +43,7 @@ describe("block", () => {
         name: "foo",
         type: "block",
       });
-      const zod = sanityZod(type);
+      const zod = _sanityTypeToZod(type);
 
       expectType<z.infer<typeof zod>>().toBeAssignableTo<
         _InferValue<typeof type>

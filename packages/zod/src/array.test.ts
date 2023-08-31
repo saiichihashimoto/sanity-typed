@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { _InferValue } from "@sanity-typed/types";
 
-import { sanityZod } from ".";
+import { _sanityTypeToZod } from ".";
 
 describe("array", () => {
   describe("defineField", () => {
@@ -19,7 +19,7 @@ describe("array", () => {
         type: "array",
         of: [defineArrayMember({ type: "boolean" })],
       });
-      const zod = sanityZod(field);
+      const zod = _sanityTypeToZod(field);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof field>
@@ -37,7 +37,7 @@ describe("array", () => {
           defineArrayMember({ type: "string" }),
         ],
       });
-      const zod = sanityZod(field);
+      const zod = _sanityTypeToZod(field);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof field>
@@ -62,7 +62,7 @@ describe("array", () => {
         type: "array",
         of: [defineArrayMember({ type: "boolean" })],
       });
-      const zod = sanityZod(type);
+      const zod = _sanityTypeToZod(type);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof type>
@@ -80,7 +80,7 @@ describe("array", () => {
           defineArrayMember({ type: "string" }),
         ],
       });
-      const zod = sanityZod(type);
+      const zod = _sanityTypeToZod(type);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof type>

@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { _InferValue } from "@sanity-typed/types";
 
-import { sanityZod } from ".";
+import { _sanityTypeToZod } from ".";
 
 describe("datetime", () => {
   describe("defineArrayMember", () => {
@@ -17,7 +17,7 @@ describe("datetime", () => {
       const arrayMember = defineArrayMember({
         type: "datetime",
       });
-      const zod = sanityZod(arrayMember);
+      const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof arrayMember>
@@ -33,7 +33,7 @@ describe("datetime", () => {
         name: "foo",
         type: "datetime",
       });
-      const zod = sanityZod(field);
+      const zod = _sanityTypeToZod(field);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof field>
@@ -49,7 +49,7 @@ describe("datetime", () => {
         name: "foo",
         type: "datetime",
       });
-      const zod = sanityZod(type);
+      const zod = _sanityTypeToZod(type);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
         _InferValue<typeof type>

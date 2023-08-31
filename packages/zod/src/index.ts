@@ -1,6 +1,32 @@
+import type { StrictDefinition } from "sanity";
 import { z } from "zod";
 
-import type { _ArrayMember, _Field, _Type } from "@sanity-typed/types";
+import type {
+  IntrinsicTypeName,
+  _ArrayMemberDefinition,
+  _FieldDefinition,
+  _TypeDefinition,
+} from "@sanity-typed/types";
+
+type _SchemaTypeDefinition<
+  TType extends string,
+  TName extends string,
+  TAlias extends IntrinsicTypeName,
+  TStrict extends StrictDefinition,
+  TReferenced extends string
+> =
+  | _ArrayMemberDefinition<
+      TType,
+      TName,
+      TAlias,
+      TStrict,
+      TReferenced,
+      any,
+      any,
+      any
+    >
+  | _FieldDefinition<TType, TName, TAlias, TStrict, TReferenced, any, any, any>
+  | _TypeDefinition<TType, TName, TAlias, TStrict, TReferenced, any, any>;
 
 const zodUnion = <Zod extends z.ZodTypeAny>(types: Zod[]) =>
   types.length === 1 ? types[0] : z.union(types as [Zod, Zod, ...Zod[]]);
@@ -51,12 +77,9 @@ const constantZods = {
 };
 
 type SanityZodArrayReturn<
-  TSchema extends
-    | _ArrayMember<"array", any, any, any, any, any, any, any>
-    | _Field<"array", any, any, any, any, any, any, any>
-    | _Type<"array", any, any, any, any, any, any>
-> = TSchema extends {
-  of?: (infer TMemberDefinition extends _ArrayMember<
+  TSchemaType extends _SchemaTypeDefinition<"array", any, any, any, any>
+> = TSchemaType extends {
+  of?: (infer TMemberDefinition extends _ArrayMemberDefinition<
     any,
     any,
     any,
@@ -72,21 +95,20 @@ type SanityZodArrayReturn<
   : never;
 
 const sanityZodArray = <
-  TSchema extends
-    | _ArrayMember<"array", any, any, any, any, any, any, any>
-    | _Field<"array", any, any, any, any, any, any, any>
-    | _Type<"array", any, any, any, any, any, any>
+  TSchemaType extends _SchemaTypeDefinition<"array", any, any, any, any>
 >({
   of,
-}: TSchema) =>
+}: TSchemaType) =>
   z.array(
     zodUnion(
-      (of as _ArrayMember<any, any, any, any, any, any, any, any>[]).map(
+      (
+        of as _ArrayMemberDefinition<any, any, any, any, any, any, any, any>[]
+      ).map(
         // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-        sanityZod
+        _sanityTypeToZod
       )
     )
-  ) as SanityZodArrayReturn<TSchema>;
+  ) as SanityZodArrayReturn<TSchemaType>;
 
 const sanityZodBlock = z.object({
   _type: z.literal("block"),
@@ -114,7 +136,7 @@ const sanityZodBlock = z.object({
 type SanityZodBlockReturn = typeof sanityZodBlock;
 
 const isFieldRequired = (
-  field: _Field<any, any, any, any, any, any, any, any>
+  field: _FieldDefinition<any, any, any, any, any, any, any, any>
 ) => {
   // eslint-disable-next-line fp/no-let -- mutation
   let isRequired = false;
@@ -152,16 +174,15 @@ const isFieldRequired = (
 };
 
 type SanityZodFields<
-  TSchema extends Extract<
-    | _ArrayMember<any, any, any, any, any, any, any, any>
-    | _Field<any, any, any, any, any, any, any, any>
-    | _Type<any, any, any, any, any, any, any>,
-    {
-      fields?: _Field<any, any, any, any, any, any, any, any>[];
-    }
+  TSchemaType extends _SchemaTypeDefinition<
+    "document" | "file" | "image" | "object",
+    any,
+    any,
+    any,
+    any
   >
-> = TSchema extends {
-  fields?: (infer TFieldDefinition extends _Field<
+> = TSchemaType extends {
+  fields?: (infer TFieldDefinition extends _FieldDefinition<
     any,
     any,
     any,
@@ -175,7 +196,7 @@ type SanityZodFields<
   ? {
       [Name in Extract<
         TFieldDefinition,
-        _Field<any, any, any, any, any, any, any, false>
+        _FieldDefinition<any, any, any, any, any, any, any, false>
       >["name"]]: z.ZodOptional<
         // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
         SanityZodReturn<Extract<TFieldDefinition, { name: Name }>>
@@ -183,89 +204,64 @@ type SanityZodFields<
     } & {
       [Name in Extract<
         TFieldDefinition,
-        _Field<any, any, any, any, any, any, any, true>
+        _FieldDefinition<any, any, any, any, any, any, any, true>
         // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
       >["name"]]: SanityZodReturn<Extract<TFieldDefinition, { name: Name }>>;
     }
   : never;
 
 const sanityZodFields = <
-  TSchema extends Extract<
-    | _ArrayMember<any, any, any, any, any, any, any, any>
-    | _Field<any, any, any, any, any, any, any, any>
-    | _Type<any, any, any, any, any, any, any>,
-    {
-      fields?: _Field<any, any, any, any, any, any, any, any>[];
-    }
+  TSchemaType extends _SchemaTypeDefinition<
+    "document" | "file" | "image" | "object",
+    any,
+    any,
+    any,
+    any
   >
 >({
   fields = [],
-}: TSchema) =>
+}: TSchemaType) =>
   Object.fromEntries(
-    (fields as _Field<any, any, any, any, any, any, any, any>[]).map(
+    (fields as _FieldDefinition<any, any, any, any, any, any, any, any>[]).map(
       (field) => [
         field.name,
         isFieldRequired(field)
           ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-            sanityZod(field)
+            _sanityTypeToZod(field)
           : z.optional(
               // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-              sanityZod(field)
+              _sanityTypeToZod(field)
             ),
       ]
     )
-  ) as SanityZodFields<TSchema>;
+  ) as SanityZodFields<TSchemaType>;
 
 type SanityZodObjectReturn<
-  TSchema extends
-    | _ArrayMember<"object", any, any, any, any, any, any, any>
-    | _Field<"object", any, any, any, any, any, any, any>
-    | _Type<"object", any, any, any, any, any, any>
-> = z.ZodObject<SanityZodFields<TSchema>>;
+  TSchemaType extends _SchemaTypeDefinition<"object", any, any, any, any>
+> = z.ZodObject<SanityZodFields<TSchemaType>>;
 
 const sanityZodObject = <
-  TSchema extends
-    | _ArrayMember<"object", any, any, any, any, any, any, any>
-    | _Field<"object", any, any, any, any, any, any, any>
-    | _Type<"object", any, any, any, any, any, any>
+  TSchemaType extends _SchemaTypeDefinition<"object", any, any, any, any>
 >(
-  schema: TSchema
-) => z.object(sanityZodFields(schema)) as SanityZodObjectReturn<TSchema>;
+  schema: TSchemaType
+) => z.object(sanityZodFields(schema)) as SanityZodObjectReturn<TSchemaType>;
 
 const sanityZodDocumentFields = <
-  TSchema extends
-    | _ArrayMember<"document", any, any, any, any, any, any, any>
-    | _Field<"document", any, any, any, any, any, any, any>
-    | _Type<"document", any, any, any, any, any, any>
+  TSchemaType extends _SchemaTypeDefinition<"document", any, any, any, any>
 >({
   name,
-}: TSchema) => ({
+}: TSchemaType) => ({
   _createdAt: z.string(),
   _id: z.string(),
   _rev: z.string(),
   _type: z.literal(
-    name as TSchema extends
-      | _ArrayMember<
-          "document",
-          infer TName extends string,
-          any,
-          any,
-          any,
-          any,
-          any,
-          any
-        >
-      | _Field<
-          "document",
-          infer TName extends string,
-          any,
-          any,
-          any,
-          any,
-          any,
-          any
-        >
-      | _Type<"document", infer TName extends string, any, any, any, any, any>
+    name as TSchemaType extends _SchemaTypeDefinition<
+      "document",
+      infer TName extends string,
+      any,
+      any,
+      any
+    >
       ? TName
       : never
   ),
@@ -273,26 +269,21 @@ const sanityZodDocumentFields = <
 });
 
 type SanityZodDocumentReturn<
-  TSchema extends
-    | _ArrayMember<"document", any, any, any, any, any, any, any>
-    | _Field<"document", any, any, any, any, any, any, any>
-    | _Type<"document", any, any, any, any, any, any>
+  TSchemaType extends _SchemaTypeDefinition<"document", any, any, any, any>
 > = z.ZodObject<
-  ReturnType<typeof sanityZodDocumentFields<TSchema>> & SanityZodFields<TSchema>
+  ReturnType<typeof sanityZodDocumentFields<TSchemaType>> &
+    SanityZodFields<TSchemaType>
 >;
 
 const sanityZodDocument = <
-  TSchema extends
-    | _ArrayMember<"document", any, any, any, any, any, any, any>
-    | _Field<"document", any, any, any, any, any, any, any>
-    | _Type<"document", any, any, any, any, any, any>
+  TSchemaType extends _SchemaTypeDefinition<"document", any, any, any, any>
 >(
-  schema: TSchema
+  schema: TSchemaType
 ) =>
   z.object({
     ...sanityZodFields(schema),
     ...sanityZodDocumentFields(schema),
-  }) as unknown as SanityZodDocumentReturn<TSchema>;
+  }) as unknown as SanityZodDocumentReturn<TSchemaType>;
 
 const assetZod = z.object({
   _key: z.optional(z.string()),
@@ -319,24 +310,18 @@ const sanityZodFileFields = {
 };
 
 type SanityZodFileReturn<
-  TSchema extends
-    | _ArrayMember<"file", any, any, any, any, any, any, any>
-    | _Field<"file", any, any, any, any, any, any, any>
-    | _Type<"file", any, any, any, any, any, any>
-> = z.ZodObject<SanityZodFields<TSchema> & typeof sanityZodFileFields>;
+  TSchemaType extends _SchemaTypeDefinition<"file", any, any, any, any>
+> = z.ZodObject<SanityZodFields<TSchemaType> & typeof sanityZodFileFields>;
 
 const sanityZodFile = <
-  TSchema extends
-    | _ArrayMember<"file", any, any, any, any, any, any, any>
-    | _Field<"file", any, any, any, any, any, any, any>
-    | _Type<"file", any, any, any, any, any, any>
+  TSchemaType extends _SchemaTypeDefinition<"file", any, any, any, any>
 >(
-  schema: TSchema
+  schema: TSchemaType
 ) =>
   z.object({
     ...sanityZodFields(schema),
     ...sanityZodFileFields,
-  }) as unknown as SanityZodFileReturn<TSchema>;
+  }) as unknown as SanityZodFileReturn<TSchemaType>;
 
 const sanityZodImageFields = {
   _type: z.literal("image"),
@@ -362,98 +347,65 @@ const sanityZodImageFields = {
 };
 
 type SanityZodImageReturn<
-  TSchema extends
-    | _ArrayMember<"image", any, any, any, any, any, any, any>
-    | _Field<"image", any, any, any, any, any, any, any>
-    | _Type<"image", any, any, any, any, any, any>
-> = z.ZodObject<SanityZodFields<TSchema> & typeof sanityZodImageFields>;
+  TSchemaType extends _SchemaTypeDefinition<"image", any, any, any, any>
+> = z.ZodObject<SanityZodFields<TSchemaType> & typeof sanityZodImageFields>;
 
 const sanityZodImage = <
-  TSchema extends
-    | _ArrayMember<"image", any, any, any, any, any, any, any>
-    | _Field<"image", any, any, any, any, any, any, any>
-    | _Type<"image", any, any, any, any, any, any>
+  TSchemaType extends _SchemaTypeDefinition<"image", any, any, any, any>
 >(
-  schema: TSchema
+  schema: TSchemaType
 ) =>
   z.object({
     ...sanityZodFields(schema),
     ...sanityZodImageFields,
-  }) as unknown as SanityZodImageReturn<TSchema>;
+  }) as unknown as SanityZodImageReturn<TSchemaType>;
 
 type SanityZodReturn<
-  TSchema extends
-    | _ArrayMember<any, any, any, any, any, any, any, any>
-    | _Field<any, any, any, any, any, any, any, any>
-    | _Type<any, any, any, any, any, any, any>
-> = TSchema["type"] extends keyof typeof constantZods
-  ? (typeof constantZods)[TSchema["type"]]
-  : TSchema["type"] extends "array"
+  TSchemaType extends _SchemaTypeDefinition<any, any, any, any, any>
+> = TSchemaType["type"] extends keyof typeof constantZods
+  ? (typeof constantZods)[TSchemaType["type"]]
+  : TSchemaType["type"] extends "array"
   ? SanityZodArrayReturn<
-      Extract<
-        TSchema,
-        | _ArrayMember<"array", any, any, any, any, any, any, any>
-        | _Field<"array", any, any, any, any, any, any, any>
-        | _Type<"array", any, any, any, any, any, any>
-      >
+      Extract<TSchemaType, _SchemaTypeDefinition<"array", any, any, any, any>>
     >
-  : TSchema["type"] extends "block"
+  : TSchemaType["type"] extends "block"
   ? SanityZodBlockReturn
-  : TSchema["type"] extends "object"
+  : TSchemaType["type"] extends "object"
   ? SanityZodObjectReturn<
-      Extract<
-        TSchema,
-        | _ArrayMember<"object", any, any, any, any, any, any, any>
-        | _Field<"object", any, any, any, any, any, any, any>
-        | _Type<"object", any, any, any, any, any, any>
-      >
+      Extract<TSchemaType, _SchemaTypeDefinition<"object", any, any, any, any>>
     >
-  : TSchema["type"] extends "document"
+  : TSchemaType["type"] extends "document"
   ? SanityZodDocumentReturn<
       Extract<
-        TSchema,
-        | _ArrayMember<"document", any, any, any, any, any, any, any>
-        | _Field<"document", any, any, any, any, any, any, any>
-        | _Type<"document", any, any, any, any, any, any>
+        TSchemaType,
+        _SchemaTypeDefinition<"document", any, any, any, any>
       >
     >
-  : TSchema["type"] extends "file"
+  : TSchemaType["type"] extends "file"
   ? SanityZodFileReturn<
-      Extract<
-        TSchema,
-        | _ArrayMember<"file", any, any, any, any, any, any, any>
-        | _Field<"file", any, any, any, any, any, any, any>
-        | _Type<"file", any, any, any, any, any, any>
-      >
+      Extract<TSchemaType, _SchemaTypeDefinition<"file", any, any, any, any>>
     >
-  : TSchema["type"] extends "image"
+  : TSchemaType["type"] extends "image"
   ? SanityZodImageReturn<
-      Extract<
-        TSchema,
-        | _ArrayMember<"image", any, any, any, any, any, any, any>
-        | _Field<"image", any, any, any, any, any, any, any>
-        | _Type<"image", any, any, any, any, any, any>
-      >
+      Extract<TSchemaType, _SchemaTypeDefinition<"image", any, any, any, any>>
     >
   : never;
 
-export const sanityZod = <
-  TSchema extends
-    | _ArrayMember<any, any, any, any, any, any, any, any>
-    | _Field<any, any, any, any, any, any, any, any>
-    | _Type<any, any, any, any, any, any, any>
+/** @private */
+export const _sanityTypeToZod = <
+  TSchemaType extends _SchemaTypeDefinition<any, any, any, any, any>
 >(
-  schema: TSchema
-): SanityZodReturn<TSchema> =>
+  schema: TSchemaType
+): SanityZodReturn<TSchemaType> =>
   (schema.type in constantZods
-    ? constantZods[schema.type as TSchema["type"] & keyof typeof constantZods]
+    ? constantZods[
+        schema.type as TSchemaType["type"] & keyof typeof constantZods
+      ]
     : schema.type === "array"
     ? sanityZodArray(
         schema as Extract<
-          TSchema,
-          | _ArrayMember<"array", any, any, any, any, any, any, any>
-          | _Field<"array", any, any, any, any, any, any, any>
-          | _Type<"array", any, any, any, any, any, any>
+          TSchemaType,
+          _SchemaTypeDefinition<"array", any, any, any, any>
         >
       )
     : schema.type === "block"
@@ -461,38 +413,30 @@ export const sanityZod = <
     : schema.type === "object"
     ? sanityZodObject(
         schema as Extract<
-          TSchema,
-          | _ArrayMember<"object", any, any, any, any, any, any, any>
-          | _Field<"object", any, any, any, any, any, any, any>
-          | _Type<"object", any, any, any, any, any, any>
+          TSchemaType,
+          _SchemaTypeDefinition<"object", any, any, any, any>
         >
       )
     : schema.type === "document"
     ? sanityZodDocument(
         schema as Extract<
-          TSchema,
-          | _ArrayMember<"document", any, any, any, any, any, any, any>
-          | _Field<"document", any, any, any, any, any, any, any>
-          | _Type<"document", any, any, any, any, any, any>
+          TSchemaType,
+          _SchemaTypeDefinition<"document", any, any, any, any>
         >
       )
     : schema.type === "file"
     ? sanityZodFile(
         schema as Extract<
-          TSchema,
-          | _ArrayMember<"file", any, any, any, any, any, any, any>
-          | _Field<"file", any, any, any, any, any, any, any>
-          | _Type<"file", any, any, any, any, any, any>
+          TSchemaType,
+          _SchemaTypeDefinition<"file", any, any, any, any>
         >
       )
     : schema.type === "image"
     ? sanityZodImage(
         schema as Extract<
-          TSchema,
-          | _ArrayMember<"image", any, any, any, any, any, any, any>
-          | _Field<"image", any, any, any, any, any, any, any>
-          | _Type<"image", any, any, any, any, any, any>
+          TSchemaType,
+          _SchemaTypeDefinition<"image", any, any, any, any>
         >
       )
     : // FIXME aliasedType: () =>
-      (undefined as never)) as SanityZodReturn<TSchema>;
+      (undefined as never)) as SanityZodReturn<TSchemaType>;
