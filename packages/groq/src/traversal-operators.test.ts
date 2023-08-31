@@ -138,68 +138,6 @@ describe("traversal operators", () => {
     >().toStrictEqual<Baz>();
   });
 
-  it('foo.bar["baz"]', async () => {
-    const query = 'foo.bar["baz"]';
-    const tree = parse(query);
-    const result = await (
-      await evaluate(tree, { root: { foo: { bar: { baz: BAZ } } } })
-    ).get();
-
-    const desiredTree = {
-      base: {
-        base: { name: "foo", type: "AccessAttribute" },
-        name: "bar",
-        type: "AccessAttribute",
-      },
-      name: "baz",
-      type: "AccessAttribute",
-    } as const;
-
-    expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
-    >();
-
-    expect(result).toBe(BAZ);
-    expectType<
-      ExecuteQuery<
-        typeof query,
-        _ScopeFromPartialScope<{ this: { foo: { bar: { baz: Baz } } } }>
-      >
-    >().toStrictEqual<Baz>();
-  });
-
-  it('foo["bar"].baz', async () => {
-    const query = 'foo["bar"].baz';
-    const tree = parse(query);
-    const result = await (
-      await evaluate(tree, { root: { foo: { bar: { baz: BAZ } } } })
-    ).get();
-
-    const desiredTree = {
-      base: {
-        base: { name: "foo", type: "AccessAttribute" },
-        name: "bar",
-        type: "AccessAttribute",
-      },
-      name: "baz",
-      type: "AccessAttribute",
-    } as const;
-
-    expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
-    >();
-
-    expect(result).toBe(BAZ);
-    expectType<
-      ExecuteQuery<
-        typeof query,
-        _ScopeFromPartialScope<{ this: { foo: { bar: { baz: Baz } } } }>
-      >
-    >().toStrictEqual<Baz>();
-  });
-
   it("*.key", async () => {
     const query = "*.key";
     const tree = parse(query);

@@ -1,10 +1,19 @@
 import { describe, expect, it } from "@jest/globals";
 import { evaluate, parse } from "groq-js";
+import type { GroqPipeFunction } from "groq-js";
 import type { ReadonlyDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { ExecuteQuery, Parse } from ".";
+import type {
+  ExecuteQuery,
+  Parse,
+  _ScopeFromPartialContext,
+  _ScopeFromPartialScope,
+} from ".";
+
+const BAZ: unique symbol = Symbol("baz");
+type Baz = typeof BAZ;
 
 describe("precendence and associativity", () => {
   describe("level 1", () => {
@@ -300,27 +309,26 @@ describe("precendence and associativity", () => {
   });
 
   describe("level 5", () => {
-    // TODO Ranges only exist in slices
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
     it.todo("1..3..5");
 
     describe("& level 1", () => {
       // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      // TODO Ranges only exist in slices
       it.todo("todo");
     });
 
     describe("& level 2", () => {
-      // TODO Ranges only exist in slices
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
       it.todo("todo");
     });
 
     describe("& level 3", () => {
-      // TODO Ranges only exist in slices
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
       it.todo("todo");
     });
 
     describe("& level 4", () => {
-      // TODO Ranges only exist in slices
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
       it.todo("todo");
     });
   });
@@ -603,7 +611,7 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 5", () => {
-      // TODO Ranges only exist in slices
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
       it.todo("todo");
     });
   });
@@ -912,7 +920,7 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 5", () => {
-      // TODO Ranges only exist in slices
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
       it.todo("todo");
     });
 
@@ -1074,7 +1082,7 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 5", () => {
-      // TODO Ranges only exist in slices
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
       it.todo("todo");
     });
 
@@ -1325,7 +1333,7 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 5", () => {
-      // TODO Ranges only exist in slices
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
       it.todo("todo");
     });
 
@@ -1634,7 +1642,7 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 5", () => {
-      // TODO Ranges only exist in slices
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
       it.todo("todo");
     });
 
@@ -1749,7 +1757,157 @@ describe("precendence and associativity", () => {
   });
 
   describe("level 11", () => {
-    it.todo("todo");
+    it("(((10)))", async () => {
+      const query = "(((10)))";
+      const tree = parse(query);
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        base: {
+          base: { base: { type: "Value", value: 10 }, type: "Group" },
+          type: "Group",
+        },
+        type: "Group",
+      } as const;
+
+      expect(tree).toStrictEqual(desiredTree);
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(10);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<10>();
+    });
+
+    it('foo.bar["baz"]', async () => {
+      const query = 'foo.bar["baz"]';
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, { root: { foo: { bar: { baz: BAZ } } } })
+      ).get();
+
+      const desiredTree = {
+        base: {
+          base: { name: "foo", type: "AccessAttribute" },
+          name: "bar",
+          type: "AccessAttribute",
+        },
+        name: "baz",
+        type: "AccessAttribute",
+      } as const;
+
+      expect(tree).toStrictEqual(desiredTree);
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(BAZ);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialScope<{ this: { foo: { bar: { baz: Baz } } } }>
+        >
+      >().toStrictEqual<Baz>();
+    });
+
+    it('foo["bar"].baz', async () => {
+      const query = 'foo["bar"].baz';
+      const tree = parse(query);
+      const result = await (
+        await evaluate(tree, { root: { foo: { bar: { baz: BAZ } } } })
+      ).get();
+
+      const desiredTree = {
+        base: {
+          base: { name: "foo", type: "AccessAttribute" },
+          name: "bar",
+          type: "AccessAttribute",
+        },
+        name: "baz",
+        type: "AccessAttribute",
+      } as const;
+
+      expect(tree).toStrictEqual(desiredTree);
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toBe(BAZ);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialScope<{ this: { foo: { bar: { baz: Baz } } } }>
+        >
+      >().toStrictEqual<Baz>();
+    });
+
+    it('*[_type=="foo"]|order(name)|{age}', async () => {
+      const query = '*[_type=="foo"]|order(name)|{age}';
+      const tree = parse(query);
+      const dataset = [
+        { _type: "bar", name: "Bar", age: 4 },
+        { _type: "foo", name: "Foo", age: 5 },
+      ] as const;
+      const result = await (await evaluate(tree, { dataset })).get();
+
+      const desiredTree = {
+        base: {
+          args: [{ name: "name", type: "AccessAttribute" }],
+          base: {
+            base: { type: "Everything" },
+            expr: {
+              left: { name: "_type", type: "AccessAttribute" },
+              op: "==",
+              right: { type: "Value", value: "foo" },
+              type: "OpCall",
+            },
+            type: "Filter",
+          },
+          func: (() => {}) as unknown as GroqPipeFunction,
+          name: "order",
+          type: "PipeFuncCall",
+        },
+        expr: {
+          base: { type: "This" },
+          expr: {
+            attributes: [
+              {
+                name: "age",
+                type: "ObjectAttributeValue",
+                value: { name: "age", type: "AccessAttribute" },
+              },
+            ],
+            type: "Object",
+          },
+          type: "Projection",
+        },
+        type: "Map",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        base: {
+          ...desiredTree.base,
+          func: expect.any(Function),
+        },
+      });
+      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+        typeof desiredTree
+      >();
+
+      expect(result).toStrictEqual([{ age: 5 }]);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            dataset: (
+              | { _type: "bar"; age: 4; name: "Bar" }
+              | { _type: "foo"; age: 5; name: "Foo" }
+            )[];
+          }>
+        >
+      >().toStrictEqual<{ age: 5 }[]>();
+    });
 
     describe("& level 1", () => {
       // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
@@ -1757,40 +1915,574 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 2", () => {
-      it.todo("todo");
+      it("foo.value||bar.value", async () => {
+        const query = "foo.value||bar.value";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { bar: { value: true }, foo: { value: false } },
+          })
+        ).get();
+
+        const desiredTree = {
+          left: {
+            base: { name: "foo", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          right: {
+            base: { name: "bar", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          type: "Or",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(true);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { bar: { value: true }; foo: { value: false } };
+            }>
+          >
+        >().toStrictEqual<true>();
+      });
+
+      it("foo||bar.value||baz", async () => {
+        const query = "foo||bar.value||baz";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { bar: { value: true }, baz: false, foo: false },
+          })
+        ).get();
+
+        const desiredTree = {
+          left: {
+            left: { name: "foo", type: "AccessAttribute" },
+            right: {
+              base: { name: "bar", type: "AccessAttribute" },
+              name: "value",
+              type: "AccessAttribute",
+            },
+            type: "Or",
+          },
+          right: { name: "baz", type: "AccessAttribute" },
+          type: "Or",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(true);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { bar: { value: true }; baz: false; foo: false };
+            }>
+          >
+        >().toStrictEqual<true>();
+      });
     });
 
     describe("& level 3", () => {
-      it.todo("todo");
+      it("foo.value&&bar.value", async () => {
+        const query = "foo.value&&bar.value";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { bar: { value: true }, foo: { value: false } },
+          })
+        ).get();
+
+        const desiredTree = {
+          left: {
+            base: { name: "foo", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          right: {
+            base: { name: "bar", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          type: "And",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(false);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { bar: { value: true }; foo: { value: false } };
+            }>
+          >
+        >().toStrictEqual<false>();
+      });
+
+      it("foo&&bar.value&&baz", async () => {
+        const query = "foo&&bar.value&&baz";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { bar: { value: true }, baz: false, foo: false },
+          })
+        ).get();
+
+        const desiredTree = {
+          left: {
+            left: { name: "foo", type: "AccessAttribute" },
+            right: {
+              base: { name: "bar", type: "AccessAttribute" },
+              name: "value",
+              type: "AccessAttribute",
+            },
+            type: "And",
+          },
+          right: { name: "baz", type: "AccessAttribute" },
+          type: "And",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(false);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { bar: { value: true }; baz: false; foo: false };
+            }>
+          >
+        >().toStrictEqual<false>();
+      });
     });
 
     describe("& level 4", () => {
-      it.todo("todo");
+      it("foo.value==bar.value", async () => {
+        const query = "foo.value==bar.value";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { bar: { value: true }, foo: { value: false } },
+          })
+        ).get();
+
+        const desiredTree = {
+          left: {
+            base: { name: "foo", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          op: "==",
+          right: {
+            base: { name: "bar", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          type: "OpCall",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(false);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { bar: { value: true }; foo: { value: false } };
+            }>
+          >
+        >().toStrictEqual<false>();
+      });
+
+      it("foo==bar.value==baz", async () => {
+        const query = "foo==bar.value==baz";
+
+        expect(() => parse(query)).toThrow();
+        expectType<Parse<typeof query>>().toBeNever();
+
+        expectType<ExecuteQuery<typeof query>>().toBeNever();
+      });
     });
 
     describe("& level 5", () => {
-      // TODO Ranges only exist in slices
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
       it.todo("todo");
     });
 
     describe("& level 6", () => {
-      it.todo("todo");
+      it("foo.value+bar.value", async () => {
+        const query = "foo.value+bar.value";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { bar: { value: 5 }, foo: { value: 4 } },
+          })
+        ).get();
+
+        const desiredTree = {
+          left: {
+            base: { name: "foo", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          op: "+",
+          right: {
+            base: { name: "bar", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          type: "OpCall",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(9);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { bar: { value: 5 }; foo: { value: 4 } };
+            }>
+          >
+        >().toStrictEqual<number>();
+      });
+
+      it("foo+bar.value+baz", async () => {
+        const query = "foo+bar.value+baz";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { bar: { value: 4 }, baz: 3, foo: 5 },
+          })
+        ).get();
+
+        const desiredTree = {
+          left: {
+            left: { name: "foo", type: "AccessAttribute" },
+            op: "+",
+            right: {
+              base: { name: "bar", type: "AccessAttribute" },
+              name: "value",
+              type: "AccessAttribute",
+            },
+            type: "OpCall",
+          },
+          op: "+",
+          right: { name: "baz", type: "AccessAttribute" },
+          type: "OpCall",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(12);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { bar: { value: 4 }; baz: 3; foo: 5 };
+            }>
+          >
+        >().toStrictEqual<number>();
+      });
     });
 
     describe("& level 7", () => {
-      it.todo("todo");
+      it("foo.value*bar.value", async () => {
+        const query = "foo.value*bar.value";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { bar: { value: 5 }, foo: { value: 4 } },
+          })
+        ).get();
+
+        const desiredTree = {
+          left: {
+            base: { name: "foo", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          op: "*",
+          right: {
+            base: { name: "bar", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          type: "OpCall",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(20);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { bar: { value: 5 }; foo: { value: 4 } };
+            }>
+          >
+        >().toStrictEqual<number>();
+      });
+
+      it("foo*bar.value*baz", async () => {
+        const query = "foo*bar.value*baz";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { bar: { value: 4 }, baz: 3, foo: 5 },
+          })
+        ).get();
+
+        const desiredTree = {
+          left: {
+            left: { name: "foo", type: "AccessAttribute" },
+            op: "*",
+            right: {
+              base: { name: "bar", type: "AccessAttribute" },
+              name: "value",
+              type: "AccessAttribute",
+            },
+            type: "OpCall",
+          },
+          op: "*",
+          right: { name: "baz", type: "AccessAttribute" },
+          type: "OpCall",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(60);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { bar: { value: 4 }; baz: 3; foo: 5 };
+            }>
+          >
+        >().toStrictEqual<number>();
+      });
     });
 
     describe("& level 8", () => {
-      it.todo("todo");
+      it("-foo.value", async () => {
+        const query = "-foo.value";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { foo: { value: 4 } },
+          })
+        ).get();
+
+        const desiredTree = {
+          base: {
+            base: { name: "foo", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          type: "Neg",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(-4);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { foo: { value: 4 } };
+            }>
+          >
+        >().toStrictEqual<-4>();
+      });
     });
 
     describe("& level 9", () => {
-      it.todo("todo");
+      it("foo.value**bar.value", async () => {
+        const query = "foo.value**bar.value";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { bar: { value: 5 }, foo: { value: 4 } },
+          })
+        ).get();
+
+        const desiredTree = {
+          left: {
+            base: { name: "foo", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          op: "**",
+          right: {
+            base: { name: "bar", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          type: "OpCall",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(1024);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { bar: { value: 5 }; foo: { value: 4 } };
+            }>
+          >
+        >().toStrictEqual<number>();
+      });
+
+      it("foo**bar.value**baz", async () => {
+        const query = "foo**bar.value**baz";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { bar: { value: 3 }, baz: 2, foo: 4 },
+          })
+        ).get();
+
+        const desiredTree = {
+          left: { name: "foo", type: "AccessAttribute" },
+          op: "**",
+          right: {
+            left: {
+              base: { name: "bar", type: "AccessAttribute" },
+              name: "value",
+              type: "AccessAttribute",
+            },
+            op: "**",
+            right: { name: "baz", type: "AccessAttribute" },
+            type: "OpCall",
+          },
+          type: "OpCall",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(262144);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { bar: { value: 4 }; baz: 3; foo: 5 };
+            }>
+          >
+        >().toStrictEqual<number>();
+      });
     });
 
     describe("& level 10", () => {
-      it.todo("todo");
+      it("+foo.value", async () => {
+        const query = "+foo.value";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { foo: { value: 4 } },
+          })
+        ).get();
+
+        const desiredTree = {
+          base: {
+            base: { name: "foo", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          type: "Pos",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(4);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { foo: { value: 4 } };
+            }>
+          >
+        >().toStrictEqual<4>();
+      });
+
+      it("!foo.value", async () => {
+        const query = "!foo.value";
+        const tree = parse(query);
+        const result = await (
+          await evaluate(tree, {
+            root: { foo: { value: false } },
+          })
+        ).get();
+
+        const desiredTree = {
+          base: {
+            base: { name: "foo", type: "AccessAttribute" },
+            name: "value",
+            type: "AccessAttribute",
+          },
+          type: "Not",
+        } as const;
+
+        expect(tree).toStrictEqual(desiredTree);
+        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+          typeof desiredTree
+        >();
+
+        expect(result).toBe(true);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            _ScopeFromPartialScope<{
+              this: { foo: { value: false } };
+            }>
+          >
+        >().toStrictEqual<true>();
+      });
     });
   });
 });
