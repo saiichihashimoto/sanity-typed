@@ -46,7 +46,7 @@ import type {
   ThisNode,
   ValueNode,
 } from "groq-js";
-import type { Simplify } from "type-fest";
+import type { Simplify, UnionToIntersection } from "type-fest";
 
 import type { ReferenceValue } from "@sanity-typed/types";
 
@@ -1066,6 +1066,10 @@ type EvaluateAccessAttribute<
           [name in TNode["name"]]: infer TValue;
         }
           ? TValue
+          : NonNullable<EvaluateBaseOrThis<TNode, TScope>> extends {
+              [name in TNode["name"]]?: infer TValue;
+            }
+          ? TValue | undefined
           : null)
       | (null extends EvaluateBaseOrThis<TNode, TScope> ? null : never)
   : never;
@@ -1078,9 +1082,16 @@ type EvaluateAccessElement<
   TScope extends Scope<Context<readonly any[], any>>
 > = TNode extends AccessElementNode
   ? Evaluate<TNode["base"], TScope> extends any[]
-    ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-      Evaluate<TNode["base"], TScope>[TNode["index"]]
+    ? Evaluate<TNode["base"], TScope>[TNode["index"]]
     : null
+  : never;
+
+type FlattenDoubleArray<TArray extends any[][]> = TArray extends []
+  ? []
+  : TArray extends [infer THead extends any[], ...infer TTail extends any[][]]
+  ? [...THead, ...FlattenDoubleArray<TTail>]
+  : TArray extends (infer TElement extends any[])[]
+  ? TElement[number][]
   : never;
 
 type EvaluateArrayElement<
@@ -1095,20 +1106,9 @@ type EvaluateArrayElement<
 type EvaluateArrayElements<
   TElements extends ArrayElementNode[],
   TScope extends Scope<Context<readonly any[], any>>
-> = TElements extends []
-  ? []
-  : TElements extends [
-      infer THead extends ArrayElementNode,
-      ...infer TTail extends ArrayElementNode[]
-    ]
-  ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-    [
-      ...EvaluateArrayElement<THead, TScope>,
-      ...EvaluateArrayElements<TTail, TScope>
-    ]
-  : TElements extends (infer TElement extends ArrayElementNode)[]
-  ? EvaluateArrayElement<TElement, TScope>
-  : never;
+> = FlattenDoubleArray<{
+  [Index in keyof TElements]: EvaluateArrayElement<TElements[Index], TScope>;
+}>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateArray()
@@ -1116,7 +1116,9 @@ type EvaluateArrayElements<
 type EvaluateArray<
   TNode extends ExprNode,
   TScope extends Scope<Context<readonly any[], any>>
-> = EvaluateArrayElements<Extract<TNode, ArrayNode>["elements"], TScope>;
+> = TNode extends ArrayNode
+  ? EvaluateArrayElements<TNode["elements"], TScope>
+  : never;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateArrayPostfix()
@@ -1166,10 +1168,10 @@ type EvaluateBooleanOperator<
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateComparison()
  */
-type EvaluateComparison<TNode extends ExprNode> = TNode extends OpCallNode
-  ? TNode extends { op: "<" | "<=" | ">" | ">=" }
-    ? boolean
-    : never
+type EvaluateComparison<TNode extends ExprNode> = TNode extends OpCallNode & {
+  op: "<" | "<=" | ">" | ">=";
+}
+  ? boolean
   : never;
 
 /**
@@ -1204,7 +1206,7 @@ type Not<TBoolean, Enabled extends boolean = true> = TBoolean extends boolean
 type EvaluateEquality<
   TNode extends ExprNode,
   TScope extends Scope<Context<readonly any[], any>>
-> = TNode extends { op: "!=" | "=="; type: "OpCall" }
+> = TNode extends OpCallNode & { op: "!=" | "==" }
   ? Not<
       Evaluate<TNode["left"], TScope> extends Evaluate<TNode["right"], TScope>
         ? true
@@ -1226,35 +1228,29 @@ type EvaluateEverything<
   TScope extends Scope<Context<readonly any[], any>>
 > = TNode extends EverythingNode ? TScope["context"]["dataset"] : never;
 
+type EvaluateFilterElement<
+  TElement,
+  TFilterExpression extends ExprNode,
+  TScope extends Scope<Context<readonly any[], any>>
+> = TElement extends never
+  ? never
+  : Evaluate<TFilterExpression, NestedScope<TElement, TScope>> extends never
+  ? never
+  : Evaluate<TFilterExpression, NestedScope<TElement, TScope>> extends true
+  ? [TElement]
+  : [];
+
 type EvaluateFilterElements<
   TBase extends any[],
   TFilterExpression extends ExprNode,
   TScope extends Scope<Context<readonly any[], any>>
-> = TBase extends []
-  ? []
-  : TBase extends [infer THead, ...infer TTail]
-  ? Evaluate<TFilterExpression, NestedScope<THead, TScope>> extends never
-    ? never
-    : EvaluateFilterElements<TTail, TFilterExpression, TScope> extends never
-    ? never
-    : Evaluate<TFilterExpression, NestedScope<THead, TScope>> extends true
-    ? [THead, ...EvaluateFilterElements<TTail, TFilterExpression, TScope>]
-    : EvaluateFilterElements<TTail, TFilterExpression, TScope>
-  : TBase extends (infer TArrayElement)[]
-  ? Evaluate<
-      TFilterExpression,
-      NestedScope<TArrayElement, TScope>
-    > extends never
-    ? never
-    : (TArrayElement extends never
-        ? never
-        : Evaluate<
-            TFilterExpression,
-            NestedScope<TArrayElement, TScope>
-          > extends true
-        ? TArrayElement
-        : never)[]
-  : [];
+> = FlattenDoubleArray<{
+  [Index in keyof TBase]: EvaluateFilterElement<
+    TBase[Index],
+    TFilterExpression,
+    TScope
+  >;
+}>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateFilter()
@@ -1809,31 +1805,38 @@ type EvaluateObjectAttribute<
   TScope extends Scope<Context<readonly any[], any>>
 > =
   | (TAttribute extends ObjectAttributeValueNode
-      ? { [key in TAttribute["name"]]: Evaluate<TAttribute["value"], TScope> }
+      ? // ? undefined extends Evaluate<TAttribute["value"], TScope>
+        //   ? {
+        //       [key in TAttribute["name"]]?: Evaluate<TAttribute["value"], TScope>;
+        //     }
+        //   : { [key in TAttribute["name"]]: Evaluate<TAttribute["value"], TScope> }
+        { [key in TAttribute["name"]]: Evaluate<TAttribute["value"], TScope> }
       : never)
   | (TAttribute extends ObjectSplatNode
       ? Evaluate<TAttribute["value"], TScope>
       : never);
 
+type PartialOnUndefined<T> = Simplify<
+  {
+    [Key in keyof T as undefined extends T[Key] ? Key : never]?: T[Key];
+  } & {
+    [Key in keyof T as undefined extends T[Key] ? never : Key]: T[Key];
+  }
+>;
+
 type EvaluateObjectAttributes<
   TAttributes extends ObjectAttributeNode[],
   TScope extends Scope<Context<readonly any[], any>>
-> = TAttributes extends []
-  ? EmptyObject
-  : TAttributes extends [
-      infer THead extends ObjectAttributeNode,
-      ...infer TTail extends ObjectAttributeNode[]
-    ]
-  ? EmptyObject extends EvaluateObjectAttributes<TTail, TScope>
-    ? EvaluateObjectAttribute<THead, TScope>
-    : EvaluateObjectAttributes<TTail, TScope> &
-        Omit<
-          EvaluateObjectAttribute<THead, TScope>,
-          keyof EvaluateObjectAttributes<TTail, TScope>
-        >
-  : TAttributes extends (infer TAttribute extends ObjectAttributeNode)[]
-  ? EvaluateObjectAttribute<TAttribute, TScope>
-  : never;
+> = PartialOnUndefined<
+  UnionToIntersection<
+    {
+      [Index in keyof TAttributes]: EvaluateObjectAttribute<
+        TAttributes[Index],
+        TScope
+      >;
+    }[number]
+  >
+>;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateObject()
@@ -1841,9 +1844,10 @@ type EvaluateObjectAttributes<
 type EvaluateObject<
   TNode extends ExprNode,
   TScope extends Scope<Context<readonly any[], any>>
-> = Simplify<
-  EvaluateObjectAttributes<Extract<TNode, ObjectNode>["attributes"], TScope>
->;
+> = TNode extends ObjectNode
+  ? // Simplify<EvaluateObjectAttributes<TNode["attributes"], TScope>>
+    EvaluateObjectAttributes<TNode["attributes"], TScope>
+  : never;
 
 /**
  * @link https://www.sanity.io/docs/groq-parameters

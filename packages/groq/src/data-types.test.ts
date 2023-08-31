@@ -477,9 +477,9 @@ describe("data types", () => {
     >();
 
     expect(result).toStrictEqual({});
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<{
-      [x: string]: never;
-    }>();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      NonNullable<unknown>
+    >();
   });
 
   it('{"foo":"bar"}', async () => {

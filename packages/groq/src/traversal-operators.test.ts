@@ -1010,6 +1010,44 @@ describe("traversal operators", () => {
     >().toStrictEqual<[{ name: "Foo" }]>();
   });
 
+  it("@{name} (with optional name)", async () => {
+    const query = "@{name}";
+    const tree = parse(query);
+    const result = await (
+      await evaluate(tree, { root: { _type: "foo", name: "Foo" } })
+    ).get();
+
+    const desiredTree = {
+      base: { type: "This" },
+      expr: {
+        attributes: [
+          {
+            name: "name",
+            type: "ObjectAttributeValue",
+            value: { name: "name", type: "AccessAttribute" },
+          },
+        ],
+        type: "Object",
+      },
+      type: "Projection",
+    } as const;
+
+    expect(tree).toStrictEqual(desiredTree);
+    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
+      typeof desiredTree
+    >();
+
+    expect(result).toStrictEqual({ name: "Foo" });
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        _ScopeFromPartialScope<{
+          this: { _type: "foo"; name?: "Foo" };
+        }>
+      >
+    >().toStrictEqual<{ name?: "Foo" }>();
+  });
+
   it("$param->", async () => {
     const query = "$param->";
     const tree = parse(query);
