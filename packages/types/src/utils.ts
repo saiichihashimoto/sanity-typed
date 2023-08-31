@@ -19,3 +19,5 @@ export type TupleOfLength<
             [T, ...Result]
           >
   : TupleOfLength<T, Min, Max, [T, ...Result]>;
+
+export type MaybeArray<T> = T | T[];

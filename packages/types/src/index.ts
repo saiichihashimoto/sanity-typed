@@ -70,7 +70,7 @@ import type {
 } from "sanity";
 import type { Merge, RemoveIndexSignature, Simplify } from "type-fest";
 
-import type { TupleOfLength } from "./utils";
+import type { MaybeArray, TupleOfLength } from "./utils";
 
 declare const README: unique symbol;
 declare const required: unique symbol;
@@ -89,8 +89,6 @@ type WithRequired<
     [required]: TRequired;
   }
 >;
-
-type MaybeArray<T> = T | T[];
 
 type ValidationBuilder<
   TRequired extends boolean,
@@ -740,7 +738,8 @@ export const defineType = <
     defineOptions
   ) as typeof schemaDefinition;
 
-type ConfigBase<
+/** @private */
+export type _ConfigBase<
   TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
   TPluginTypeDefinition extends _TypeDefinition<
     any,
@@ -781,7 +780,7 @@ export type PluginOptions<
     any,
     any
   > = _TypeDefinition<string, any, any, any, any, any, any>
-> = ConfigBase<TTypeDefinition, TPluginTypeDefinition> &
+> = _ConfigBase<TTypeDefinition, TPluginTypeDefinition> &
   Omit<PluginOptionsNative, "plugins" | "schema">;
 
 export const definePlugin = <
@@ -820,7 +819,7 @@ type WorkspaceOptions<
   >
 > = Merge<
   WorkspaceOptionsNative,
-  ConfigBase<TTypeDefinition, TPluginTypeDefinition>
+  _ConfigBase<TTypeDefinition, TPluginTypeDefinition>
 >;
 
 export type Config<
@@ -1006,9 +1005,9 @@ type ExpandAliasValues<
   : Value;
 
 export type InferSchemaValues<
-  TConfig extends MaybeArray<ConfigBase<any, any>>
+  TConfig extends MaybeArray<_ConfigBase<any, any>>
 > = TConfig extends MaybeArray<
-  ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
+  _ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
 >
   ? {
       [TName in TTypeDefinition extends _TypeDefinition<

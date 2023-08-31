@@ -4,12 +4,14 @@ import type { z } from "zod";
 import { expectType } from "@sanity-typed/test-utils";
 import {
   defineArrayMember,
+  defineConfig,
   defineField,
+  definePlugin,
   defineType,
 } from "@sanity-typed/types";
-import type { _InferValue } from "@sanity-typed/types";
+import type { InferSchemaValues, _InferValue } from "@sanity-typed/types";
 
-import { _sanityTypeToZod } from ".";
+import { _sanityTypeToZod, sanityConfigToZods } from ".";
 
 describe("document", () => {
   describe("defineArrayMember", () => {
@@ -508,10 +510,95 @@ describe("document", () => {
   });
 
   describe("defineConfig", () => {
-    it.todo("builds parser for SanityDocument with fields");
+    it("builds parser for SanityDocument with fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "document",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "boolean",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      const zods = sanityConfigToZods(config);
+
+      expectType<{
+        [TName in keyof typeof zods]: z.infer<(typeof zods)[TName]>;
+      }>().toStrictEqual<InferSchemaValues<typeof config>>();
+      expect(
+        zods.foo.parse({
+          _createdAt: "createdAt",
+          _id: "id",
+          _rev: "rev",
+          _type: "foo",
+          _updatedAt: "updatedAt",
+          bar: true,
+        })
+      ).toStrictEqual({
+        _createdAt: "createdAt",
+        _id: "id",
+        _rev: "rev",
+        _type: "foo",
+        _updatedAt: "updatedAt",
+        bar: true,
+      });
+      expect(() => zods.foo.parse(true)).toThrow();
+    });
   });
 
   describe("definePlugin", () => {
-    it.todo("builds parser for SanityDocument with fields");
+    it("builds parser for SanityDocument with fields", () => {
+      const plugin = definePlugin({
+        name: "plugin",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "document",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "boolean",
+                }),
+              ],
+            }),
+          ],
+        },
+      })();
+
+      const zods = sanityConfigToZods(plugin);
+
+      expectType<{
+        [TName in keyof typeof zods]: z.infer<(typeof zods)[TName]>;
+      }>().toStrictEqual<InferSchemaValues<typeof plugin>>();
+      expect(
+        zods.foo.parse({
+          _createdAt: "createdAt",
+          _id: "id",
+          _rev: "rev",
+          _type: "foo",
+          _updatedAt: "updatedAt",
+          bar: true,
+        })
+      ).toStrictEqual({
+        _createdAt: "createdAt",
+        _id: "id",
+        _rev: "rev",
+        _type: "foo",
+        _updatedAt: "updatedAt",
+        bar: true,
+      });
+      expect(() => zods.foo.parse(true)).toThrow();
+    });
   });
 });

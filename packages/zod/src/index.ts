@@ -4,6 +4,7 @@ import { z } from "zod";
 import type {
   IntrinsicTypeName,
   _ArrayMemberDefinition,
+  _ConfigBase,
   _FieldDefinition,
   _TypeDefinition,
 } from "@sanity-typed/types";
@@ -465,3 +466,26 @@ export const _sanityTypeToZod = <
       )
     : // FIXME aliasedType: () =>
       (undefined as never)) as SanityTypeToZod<TSchemaType>;
+
+export const sanityConfigToZods = <TConfig extends _ConfigBase<any, any>>({
+  schema: { types: typesUntyped = [] } = {},
+}: TConfig) => {
+  type TTypeDefinition = TConfig extends _ConfigBase<infer TTypeDefinition, any>
+    ? TTypeDefinition
+    : never;
+
+  const types = typesUntyped as NonNullable<
+    NonNullable<_ConfigBase<TTypeDefinition, any>["schema"]>["types"]
+  >;
+
+  return Array.isArray(types)
+    ? (Object.fromEntries(
+        types.map((type) => [type.name, _sanityTypeToZod(type)])
+      ) as {
+        [Name in TTypeDefinition["name"]]: SanityTypeToZod<
+          Extract<TTypeDefinition, { name: Name }>
+        >;
+      })
+    : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
+      (undefined as never);
+};
