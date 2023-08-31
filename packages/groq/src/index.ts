@@ -583,6 +583,33 @@ type SimpleExpression<TExpression extends string> =
   | This<TExpression>
   | ThisAttribute<TExpression>;
 
+type Level1 =
+  // TODO Pair
+  { _TODO: "Pair" };
+
+type Level2 = Level1 | OrNode;
+
+type Level3 = AndNode | Level2;
+
+type Level4 =
+  | AscNode
+  | DescNode
+  | Level3
+  | (OpCallNode & { op: "!=" | "<" | "<=" | "==" | ">" | ">=" });
+
+type Level5 = // TODO https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Precedence-and-associativity
+  Level4;
+
+type Level6 = Level5 | (OpCallNode & { op: "-" | "+" });
+
+type Level7 = Level6 | (OpCallNode & { op: "*" | "/" | "%" });
+
+type Level8 = Level7 | NegNode;
+
+type Level9 = Level8 | (OpCallNode & { op: "**" });
+
+type Level10 = Level9 | NotNode | PosNode;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Parenthesis
  */
@@ -596,9 +623,9 @@ type Parenthesis<TExpression extends string> =
  */
 type ArrayPostfix<TExpression extends string> =
   TExpression extends `${infer TBase}[]`
-    ? _Parse<TBase> extends never
+    ? Exclude<_Parse<TBase>, Level10> extends never
       ? never
-      : { base: _Parse<TBase>; type: "ArrayCoerce" }
+      : { base: Exclude<_Parse<TBase>, Level10>; type: "ArrayCoerce" }
     : never;
 
 /**
@@ -650,7 +677,7 @@ type SquareBracketTraversal<
 > = TExpression extends `${infer TBase}[${infer TBracketExpression}]`
   ?
       | SquareBracketTraversal<`${TBracketExpression}]`, `${_Prefix}${TBase}[`>
-      | (_Parse<`${_Prefix}${TBase}`> extends never
+      | (Exclude<_Parse<`${_Prefix}${TBase}`>, Level10> extends never
           ? never
           :
               | {
@@ -664,7 +691,10 @@ type SquareBracketTraversal<
                       : ConstantEvaluate<_Parse<TStart>> extends number
                       ? ConstantEvaluate<_Parse<TEnd>> extends number
                         ? {
-                            base: _Parse<`${_Prefix}${TBase}`>;
+                            base: Exclude<
+                              _Parse<`${_Prefix}${TBase}`>,
+                              Level10
+                            >;
                             isInclusive: TOp extends ".." ? true : false;
                             left: ConstantEvaluate<_Parse<TStart>>;
                             right: ConstantEvaluate<_Parse<TEnd>>;
@@ -679,21 +709,23 @@ type SquareBracketTraversal<
                   : ConstantEvaluate<_Parse<TBracketExpression>> extends string
                   ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
                     MaybeMap<
-                      _Parse<`${_Prefix}${TBase}`>,
+                      Exclude<_Parse<`${_Prefix}${TBase}`>, Level10>,
                       {
-                        base: MaybeMapBase<_Parse<`${_Prefix}${TBase}`>>;
+                        base: MaybeMapBase<
+                          Exclude<_Parse<`${_Prefix}${TBase}`>, Level10>
+                        >;
                         name: ConstantEvaluate<_Parse<TBracketExpression>>;
                         type: "AccessAttribute";
                       }
                     >
                   : ConstantEvaluate<_Parse<TBracketExpression>> extends number
                   ? {
-                      base: _Parse<`${_Prefix}${TBase}`>;
+                      base: Exclude<_Parse<`${_Prefix}${TBase}`>, Level10>;
                       index: ConstantEvaluate<_Parse<TBracketExpression>>;
                       type: "AccessElement";
                     }
                   : {
-                      base: _Parse<`${_Prefix}${TBase}`>;
+                      base: Exclude<_Parse<`${_Prefix}${TBase}`>, Level10>;
                       expr: _Parse<TBracketExpression>;
                       type: "Filter";
                     }))
@@ -708,14 +740,16 @@ type AttributeAccess<
 > = TExpression extends `${infer TBase}.${infer TIdentifier}`
   ?
       | AttributeAccess<TIdentifier, `${_Prefix}${TBase}.`>
-      | (_Parse<`${_Prefix}${TBase}`> extends never
+      | (Exclude<_Parse<`${_Prefix}${TBase}`>, Level10> extends never
           ? never
           : Identifier<TIdentifier> extends never
           ? never
           : MaybeMap<
-              _Parse<`${_Prefix}${TBase}`>,
+              Exclude<_Parse<`${_Prefix}${TBase}`>, Level10>,
               {
-                base: MaybeMapBase<_Parse<`${_Prefix}${TBase}`>>;
+                base: MaybeMapBase<
+                  Exclude<_Parse<`${_Prefix}${TBase}`>, Level10>
+                >;
                 name: TIdentifier;
                 type: "AccessAttribute";
               }
@@ -725,14 +759,14 @@ type AttributeAccess<
 type ProjectionInner<
   TBase extends string,
   TProjection extends string
-> = _Parse<TBase> extends never
+> = Exclude<_Parse<TBase>, Level10> extends never
   ? never
   : ObjectType<`{${TProjection}}`> extends never
   ? never
   : MaybeMap<
-      _Parse<TBase>,
+      Exclude<_Parse<TBase>, Level10>,
       {
-        base: MaybeMapBase<_Parse<TBase>>;
+        base: MaybeMapBase<Exclude<_Parse<TBase>, Level10>>;
         expr: ObjectType<`{${TProjection}}`>;
         type: "Projection";
       }
@@ -763,17 +797,22 @@ type Dereference<
 > = TExpression extends `${infer TBase}->${infer TIdentifier}`
   ?
       | Dereference<TIdentifier, `${_Prefix}${TBase}->`>
-      | (_Parse<`${_Prefix}${TBase}`> extends never
+      | (Exclude<_Parse<`${_Prefix}${TBase}`>, Level10> extends never
           ? never
           : TIdentifier extends ""
-          ? { base: _Parse<`${_Prefix}${TBase}`>; type: "Deref" }
+          ? {
+              base: Exclude<_Parse<`${_Prefix}${TBase}`>, Level10>;
+              type: "Deref";
+            }
           : Identifier<TIdentifier> extends never
           ? never
           : MaybeMap<
-              _Parse<`${_Prefix}${TBase}`>,
+              Exclude<_Parse<`${_Prefix}${TBase}`>, Level10>,
               {
                 base: {
-                  base: MaybeMapBase<_Parse<`${_Prefix}${TBase}`>>;
+                  base: MaybeMapBase<
+                    Exclude<_Parse<`${_Prefix}${TBase}`>, Level10>
+                  >;
                   type: "Deref";
                 };
                 name: TIdentifier;
@@ -833,33 +872,6 @@ type CompoundExpression<TExpression extends string> =
   | Parenthesis<TExpression>
   | PipeFuncCall<TExpression>
   | TraversalExpression<TExpression>;
-
-type Level1 =
-  // TODO Pair
-  { _TODO: "Pair" };
-
-type Level2 = Level1 | OrNode;
-
-type Level3 = AndNode | Level2;
-
-type Level4 =
-  | AscNode
-  | DescNode
-  | Level3
-  | (OpCallNode & { op: "!=" | "<" | "<=" | "==" | ">" | ">=" });
-
-type Level5 = // TODO https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Precedence-and-associativity
-  Level4;
-
-type Level6 = Level5 | (OpCallNode & { op: "-" | "+" });
-
-type Level7 = Level6 | (OpCallNode & { op: "*" | "/" | "%" });
-
-type Level8 = Level7 | NegNode;
-
-type Level9 = Level8 | (OpCallNode & { op: "**" });
-
-// type Level10 = Level9 | NotNode | PosNode;
 
 type BooleanOperators = {
   "&&": {
