@@ -273,7 +273,10 @@ export type BlockDefinition<
       BlockRule
     >
   > & {
-    of?: (TMemberDefinition & { name: string; type: "object" | "reference" })[];
+    of?: TupleOfLength<
+      TMemberDefinition & { name: string; type: "object" | "reference" },
+      1
+    >;
   }
 >;
 
