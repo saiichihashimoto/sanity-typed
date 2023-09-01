@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/client",
   "version": "0.0.0-development",
-  "description": "Typed Sanity Cllient Results, all inferred, no client changes!",
+  "description": "Typed Sanity Client Results, all inferred, no client changes!",
   "keywords": [
     "sanity",
     "sanity-io",
@@ -33,7 +33,7 @@
   "dependencies": {
     "@sanity-typed/groq": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
-    "type-fest": "2.19.0"
+    "type-fest": "4.3.1"
   },
   "devDependencies": {
     "@jest/globals": "29.6.2",

@@ -4,13 +4,8 @@ import {
   evaluate as evaluateNative,
   parse as parseNative,
 } from "groq-js";
-import type {
-  EvaluateOptions,
-  ExprNode,
-  GroqType,
-  ParseOptions,
-} from "groq-js";
-import type { Merge } from "type-fest";
+import type { ExprNode, GroqType, ParseOptions } from "groq-js";
+import type { WritableDeep } from "type-fest";
 
 import type { Evaluate, Parse, QueryParams } from "@sanity-typed/groq";
 
@@ -40,46 +35,45 @@ type StaticOrStreamValue<P, T extends GroqType> =
 
 export const evaluate = <
   const Node extends ExprNode,
-  Dataset extends readonly any[],
+  const Dataset extends readonly any[],
   const Parameters extends QueryParams<Node>,
-  SanityProjectId extends string,
-  SanityDataset extends string,
-  Before extends Dataset[number] | null = null,
-  After extends Dataset[number] | null = null,
-  This = null
+  const SanityProjectId extends string,
+  const SanityDataset extends string,
+  const Before extends Dataset[number] | null = null,
+  const After extends Dataset[number] | null = null,
+  const This = null
 >(
   node: Node,
-  options: Merge<
-    EvaluateOptions,
-    {
-      after?: After;
-      before?: Before;
-      dataset?: Dataset;
-      params?: Parameters;
-      root?: This;
-      sanity?: {
-        dataset: SanityDataset;
-        projectId: SanityProjectId;
-      };
-    }
-  > = {}
+  options: {
+    after?: After;
+    before?: Before;
+    dataset?: Dataset;
+    identity?: string;
+    params?: Parameters;
+    root?: This;
+    sanity?: {
+      dataset: SanityDataset;
+      projectId: SanityProjectId;
+    };
+    timestamp?: Date;
+  } = {}
 ) =>
   evaluateNative(node, options) as unknown as MaybePromiseLike<
     StaticOrStreamValue<
       Evaluate<
-        Node,
+        WritableDeep<Node>,
         {
           context: {
             client: {
               dataset: SanityDataset;
               projectId: SanityProjectId;
             };
-            dataset: Dataset;
-            delta: { after: After; before: Before };
-            parameters: Parameters;
+            dataset: WritableDeep<Dataset>;
+            delta: { after: WritableDeep<After>; before: WritableDeep<Before> };
+            parameters: WritableDeep<Parameters>;
           };
           parent: null;
-          this: This;
+          this: WritableDeep<This>;
         }
       >,
       any
