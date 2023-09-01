@@ -12,7 +12,7 @@ import type {
 } from "geojson";
 import { evaluate, parse } from "groq-js";
 import type { DateTime, GroqFunction } from "groq-js";
-import type { ReadonlyDeep } from "type-fest";
+import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -43,8 +43,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -105,8 +105,8 @@ describe("functions", () => {
       //   ...desiredTree,
       //   func: expect.any(Function),
       // });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual({ _type: "foo" });
@@ -136,8 +136,8 @@ describe("functions", () => {
       //   ...desiredTree,
       //   func: expect.any(Function),
       // });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -198,8 +198,8 @@ describe("functions", () => {
       //   ...desiredTree,
       //   func: expect.any(Function),
       // });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual({ _type: "foo" });
@@ -229,8 +229,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -253,8 +253,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(1);
@@ -277,8 +277,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -304,8 +304,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(1);
@@ -331,8 +331,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(1);
@@ -358,8 +358,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(1);
@@ -390,8 +390,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(1);
@@ -419,8 +419,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -469,8 +469,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(4);
@@ -519,8 +519,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(4);
@@ -543,8 +543,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -567,8 +567,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<DateTime>();
@@ -590,8 +590,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expectType<
@@ -618,8 +618,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expectType<
@@ -646,8 +646,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(false);
@@ -670,8 +670,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(true);
@@ -694,8 +694,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(true);
@@ -718,8 +718,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -763,9 +763,9 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>()
+      expectType<Parse<typeof query>>()
         // TODO toStrictEqual
-        .toBeAssignableTo<typeof desiredTree>();
+        .toBeAssignableTo<WritableDeep<typeof desiredTree>>();
 
       expect(result).toBe(3);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<3>();
@@ -787,8 +787,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(6);
@@ -811,8 +811,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(6);
@@ -839,8 +839,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("2023-08-29T03:25:14.355Z");
@@ -867,8 +867,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("2023-08-29T03:25:14.355Z");
@@ -892,8 +892,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -998,8 +998,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(false);
@@ -1022,8 +1022,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(false);
@@ -1058,8 +1058,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(false);
@@ -1094,8 +1094,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(false);
@@ -1118,8 +1118,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(3);
@@ -1145,8 +1145,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(3.1);
@@ -1172,8 +1172,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(3.1);
@@ -1196,8 +1196,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("true");
@@ -1220,8 +1220,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("false");
@@ -1244,8 +1244,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("a string");
@@ -1268,8 +1268,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("3.14");
@@ -1292,8 +1292,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -1316,8 +1316,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("3.14");
@@ -1340,8 +1340,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("string");
@@ -1364,8 +1364,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("string");
@@ -1388,8 +1388,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("STRING");
@@ -1412,8 +1412,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("STRING");
@@ -1441,8 +1441,8 @@ describe("functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<DateTime>();
@@ -1470,8 +1470,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "join",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -1498,8 +1498,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "join",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -1526,8 +1526,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "join",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("");
@@ -1563,8 +1563,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "join",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("5");
@@ -1600,8 +1600,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "join",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -1647,8 +1647,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "join",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("5,true,foo");
@@ -1677,8 +1677,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "join",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("1,2");
@@ -1712,8 +1712,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "join",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -1744,8 +1744,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "compact",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -1769,8 +1769,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "compact",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([]);
@@ -1815,8 +1815,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "compact",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([1, 2]);
@@ -1842,8 +1842,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "compact",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([1, 2]);
@@ -1881,8 +1881,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "compact",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([]);
@@ -1911,8 +1911,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "unique",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -1936,8 +1936,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "unique",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([]);
@@ -1982,8 +1982,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "unique",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([1, 2]);
@@ -2023,9 +2023,9 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "unique",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>()
+      expectType<Parse<typeof query>>()
         // TODO toStrictEqual
-        .toBeAssignableTo<typeof desiredTree>();
+        .toBeAssignableTo<WritableDeep<typeof desiredTree>>();
 
       expect(result).toStrictEqual([{}, {}]);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<
@@ -2052,8 +2052,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "unique",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([1, 2]);
@@ -2087,8 +2087,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "split",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual(["this is a string"]);
@@ -2117,8 +2117,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "split",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual(["this", "is", "a", "string"]);
@@ -2147,8 +2147,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "split",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual(["", "this", "is", "a", "string", ""]);
@@ -2177,8 +2177,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "split",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual(["t", "e", "s", "t"]);
@@ -2209,8 +2209,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "split",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual(["t", "e", "s", "t"]);
@@ -2244,8 +2244,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "split",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual(["this", "is", "a", "string"]);
@@ -2277,8 +2277,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "startsWith",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(true);
@@ -2305,8 +2305,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "startsWith",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(false);
@@ -2353,8 +2353,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "sum",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(6);
@@ -2399,8 +2399,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "sum",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(4);
@@ -2445,8 +2445,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "sum",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -2481,8 +2481,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "sum",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(0);
@@ -2511,8 +2511,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "sum",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(0);
@@ -2557,8 +2557,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "avg",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(2);
@@ -2603,8 +2603,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "avg",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(2);
@@ -2649,8 +2649,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "avg",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -2685,8 +2685,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "avg",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -2715,8 +2715,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "avg",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -2761,8 +2761,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "min",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(1);
@@ -2807,8 +2807,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "min",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(1);
@@ -2853,8 +2853,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "min",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -2889,8 +2889,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "min",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -2919,8 +2919,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "min",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -2965,8 +2965,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "max",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(3);
@@ -3011,8 +3011,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "max",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(3);
@@ -3057,8 +3057,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "max",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -3093,8 +3093,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "max",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -3123,8 +3123,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "max",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -3221,8 +3221,8 @@ describe("functions", () => {
           func: expect.any(Function),
           name: "text",
         });
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -3255,8 +3255,8 @@ describe("functions", () => {
           func: expect.any(Function),
           name: "text",
         });
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe("foo");
@@ -3309,8 +3309,8 @@ describe("functions", () => {
           func: expect.any(Function),
           name: "text",
         });
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe("foo\n\nbar");
@@ -3586,8 +3586,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "projectId",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("projectId");
@@ -3622,8 +3622,8 @@ describe("functions", () => {
         func: expect.any(Function),
         name: "dataset",
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe("dataset");

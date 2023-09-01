@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { evaluate, parse } from "groq-js";
-import type { ReadonlyDeep } from "type-fest";
+import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -18,8 +18,8 @@ describe("compound expressions", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toBe(10);

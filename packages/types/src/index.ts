@@ -69,13 +69,21 @@ import type {
   WorkspaceOptions as WorkspaceOptionsNative,
 } from "sanity";
 import type {
-  Merge,
-  RemoveIndexSignature,
+  Except,
+  OmitIndexSignature,
   SetRequired,
   Simplify,
 } from "type-fest";
 
 import type { MaybeArray, TupleOfLength } from "./utils";
+
+// TODO Couldn't use type-fest's Merge >=3.0.0
+type Merge_<FirstType, SecondType> = Except<
+  FirstType,
+  Extract<keyof FirstType, keyof SecondType>
+> &
+  SecondType;
+type Merge<FirstType, SecondType> = Simplify<Merge_<FirstType, SecondType>>;
 
 declare const README: unique symbol;
 declare const required: unique symbol;
@@ -251,7 +259,7 @@ export type ArrayDefinition<
 >;
 
 export type PortableTextMarkDefinition =
-  RemoveIndexSignature<PortableTextMarkDefinitionNative>;
+  OmitIndexSignature<PortableTextMarkDefinitionNative>;
 
 export type PortableTextSpan = Omit<PortableTextSpanNative, "_key">;
 
@@ -330,7 +338,7 @@ export type SanityDocument<
     [required]?: boolean;
   }
 > = Simplify<
-  RemoveIndexSignature<ObjectValue<TFieldDefinition> & SanityDocumentNative> & {
+  OmitIndexSignature<ObjectValue<TFieldDefinition> & SanityDocumentNative> & {
     _type: TType;
   }
 >;
@@ -364,7 +372,7 @@ export type FileValue<
     [required]?: boolean;
   } = never
 > = Simplify<
-  ObjectValue<TFieldDefinition> & RemoveIndexSignature<FileValueNativeWithType>
+  ObjectValue<TFieldDefinition> & OmitIndexSignature<FileValueNativeWithType>
 >;
 
 type FileDefinition<
@@ -395,7 +403,7 @@ export type ImageValue<
     [required]?: boolean;
   } = never
 > = Simplify<
-  ObjectValue<TFieldDefinition> & RemoveIndexSignature<ImageValueNativeWithType>
+  ObjectValue<TFieldDefinition> & OmitIndexSignature<ImageValueNativeWithType>
 >;
 
 type ImageDefinition<
