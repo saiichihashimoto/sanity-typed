@@ -26,7 +26,7 @@ npm install sanity @sanity-typed/client @sanity-typed/types
 ## Packages
 
 - [`@sanity-typed/types`](packages/types): Typed Sanity Documents, all inferred, no config changes!
-- [`@sanity-typed/client`](packages/client): Typed Sanity Cllient Results, all inferred, no client changes!
+- [`@sanity-typed/client`](packages/client): Typed Sanity Client Results, all inferred, no client changes!
 
 ### Other
 

@@ -9,7 +9,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-Typed Sanity Cllient Results, all inferred, no client changes!
+Typed Sanity Client Results, all inferred, no client changes!
 
 @[:page_toc](## Page Contents)
 
