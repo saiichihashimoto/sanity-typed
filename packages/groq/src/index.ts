@@ -47,6 +47,8 @@ import type {
   ValueNode,
 } from "groq-js";
 import type {
+  IsStringLiteral,
+  IsUnknown,
   Simplify as SimplifyNative,
   UnionToIntersection,
 } from "type-fest";
@@ -1528,7 +1530,7 @@ type Functions<
      */
     round: TArgs extends [infer TNum, infer TPrec] | [infer TNum]
       ? TNum extends number
-        ? unknown extends TPrec
+        ? IsUnknown<TPrec> extends true
           ? number
           : TPrec extends number
           ? number
@@ -1610,10 +1612,10 @@ type Functions<
     split: TArgs extends [infer TStr, infer TSep]
       ? TStr extends string
         ? TSep extends string
-          ? string extends TStr
+          ? IsStringLiteral<TStr> extends false
             ? // There's no splitting an unknown string
               string[]
-            : string extends TSep
+            : IsStringLiteral<TSep> extends false
             ? // There's no splitting with an unknown string
               string[]
             : TStr extends `${infer TLeft}${TSep}${infer TRight}`

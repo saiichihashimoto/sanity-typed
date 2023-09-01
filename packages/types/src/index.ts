@@ -70,6 +70,7 @@ import type {
 } from "sanity";
 import type {
   Except,
+  IsStringLiteral,
   OmitIndexSignature,
   SetRequired,
   Simplify,
@@ -201,11 +202,12 @@ export type ReferenceValue<TReferenced extends string> = Merge<
 export type TypeReference<TReferenced extends string> = Merge<
   TypeReferenceNative,
   {
-    type: string extends TReferenced
-      ? TReferenced & {
-          [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-        }
-      : TReferenced;
+    type: TReferenced &
+      (IsStringLiteral<TReferenced> extends false
+        ? TReferenced & {
+            [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+          }
+        : TReferenced);
   }
 >;
 
@@ -525,7 +527,7 @@ export type _ArrayMemberDefinition<
                       (Value extends any[]
                         ? unknown
                         : Value extends { [key: string]: any }
-                        ? (string extends TName
+                        ? (IsStringLiteral<TName> extends false
                             ? unknown
                             : Value["_type"] extends TName
                             ? unknown
@@ -537,7 +539,7 @@ export type _ArrayMemberDefinition<
                         (Value extends any[]
                           ? unknown
                           : Value extends { [key: string]: any }
-                          ? (string extends TName
+                          ? (IsStringLiteral<TName> extends false
                               ? unknown
                               : Value["_type"] extends TName
                               ? unknown
@@ -565,7 +567,9 @@ export type _ArrayMemberDefinition<
           DefinitionBase<
             any,
             AliasValue<TType> &
-              (string extends TName ? unknown : { _type: TName }) & {
+              (IsStringLiteral<TName> extends false
+                ? unknown
+                : { _type: TName }) & {
                 _key: string;
               },
             any
@@ -617,7 +621,7 @@ export const _makeDefineArrayMember =
       arrayOfSchema as any,
       defineOptions
     ) as typeof arrayOfSchema &
-      (string extends TName ? unknown : { name: TName });
+      (IsStringLiteral<TName> extends false ? unknown : { name: TName });
 
 export const defineArrayMember = _makeDefineArrayMember<false>();
 
