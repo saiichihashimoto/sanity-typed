@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { evaluate, parse } from "groq-js";
 import type { GroqPipeFunction } from "groq-js";
-import type { ReadonlyDeep } from "type-fest";
+import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -29,8 +29,8 @@ describe("pipe functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -54,8 +54,8 @@ describe("pipe functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([FOO]);
@@ -83,8 +83,8 @@ describe("pipe functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([FOO]);
@@ -112,8 +112,8 @@ describe("pipe functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([FOO]);
@@ -158,8 +158,8 @@ describe("pipe functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([1, 2, 3]);
@@ -183,8 +183,8 @@ describe("pipe functions", () => {
         ...desiredTree,
         func: expect.any(Function),
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([FOO]);

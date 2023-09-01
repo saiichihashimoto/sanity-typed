@@ -1,7 +1,7 @@
 import type {
   PortableTextBlock as PortableTextBlockNative,
-  PortableTextMarkDefinition,
-  PortableTextSpan,
+  PortableTextMarkDefinition as PortableTextMarkDefinitionNative,
+  PortableTextSpan as PortableTextSpanNative,
   TypedObject,
 } from "@portabletext/types";
 import {
@@ -68,9 +68,17 @@ import type {
   UrlRule,
   WorkspaceOptions as WorkspaceOptionsNative,
 } from "sanity";
-import type { Merge, RemoveIndexSignature, Simplify } from "type-fest";
+import type { Except, OmitIndexSignature, Simplify } from "type-fest";
 
 import type { TupleOfLength } from "./utils";
+
+// TODO Couldn't use type-fest's Merge >=3.0.0
+type Merge_<FirstType, SecondType> = Except<
+  FirstType,
+  Extract<keyof FirstType, keyof SecondType>
+> &
+  SecondType;
+type Merge<FirstType, SecondType> = Simplify<Merge_<FirstType, SecondType>>;
 
 declare const README: unique symbol;
 declare const required: unique symbol;
@@ -245,6 +253,11 @@ export type ArrayDefinition<
   }
 >;
 
+export type PortableTextMarkDefinition =
+  OmitIndexSignature<PortableTextMarkDefinitionNative>;
+
+export type PortableTextSpan = Omit<PortableTextSpanNative, "_key">;
+
 export type PortableTextBlock<
   M extends PortableTextMarkDefinition = PortableTextMarkDefinition,
   C extends TypedObject = PortableTextSpan,
@@ -318,7 +331,7 @@ export type SanityDocument<
     [required]?: boolean;
   }
 > = Simplify<
-  RemoveIndexSignature<ObjectValue<TFieldDefinition> & SanityDocumentNative> & {
+  OmitIndexSignature<ObjectValue<TFieldDefinition> & SanityDocumentNative> & {
     _type: TType;
   }
 >;
@@ -352,7 +365,7 @@ export type FileValue<
     [required]?: boolean;
   } = never
 > = Simplify<
-  ObjectValue<TFieldDefinition> & RemoveIndexSignature<FileValueNativeWithType>
+  ObjectValue<TFieldDefinition> & OmitIndexSignature<FileValueNativeWithType>
 >;
 
 type FileDefinition<
@@ -383,7 +396,7 @@ export type ImageValue<
     [required]?: boolean;
   } = never
 > = Simplify<
-  ObjectValue<TFieldDefinition> & RemoveIndexSignature<ImageValueNativeWithType>
+  ObjectValue<TFieldDefinition> & OmitIndexSignature<ImageValueNativeWithType>
 >;
 
 type ImageDefinition<

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { evaluate, parse } from "groq-js";
 import type { GroqPipeFunction } from "groq-js";
-import type { ReadonlyDeep } from "type-fest";
+import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -38,8 +38,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(true);
@@ -69,8 +69,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(false);
@@ -103,8 +103,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(true);
@@ -207,8 +207,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(true);
@@ -237,8 +237,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(false);
@@ -268,8 +268,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(true);
@@ -298,8 +298,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(false);
@@ -352,8 +352,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(6);
@@ -378,8 +378,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(0);
@@ -404,8 +404,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(4);
@@ -430,8 +430,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(2);
@@ -466,8 +466,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -495,8 +495,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -527,8 +527,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -556,8 +556,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -589,8 +589,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(false);
@@ -635,8 +635,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(6);
@@ -661,8 +661,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(1);
@@ -687,8 +687,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(0);
@@ -713,8 +713,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(1);
@@ -739,8 +739,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(4);
@@ -775,8 +775,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -804,8 +804,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -836,8 +836,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -865,8 +865,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -898,8 +898,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(false);
@@ -948,8 +948,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(14);
@@ -979,8 +979,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(11);
@@ -1001,8 +1001,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(1);
@@ -1027,8 +1027,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -1049,8 +1049,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -1072,8 +1072,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(false);
@@ -1100,8 +1100,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(1);
@@ -1123,8 +1123,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(6);
@@ -1152,8 +1152,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(262144);
@@ -1188,8 +1188,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -1217,8 +1217,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -1249,8 +1249,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -1278,8 +1278,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBeNull();
@@ -1311,8 +1311,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(false);
@@ -1361,8 +1361,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(1032);
@@ -1392,8 +1392,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(88);
@@ -1425,8 +1425,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(8192);
@@ -1456,8 +1456,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(810);
@@ -1482,8 +1482,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(-0.25);
@@ -1504,8 +1504,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(5);
@@ -1523,8 +1523,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(true);
@@ -1542,8 +1542,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -1561,8 +1561,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBeNull();
@@ -1587,8 +1587,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(true);
@@ -1609,8 +1609,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(false);
@@ -1632,8 +1632,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(true);
@@ -1660,8 +1660,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(3);
@@ -1683,8 +1683,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(6);
@@ -1704,8 +1704,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(-5);
@@ -1723,8 +1723,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(-5);
@@ -1746,8 +1746,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(8);
@@ -1771,8 +1771,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(10);
@@ -1797,8 +1797,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(BAZ);
@@ -1828,8 +1828,8 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual(desiredTree);
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toBe(BAZ);
@@ -1844,11 +1844,14 @@ describe("precendence and associativity", () => {
     it('*[_type=="foo"]|order(name)|{age}', async () => {
       const query = '*[_type=="foo"]|order(name)|{age}';
       const tree = parse(query);
-      const dataset = [
-        { _type: "bar", name: "Bar", age: 4 },
-        { _type: "foo", name: "Foo", age: 5 },
-      ] as const;
-      const result = await (await evaluate(tree, { dataset })).get();
+      const result = await (
+        await evaluate(tree, {
+          dataset: [
+            { _type: "bar", name: "Bar", age: 4 },
+            { _type: "foo", name: "Foo", age: 5 },
+          ],
+        })
+      ).get();
 
       const desiredTree = {
         base: {
@@ -1891,8 +1894,8 @@ describe("precendence and associativity", () => {
           func: expect.any(Function),
         },
       });
-      expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-        typeof desiredTree
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
       >();
 
       expect(result).toStrictEqual([{ age: 5 }]);
@@ -1939,8 +1942,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(true);
@@ -1978,8 +1981,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(true);
@@ -2019,8 +2022,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(false);
@@ -2058,8 +2061,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(false);
@@ -2100,8 +2103,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(false);
@@ -2156,8 +2159,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(9);
@@ -2197,8 +2200,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(12);
@@ -2239,8 +2242,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(20);
@@ -2280,8 +2283,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(60);
@@ -2316,8 +2319,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(-4);
@@ -2358,8 +2361,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(1024);
@@ -2399,8 +2402,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(262144);
@@ -2435,8 +2438,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(4);
@@ -2469,8 +2472,8 @@ describe("precendence and associativity", () => {
         } as const;
 
         expect(tree).toStrictEqual(desiredTree);
-        expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-          typeof desiredTree
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof desiredTree>
         >();
 
         expect(result).toBe(true);
