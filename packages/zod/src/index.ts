@@ -29,16 +29,12 @@ type _SchemaTypeDefinition<
   | _FieldDefinition<TType, TName, TAlias, TStrict, TReferenced, any, any, any>
   | _TypeDefinition<TType, TName, TAlias, TStrict, TReferenced, any, any>;
 
-type ZodUnion<Zods extends z.ZodTypeAny[]> = Zods["length"] extends 1
-  ? Zods[number]
-  : z.ZodUnion<Zods & [Zods[0], Zods[1], ...Zods[number][]]>;
-
 const zodUnion = <Zods extends z.ZodTypeAny[]>(types: Zods) =>
   (types.length === 1
     ? types[0]
     : z.union(
         types as unknown as [Zods[number], Zods[number], ...Zods[number][]]
-      )) as ZodUnion<Zods>;
+      )) as Zods[number];
 
 const constantZods = {
   boolean: z.boolean(),
@@ -85,6 +81,42 @@ const constantZods = {
   url: z.string(),
 };
 
+const addKey = <Zod extends z.ZodType<any, any, any>>(zod: Zod) =>
+  z.intersection(
+    zod,
+    z.object({
+      _key: z.string(),
+    })
+  );
+
+type AddKey<Zod extends z.ZodType<any, any, any>> = ReturnType<
+  typeof addKey<Zod>
+>;
+
+const addType =
+  <const Type extends string>(type: Type) =>
+  <Zod extends z.ZodType<any, any, any>>(zod: Zod) =>
+    z.intersection(
+      zod,
+      z.object({
+        _type: z.literal(type),
+      })
+    );
+
+// HACK just so I can get the type
+const addTypeUncurried = <
+  const Type extends string,
+  Zod extends z.ZodType<any, any, any>
+>(
+  type: Type,
+  zod: Zod
+) => addType<Type>(type)<Zod>(zod);
+
+type AddType<
+  Type extends string,
+  Zod extends z.ZodType<any, any, any>
+> = ReturnType<typeof addTypeUncurried<Type, Zod>>;
+
 type MembersZods<
   TMemberDefinitions extends _ArrayMemberDefinition<
     any,
@@ -96,17 +128,65 @@ type MembersZods<
     any,
     any
   >[]
-> = {
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-  [Index in keyof TMemberDefinitions]: SanityTypeToZod<
-    TMemberDefinitions[Index]
-  >;
-};
+> =
+  TMemberDefinitions extends (infer TMemberDefinition extends _ArrayMemberDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >)[]
+    ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+      (SanityTypeToZod<TMemberDefinition> extends z.ZodObject<any>
+        ? TMemberDefinition extends { name: infer TName extends string }
+          ? AddType<
+              TName,
+              AddKey<
+                // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+                SanityTypeToZod<TMemberDefinition>
+              >
+            >
+          : AddKey<
+              // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+              SanityTypeToZod<TMemberDefinition>
+            >
+        : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+          SanityTypeToZod<TMemberDefinition>)[]
+    : never;
+
+const memberZods = <
+  TMemberDefinitions extends _ArrayMemberDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >[]
+>(
+  members: TMemberDefinitions
+) =>
+  members.map((member) => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+    const zod = _sanityTypeToZod(member);
+
+    // TODO use lodash-fp flow
+    return zod instanceof z.ZodObject
+      ? "name" in member
+        ? addType(member.name)(addKey(zod))
+        : addKey(zod)
+      : zod;
+  }) as MembersZods<TMemberDefinitions>;
 
 type ArrayZod<
   TSchemaType extends _SchemaTypeDefinition<"array", any, any, any, any>
 > = TSchemaType extends {
-  of?: infer TMemberDefinitions extends _ArrayMemberDefinition<
+  of: infer TMemberDefinitions extends _ArrayMemberDefinition<
     any,
     any,
     any,
@@ -117,8 +197,7 @@ type ArrayZod<
     any
   >[];
 }
-  ? // z.ZodArray<ZodUnion<MembersZods<TMemberDefinitions>>>
-    z.ZodArray<MembersZods<TMemberDefinitions>[number]>
+  ? z.ZodArray<MembersZods<TMemberDefinitions>[number]>
   : never;
 
 const arrayZod = <
@@ -128,28 +207,27 @@ const arrayZod = <
 }: TSchemaType) =>
   z.array(
     zodUnion(
-      (
+      memberZods(
         of as _ArrayMemberDefinition<any, any, any, any, any, any, any, any>[]
-      ).map(
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-        _sanityTypeToZod
       )
     )
   ) as ArrayZod<TSchemaType>;
 
-const blockZod = z.object({
+const spanZod = addKey(
+  z.object({
+    _type: z.literal("span"),
+    marks: z.optional(z.array(z.string())),
+    text: z.string(),
+  })
+);
+
+type SpanZod = typeof spanZod;
+
+const blockFieldsZods = {
   _type: z.literal("block"),
   level: z.optional(z.number()),
   listItem: z.optional(z.string()),
   style: z.optional(z.string()),
-  children: z.array(
-    z.object({
-      _key: z.optional(z.string()),
-      _type: z.literal("span"),
-      marks: z.optional(z.array(z.string())),
-      text: z.string(),
-    })
-  ),
   markDefs: z.optional(
     z.array(
       z.object({
@@ -158,9 +236,60 @@ const blockZod = z.object({
       })
     )
   ),
-});
+};
 
-type BlockZod = typeof blockZod;
+type BlockFieldsZods = typeof blockFieldsZods;
+
+type BlockZod<
+  TSchemaType extends _SchemaTypeDefinition<"block", any, any, any, any>
+> = z.ZodObject<
+  BlockFieldsZods & {
+    children: z.ZodArray<
+      TSchemaType extends {
+        of?: infer TMemberDefinitions extends _ArrayMemberDefinition<
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any
+        >[];
+      }
+        ? MembersZods<TMemberDefinitions>[number] | SpanZod
+        : SpanZod
+    >;
+  }
+>;
+
+const blockZod = <
+  TSchemaType extends _SchemaTypeDefinition<"block", any, any, any, any>
+>({
+  of,
+}: TSchemaType) =>
+  z.object({
+    ...blockFieldsZods,
+    children: z.array(
+      !of
+        ? spanZod
+        : zodUnion([
+            spanZod,
+            ...memberZods(
+              of as _ArrayMemberDefinition<
+                any,
+                any,
+                any,
+                any,
+                any,
+                any,
+                any,
+                any
+              >[]
+            ),
+          ])
+    ),
+  }) as BlockZod<TSchemaType>;
 
 const isFieldRequired = (
   field: _FieldDefinition<any, any, any, any, any, any, any, any>
@@ -193,7 +322,7 @@ const isFieldRequired = (
 
   // eslint-disable-next-line fp/no-unused-expression -- mutation
   field.validation?.(
-    // @ts-expect-error -- Honestly, idk
+    // @ts-expect-error -- TODO Honestly, idk
     rule
   );
 
@@ -395,7 +524,9 @@ type SanityTypeToZod<
       Extract<TSchemaType, _SchemaTypeDefinition<"array", any, any, any, any>>
     >
   : TSchemaType["type"] extends "block"
-  ? BlockZod
+  ? BlockZod<
+      Extract<TSchemaType, _SchemaTypeDefinition<"block", any, any, any, any>>
+    >
   : TSchemaType["type"] extends "object"
   ? ObjectZod<
       Extract<TSchemaType, _SchemaTypeDefinition<"object", any, any, any, any>>
@@ -435,7 +566,12 @@ export const _sanityTypeToZod = <
         >
       )
     : schema.type === "block"
-    ? blockZod
+    ? blockZod(
+        schema as Extract<
+          TSchemaType,
+          _SchemaTypeDefinition<"block", any, any, any, any>
+        >
+      )
     : schema.type === "object"
     ? objectZod(
         schema as Extract<

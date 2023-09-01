@@ -1,7 +1,7 @@
 import type {
   PortableTextBlock as PortableTextBlockNative,
-  PortableTextMarkDefinition,
-  PortableTextSpan,
+  PortableTextMarkDefinition as PortableTextMarkDefinitionNative,
+  PortableTextSpan as PortableTextSpanNative,
   TypedObject,
 } from "@portabletext/types";
 import {
@@ -68,7 +68,12 @@ import type {
   UrlRule,
   WorkspaceOptions as WorkspaceOptionsNative,
 } from "sanity";
-import type { Merge, RemoveIndexSignature, Simplify } from "type-fest";
+import type {
+  Merge,
+  RemoveIndexSignature,
+  SetRequired,
+  Simplify,
+} from "type-fest";
 
 import type { MaybeArray, TupleOfLength } from "./utils";
 
@@ -245,9 +250,16 @@ export type ArrayDefinition<
   }
 >;
 
+export type PortableTextMarkDefinition =
+  RemoveIndexSignature<PortableTextMarkDefinitionNative>;
+
+export type PortableTextSpan = Omit<PortableTextSpanNative, "_key">;
+
 export type PortableTextBlock<
   M extends PortableTextMarkDefinition = PortableTextMarkDefinition,
-  C extends TypedObject = PortableTextSpan,
+  C extends SetRequired<TypedObject, "_key"> = PortableTextSpan & {
+    _key: string;
+  },
   S extends string = string,
   L extends string = string
 > = Omit<PortableTextBlockNative<M, C, S, L> & { _type: "block" }, "_key">;
@@ -261,20 +273,17 @@ export type BlockDefinition<
     TRequired,
     PortableTextBlock<
       PortableTextMarkDefinition,
-      _InferValue<TMemberDefinition> | PortableTextSpan
+      _InferValue<TMemberDefinition> | (PortableTextSpan & { _key: string })
     >,
     RewriteValue<
       PortableTextBlock<
         PortableTextMarkDefinition,
-        _InferValue<TMemberDefinition> | PortableTextSpan
+        _InferValue<TMemberDefinition> | (PortableTextSpan & { _key: string })
       >,
       BlockRule
     >
   > & {
-    of?: TupleOfLength<
-      TMemberDefinition & { name: string; type: "object" | "reference" },
-      1
-    >;
+    of?: TupleOfLength<TMemberDefinition, 1>;
   }
 >;
 

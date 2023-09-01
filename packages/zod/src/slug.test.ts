@@ -20,11 +20,7 @@ describe("slug", () => {
       const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<
-          _InferValue<typeof arrayMember>,
-          // TODO defineArrayMember would have to return a runtime value to determine _key
-          "_key"
-        >
+        Omit<_InferValue<typeof arrayMember>, "_key">
       >();
       expect(zod.parse({ _type: "slug", current: "foo" })).toStrictEqual({
         _type: "slug",

@@ -30,11 +30,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<
-          _InferValue<typeof arrayMember>,
-          // TODO defineArrayMember would have to return a runtime value to determine _key
-          "_key"
-        >
+        Omit<_InferValue<typeof arrayMember>, "_key">
       >();
       expect(zod.parse({})).toStrictEqual({});
       expect(zod.parse({ bar: true, tar: 5 })).toStrictEqual({
@@ -63,11 +59,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<
-          _InferValue<typeof arrayMember>,
-          // TODO defineArrayMember would have to return a runtime value to determine _key
-          "_key"
-        >
+        Omit<_InferValue<typeof arrayMember>, "_key">
       >();
       expect(zod.parse({})).toStrictEqual({});
       expect(zod.parse({ bar: { tar: 5 } })).toStrictEqual({ bar: { tar: 5 } });
@@ -88,11 +80,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<
-          _InferValue<typeof arrayMember>,
-          // TODO defineArrayMember would have to return a runtime value to determine _key
-          "_key"
-        >
+        Omit<_InferValue<typeof arrayMember>, "_key">
       >();
       expect(zod.parse({ bar: true })).toStrictEqual({ bar: true });
       expect(() => zod.parse({})).toThrow();
