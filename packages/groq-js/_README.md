@@ -65,12 +65,12 @@ const tree = parse(input);
  *  }
  */
 
-const dataset = [
-  { _type: "user", name: "Michael" },
-  { _type: "company", name: "Bluth Company" },
-] as const;
-
-const value = await evaluate(tree, { dataset });
+const value = await evaluate(tree, {
+  dataset: [
+    { _type: "user", name: "Michael" },
+    { _type: "company", name: "Bluth Company" },
+  ],
+});
 
 const result = await value.get();
 /**

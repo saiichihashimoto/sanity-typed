@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { evaluate, parse } from "groq-js";
-import type { ReadonlyDeep } from "type-fest";
+import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -29,8 +29,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toBeNull();
@@ -48,8 +48,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toBe(true);
@@ -67,8 +67,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toBe(false);
@@ -86,8 +86,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toBe(5.6);
@@ -105,8 +105,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toBe("double quoted string");
@@ -126,8 +126,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toBe('double" "quoted" "string"');
@@ -156,8 +156,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toBe("single quoted string");
@@ -177,8 +177,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toBe("single' 'quoted' 'string");
@@ -207,8 +207,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual([]);
@@ -232,8 +232,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual([true]);
@@ -257,8 +257,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual([true]);
@@ -287,8 +287,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual([true, false]);
@@ -347,8 +347,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual([
@@ -390,8 +390,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual([null]);
@@ -448,9 +448,9 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>()
+    expectType<Parse<typeof query>>()
       // TODO toStrictEqual
-      .toBeAssignableTo<typeof desiredTree>();
+      .toBeAssignableTo<WritableDeep<typeof desiredTree>>();
 
     expect(result).toStrictEqual([
       [null, null],
@@ -472,8 +472,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({});
@@ -499,8 +499,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({ foo: "bar" });
@@ -524,8 +524,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({ foo: "bar" });
@@ -554,8 +554,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({
@@ -585,8 +585,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({ foo: "bar" });
@@ -615,8 +615,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({ foo: "bar" });
@@ -652,8 +652,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({ baz: "qux", foo: "bar" });
@@ -690,8 +690,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({ foo: "bar" });
@@ -723,8 +723,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({ foo: "bar" });
@@ -769,8 +769,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({
@@ -794,8 +794,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({ foo: "bar" });
@@ -818,8 +818,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({ foo: "bar" });
@@ -849,8 +849,8 @@ describe("data types", () => {
     } as const;
 
     expect(tree).toStrictEqual(desiredTree);
-    expectType<ReadonlyDeep<Parse<typeof query>>>().toStrictEqual<
-      typeof desiredTree
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof desiredTree>
     >();
 
     expect(result).toStrictEqual({ baz: "qux", foo: "bar" });

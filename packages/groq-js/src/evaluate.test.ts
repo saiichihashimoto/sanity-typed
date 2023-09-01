@@ -7,6 +7,7 @@ import { expectType } from "@sanity-typed/test-utils";
 import { evaluate, parse } from ".";
 
 const FOO: unique symbol = Symbol("foo");
+type Foo = typeof FOO;
 
 describe("evaluate", () => {
   it("returns same value as groq-js", () => {
@@ -37,11 +38,10 @@ describe("evaluate", () => {
   it("uses `dataset` as `*`", async () => {
     const query = "*";
     const tree = parse(query);
-    const dataset = [FOO];
-    const result = await (await evaluate(tree, { dataset })).get();
+    const result = await (await evaluate(tree, { dataset: [FOO] })).get();
 
     expect(result).toStrictEqual([FOO]);
-    expectType<typeof result>().toStrictEqual<symbol[]>();
+    expectType<typeof result>().toStrictEqual<[Foo]>();
   });
 
   it("uses `params` as parameters", async () => {

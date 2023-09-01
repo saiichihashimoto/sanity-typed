@@ -1,13 +1,15 @@
 import { describe, it } from "@jest/globals";
-import type {
-  PortableTextMarkDefinition,
-  PortableTextSpan,
-} from "@portabletext/types";
 
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineField, defineType } from ".";
-import type { PortableTextBlock, ReferenceValue, _InferValue } from ".";
+import type {
+  PortableTextBlock,
+  PortableTextMarkDefinition,
+  PortableTextSpan,
+  ReferenceValue,
+  _InferValue,
+} from ".";
 
 describe("block", () => {
   describe("defineArrayMember", () => {
