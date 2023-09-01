@@ -1088,8 +1088,9 @@ type EvaluateAccessElement<
   TScope extends Scope<Context<any[], any>>
 > = TNode extends AccessElementNode
   ? Evaluate<TNode["base"], TScope> extends any[]
-    ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-      Evaluate<TNode["base"], TScope>[TNode["index"]]
+    ? TNode["index"] extends keyof Evaluate<TNode["base"], TScope>
+      ? Evaluate<TNode["base"], TScope>[TNode["index"]]
+      : null
     : null
   : never;
 
@@ -1744,8 +1745,7 @@ type EvaluateMath<
               : null
             : Evaluate<TNode["left"], TScope> extends string
             ? Evaluate<TNode["right"], TScope> extends string
-              ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-                `${Evaluate<TNode["left"], TScope>}${Evaluate<
+              ? `${Evaluate<TNode["left"], TScope>}${Evaluate<
                   TNode["right"],
                   TScope
                 >}`
