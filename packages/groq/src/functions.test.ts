@@ -1652,7 +1652,7 @@ describe("functions", () => {
       >();
 
       expect(result).toBe("5,true,foo");
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<string>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<"5,true,foo">();
     });
 
     it('array::join($param,",")', async () => {

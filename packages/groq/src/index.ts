@@ -47,7 +47,10 @@ import type {
   ValueNode,
 } from "groq-js";
 import type {
+  IsStringLiteral,
+  Join,
   Simplify as SimplifyNative,
+  Split,
   UnionToIntersection,
 } from "type-fest";
 
@@ -1316,26 +1319,10 @@ type Functions<
     join: TArgs extends [infer TArr, infer TSep]
       ? TArr extends any[]
         ? TSep extends string
-          ? TArr extends []
-            ? ""
-            : Functions<
-                [TArr[number]],
-                TScope
-              >["global"]["string"] extends string
-            ? TArr extends [infer TElement]
-              ? Functions<[TElement], TScope>["global"]["string"]
-              : // TODO RangeError: Maximum call stack size exceeded
-                // TArr extends [infer THead, ...infer TTail]
-                // ? `${Functions<
-                //     [THead],
-                //     TScope
-                //   >["global"]["string"]}${TSep}${Functions<
-                //     [TTail, TSep],
-                //     TScope
-                //   >["array"]["join"]}`
-                // : // Once it's reduced to Element[], a literal can't be determined
-                //   string
-                string
+          ? Functions<[TArr[number]], TScope>["global"]["string"] extends string
+            ? IsStringLiteral<TSep> extends false
+              ? string
+              : Join<TArr, TSep>
             : null
           : null
         : null
@@ -1611,18 +1598,10 @@ type Functions<
       ? TStr extends string
         ? TSep extends string
           ? string extends TStr
-            ? // There's no splitting an unknown string
-              string[]
+            ? string[]
             : string extends TSep
-            ? // There's no splitting with an unknown string
-              string[]
-            : TStr extends `${infer TLeft}${TSep}${infer TRight}`
-            ? TRight extends ""
-              ? TSep extends ""
-                ? [TLeft]
-                : [TLeft, TRight]
-              : [TLeft, ...Functions<[TRight, TSep], TScope>["string"]["split"]]
-            : [TStr]
+            ? string[]
+            : Split<TStr, TSep>
           : null
         : null
       : never;
