@@ -1,6 +1,7 @@
 import type { StrictDefinition } from "sanity";
 import { z } from "zod";
 
+import { _referenced } from "@sanity-typed/types";
 import type {
   IntrinsicTypeName,
   _ArrayMemberDefinition,
@@ -55,7 +56,25 @@ const constantZods = {
     lng: z.number(),
   }),
   number: z.number(),
-  reference: z.object({
+  slug: z.object({
+    _type: z.literal("slug"),
+    current: z.string(),
+  }),
+  string: z.string(),
+  text: z.string(),
+  url: z.string(),
+};
+
+const referenceZod = <
+  TSchemaType extends _SchemaTypeDefinition<"reference", any, any, any, any>
+>() =>
+  z.object({
+    [_referenced]:
+      z.custom<
+        TSchemaType extends { to: { type: infer TReferenced }[] }
+          ? TReferenced
+          : never
+      >(),
     _ref: z.string(),
     _type: z.literal("reference"),
     _weak: z.optional(z.boolean()),
@@ -71,15 +90,11 @@ const constantZods = {
         ),
       })
     ),
-  }),
-  slug: z.object({
-    _type: z.literal("slug"),
-    current: z.string(),
-  }),
-  string: z.string(),
-  text: z.string(),
-  url: z.string(),
-};
+  });
+
+type ReferenceZod<
+  TSchemaType extends _SchemaTypeDefinition<"reference", any, any, any, any>
+> = ReturnType<typeof referenceZod<TSchemaType>>;
 
 const addKey = <Zod extends z.ZodType<any, any, any>>(zod: Zod) =>
   z.intersection(
@@ -519,6 +534,13 @@ type SanityTypeToZod<
   TSchemaType extends _SchemaTypeDefinition<any, any, any, any, any>
 > = TSchemaType["type"] extends keyof typeof constantZods
   ? (typeof constantZods)[TSchemaType["type"]]
+  : TSchemaType["type"] extends "reference"
+  ? ReferenceZod<
+      Extract<
+        TSchemaType,
+        _SchemaTypeDefinition<"reference", any, any, any, any>
+      >
+    >
   : TSchemaType["type"] extends "array"
   ? ArrayZod<
       Extract<TSchemaType, _SchemaTypeDefinition<"array", any, any, any, any>>
@@ -558,6 +580,13 @@ export const _sanityTypeToZod = <
     ? constantZods[
         schema.type as TSchemaType["type"] & keyof typeof constantZods
       ]
+    : schema.type === "reference"
+    ? referenceZod<
+        Extract<
+          TSchemaType,
+          _SchemaTypeDefinition<"reference", any, any, any, any>
+        >
+      >()
     : schema.type === "array"
     ? arrayZod(
         schema as Extract<
@@ -603,7 +632,9 @@ export const _sanityTypeToZod = <
     : // FIXME aliasedType: () =>
       (undefined as never)) as SanityTypeToZod<TSchemaType>;
 
-export const sanityConfigToZods = <TConfig extends _ConfigBase<any, any>>({
+export const sanityConfigToZods = <
+  const TConfig extends _ConfigBase<any, any>
+>({
   schema: { types: typesUntyped = [] } = {},
 }: TConfig) => {
   type TTypeDefinition = TConfig extends _ConfigBase<infer TTypeDefinition, any>

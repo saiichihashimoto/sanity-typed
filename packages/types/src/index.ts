@@ -190,11 +190,12 @@ export type NumberDefinition<TRequired extends boolean> = Merge<
   DefinitionBase<TRequired, number, NumberRule>
 >;
 
-declare const referenced: unique symbol;
+/** @private */
+export const _referenced: unique symbol = Symbol("referenced");
 
 export type ReferenceValue<TReferenced extends string> = Merge<
   Omit<ReferenceValueNative, "_key"> & { _type: "reference" },
-  { [referenced]: TReferenced }
+  { [_referenced]: TReferenced }
 >;
 
 export type TypeReference<TReferenced extends string> = Merge<

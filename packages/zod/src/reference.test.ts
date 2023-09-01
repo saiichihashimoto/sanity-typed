@@ -21,7 +21,7 @@ describe("reference", () => {
       const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferValue<typeof arrayMember>, symbol | "_key">
+        Omit<_InferValue<typeof arrayMember>, "_key">
       >();
       expect(zod.parse({ _ref: "foo", _type: "reference" })).toStrictEqual({
         _ref: "foo",
@@ -41,7 +41,7 @@ describe("reference", () => {
       const zod = _sanityTypeToZod(field);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferValue<typeof field>, symbol>
+        _InferValue<typeof field>
       >();
       expect(zod.parse({ _ref: "foo", _type: "reference" })).toStrictEqual({
         _ref: "foo",
@@ -61,7 +61,7 @@ describe("reference", () => {
       const zod = _sanityTypeToZod(type);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferValue<typeof type>, symbol>
+        _InferValue<typeof type>
       >();
       expect(zod.parse({ _ref: "foo", _type: "reference" })).toStrictEqual({
         _ref: "foo",
