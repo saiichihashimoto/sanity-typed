@@ -4,6 +4,13 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
+      "inputs": [
+        "**",
+        "!.turbo/**",
+        "!dist/**",
+        "!node_modules/**",
+        "!src/**/*.test.*"
+      ],
       "outputs": ["dist/**"]
     },
     "dev": {

@@ -11,7 +11,7 @@
   },
   "workspaces": ["@types/*", "packages/*"],
   "scripts": {
-    "build": "turbo run build --color --continue",
+    "build": "turbo run build --color",
     "dev": "concurrently --prefix-colors \"auto\" npm:dev:*",
     "dev:build": "turbo run dev --color --parallel --concurrency 50",
     "dev:test": "npm run test -- --watch",
