@@ -576,7 +576,12 @@ export type _ArrayMemberDefinition<
           >
         >,
         "name"
-      >) & {
+      >) &
+  (IsStringLiteral<TName> extends false
+    ? unknown
+    : {
+        name: TName;
+      }) & {
     name?: TName;
     type: TType;
   };
@@ -620,8 +625,7 @@ export const _makeDefineArrayMember =
     defineArrayMemberNative(
       arrayOfSchema as any,
       defineOptions
-    ) as typeof arrayOfSchema &
-      (IsStringLiteral<TName> extends false ? unknown : { name: TName });
+    ) as typeof arrayOfSchema;
 
 export const defineArrayMember = _makeDefineArrayMember<false>();
 
