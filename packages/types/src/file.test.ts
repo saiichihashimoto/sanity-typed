@@ -1,145 +1,350 @@
 import { describe, it } from "@jest/globals";
-import type { ReferenceValue as ReferenceValueNative } from "sanity";
+import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import { defineArrayMember, defineField, defineType } from ".";
-import type { FileValue, _InferValue } from ".";
+import { defineArrayMember, defineConfig, defineField, defineType } from ".";
+import type { FileValue, InferSchemaValues } from ".";
 
 describe("file", () => {
   describe("defineArrayMember", () => {
     it("infers FileValue", () => {
-      const arrayMember = defineArrayMember({
-        type: "file",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "file",
+                }),
+              ],
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        FileValue & {
-          _key: string;
-        }
+      expectType<
+        InferSchemaValues<typeof config>["foo"][number]
+      >().toStrictEqual<
+        Simplify<
+          FileValue & {
+            _key: string;
+          }
+        >
       >();
     });
+  });
 
-    it("infers FileValue with fields", () => {
-      const arrayMember = defineArrayMember({
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-          }),
-          defineField({
-            name: "tar",
-            type: "number",
-          }),
-        ],
-      });
-
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        {
-          _key: string;
-        } & {
-          _type: "file";
-          asset?: ReferenceValueNative;
-          bar?: boolean;
-          tar?: number;
-        }
-      >();
-    });
-
-    it("infers nested objects", () => {
-      const arrayMember = defineArrayMember({
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "object",
-            fields: [
-              defineField({
-                name: "tar",
-                type: "number",
+  it("infers FileValue with fields", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "array",
+            of: [
+              defineArrayMember({
+                type: "file",
+                fields: [
+                  defineField({
+                    name: "bar",
+                    type: "boolean",
+                  }),
+                  defineField({
+                    name: "tar",
+                    type: "number",
+                  }),
+                ],
               }),
             ],
           }),
         ],
-      });
+      },
+    });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        {
+    expectType<InferSchemaValues<typeof config>["foo"][number]>().toStrictEqual<
+      Simplify<
+        FileValue & {
           _key: string;
-        } & {
-          _type: "file";
-          asset?: ReferenceValueNative;
+          bar?: boolean;
+          tar?: number;
+        }
+      >
+    >();
+  });
+
+  it("infers nested objects", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "array",
+            of: [
+              defineArrayMember({
+                type: "file",
+                fields: [
+                  defineField({
+                    name: "bar",
+                    type: "object",
+                    fields: [
+                      defineField({
+                        name: "tar",
+                        type: "number",
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    expectType<InferSchemaValues<typeof config>["foo"][number]>().toStrictEqual<
+      Simplify<
+        FileValue & {
+          _key: string;
           bar?: {
             tar?: number;
           };
         }
-      >();
-    });
+      >
+    >();
+  });
 
-    it("infers required fields", () => {
-      const arrayMember = defineArrayMember({
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-            validation: (Rule) => Rule.required(),
+  it("infers required fields", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "array",
+            of: [
+              defineArrayMember({
+                type: "file",
+                fields: [
+                  defineField({
+                    name: "bar",
+                    type: "boolean",
+                    validation: (Rule) => Rule.required(),
+                  }),
+                ],
+              }),
+            ],
           }),
         ],
-      });
+      },
+    });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        {
+    expectType<InferSchemaValues<typeof config>["foo"][number]>().toStrictEqual<
+      Simplify<
+        FileValue & {
           _key: string;
-        } & { _type: "file"; asset?: ReferenceValueNative; bar: boolean }
-      >();
-    });
+          bar: boolean;
+        }
+      >
+    >();
   });
+});
 
-  describe("defineField", () => {
-    it("infers FileValue", () => {
-      const field = defineField({
-        name: "foo",
-        type: "file",
-      });
-
-      expectType<_InferValue<typeof field>>().toStrictEqual<FileValue>();
-    });
-
-    it("infers FileValue with fields", () => {
-      const field = defineField({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-          }),
-          defineField({
-            name: "tar",
-            type: "number",
-          }),
-        ],
-      });
-
-      expectType<_InferValue<typeof field>>().toStrictEqual<{
-        _type: "file";
-        asset?: ReferenceValueNative;
-        bar?: boolean;
-        tar?: number;
-      }>();
-    });
-
-    it("infers nested objects", () => {
-      const field = defineField({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
+describe("defineField", () => {
+  it("infers FileValue", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
             type: "object",
             fields: [
+              defineField({
+                name: "bar",
+                type: "file",
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    expectType<
+      Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+    >().toStrictEqual<FileValue>();
+  });
+
+  it("infers FileValue with fields", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "object",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "file",
+                fields: [
+                  defineField({
+                    name: "bar",
+                    type: "boolean",
+                  }),
+                  defineField({
+                    name: "tar",
+                    type: "number",
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    expectType<
+      Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+    >().toStrictEqual<
+      Simplify<
+        FileValue & {
+          bar?: boolean;
+          tar?: number;
+        }
+      >
+    >();
+  });
+
+  it("infers nested objects", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "object",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "file",
+                fields: [
+                  defineField({
+                    name: "bar",
+                    type: "object",
+                    fields: [
+                      defineField({
+                        name: "tar",
+                        type: "number",
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    expectType<
+      Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+    >().toStrictEqual<
+      Simplify<
+        FileValue & {
+          bar?: {
+            tar?: number;
+          };
+        }
+      >
+    >();
+  });
+
+  it("infers required fields", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "object",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "file",
+                fields: [
+                  defineField({
+                    name: "bar",
+                    type: "boolean",
+                    validation: (Rule) => Rule.required(),
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    expectType<
+      Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+    >().toStrictEqual<
+      Simplify<
+        FileValue & {
+          bar: boolean;
+        }
+      >
+    >();
+  });
+});
+
+describe("defineType", () => {
+  it("infers FileValue", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "file",
+          }),
+        ],
+      },
+    });
+
+    expectType<
+      InferSchemaValues<typeof config>["foo"]
+    >().toStrictEqual<FileValue>();
+  });
+
+  it("infers FileValue with fields", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "file",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "boolean",
+              }),
               defineField({
                 name: "tar",
                 type: "number",
@@ -147,117 +352,83 @@ describe("file", () => {
             ],
           }),
         ],
-      });
+      },
+    });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<{
-        _type: "file";
-        asset?: ReferenceValueNative;
-        bar?: {
+    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      Simplify<
+        FileValue & {
+          bar?: boolean;
           tar?: number;
-        };
-      }>();
-    });
-
-    it("infers required fields", () => {
-      const field = defineField({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-            validation: (Rule) => Rule.required(),
-          }),
-        ],
-      });
-
-      expectType<_InferValue<typeof field>>().toStrictEqual<{
-        _type: "file";
-        asset?: ReferenceValueNative;
-        bar: boolean;
-      }>();
-    });
+        }
+      >
+    >();
   });
 
-  describe("defineType", () => {
-    it("infers FileValue", () => {
-      const type = defineType({
-        name: "foo",
-        type: "file",
-      });
-
-      expectType<_InferValue<typeof type>>().toStrictEqual<FileValue>();
-    });
-
-    it("infers FileValue with fields", () => {
-      const type = defineType({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-          }),
-          defineField({
-            name: "tar",
-            type: "number",
-          }),
-        ],
-      });
-
-      expectType<_InferValue<typeof type>>().toStrictEqual<{
-        _type: "file";
-        asset?: ReferenceValueNative;
-        bar?: boolean;
-        tar?: number;
-      }>();
-    });
-
-    it("infers nested objects", () => {
-      const type = defineType({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "object",
+  it("infers nested objects", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "file",
             fields: [
               defineField({
-                name: "tar",
-                type: "number",
+                name: "bar",
+                type: "object",
+                fields: [
+                  defineField({
+                    name: "tar",
+                    type: "number",
+                  }),
+                ],
               }),
             ],
           }),
         ],
-      });
-
-      expectType<_InferValue<typeof type>>().toStrictEqual<{
-        _type: "file";
-        asset?: ReferenceValueNative;
-        bar?: {
-          tar?: number;
-        };
-      }>();
+      },
     });
 
-    it("infers required fields", () => {
-      const type = defineType({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-            validation: (Rule) => Rule.required(),
+    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      Simplify<
+        FileValue & {
+          bar?: {
+            tar?: number;
+          };
+        }
+      >
+    >();
+  });
+
+  it("infers required fields", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "file",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "boolean",
+                validation: (Rule) => Rule.required(),
+              }),
+            ],
           }),
         ],
-      });
-
-      expectType<_InferValue<typeof type>>().toStrictEqual<{
-        _type: "file";
-        asset?: ReferenceValueNative;
-        bar: boolean;
-      }>();
+      },
     });
+
+    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      Simplify<
+        FileValue & {
+          bar: boolean;
+        }
+      >
+    >();
   });
 });
