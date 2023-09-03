@@ -123,14 +123,6 @@ type DefinitionBase<
   validation?: ValidationBuilder<TRequired, Value, Rule>;
 };
 
-/**
- * Infers the Value of a Definition, without aliased types.
- *
- * @private
- */
-export type _InferValue<Def extends DefinitionBase<any, any, any>> =
-  Def extends DefinitionBase<any, infer Value, any> ? Value : never;
-
 type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = Merge<
   {
     [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule
@@ -244,6 +236,8 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
   UrlDefinitionNative,
   DefinitionBase<TRequired, string, UrlRule>
 >;
+type InferValue<Def extends DefinitionBase<any, any, any>> =
+  Def extends DefinitionBase<any, infer Value, any> ? Value : never;
 
 export type ArrayDefinition<
   TRequired extends boolean,
@@ -252,8 +246,8 @@ export type ArrayDefinition<
   ArrayDefinitionNative,
   DefinitionBase<
     TRequired,
-    _InferValue<TMemberDefinition>[],
-    ArrayRule<_InferValue<TMemberDefinition>[]>
+    InferValue<TMemberDefinition>[],
+    ArrayRule<InferValue<TMemberDefinition>[]>
   > & {
     of: TupleOfLength<TMemberDefinition, 1>;
   }
@@ -280,12 +274,12 @@ export type BlockDefinition<
     TRequired,
     PortableTextBlock<
       PortableTextMarkDefinition,
-      _InferValue<TMemberDefinition> | PortableTextSpan
+      InferValue<TMemberDefinition> | PortableTextSpan
     >,
     RewriteValue<
       PortableTextBlock<
         PortableTextMarkDefinition,
-        _InferValue<TMemberDefinition> | PortableTextSpan
+        InferValue<TMemberDefinition> | PortableTextSpan
       >,
       BlockRule
     >
@@ -304,12 +298,12 @@ type ObjectValue<
     [Name in Extract<
       TFieldDefinition,
       { [required]?: false }
-    >["name"]]?: _InferValue<Extract<TFieldDefinition, { name: Name }>>;
+    >["name"]]?: InferValue<Extract<TFieldDefinition, { name: Name }>>;
   } & {
     [Name in Extract<
       TFieldDefinition,
       { [required]?: true }
-    >["name"]]: _InferValue<Extract<TFieldDefinition, { name: Name }>>;
+    >["name"]]: InferValue<Extract<TFieldDefinition, { name: Name }>>;
   }
 >;
 
@@ -453,7 +447,7 @@ type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any>;
 
 declare const aliasedType: unique symbol;
 
-export type AliasValue<TType extends string> = {
+type AliasValue<TType extends string> = {
   [aliasedType]: TType;
 };
 
@@ -880,7 +874,7 @@ type ExpandAliasValues<
   ? Extract<TAliasedDefinition, { name: TType }> extends never
     ? unknown
     : ExpandAliasValues<
-        _InferValue<Extract<TAliasedDefinition, { name: TType }>>,
+        InferValue<Extract<TAliasedDefinition, { name: TType }>>,
         TAliasedDefinition
       > &
         OmitToUnknown<Value, keyof AliasValue<TType>> &
@@ -932,7 +926,7 @@ export type InferSchemaValues<
           any,
           any
         >
-          ? _InferValue<TTypeDefinition> & { _type: TName }
+          ? InferValue<TTypeDefinition> & { _type: TName }
           : TTypeDefinition extends _TypeDefinition<
               any,
               TName,
@@ -942,7 +936,7 @@ export type InferSchemaValues<
               any,
               any
             >
-          ? _InferValue<TTypeDefinition>
+          ? InferValue<TTypeDefinition>
           : never,
         // TPluginTypeDefinition | TTypeDefinition
         | (_TypeDefinition<
