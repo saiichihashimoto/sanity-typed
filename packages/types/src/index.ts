@@ -331,19 +331,17 @@ export type ObjectDefinition<
 >;
 
 export type SanityDocument<
-  TType extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  }
+  } = never
 > = Simplify<
   OmitIndexSignature<ObjectValue<TFieldDefinition> & SanityDocumentNative> & {
-    _type: TType;
+    _type: "document";
   }
 >;
 
 export type DocumentDefinition<
-  TName extends string,
   TRequired extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -353,8 +351,8 @@ export type DocumentDefinition<
   DocumentDefinitionNative,
   DefinitionBase<
     TRequired,
-    SanityDocument<TName, TFieldDefinition>,
-    RewriteValue<SanityDocument<TName, TFieldDefinition>, DocumentRule>
+    SanityDocument<TFieldDefinition>,
+    RewriteValue<SanityDocument<TFieldDefinition>, DocumentRule>
   > & {
     fields: TupleOfLength<TFieldDefinition, 1>;
   }
@@ -423,7 +421,6 @@ type ImageDefinition<
 >;
 
 type IntrinsicDefinitions<
-  TName extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -438,7 +435,7 @@ type IntrinsicDefinitions<
   crossDatasetReference: CrossDatasetReferenceDefinition<TRequired>;
   date: DateDefinition<TRequired>;
   datetime: DatetimeDefinition<TRequired>;
-  document: DocumentDefinition<TName, TRequired, TFieldDefinition>;
+  document: DocumentDefinition<TRequired, TFieldDefinition>;
   email: EmailDefinition<TRequired>;
   file: FileDefinition<TRequired, TFieldDefinition>;
   geopoint: GeopointDefinition<TRequired>;
@@ -452,7 +449,7 @@ type IntrinsicDefinitions<
   url: UrlDefinition<TRequired>;
 };
 
-type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any, any>;
+type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any>;
 
 declare const aliasedType: unique symbol;
 
@@ -468,7 +465,7 @@ type TypeAliasDefinition<
   TypeAliasDefinitionNative<TType, TAlias>,
   DefinitionBase<TRequired, AliasValue<TType>, any> & {
     options?: TAlias extends IntrinsicTypeName
-      ? IntrinsicDefinitions<any, any, any, any, TRequired>[TAlias]["options"]
+      ? IntrinsicDefinitions<any, any, any, TRequired>[TAlias]["options"]
       : unknown;
   }
 >;
@@ -497,7 +494,6 @@ export type _ArrayMemberDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TName,
               TFieldDefinition,
               TMemberDefinition,
               TReferenced,
@@ -505,7 +501,6 @@ export type _ArrayMemberDefinition<
             >[type] extends DefinitionBase<any, infer Value, infer Rule>
               ? Merge<
                   IntrinsicDefinitions<
-                    TName,
                     TFieldDefinition,
                     TMemberDefinition,
                     TReferenced,
@@ -540,7 +535,6 @@ export type _ArrayMemberDefinition<
                   >
                 >
               : IntrinsicDefinitions<
-                  TName,
                   TFieldDefinition,
                   TMemberDefinition,
                   TReferenced,
@@ -642,7 +636,6 @@ export type _FieldDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TName,
               TFieldDefinition,
               TMemberDefinition,
               TReferenced,
@@ -706,7 +699,6 @@ type _TypeDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TName,
               TFieldDefinition,
               TMemberDefinition,
               TReferenced,

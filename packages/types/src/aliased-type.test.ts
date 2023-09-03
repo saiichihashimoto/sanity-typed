@@ -85,7 +85,7 @@ describe("<alias>", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "foo";
+          _type: "document";
           _updatedAt: string;
           bar?: string;
         };
@@ -133,7 +133,7 @@ describe("<alias>", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "foo";
+          _type: "document";
           _updatedAt: string;
           bar?: {
             _type: "bar";
@@ -270,7 +270,7 @@ describe("<alias>", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "foo";
+          _type: "document";
           _updatedAt: string;
           pluginValue?: {
             _type: "pluginValue";
@@ -314,7 +314,7 @@ describe("<alias>", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "foo";
+          _type: "document";
           _updatedAt: string;
           bar?: string;
         };
@@ -361,7 +361,7 @@ describe("<alias>", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "foo";
+          _type: "document";
           _updatedAt: string;
           bar?: {
             _type: "bar";
@@ -495,7 +495,7 @@ describe("<alias>", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "foo";
+          _type: "document";
           _updatedAt: string;
           pluginValue?: {
             _type: "pluginValue";

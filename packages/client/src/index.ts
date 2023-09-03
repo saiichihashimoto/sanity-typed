@@ -46,6 +46,6 @@ export const createClient =
     createClientNative(config) as unknown as SanityClient<
       Config,
       {
-        [type in keyof Values]: Extract<Values[type], SanityDocument<any, any>>;
+        [type in keyof Values]: Extract<Values[type], SanityDocument<any>>;
       }[keyof Values][]
     >;

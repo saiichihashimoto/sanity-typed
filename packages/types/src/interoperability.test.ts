@@ -70,7 +70,7 @@ describe("interoperability", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "foo";
+          _type: "document";
           _updatedAt: string;
           pluginValue?: unknown;
         };
@@ -123,7 +123,7 @@ describe("interoperability", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "foo";
+          _type: "document";
           _updatedAt: string;
           pluginValue?: unknown;
         };
@@ -170,7 +170,7 @@ describe("interoperability", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "foo";
+          _type: "document";
           _updatedAt: string;
           bar?: { _type: "bar" } & { [x: string]: unknown };
         };
