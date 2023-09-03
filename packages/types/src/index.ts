@@ -475,7 +475,7 @@ type TypeAliasDefinition<
  *
  * @private
  */
-export const makeDefineArrayMember =
+export const _makeDefineArrayMember =
   <AllowArrays extends boolean>() =>
   <
     TType extends string,
@@ -579,7 +579,7 @@ export const makeDefineArrayMember =
     ) as typeof arrayOfSchema &
       (string extends TName ? unknown : { name: TName });
 
-export const defineArrayMember = makeDefineArrayMember<false>();
+export const defineArrayMember = _makeDefineArrayMember<false>();
 
 export const defineField = <
   TType extends string,
