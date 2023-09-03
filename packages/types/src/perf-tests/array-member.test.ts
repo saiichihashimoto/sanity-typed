@@ -2,10 +2,10 @@ import { describe, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import { makeDefineArrayMember } from "..";
+import { _makeDefineArrayMember } from "..";
 import type { _InferValue } from "..";
 
-const defineArrayMember2 = makeDefineArrayMember<true>();
+const defineArrayMember2 = _makeDefineArrayMember<true>();
 
 describe("array member depth test", () => {
   it("defineArrayMember 101 deep works", () => {
