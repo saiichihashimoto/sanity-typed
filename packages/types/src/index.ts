@@ -72,6 +72,7 @@ import type {
   Except,
   IsStringLiteral,
   OmitIndexSignature,
+  SetRequired,
   Simplify,
 } from "type-fest";
 
@@ -261,7 +262,7 @@ export type ArrayDefinition<
 export type PortableTextMarkDefinition =
   OmitIndexSignature<PortableTextMarkDefinitionNative>;
 
-export type PortableTextSpan = Omit<PortableTextSpanNative, "_key">;
+export type PortableTextSpan = SetRequired<PortableTextSpanNative, "_key">;
 
 export type PortableTextBlock<
   M extends PortableTextMarkDefinition = PortableTextMarkDefinition,
@@ -289,7 +290,7 @@ export type BlockDefinition<
       BlockRule
     >
   > & {
-    of?: (TMemberDefinition & { name: string; type: "object" | "reference" })[];
+    of?: TupleOfLength<TMemberDefinition, 1>;
   }
 >;
 
