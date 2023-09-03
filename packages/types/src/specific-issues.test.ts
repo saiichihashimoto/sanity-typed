@@ -1,70 +1,71 @@
 import { describe, it } from "@jest/globals";
-import type { ImageCrop, ImageHotspot, ReferenceValue } from "sanity";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import { defineArrayMember, defineField } from ".";
-import type { _InferValue } from ".";
+import { defineArrayMember, defineConfig, defineField, defineType } from ".";
+import type { ImageValue, InferSchemaValues } from ".";
 
 describe("specific issues", () => {
   it("#108 object -> array -> object -> object -> array -> object -> image", () => {
     // https://github.com/saiichihashimoto/sanity-typed/issues/108
-    const type = defineField({
-      name: "foo",
-      type: "object",
-      fields: [
-        defineField({
-          name: "foo",
-          type: "array",
-          of: [
-            defineArrayMember({
-              type: "object",
-              fields: [
-                defineField({
-                  name: "foo",
-                  type: "object",
-                  fields: [
-                    defineField({
-                      name: "foo",
-                      type: "array",
-                      of: [
-                        defineArrayMember({
-                          type: "object",
-                          fields: [
-                            defineField({
-                              name: "foo",
-                              type: "image",
-                            }),
-                          ],
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        }),
-      ],
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "object",
+            fields: [
+              defineField({
+                name: "foo",
+                type: "array",
+                of: [
+                  defineArrayMember({
+                    type: "object",
+                    fields: [
+                      defineField({
+                        name: "foo",
+                        type: "object",
+                        fields: [
+                          defineField({
+                            name: "foo",
+                            type: "array",
+                            of: [
+                              defineArrayMember({
+                                type: "object",
+                                fields: [
+                                  defineField({
+                                    name: "foo",
+                                    type: "image",
+                                  }),
+                                ],
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
     });
 
-    expectType<_InferValue<typeof type>>().toStrictEqual<{
-      foo?: ({
+    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<{
+      _type: "foo";
+      foo?: {
         _key: string;
-      } & {
         foo?: {
-          foo?: ({
+          foo?: {
             _key: string;
-          } & {
-            foo?: {
-              _type: "image";
-              asset?: ReferenceValue;
-              crop?: ImageCrop;
-              hotspot?: ImageHotspot;
-            };
-          })[];
+            foo?: ImageValue;
+          }[];
         };
-      })[];
+      }[];
     }>();
   });
 });

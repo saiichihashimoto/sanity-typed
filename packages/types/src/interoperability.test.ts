@@ -18,7 +18,7 @@ import {
   definePlugin,
   defineType,
 } from ".";
-import type { InferSchemaValues, _InferValue } from ".";
+import type { InferSchemaValues } from ".";
 
 describe("interoperability", () => {
   describe("castToTyped", () => {
@@ -63,9 +63,7 @@ describe("interoperability", () => {
         ],
       });
 
-      type Values = InferSchemaValues<typeof config>;
-
-      expectType<Values>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
         foo: {
           _createdAt: string;
           _id: string;
@@ -116,9 +114,7 @@ describe("interoperability", () => {
         ],
       });
 
-      type Values = InferSchemaValues<typeof config>;
-
-      expectType<Values>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
         foo: {
           _createdAt: string;
           _id: string;
@@ -131,24 +127,33 @@ describe("interoperability", () => {
     });
 
     it("castToTyped(defineTypeNative(...))", () => {
-      const config = defineConfig({
+      const config1 = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
         schema: {
           types: [
-            defineType({
-              name: "foo",
-              type: "document",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "bar",
-                }),
-              ],
-            }),
             castToTyped(
               defineTypeNative({
-                name: "bar",
+                name: "foo",
+                type: "boolean",
+              })
+            ),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config1>["foo"]
+      >().toStrictEqual<boolean>();
+
+      const config2 = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            castToTyped(
+              defineTypeNative({
+                name: "foo",
                 type: "object",
                 fields: [
                   defineFieldNative({
@@ -162,81 +167,137 @@ describe("interoperability", () => {
         },
       });
 
-      type Values = InferSchemaValues<typeof config>;
-
-      expectType<Values>().toStrictEqual<{
-        bar: { [x: string]: unknown; _type: "bar" };
-        foo: {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "document";
-          _updatedAt: string;
-          bar?: { _type: "bar" } & { [x: string]: unknown };
-        };
+      expectType<InferSchemaValues<typeof config2>["foo"]>().toStrictEqual<{
+        [x: string]: unknown;
+        _type: "foo";
       }>();
     });
 
     it("castToTyped(defineFieldNative(...))", () => {
-      const booleanField = castToTyped(
-        defineFieldNative({
-          name: "bar",
-          type: "boolean",
-        })
-      );
-
-      expectType<_InferValue<typeof booleanField>>().toStrictEqual<boolean>();
-
-      const objectField = castToTyped(
-        defineFieldNative({
-          name: "foo",
-          type: "object",
-          fields: [
-            defineFieldNative({
-              name: "bar",
-              type: "boolean",
+      const config1 = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                castToTyped(
+                  defineFieldNative({
+                    name: "bar",
+                    type: "boolean",
+                  })
+                ),
+              ],
             }),
           ],
-        })
-      );
+        },
+      });
 
-      expectType<_InferValue<typeof objectField>>().toStrictEqual<{
-        [x: string]: unknown;
-      }>();
+      expectType<
+        Required<InferSchemaValues<typeof config1>["foo"]>["bar"]
+      >().toStrictEqual<boolean>();
+
+      const config2 = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                castToTyped(
+                  defineFieldNative({
+                    name: "bar",
+                    type: "object",
+                    fields: [
+                      defineFieldNative({
+                        name: "bar",
+                        type: "boolean",
+                      }),
+                    ],
+                  })
+                ),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        Required<InferSchemaValues<typeof config2>["foo"]>["bar"]
+      >().toStrictEqual<
+        | {
+            [x: string]: unknown;
+            _key: string;
+            _type: "bar";
+          }
+        | {
+            [x: string]: unknown;
+          }
+      >();
     });
 
     it("castToTyped(defineArrayMemberNative(...))", () => {
-      const booleanField = castToTyped(
-        defineArrayMemberNative({
-          name: "bar",
-          type: "boolean",
-        })
-      );
-
-      expectType<_InferValue<typeof booleanField>>().toStrictEqual<boolean>();
-
-      const objectField = castToTyped(
-        defineArrayMemberNative({
-          name: "foo",
-          type: "object",
-          fields: [
-            defineFieldNative({
-              name: "bar",
-              type: "boolean",
+      const config1 = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                castToTyped(
+                  defineArrayMemberNative({
+                    name: "bar",
+                    type: "boolean",
+                  })
+                ),
+              ],
             }),
           ],
-        })
-      );
+        },
+      });
 
-      expectType<_InferValue<typeof objectField>>().toStrictEqual<
-        {
-          _key: string;
-        } & {
-          _type: "foo";
-        } & {
-          [x: string]: unknown;
-        }
-      >();
+      expectType<
+        InferSchemaValues<typeof config1>["foo"][number]
+      >().toStrictEqual<boolean>();
+
+      const config2 = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                castToTyped(
+                  defineArrayMemberNative({
+                    type: "object",
+                    fields: [
+                      defineFieldNative({
+                        name: "bar",
+                        type: "boolean",
+                      }),
+                    ],
+                  })
+                ),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config2>["foo"][number]
+      >().toStrictEqual<{
+        [x: string]: unknown;
+        _key: string;
+      }>();
     });
   });
 

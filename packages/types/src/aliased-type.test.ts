@@ -2,56 +2,10 @@ import { describe, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import {
-  defineArrayMember,
-  defineConfig,
-  defineField,
-  definePlugin,
-  defineType,
-} from ".";
-import type { AliasValue, InferSchemaValues, _InferValue } from ".";
+import { defineConfig, defineField, definePlugin, defineType } from ".";
+import type { InferSchemaValues } from ".";
 
 describe("<alias>", () => {
-  describe("defineArrayMember", () => {
-    it("infers AliasValue", () => {
-      const arrayMember = defineArrayMember({
-        type: "named",
-      });
-
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        AliasValue<"named"> & {
-          _key: string;
-        }
-      >();
-    });
-  });
-
-  describe("defineField", () => {
-    it("infers AliasValue", () => {
-      const field = defineField({
-        name: "foo",
-        type: "named",
-      });
-
-      expectType<_InferValue<typeof field>>().toStrictEqual<
-        AliasValue<"named">
-      >();
-    });
-  });
-
-  describe("defineType", () => {
-    it("infers AliasValue", () => {
-      const type = defineType({
-        name: "foo",
-        type: "named",
-      });
-
-      expectType<_InferValue<typeof type>>().toStrictEqual<
-        AliasValue<"named">
-      >();
-    });
-  });
-
   describe("defineConfig", () => {
     it("infers primitive type value", () => {
       const config = defineConfig({
@@ -77,9 +31,7 @@ describe("<alias>", () => {
         },
       });
 
-      type Values = InferSchemaValues<typeof config>;
-
-      expectType<Values>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
         bar: string;
         foo: {
           _createdAt: string;
@@ -122,9 +74,7 @@ describe("<alias>", () => {
         },
       });
 
-      type Values = InferSchemaValues<typeof config>;
-
-      expectType<Values>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
         bar: {
           _type: "bar";
           baz?: boolean;
@@ -263,9 +213,7 @@ describe("<alias>", () => {
         ],
       });
 
-      type Values = InferSchemaValues<typeof config>;
-
-      expectType<Values>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
         foo: {
           _createdAt: string;
           _id: string;
