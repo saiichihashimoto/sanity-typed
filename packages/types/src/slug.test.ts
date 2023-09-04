@@ -83,8 +83,14 @@ describe("slug", () => {
       });
 
       expectType<
-        InferSchemaValues<typeof config>["foo"]
-      >().toStrictEqual<SlugValue>();
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
+        Simplify<
+          SlugValue & {
+            _type: "foo";
+          }
+        >
+      >();
     });
   });
 });

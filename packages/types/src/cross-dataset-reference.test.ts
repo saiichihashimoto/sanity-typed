@@ -87,9 +87,11 @@ describe("crossDatasetReference", () => {
         },
       });
 
-      expectType<
-        InferSchemaValues<typeof config>["foo"]
-      >().toStrictEqual<CrossDatasetReferenceValue>();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+        Omit<CrossDatasetReferenceValue, "_type"> & {
+          _type: "foo";
+        }
+      >();
     });
   });
 });

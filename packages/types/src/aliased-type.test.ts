@@ -37,9 +37,10 @@ describe("<alias>", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "document";
           _updatedAt: string;
           bar?: string;
+        } & {
+          _type: "foo";
         };
       }>();
     });
@@ -76,17 +77,22 @@ describe("<alias>", () => {
 
       expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
         bar: {
+          _type: "bar";
+        } & {
           baz?: boolean;
         };
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "document";
           _updatedAt: string;
           bar?: {
+            _type: "bar";
+          } & {
             baz?: boolean;
           };
+        } & {
+          _type: "foo";
         };
       }>();
     });
@@ -215,11 +221,14 @@ describe("<alias>", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "document";
           _updatedAt: string;
           pluginValue?: {
+            _type: "pluginValue";
+          } & {
             baz?: boolean;
           };
+        } & {
+          _type: "foo";
         };
       }>();
     });
@@ -257,9 +266,10 @@ describe("<alias>", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "document";
           _updatedAt: string;
           bar?: string;
+        } & {
+          _type: "foo";
         };
       }>();
     });
@@ -297,17 +307,22 @@ describe("<alias>", () => {
 
       expectType<Values>().toStrictEqual<{
         bar: {
+          _type: "bar";
+        } & {
           baz?: boolean;
         };
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "document";
           _updatedAt: string;
           bar?: {
+            _type: "bar";
+          } & {
             baz?: boolean;
           };
+        } & {
+          _type: "foo";
         };
       }>();
     });
@@ -435,11 +450,14 @@ describe("<alias>", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "document";
           _updatedAt: string;
           pluginValue?: {
+            _type: "pluginValue";
+          } & {
             baz?: boolean;
           };
+        } & {
+          _type: "foo";
         };
       }>();
     });

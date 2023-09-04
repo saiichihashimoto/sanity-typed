@@ -85,7 +85,9 @@ describe("reference", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        ReferenceValue<"other">
+        Omit<ReferenceValue<"other">, "_type"> & {
+          _type: "foo";
+        }
       >();
     });
   });

@@ -326,9 +326,11 @@ describe("defineType", () => {
       },
     });
 
-    expectType<
-      InferSchemaValues<typeof config>["foo"]
-    >().toStrictEqual<FileValue>();
+    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      FileValue & {
+        _type: "foo";
+      }
+    >();
   });
 
   it("infers FileValue with fields", () => {
@@ -355,9 +357,12 @@ describe("defineType", () => {
       },
     });
 
-    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+    expectType<
+      Simplify<InferSchemaValues<typeof config>["foo"]>
+    >().toStrictEqual<
       Simplify<
-        FileValue & {
+        Omit<FileValue, "_type"> & {
+          _type: "foo";
           bar?: boolean;
           tar?: number;
         }
@@ -391,9 +396,12 @@ describe("defineType", () => {
       },
     });
 
-    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+    expectType<
+      Simplify<InferSchemaValues<typeof config>["foo"]>
+    >().toStrictEqual<
       Simplify<
-        FileValue & {
+        Omit<FileValue, "_type"> & {
+          _type: "foo";
           bar?: {
             tar?: number;
           };
@@ -423,9 +431,12 @@ describe("defineType", () => {
       },
     });
 
-    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+    expectType<
+      Simplify<InferSchemaValues<typeof config>["foo"]>
+    >().toStrictEqual<
       Simplify<
-        FileValue & {
+        Omit<FileValue, "_type"> & {
+          _type: "foo";
           bar: boolean;
         }
       >

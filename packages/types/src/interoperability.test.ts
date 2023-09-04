@@ -6,6 +6,7 @@ import {
   definePlugin as definePluginNative,
   defineType as defineTypeNative,
 } from "sanity";
+import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -68,9 +69,10 @@ describe("interoperability", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "document";
           _updatedAt: string;
           pluginValue?: unknown;
+        } & {
+          _type: "foo";
         };
       }>();
     });
@@ -119,9 +121,10 @@ describe("interoperability", () => {
           _createdAt: string;
           _id: string;
           _rev: string;
-          _type: "document";
           _updatedAt: string;
           pluginValue?: unknown;
+        } & {
+          _type: "foo";
         };
       }>();
     });
@@ -167,8 +170,11 @@ describe("interoperability", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config2>["foo"]>().toStrictEqual<{
+      expectType<
+        Simplify<InferSchemaValues<typeof config2>["foo"]>
+      >().toStrictEqual<{
         [x: string]: unknown;
+        _type: "foo";
       }>();
     });
 

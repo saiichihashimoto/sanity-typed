@@ -326,9 +326,11 @@ describe("defineType", () => {
       },
     });
 
-    expectType<
-      InferSchemaValues<typeof config>["foo"]
-    >().toStrictEqual<ImageValue>();
+    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      ImageValue & {
+        _type: "foo";
+      }
+    >();
   });
 
   it("infers ImageValue with fields", () => {
@@ -358,6 +360,7 @@ describe("defineType", () => {
     expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
       Simplify<
         ImageValue & {
+          _type: "foo";
           bar?: boolean;
           tar?: number;
         }
@@ -394,6 +397,7 @@ describe("defineType", () => {
     expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
       Simplify<
         ImageValue & {
+          _type: "foo";
           bar?: {
             tar?: number;
           };
@@ -426,6 +430,7 @@ describe("defineType", () => {
     expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
       Simplify<
         ImageValue & {
+          _type: "foo";
           bar: boolean;
         }
       >

@@ -261,10 +261,14 @@ describe("object", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<{
-        bar?: boolean;
-        tar?: number;
-      }>();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+        {
+          _type: "foo";
+        } & {
+          bar?: boolean;
+          tar?: number;
+        }
+      >();
     });
 
     it("infers nested objects", () => {
@@ -293,11 +297,15 @@ describe("object", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<{
-        bar?: {
-          tar?: number;
-        };
-      }>();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+        {
+          _type: "foo";
+        } & {
+          bar?: {
+            tar?: number;
+          };
+        }
+      >();
     });
 
     it("infers required fields", () => {
@@ -321,9 +329,13 @@ describe("object", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<{
-        bar: boolean;
-      }>();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+        {
+          _type: "foo";
+        } & {
+          bar: boolean;
+        }
+      >();
     });
   });
 });

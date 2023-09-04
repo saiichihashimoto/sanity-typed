@@ -165,8 +165,14 @@ describe("block", () => {
       });
 
       expectType<
-        InferSchemaValues<typeof config>["foo"]
-      >().toStrictEqual<PortableTextBlock>();
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
+        Simplify<
+          Omit<PortableTextBlock, "_type"> & {
+            _type: "foo";
+          }
+        >
+      >();
     });
 
     it("infers array of members", () => {
@@ -185,9 +191,13 @@ describe("block", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        PortableTextBlock<
-          PortableTextMarkDefinition,
-          PortableTextSpan | Simplify<SlugValue & { _key: string }>
+        Simplify<
+          PortableTextBlock<
+            PortableTextMarkDefinition,
+            PortableTextSpan | Simplify<SlugValue & { _key: string }>
+          > & {
+            _type: "foo";
+          }
         >
       >();
     });
@@ -211,11 +221,15 @@ describe("block", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        PortableTextBlock<
-          PortableTextMarkDefinition,
-          | PortableTextSpan
-          | Simplify<GeopointValue & { _key: string }>
-          | Simplify<SlugValue & { _key: string }>
+        Simplify<
+          PortableTextBlock<
+            PortableTextMarkDefinition,
+            | PortableTextSpan
+            | Simplify<GeopointValue & { _key: string }>
+            | Simplify<SlugValue & { _key: string }>
+          > & {
+            _type: "foo";
+          }
         >
       >();
     });

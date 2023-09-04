@@ -82,9 +82,11 @@ describe("geopoint", () => {
         },
       });
 
-      expectType<
-        InferSchemaValues<typeof config>["foo"]
-      >().toStrictEqual<GeopointValue>();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+        Omit<GeopointValue, "_type"> & {
+          _type: "foo";
+        }
+      >();
     });
   });
 });

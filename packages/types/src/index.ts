@@ -70,7 +70,6 @@ import type {
 } from "sanity";
 import type {
   Except,
-  IsNever,
   IsStringLiteral,
   OmitIndexSignature,
   SetRequired,
@@ -825,19 +824,15 @@ type ExpandAliasValues<
         InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
         TAliasedDefinition
       >
-    : IsNever<Exclude<keyof Value, keyof AliasValue<TType>>> extends true
-    ? ExpandAliasValues<
-        InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
-        TAliasedDefinition
-      >
     : Omit<
         ExpandAliasValues<
           InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
           TAliasedDefinition
         >,
-        Exclude<keyof Value, keyof AliasValue<TType>>
-      > &
-        Omit<Value, keyof AliasValue<TType>>
+        "_type"
+      > & {
+        _type: TType;
+      }
   : Value extends (infer Item)[]
   ? ExpandAliasValues<
       IsObject<Item> extends false ? Item : Item & { _key: string },
@@ -855,8 +850,8 @@ export type InferSchemaValues<
   ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
 >
   ? {
-      [TType in TTypeDefinition as TType["name"]]: ExpandAliasValues<
-        InferRawValue<TType>,
+      [TName in TTypeDefinition["name"]]: ExpandAliasValues<
+        AliasValue<TName>,
         // TPluginTypeDefinition | TTypeDefinition
         | (_TypeDefinition<
             any,

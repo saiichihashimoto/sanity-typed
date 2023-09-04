@@ -286,9 +286,12 @@ describe("document", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
         Simplify<
-          SanityDocument & {
+          Omit<SanityDocument, "_type"> & {
+            _type: "foo";
             bar?: boolean;
             tar?: number;
           }
@@ -322,9 +325,12 @@ describe("document", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
         Simplify<
-          SanityDocument & {
+          Omit<SanityDocument, "_type"> & {
+            _type: "foo";
             bar?: {
               tar?: number;
             };
@@ -354,9 +360,12 @@ describe("document", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
         Simplify<
-          SanityDocument & {
+          Omit<SanityDocument, "_type"> & {
+            _type: "foo";
             bar: boolean;
           }
         >

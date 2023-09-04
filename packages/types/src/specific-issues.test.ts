@@ -55,16 +55,20 @@ describe("specific issues", () => {
       },
     });
 
-    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<{
-      foo?: {
-        _key: string;
+    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      {
+        _type: "foo";
+      } & {
         foo?: {
+          _key: string;
           foo?: {
-            _key: string;
-            foo?: ImageValue;
-          }[];
-        };
-      }[];
-    }>();
+            foo?: {
+              _key: string;
+              foo?: ImageValue;
+            }[];
+          };
+        }[];
+      }
+    >();
   });
 });
