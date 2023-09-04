@@ -22,10 +22,10 @@
     "@sanity-typed/types": "0.0.0-development"
   },
   "devDependencies": {
-    "@jest/globals": "29.6.2",
+    "@jest/globals": "29.6.4",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "sanity": "3.16.1",
+    "sanity": "3.16.2",
     "zod": "3.21.4"
   },
   "peerDependencies": {
