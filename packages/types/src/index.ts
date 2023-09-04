@@ -887,109 +887,6 @@ export const defineConfig = <
     ? Extract<typeof config, any[]>
     : Exclude<typeof config, any[]>;
 
-export const castToTyped = <Untyped>(untyped: Untyped) =>
-  untyped as Untyped extends ReturnType<
-    typeof defineTypeNative<
-      infer TType extends string,
-      infer TName extends string,
-      any,
-      any,
-      infer TAlias extends IntrinsicTypeName | undefined,
-      infer TStrict extends StrictDefinition
-    >
-  >
-    ? _TypeDefinition<TType, TName, NonNullable<TAlias>, TStrict, any, any, any>
-    : Untyped extends ReturnType<
-        typeof defineFieldNative<
-          infer TType extends string,
-          infer TName extends string,
-          any,
-          any,
-          infer TAlias extends IntrinsicTypeName | undefined,
-          infer TStrict extends StrictDefinition
-        >
-      >
-    ? _FieldDefinition<
-        TType,
-        TName,
-        NonNullable<TAlias>,
-        TStrict,
-        any,
-        any,
-        any,
-        any
-      >
-    : Untyped extends ReturnType<
-        typeof defineArrayMemberNative<
-          infer TType extends string,
-          infer TName extends string,
-          any,
-          any,
-          infer TAlias extends IntrinsicTypeName | undefined,
-          infer TStrict extends StrictDefinition
-        >
-      >
-    ? _ArrayMemberDefinition<
-        TType,
-        TName,
-        NonNullable<TAlias>,
-        TStrict,
-        any,
-        any,
-        any,
-        any
-      >
-    : Untyped extends PluginOptionsNative
-    ? ReturnType<typeof definePlugin<any, any>>
-    : {
-        [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
-      };
-
-export const castFromTyped = <Untyped>(untyped: Untyped) =>
-  untyped as Untyped extends _FieldDefinition<
-    infer TType extends string,
-    infer TName extends string,
-    infer TAlias extends IntrinsicTypeName,
-    infer TStrict extends StrictDefinition,
-    any,
-    any,
-    any,
-    any
-  >
-    ? ReturnType<
-        typeof defineFieldNative<TType, TName, any, any, TAlias, TStrict>
-      >
-    : Untyped extends _TypeDefinition<
-        infer TType extends string,
-        infer TName extends string,
-        infer TAlias extends IntrinsicTypeName,
-        infer TStrict extends StrictDefinition,
-        any,
-        any,
-        any
-      >
-    ? ReturnType<
-        typeof defineTypeNative<TType, TName, any, any, TAlias, TStrict>
-      >
-    : Untyped extends _ArrayMemberDefinition<
-        infer TType extends string,
-        infer TName extends string,
-        infer TAlias extends IntrinsicTypeName,
-        infer TStrict extends StrictDefinition,
-        any,
-        any,
-        any,
-        any
-      >
-    ? ReturnType<
-        typeof defineArrayMemberNative<TType, TName, any, any, TAlias, TStrict>
-      >
-    : Untyped extends PluginOptions<any, any>
-    ? PluginOptionsNative
-    : {
-        [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
-      };
-
 type OmitToUnknown<T, K extends number | string | symbol> = Exclude<
   keyof T,
   K
@@ -1094,3 +991,106 @@ export type InferSchemaValues<
       >;
     }
   : never;
+
+export const castToTyped = <Untyped>(untyped: Untyped) =>
+  untyped as Untyped extends ReturnType<
+    typeof defineTypeNative<
+      infer TType extends string,
+      infer TName extends string,
+      any,
+      any,
+      infer TAlias extends IntrinsicTypeName | undefined,
+      infer TStrict extends StrictDefinition
+    >
+  >
+    ? _TypeDefinition<TType, TName, NonNullable<TAlias>, TStrict, any, any, any>
+    : Untyped extends ReturnType<
+        typeof defineFieldNative<
+          infer TType extends string,
+          infer TName extends string,
+          any,
+          any,
+          infer TAlias extends IntrinsicTypeName | undefined,
+          infer TStrict extends StrictDefinition
+        >
+      >
+    ? _FieldDefinition<
+        TType,
+        TName,
+        NonNullable<TAlias>,
+        TStrict,
+        any,
+        any,
+        any,
+        any
+      >
+    : Untyped extends ReturnType<
+        typeof defineArrayMemberNative<
+          infer TType extends string,
+          infer TName extends string,
+          any,
+          any,
+          infer TAlias extends IntrinsicTypeName | undefined,
+          infer TStrict extends StrictDefinition
+        >
+      >
+    ? _ArrayMemberDefinition<
+        TType,
+        TName,
+        NonNullable<TAlias>,
+        TStrict,
+        any,
+        any,
+        any,
+        any
+      >
+    : Untyped extends PluginOptionsNative
+    ? ReturnType<typeof definePlugin<any, any>>
+    : {
+        [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
+      };
+
+export const castFromTyped = <Untyped>(untyped: Untyped) =>
+  untyped as Untyped extends _FieldDefinition<
+    infer TType extends string,
+    infer TName extends string,
+    infer TAlias extends IntrinsicTypeName,
+    infer TStrict extends StrictDefinition,
+    any,
+    any,
+    any,
+    any
+  >
+    ? ReturnType<
+        typeof defineFieldNative<TType, TName, any, any, TAlias, TStrict>
+      >
+    : Untyped extends _TypeDefinition<
+        infer TType extends string,
+        infer TName extends string,
+        infer TAlias extends IntrinsicTypeName,
+        infer TStrict extends StrictDefinition,
+        any,
+        any,
+        any
+      >
+    ? ReturnType<
+        typeof defineTypeNative<TType, TName, any, any, TAlias, TStrict>
+      >
+    : Untyped extends _ArrayMemberDefinition<
+        infer TType extends string,
+        infer TName extends string,
+        infer TAlias extends IntrinsicTypeName,
+        infer TStrict extends StrictDefinition,
+        any,
+        any,
+        any,
+        any
+      >
+    ? ReturnType<
+        typeof defineArrayMemberNative<TType, TName, any, any, TAlias, TStrict>
+      >
+    : Untyped extends PluginOptions<any, any>
+    ? PluginOptionsNative
+    : {
+        [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
+      };
