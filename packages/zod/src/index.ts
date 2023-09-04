@@ -1,4 +1,5 @@
 import type { StrictDefinition } from "sanity";
+import type { IsStringLiteral } from "type-fest";
 import { z } from "zod";
 
 import { _referenced } from "@sanity-typed/types";
@@ -96,41 +97,48 @@ type ReferenceZod<
   TSchemaType extends _SchemaTypeDefinition<"reference", any, any, any, any>
 > = ReturnType<typeof referenceZod<TSchemaType>>;
 
-const addKey = <Zod extends z.ZodType<any, any, any>>(zod: Zod) =>
-  z.intersection(
-    zod,
-    z.object({
-      _key: z.string(),
-    })
-  );
-
-type AddKey<Zod extends z.ZodType<any, any, any>> = ReturnType<
-  typeof addKey<Zod>
->;
-
-const addType =
-  <const Type extends string>(type: Type) =>
-  <Zod extends z.ZodType<any, any, any>>(zod: Zod) =>
-    z.intersection(
-      zod,
-      z.object({
-        _type: z.literal(type),
-      })
-    );
-
-// HACK just so I can get the type
-const addTypeUncurried = <
-  const Type extends string,
-  Zod extends z.ZodType<any, any, any>
->(
-  type: Type,
-  zod: Zod
-) => addType<Type>(type)<Zod>(zod);
+const addTypeFieldsZods = <Type extends string>(type: Type) => ({
+  _type: z.literal(type),
+});
 
 type AddType<
-  Type extends string,
-  Zod extends z.ZodType<any, any, any>
-> = ReturnType<typeof addTypeUncurried<Type, Zod>>;
+  Type extends string | undefined,
+  Zod extends z.ZodTypeAny
+> = IsStringLiteral<Type> extends false
+  ? Zod
+  : Zod extends z.ZodObject<infer T>
+  ? z.ZodObject<
+      // TODO Should be able to get this from ZodObject<...>['extend']<...> somehow
+      Omit<
+        T,
+        keyof ReturnType<typeof addTypeFieldsZods<Exclude<Type, undefined>>>
+      > &
+        ReturnType<typeof addTypeFieldsZods<Exclude<Type, undefined>>>
+    >
+  : Zod;
+
+const addType =
+  <Type extends string | undefined>(type: Type) =>
+  <Zod extends z.ZodTypeAny>(zod: Zod) =>
+    (typeof type !== "string" || !(zod instanceof z.ZodObject)
+      ? zod
+      : zod.extend(addTypeFieldsZods(type))) as AddType<Type, Zod>;
+
+const addKeyFieldsZods = {
+  _key: z.string(),
+};
+
+type AddKey<Zod extends z.ZodTypeAny> = Zod extends z.ZodObject<infer T>
+  ? z.ZodObject<
+      // TODO Should be able to get this from ZodObject<...>['extend']<...> somehow
+      Omit<T, keyof typeof addKeyFieldsZods> & typeof addKeyFieldsZods
+    >
+  : Zod;
+
+const addKey = <Zod extends z.ZodTypeAny>(zod: Zod) =>
+  (!(zod instanceof z.ZodObject)
+    ? zod
+    : zod.extend(addKeyFieldsZods)) as AddKey<Zod>;
 
 type MembersZods<
   TMemberDefinitions extends _ArrayMemberDefinition<
@@ -154,22 +162,14 @@ type MembersZods<
     any,
     any
   >)[]
-    ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-      (SanityTypeToZod<TMemberDefinition> extends z.ZodObject<any>
-        ? TMemberDefinition extends { name: infer TName extends string }
-          ? AddType<
-              TName,
-              AddKey<
-                // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-                SanityTypeToZod<TMemberDefinition>
-              >
-            >
-          : AddKey<
-              // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-              SanityTypeToZod<TMemberDefinition>
-            >
-        : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-          SanityTypeToZod<TMemberDefinition>)[]
+    ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      AddType<
+        TMemberDefinition["name"],
+        AddKey<
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+          SanityTypeToZod<TMemberDefinition>
+        >
+      >[]
     : never;
 
 const memberZods = <
@@ -191,11 +191,7 @@ const memberZods = <
     const zod = _sanityTypeToZod(member);
 
     // TODO use lodash-fp flow
-    return zod instanceof z.ZodObject
-      ? "name" in member
-        ? addType(member.name)(addKey(zod))
-        : addKey(zod)
-      : zod;
+    return "name" in member ? addType(member.name)(addKey(zod)) : addKey(zod);
   }) as MembersZods<TMemberDefinitions>;
 
 type ArrayZod<
@@ -253,12 +249,10 @@ const blockFieldsZods = {
   ),
 };
 
-type BlockFieldsZods = typeof blockFieldsZods;
-
 type BlockZod<
   TSchemaType extends _SchemaTypeDefinition<"block", any, any, any, any>
 > = z.ZodObject<
-  BlockFieldsZods & {
+  typeof blockFieldsZods & {
     children: z.ZodArray<
       TSchemaType extends {
         of?: infer TMemberDefinitions extends _ArrayMemberDefinition<

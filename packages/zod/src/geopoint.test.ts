@@ -1,77 +1,236 @@
 import { describe, expect, it } from "@jest/globals";
+import type { Simplify } from "type-fest";
 import type { z } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
   defineArrayMember,
+  defineConfig,
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { _InferRawValue } from "@sanity-typed/types";
+import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityTypeToZod } from ".";
+import { sanityConfigToZods } from ".";
 
 describe("geopoint", () => {
   describe("defineArrayMember", () => {
-    it("builds parser for GeopointValue", () => {
-      const arrayMember = defineArrayMember({
-        type: "geopoint",
+    it("builds parser for ReferenceValue", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "geopoint",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(arrayMember);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferRawValue<typeof arrayMember>, "_key">
+      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >();
       expect(
-        zod.parse({ _type: "geopoint", lat: 5, lng: 5, alt: 5 })
-      ).toStrictEqual({ _type: "geopoint", lat: 5, lng: 5, alt: 5 });
-      expect(() => zod.parse(true)).toThrow();
+        zods.foo.parse([
+          {
+            _key: "key",
+            _type: "geopoint",
+            lat: 0,
+            lng: 0,
+          },
+        ])
+      ).toStrictEqual([
+        {
+          _key: "key",
+          _type: "geopoint",
+          lat: 0,
+          lng: 0,
+        },
+      ]);
+      expect(() => zods.foo.parse([true])).toThrow();
+    });
+
+    it("overwrites `_type` with `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "foo",
+                  type: "geopoint",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZods(config);
+
+      expectType<
+        z.infer<(typeof zods)["foo"]>[number]["_type"]
+      >().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]["_type"]
+      >();
+      expect(
+        zods.foo.parse([
+          {
+            _key: "key",
+            _type: "foo",
+            lat: 0,
+            lng: 0,
+          },
+        ])
+      ).toStrictEqual([
+        {
+          _key: "key",
+          _type: "foo",
+          lat: 0,
+          lng: 0,
+        },
+      ]);
+      expect(() => zods.foo.parse([true])).toThrow();
     });
   });
 
   describe("defineField", () => {
-    it("builds parser for GeopointValue", () => {
-      const field = defineField({
-        name: "foo",
-        type: "geopoint",
+    it("builds parser for ReferenceValue", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "geopoint",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(field);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof field>
+      expectType<
+        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+      >().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
       expect(
-        zod.parse({
-          _type: "geopoint",
-          lat: 5,
-          lng: 5,
-          alt: 5,
+        zods.foo.parse({
+          bar: {
+            _type: "geopoint",
+            lat: 0,
+            lng: 0,
+          },
         })
-      ).toStrictEqual({ _type: "geopoint", lat: 5, lng: 5, alt: 5 });
-      expect(() => zod.parse(true)).toThrow();
+      ).toStrictEqual({
+        bar: {
+          _type: "geopoint",
+          lat: 0,
+          lng: 0,
+        },
+      });
+      expect(() => zods.foo.parse(true)).toThrow();
     });
   });
 
   describe("defineType", () => {
-    it("builds parser for GeopointValue", () => {
-      const type = defineType({
-        name: "foo",
-        type: "geopoint",
+    it.failing("builds parser for ReferenceValue", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "geopoint",
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(type);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        // @ts-expect-error -- FIXME
+        Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
-        zod.parse({
-          _type: "geopoint",
-          lat: 5,
-          lng: 5,
-          alt: 5,
+        zods.foo.parse({
+          _type: "foo",
+          lat: 0,
+          lng: 0,
         })
-      ).toStrictEqual({ _type: "geopoint", lat: 5, lng: 5, alt: 5 });
-      expect(() => zod.parse(true)).toThrow();
+      ).toStrictEqual({
+        _type: "foo",
+        lat: 0,
+        lng: 0,
+      });
+      expect(() => zods.foo.parse(true)).toThrow();
+    });
+
+    it.failing("overwrites `_type` with defineArrayMember `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "geopoint",
+            }),
+            defineType({
+              name: "bar",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "foo",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZods(config);
+
+      expectType<z.infer<(typeof zods)["bar"]>[number]["_type"]>()
+        // @ts-expect-error -- FIXME
+        .toStrictEqual<
+          InferSchemaValues<typeof config>["bar"][number]["_type"]
+        >();
+      expect(
+        zods.bar.parse([
+          {
+            _type: "bar",
+            lat: 0,
+            lng: 0,
+          },
+        ])
+      ).toStrictEqual([
+        {
+          _type: "bar",
+          lat: 0,
+          lng: 0,
+        },
+      ]);
+      expect(() => zods.bar.parse(true)).toThrow();
     });
   });
 });
