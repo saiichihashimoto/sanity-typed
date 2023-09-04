@@ -238,8 +238,7 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
   UrlDefinitionNative,
   DefinitionBase<TRequired, string, UrlRule>
 >;
-/** @private */
-export type _InferRawValue<Def extends DefinitionBase<any, any, any>> =
+export type InferRawValue<Def extends DefinitionBase<any, any, any>> =
   Def extends DefinitionBase<any, infer Value, any> ? Value : never;
 
 export type ArrayDefinition<
@@ -249,8 +248,8 @@ export type ArrayDefinition<
   ArrayDefinitionNative,
   DefinitionBase<
     TRequired,
-    _InferRawValue<TMemberDefinition>[],
-    ArrayRule<_InferRawValue<TMemberDefinition>[]>
+    InferRawValue<TMemberDefinition>[],
+    ArrayRule<InferRawValue<TMemberDefinition>[]>
   > & {
     of: TupleOfLength<TMemberDefinition, 1>;
   }
@@ -280,7 +279,7 @@ export type BlockDefinition<
       | PortableTextSpan
       | (TMemberDefinition extends never
           ? never
-          : _InferRawValue<TMemberDefinition> & { _key: string })
+          : InferRawValue<TMemberDefinition> & { _key: string })
     >,
     RewriteValue<
       PortableTextBlock<
@@ -288,7 +287,7 @@ export type BlockDefinition<
         | PortableTextSpan
         | (TMemberDefinition extends never
             ? never
-            : _InferRawValue<TMemberDefinition> & { _key: string })
+            : InferRawValue<TMemberDefinition> & { _key: string })
       >,
       BlockRule
     >
@@ -307,12 +306,12 @@ type ObjectValue<
     [Name in Extract<
       TFieldDefinition,
       { [required]?: false }
-    >["name"]]?: _InferRawValue<Extract<TFieldDefinition, { name: Name }>>;
+    >["name"]]?: InferRawValue<Extract<TFieldDefinition, { name: Name }>>;
   } & {
     [Name in Extract<
       TFieldDefinition,
       { [required]?: true }
-    >["name"]]: _InferRawValue<Extract<TFieldDefinition, { name: Name }>>;
+    >["name"]]: InferRawValue<Extract<TFieldDefinition, { name: Name }>>;
   }
 >;
 
@@ -872,17 +871,17 @@ type ExpandAliasValues<
     ? unknown
     : IsObject<
         ExpandAliasValues<
-          _InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
+          InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
           TAliasedDefinition
         >
       > extends false
     ? ExpandAliasValues<
-        _InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
+        InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
         TAliasedDefinition
       >
     : Omit<
         ExpandAliasValues<
-          _InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
+          InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
           TAliasedDefinition
         >,
         "_type"

@@ -190,7 +190,7 @@ const memberZods = <
 ) =>
   members.map((member) => {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-    const zod = _sanityTypeToZod(member);
+    const zod = schemaTypeToZod(member);
 
     // TODO use lodash-fp flow
     return "name" in member ? addType(member.name)(addKey(zod)) : addKey(zod);
@@ -394,10 +394,10 @@ const fieldsZods = <
         field.name,
         isFieldRequired(field)
           ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-            _sanityTypeToZod(field)
+            schemaTypeToZod(field)
           : z.optional(
               // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-              _sanityTypeToZod(field)
+              schemaTypeToZod(field)
             ),
       ]
     )
@@ -550,8 +550,7 @@ type SanityTypeToZod<
     >
   : never;
 
-/** @private */
-export const _sanityTypeToZod = <
+const schemaTypeToZod = <
   TSchemaType extends _SchemaTypeDefinition<any, any, any, any, any>
 >(
   schema: TSchemaType
@@ -627,7 +626,7 @@ export const sanityConfigToZods = <
 
   return Array.isArray(types)
     ? (Object.fromEntries(
-        types.map((type) => [type.name, _sanityTypeToZod(type)])
+        types.map((type) => [type.name, schemaTypeToZod(type)])
       ) as {
         [Name in TTypeDefinition["name"]]: SanityTypeToZod<
           Extract<TTypeDefinition, { name: Name }>
