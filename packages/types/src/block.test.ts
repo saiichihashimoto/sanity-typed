@@ -244,11 +244,16 @@ describe("block", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
         Simplify<
-          PortableTextBlock<
-            PortableTextMarkDefinition,
-            PortableTextSpan | Simplify<SlugValue & { _key: string }>
+          Omit<
+            PortableTextBlock<
+              PortableTextMarkDefinition,
+              PortableTextSpan | (SlugValue & { _key: string })
+            >,
+            "_type"
           > & {
             _type: "foo";
           }
@@ -274,13 +279,18 @@ describe("block", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
         Simplify<
-          PortableTextBlock<
-            PortableTextMarkDefinition,
-            | PortableTextSpan
-            | Simplify<GeopointValue & { _key: string }>
-            | Simplify<SlugValue & { _key: string }>
+          Omit<
+            PortableTextBlock<
+              PortableTextMarkDefinition,
+              | PortableTextSpan
+              | (GeopointValue & { _key: string })
+              | (SlugValue & { _key: string })
+            >,
+            "_type"
           > & {
             _type: "foo";
           }

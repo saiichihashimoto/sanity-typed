@@ -357,7 +357,7 @@ describe("file", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        FileValue & {
+        Omit<FileValue, "_type"> & {
           _type: "foo";
         }
       >();

@@ -357,7 +357,7 @@ describe("image", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        ImageValue & {
+        Omit<ImageValue, "_type"> & {
           _type: "foo";
         }
       >();
@@ -416,9 +416,11 @@ describe("image", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
         Simplify<
-          ImageValue & {
+          Omit<ImageValue, "_type"> & {
             _type: "foo";
             bar?: boolean;
             tar?: number;
@@ -453,9 +455,11 @@ describe("image", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
         Simplify<
-          ImageValue & {
+          Omit<ImageValue, "_type"> & {
             _type: "foo";
             bar?: {
               tar?: number;
@@ -486,9 +490,11 @@ describe("image", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
         Simplify<
-          ImageValue & {
+          Omit<ImageValue, "_type"> & {
             _type: "foo";
             bar: boolean;
           }
