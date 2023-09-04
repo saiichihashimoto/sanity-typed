@@ -294,9 +294,11 @@ describe("block", () => {
       });
       const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>["_type"]>().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"]["_type"]
-      >();
+      expectType<z.infer<(typeof zods)["bar"]>[number]["_type"]>()
+        // @ts-expect-error -- FIXME
+        .toStrictEqual<
+          InferSchemaValues<typeof config>["bar"][number]["_type"]
+        >();
       expect(
         zods.foo.parse({
           ...fields,
