@@ -59,15 +59,17 @@ describe("specific issues", () => {
       {
         _type: "foo";
       } & {
-        foo?: {
+        foo?: ({
           _key: string;
+        } & {
           foo?: {
-            foo?: {
+            foo?: ({
               _key: string;
+            } & {
               foo?: ImageValue;
-            }[];
+            })[];
           };
-        }[];
+        })[];
       }
     >();
   });

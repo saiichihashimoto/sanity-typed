@@ -29,7 +29,7 @@ describe("geopoint", () => {
       });
 
       expectType<
-        InferSchemaValues<typeof config>["foo"][number]
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >().toStrictEqual<
         Simplify<
           GeopointValue & {
@@ -37,6 +37,31 @@ describe("geopoint", () => {
           }
         >
       >();
+    });
+
+    it("overwrites `_type` with `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "geopoint",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["foo"][number]["_type"]
+      >().toStrictEqual<"bar">();
     });
   });
 
@@ -87,6 +112,35 @@ describe("geopoint", () => {
           _type: "foo";
         }
       >();
+    });
+
+    it("overwrites `_type` with defineArrayMember `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "geopoint",
+            }),
+            defineType({
+              name: "bar",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "foo",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >().toStrictEqual<"bar">();
     });
   });
 });

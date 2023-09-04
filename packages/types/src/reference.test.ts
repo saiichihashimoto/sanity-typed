@@ -29,7 +29,7 @@ describe("reference", () => {
       });
 
       expectType<
-        InferSchemaValues<typeof config>["foo"][number]
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >().toStrictEqual<
         Simplify<
           ReferenceValue<"other"> & {
@@ -37,6 +37,32 @@ describe("reference", () => {
           }
         >
       >();
+    });
+
+    it("overwrites `_type` with `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "reference",
+                  to: [{ type: "other" as const }],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["foo"][number]["_type"]
+      >().toStrictEqual<"bar">();
     });
   });
 
@@ -89,6 +115,36 @@ describe("reference", () => {
           _type: "foo";
         }
       >();
+    });
+
+    it("overwrites `_type` with defineArrayMember `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "reference",
+              to: [{ type: "other" as const }],
+            }),
+            defineType({
+              name: "bar",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "foo",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >().toStrictEqual<"bar">();
     });
   });
 });

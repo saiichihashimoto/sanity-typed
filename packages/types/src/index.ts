@@ -443,7 +443,9 @@ type IntrinsicDefinitions<
   url: UrlDefinition<TRequired>;
 };
 
-type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any>;
+export type IntrinsicTypeName = Simplify<
+  keyof IntrinsicDefinitions<any, any, any, any>
+>;
 
 declare const aliasedType: unique symbol;
 
@@ -463,6 +465,8 @@ type TypeAliasDefinition<
       : unknown;
   }
 >;
+
+type IsObject<T> = T extends any[] ? false : T extends object ? true : false;
 
 /** @private */
 export type _ArrayMemberDefinition<
@@ -492,13 +496,57 @@ export type _ArrayMemberDefinition<
               TMemberDefinition,
               TReferenced,
               any
-            >[type],
+            >[type] extends DefinitionBase<any, infer Value, infer Rule>
+              ? Merge<
+                  IntrinsicDefinitions<
+                    TFieldDefinition,
+                    TMemberDefinition,
+                    TReferenced,
+                    any
+                  >[type],
+                  DefinitionBase<
+                    any,
+                    IsObject<Value> extends false
+                      ? Value
+                      : IsStringLiteral<TName> extends false
+                      ? Value
+                      : Omit<Value, "_type"> & { _type: TName },
+                    // @ts-expect-error -- TODO Doesn't match the rule for some reason
+                    RewriteValue<
+                      IsObject<Value> extends false
+                        ? Value
+                        : IsStringLiteral<TName> extends false
+                        ? Value
+                        : Omit<Value, "_type"> & { _type: TName },
+                      Rule
+                    >
+                  >
+                >
+              : IntrinsicDefinitions<
+                  TFieldDefinition,
+                  TMemberDefinition,
+                  TReferenced,
+                  any
+                >[type],
             "name"
           >;
         }[IntrinsicTypeName],
         { type: TType }
       >
-    : Omit<TypeAliasDefinition<TType, TAlias, any>, "name">) &
+    : Omit<
+        Merge<
+          TypeAliasDefinition<TType, TAlias, any>,
+          DefinitionBase<
+            any,
+            AliasValue<TType> &
+              (IsStringLiteral<TName> extends false
+                ? unknown
+                : { _type: TName }),
+            any
+          >
+        >,
+        "name"
+      >) &
   (IsStringLiteral<TName> extends false
     ? unknown
     : {
@@ -806,8 +854,6 @@ export const defineConfig = <
     ? Extract<typeof config, any[]>
     : Exclude<typeof config, any[]>;
 
-type IsObject<T> = T extends any[] ? false : T extends object ? true : false;
-
 type ExpandAliasValues<
   Value,
   TAliasedDefinition extends _TypeDefinition<any, any, any, any, any, any, any>
@@ -831,13 +877,28 @@ type ExpandAliasValues<
         >,
         "_type"
       > & {
-        _type: TType;
+        _type: Value extends { _type: infer TOverwriteType }
+          ? TOverwriteType
+          : TType;
       }
+  : Value extends PortableTextBlock<infer M, infer C, infer S, infer L>
+  ? PortableTextBlock<
+      M,
+      | PortableTextSpan
+      | (C extends PortableTextSpan
+          ? never
+          : ExpandAliasValues<C[], TAliasedDefinition>[number]),
+      S,
+      L
+    >
   : Value extends (infer Item)[]
-  ? ExpandAliasValues<
-      IsObject<Item> extends false ? Item : Item & { _key: string },
-      TAliasedDefinition
-    >[]
+  ? (Item extends never
+      ? never
+      : IsObject<Item> extends false
+      ? ExpandAliasValues<Item, TAliasedDefinition>
+      : ExpandAliasValues<Item, TAliasedDefinition> & {
+          _key: string;
+        })[]
   : Value extends object
   ? {
       [key in keyof Value]: ExpandAliasValues<Value[key], TAliasedDefinition>;

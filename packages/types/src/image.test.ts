@@ -28,7 +28,7 @@ describe("image", () => {
       });
 
       expectType<
-        InferSchemaValues<typeof config>["foo"][number]
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >().toStrictEqual<
         Simplify<
           ImageValue & {
@@ -37,403 +37,463 @@ describe("image", () => {
         >
       >();
     });
-  });
 
-  it("infers ImageValue with fields", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [
-          defineType({
-            name: "foo",
-            type: "array",
-            of: [
-              defineArrayMember({
-                type: "image",
-                fields: [
-                  defineField({
-                    name: "bar",
-                    type: "boolean",
-                  }),
-                  defineField({
-                    name: "tar",
-                    type: "number",
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      },
+    it("overwrites `_type` with `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "image",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["foo"][number]["_type"]
+      >().toStrictEqual<"bar">();
     });
 
-    expectType<InferSchemaValues<typeof config>["foo"][number]>().toStrictEqual<
-      Simplify<
-        ImageValue & {
-          _key: string;
-          bar?: boolean;
-          tar?: number;
-        }
-      >
-    >();
-  });
+    it("infers ImageValue with fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "image",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                    }),
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
 
-  it("infers nested objects", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [
-          defineType({
-            name: "foo",
-            type: "array",
-            of: [
-              defineArrayMember({
-                type: "image",
-                fields: [
-                  defineField({
-                    name: "bar",
-                    type: "object",
-                    fields: [
-                      defineField({
-                        name: "tar",
-                        type: "number",
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      },
-    });
-
-    expectType<InferSchemaValues<typeof config>["foo"][number]>().toStrictEqual<
-      Simplify<
-        ImageValue & {
-          _key: string;
-          bar?: {
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
+      >().toStrictEqual<
+        Simplify<
+          ImageValue & {
+            _key: string;
+            bar?: boolean;
             tar?: number;
-          };
-        }
-      >
-    >();
-  });
-
-  it("infers required fields", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [
-          defineType({
-            name: "foo",
-            type: "array",
-            of: [
-              defineArrayMember({
-                type: "image",
-                fields: [
-                  defineField({
-                    name: "bar",
-                    type: "boolean",
-                    validation: (Rule) => Rule.required(),
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      },
+          }
+        >
+      >();
     });
 
-    expectType<InferSchemaValues<typeof config>["foo"][number]>().toStrictEqual<
-      Simplify<
-        ImageValue & {
-          _key: string;
-          bar: boolean;
-        }
-      >
-    >();
-  });
-});
+    it("infers nested objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "image",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "object",
+                      fields: [
+                        defineField({
+                          name: "tar",
+                          type: "number",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
 
-describe("defineField", () => {
-  it("infers ImageValue", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [
-          defineType({
-            name: "foo",
-            type: "object",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "image",
-              }),
-            ],
-          }),
-        ],
-      },
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
+      >().toStrictEqual<
+        Simplify<
+          ImageValue & {
+            _key: string;
+            bar?: {
+              tar?: number;
+            };
+          }
+        >
+      >();
     });
 
-    expectType<
-      Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-    >().toStrictEqual<ImageValue>();
+    it("infers required fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "image",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                      validation: (Rule) => Rule.required(),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
+      >().toStrictEqual<
+        Simplify<
+          ImageValue & {
+            _key: string;
+            bar: boolean;
+          }
+        >
+      >();
+    });
   });
 
-  it("infers ImageValue with fields", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [
-          defineType({
-            name: "foo",
-            type: "object",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "image",
-                fields: [
-                  defineField({
-                    name: "bar",
-                    type: "boolean",
-                  }),
-                  defineField({
-                    name: "tar",
-                    type: "number",
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      },
+  describe("defineField", () => {
+    it("infers ImageValue", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "image",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >().toStrictEqual<ImageValue>();
     });
 
-    expectType<
-      Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-    >().toStrictEqual<
-      Simplify<
-        ImageValue & {
-          bar?: boolean;
-          tar?: number;
-        }
-      >
-    >();
-  });
+    it("infers ImageValue with fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "image",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                    }),
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
 
-  it("infers nested objects", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [
-          defineType({
-            name: "foo",
-            type: "object",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "image",
-                fields: [
-                  defineField({
-                    name: "bar",
-                    type: "object",
-                    fields: [
-                      defineField({
-                        name: "tar",
-                        type: "number",
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      },
-    });
-
-    expectType<
-      Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-    >().toStrictEqual<
-      Simplify<
-        ImageValue & {
-          bar?: {
+      expectType<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >().toStrictEqual<
+        Simplify<
+          ImageValue & {
+            bar?: boolean;
             tar?: number;
-          };
-        }
-      >
-    >();
-  });
-
-  it("infers required fields", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [
-          defineType({
-            name: "foo",
-            type: "object",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "image",
-                fields: [
-                  defineField({
-                    name: "bar",
-                    type: "boolean",
-                    validation: (Rule) => Rule.required(),
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      },
+          }
+        >
+      >();
     });
 
-    expectType<
-      Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-    >().toStrictEqual<
-      Simplify<
-        ImageValue & {
-          bar: boolean;
-        }
-      >
-    >();
-  });
-});
+    it("infers nested objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "image",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "object",
+                      fields: [
+                        defineField({
+                          name: "tar",
+                          type: "number",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
 
-describe("defineType", () => {
-  it("infers ImageValue", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [
-          defineType({
-            name: "foo",
-            type: "image",
-          }),
-        ],
-      },
+      expectType<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >().toStrictEqual<
+        Simplify<
+          ImageValue & {
+            bar?: {
+              tar?: number;
+            };
+          }
+        >
+      >();
     });
 
-    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-      ImageValue & {
-        _type: "foo";
-      }
-    >();
+    it("infers required fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "image",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                      validation: (Rule) => Rule.required(),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >().toStrictEqual<
+        Simplify<
+          ImageValue & {
+            bar: boolean;
+          }
+        >
+      >();
+    });
   });
 
-  it("infers ImageValue with fields", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [
-          defineType({
-            name: "foo",
-            type: "image",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "boolean",
-              }),
-              defineField({
-                name: "tar",
-                type: "number",
-              }),
-            ],
-          }),
-        ],
-      },
-    });
+  describe("defineType", () => {
+    it("infers ImageValue", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "image",
+            }),
+          ],
+        },
+      });
 
-    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-      Simplify<
+      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
         ImageValue & {
           _type: "foo";
-          bar?: boolean;
-          tar?: number;
         }
-      >
-    >();
-  });
-
-  it("infers nested objects", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [
-          defineType({
-            name: "foo",
-            type: "image",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "object",
-                fields: [
-                  defineField({
-                    name: "tar",
-                    type: "number",
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      },
+      >();
     });
 
-    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-      Simplify<
-        ImageValue & {
-          _type: "foo";
-          bar?: {
+    it("overwrites `_type` with defineArrayMember `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "image",
+            }),
+            defineType({
+              name: "bar",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "foo",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >().toStrictEqual<"bar">();
+    });
+
+    it("infers ImageValue with fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "image",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "boolean",
+                }),
+                defineField({
+                  name: "tar",
+                  type: "number",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+        Simplify<
+          ImageValue & {
+            _type: "foo";
+            bar?: boolean;
             tar?: number;
-          };
-        }
-      >
-    >();
-  });
-
-  it("infers required fields", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [
-          defineType({
-            name: "foo",
-            type: "image",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "boolean",
-                validation: (Rule) => Rule.required(),
-              }),
-            ],
-          }),
-        ],
-      },
+          }
+        >
+      >();
     });
 
-    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-      Simplify<
-        ImageValue & {
-          _type: "foo";
-          bar: boolean;
-        }
-      >
-    >();
+    it("infers nested objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "image",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "object",
+                  fields: [
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+        Simplify<
+          ImageValue & {
+            _type: "foo";
+            bar?: {
+              tar?: number;
+            };
+          }
+        >
+      >();
+    });
+
+    it("infers required fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "image",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "boolean",
+                  validation: (Rule) => Rule.required(),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+        Simplify<
+          ImageValue & {
+            _type: "foo";
+            bar: boolean;
+          }
+        >
+      >();
+    });
   });
 });

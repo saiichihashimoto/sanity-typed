@@ -233,9 +233,15 @@ describe("interoperability", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config2>["foo"]>["bar"]
-      >().toStrictEqual<{
-        [x: string]: unknown;
-      }>();
+      >().toStrictEqual<
+        | {
+            [x: string]: unknown;
+            _type: "bar";
+          }
+        | {
+            [x: string]: unknown;
+          }
+      >();
     });
 
     it("castToTyped(defineArrayMemberNative(...))", () => {
@@ -291,7 +297,7 @@ describe("interoperability", () => {
       });
 
       expectType<
-        InferSchemaValues<typeof config2>["foo"][number]
+        Simplify<InferSchemaValues<typeof config2>["foo"][number]>
       >().toStrictEqual<{
         [x: string]: unknown;
         _key: string;

@@ -121,9 +121,7 @@ describe("<alias>", () => {
       type Values = InferSchemaValues<typeof config>;
 
       // It really is cyclical!
-      expectType<Values["foo"]["foo"]["foo"]>().toStrictEqual<
-        Values["foo"]["foo"]
-      >();
+      expectType<Values["foo"]["foo"]>().toStrictEqual<Values["foo"]>();
     });
 
     it("infers multiple step cyclical type value", () => {
@@ -172,9 +170,9 @@ describe("<alias>", () => {
       type Values = InferSchemaValues<typeof config>;
 
       // It really is cyclical!
-      expectType<
-        Values["foo"]["bar"]["baz"]["foo"]["bar"]["baz"]["foo"]
-      >().toStrictEqual<Values["foo"]["bar"]["baz"]["foo"]>();
+      expectType<Values["foo"]["bar"]["baz"]["foo"]>().toStrictEqual<
+        Values["foo"]
+      >();
     });
 
     it("infers plugin type value", () => {
@@ -350,9 +348,7 @@ describe("<alias>", () => {
       type Values = InferSchemaValues<typeof plugin>;
 
       // It really is cyclical!
-      expectType<Values["foo"]["foo"]["foo"]>().toStrictEqual<
-        Values["foo"]["foo"]
-      >();
+      expectType<Values["foo"]["foo"]>().toStrictEqual<Values["foo"]>();
     });
 
     it("infers multiple step cyclical type value", () => {
@@ -400,9 +396,9 @@ describe("<alias>", () => {
       type Values = InferSchemaValues<typeof plugin>;
 
       // It really is cyclical!
-      expectType<
-        Values["foo"]["bar"]["baz"]["foo"]["bar"]["baz"]["foo"]
-      >().toStrictEqual<Values["foo"]["bar"]["baz"]["foo"]>();
+      expectType<Values["foo"]["bar"]["baz"]["foo"]>().toStrictEqual<
+        Values["foo"]
+      >();
     });
 
     it("infers plugin type value", () => {
