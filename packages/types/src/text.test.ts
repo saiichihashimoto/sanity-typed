@@ -2,39 +2,81 @@ import { describe, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import { defineArrayMember, defineField, defineType } from ".";
-import type { _InferValue } from ".";
+import { defineArrayMember, defineConfig, defineField, defineType } from ".";
+import type { InferSchemaValues } from ".";
 
 describe("text", () => {
   describe("defineArrayMember", () => {
     it("infers string", () => {
-      const arrayMember = defineArrayMember({
-        type: "text",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "text",
+                }),
+              ],
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<string>();
+      expectType<
+        InferSchemaValues<typeof config>["foo"][number]
+      >().toStrictEqual<string>();
     });
   });
 
   describe("defineField", () => {
     it("infers string", () => {
-      const field = defineField({
-        name: "foo",
-        type: "text",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "text",
+                }),
+              ],
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<string>();
+      expectType<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >().toStrictEqual<string>();
     });
   });
 
   describe("defineType", () => {
     it("infers string", () => {
-      const type = defineType({
-        name: "foo",
-        type: "text",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof type>>().toStrictEqual<string>();
+      expectType<
+        InferSchemaValues<typeof config>["foo"]
+      >().toStrictEqual<string>();
     });
   });
 });

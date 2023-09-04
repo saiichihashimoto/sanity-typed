@@ -1,44 +1,149 @@
 import { describe, it } from "@jest/globals";
+import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import { defineArrayMember, defineField, defineType } from ".";
-import type { SlugValue, _InferValue } from ".";
+import { defineArrayMember, defineConfig, defineField, defineType } from ".";
+import type { InferSchemaValues, SlugValue } from ".";
 
 describe("slug", () => {
   describe("defineArrayMember", () => {
     it("infers SlugValue", () => {
-      const arrayMember = defineArrayMember({
-        type: "slug",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "slug",
+                }),
+              ],
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof arrayMember>>().toStrictEqual<
-        SlugValue & {
-          _key: string;
-        }
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
+      >().toStrictEqual<
+        Simplify<
+          SlugValue & {
+            _key: string;
+          }
+        >
       >();
+    });
+
+    it("overwrites `_type` with `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "slug",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["foo"][number]["_type"]
+      >().toStrictEqual<"bar">();
     });
   });
 
   describe("defineField", () => {
     it("infers SlugValue", () => {
-      const field = defineField({
-        name: "foo",
-        type: "slug",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "slug",
+                }),
+              ],
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<SlugValue>();
+      expectType<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >().toStrictEqual<SlugValue>();
     });
   });
 
   describe("defineType", () => {
     it("infers SlugValue", () => {
-      const type = defineType({
-        name: "foo",
-        type: "slug",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "slug",
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof type>>().toStrictEqual<SlugValue>();
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
+        Simplify<
+          SlugValue & {
+            _type: "foo";
+          }
+        >
+      >();
+    });
+
+    it("overwrites `_type` with defineArrayMember `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "slug",
+            }),
+            defineType({
+              name: "bar",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "foo",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >().toStrictEqual<"bar">();
     });
   });
 });

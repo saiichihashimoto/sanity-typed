@@ -7,7 +7,7 @@ import {
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { _InferValue } from "@sanity-typed/types";
+import type { _InferRawValue } from "@sanity-typed/types";
 
 import { _sanityTypeToZod } from ".";
 
@@ -30,7 +30,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferValue<typeof arrayMember>, "_key">
+        Omit<_InferRawValue<typeof arrayMember>, "_key">
       >();
       expect(zod.parse({})).toStrictEqual({});
       expect(zod.parse({ bar: true, tar: 5 })).toStrictEqual({
@@ -59,7 +59,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferValue<typeof arrayMember>, "_key">
+        Omit<_InferRawValue<typeof arrayMember>, "_key">
       >();
       expect(zod.parse({})).toStrictEqual({});
       expect(zod.parse({ bar: { tar: 5 } })).toStrictEqual({ bar: { tar: 5 } });
@@ -80,7 +80,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferValue<typeof arrayMember>, "_key">
+        Omit<_InferRawValue<typeof arrayMember>, "_key">
       >();
       expect(zod.parse({ bar: true })).toStrictEqual({ bar: true });
       expect(() => zod.parse({})).toThrow();
@@ -106,7 +106,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(field);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferValue<typeof field>
+        _InferRawValue<typeof field>
       >();
       expect(zod.parse({})).toStrictEqual({});
       expect(zod.parse({ bar: true, tar: 5 })).toStrictEqual({
@@ -136,7 +136,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(field);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferValue<typeof field>
+        _InferRawValue<typeof field>
       >();
       expect(zod.parse({})).toStrictEqual({});
       expect(zod.parse({ bar: { tar: 5 } })).toStrictEqual({ bar: { tar: 5 } });
@@ -158,7 +158,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(field);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferValue<typeof field>
+        _InferRawValue<typeof field>
       >();
       expect(zod.parse({ bar: true })).toStrictEqual({ bar: true });
       expect(() => zod.parse({})).toThrow();
@@ -184,7 +184,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(type);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferValue<typeof type>
+        _InferRawValue<typeof type>
       >();
       expect(zod.parse({})).toStrictEqual({});
       expect(zod.parse({ bar: true, tar: 5 })).toStrictEqual({
@@ -214,7 +214,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(type);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferValue<typeof type>
+        _InferRawValue<typeof type>
       >();
       expect(zod.parse({})).toStrictEqual({});
       expect(zod.parse({ bar: { tar: 5 } })).toStrictEqual({ bar: { tar: 5 } });
@@ -236,7 +236,7 @@ describe("object", () => {
       const zod = _sanityTypeToZod(type);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferValue<typeof type>
+        _InferRawValue<typeof type>
       >();
       expect(zod.parse({ bar: true })).toStrictEqual({ bar: true });
       expect(() => zod.parse({})).toThrow();

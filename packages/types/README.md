@@ -19,6 +19,8 @@ Typed Sanity Documents, all inferred, no config changes!
   - [Writing typed plugins](#writing-typed-plugins)
   - [Using external untyped plugins](#using-external-untyped-plugins)
 - [Breaking Changes](#breaking-changes)
+  - [4 to 5](#4-to-5)
+    - [Removed `_InferRawValue` and `AliasValue`](#removed-_inferrawvalue-and-aliasvalue)
   - [3 to 4](#3-to-4)
     - [Referenced `_type` needs `as const`](#referenced-_type-needs-as-const)
     - [Renamed `DocumentValue` to `SanityDocument`](#renamed-documentvalue-to-sanitydocument)
@@ -247,6 +249,12 @@ const nav = defineType({
 
 ## Breaking Changes
 
+### 4 to 5
+
+#### Removed `_InferRawValue` and `AliasValue`
+
+Use [`InferSchemaValues`](#inferschemavalues) instead. Neither `_InferRawValue` nor `AliasValue` are directly usable, while `InferSchemaValues` is the only real world use case.
+
 ### 3 to 4
 
 #### Referenced `_type` needs `as const`
@@ -324,7 +332,7 @@ type Values = InferSchemaValues<typeof config>;
 + export type Product = Values["product"];
 ```
 
-You can still use `_InferValue` but this is discouraged, because it will be missing the context from the config:
+You can still use `_InferRawValue` but this is discouraged, because it will be missing the context from the config (and is removed in v5):
 
 ```diff
 const product = defineType({
@@ -337,6 +345,6 @@ const product = defineType({
 });
 
 - export type Product = InferValue<typeof product>;
-+ export type Product = _InferValue<typeof product>;
++ export type Product = _InferRawValue<typeof product>;
 ```
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/types/_README.md -->

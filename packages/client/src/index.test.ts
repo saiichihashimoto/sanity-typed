@@ -10,13 +10,13 @@ describe("createClient", () => {
   describe("fetch", () => {
     it("returns the groq query result", () => {
       const exec = async () => {
-        const client = createClient<{ foo: SanityDocument<"foo", any> }>()({});
+        const client = createClient<{ foo: SanityDocument<any> }>()({});
 
         return client.fetch("*");
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<SanityDocument<"foo", any>[]>
+        Promise<SanityDocument<any>[]>
       >();
     });
 
@@ -24,14 +24,14 @@ describe("createClient", () => {
       const exec = async () => {
         const client = createClient<{
           bar: { _type: "bar"; bar: "bar" };
-          foo: SanityDocument<"foo", any>;
+          foo: SanityDocument<any>;
         }>()({});
 
         return client.fetch("*");
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<SanityDocument<"foo", any>[]>
+        Promise<SanityDocument<any>[]>
       >();
     });
 
@@ -65,7 +65,7 @@ describe("createClient", () => {
   describe("clone", () => {
     it("returns the same type", () => {
       const exec = () => {
-        const client = createClient<{ foo: SanityDocument<"foo", any> }>()({});
+        const client = createClient<{ foo: SanityDocument<any> }>()({});
 
         return client;
       };
@@ -80,7 +80,7 @@ describe("createClient", () => {
     it("returns the altered type", () => {
       const exec = () => {
         const client = createClient<{
-          foo: SanityDocument<"foo", any>;
+          foo: SanityDocument<any>;
         }>()({
           dataset: "dataset",
           projectId: "projectId",
@@ -92,7 +92,7 @@ describe("createClient", () => {
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         SanityClient<
           { dataset: "dataset"; projectId: "projectId" },
-          SanityDocument<"foo", any>[]
+          SanityDocument<any>[]
         >
       >();
 
@@ -107,7 +107,7 @@ describe("createClient", () => {
       expectType<ReturnType<typeof exec2>>().toStrictEqual<
         SanityClient<
           { dataset: "dataset"; projectId: "newProjectId" },
-          SanityDocument<"foo", any>[]
+          SanityDocument<any>[]
         >
       >();
     });

@@ -7,7 +7,7 @@ import {
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { _InferValue } from "@sanity-typed/types";
+import type { _InferRawValue } from "@sanity-typed/types";
 
 import { _sanityTypeToZod } from ".";
 
@@ -20,7 +20,7 @@ describe("boolean", () => {
       const zod = _sanityTypeToZod(arrayMember);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferValue<typeof arrayMember>
+        _InferRawValue<typeof arrayMember>
       >();
       expect(zod.parse(true)).toBe(true);
       expect(() => zod.parse("foo")).toThrow();
@@ -36,7 +36,7 @@ describe("boolean", () => {
       const zod = _sanityTypeToZod(field);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferValue<typeof field>
+        _InferRawValue<typeof field>
       >();
       expect(zod.parse(true)).toBe(true);
       expect(() => zod.parse("foo")).toThrow();
@@ -52,7 +52,7 @@ describe("boolean", () => {
       const zod = _sanityTypeToZod(type);
 
       expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferValue<typeof type>
+        _InferRawValue<typeof type>
       >();
       expect(zod.parse(true)).toBe(true);
       expect(() => zod.parse("foo")).toThrow();

@@ -1,277 +1,302 @@
 import { describe, it } from "@jest/globals";
+import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import {
-  defineArrayMember,
-  defineConfig,
-  defineField,
-  definePlugin,
-  defineType,
-} from ".";
-import type { InferSchemaValues, _InferValue } from ".";
+import { defineArrayMember, defineConfig, defineField, defineType } from ".";
+import type { InferSchemaValues, SanityDocument } from ".";
 
 describe("document", () => {
   describe("defineArrayMember", () => {
     it("infers SanityDocument with fields", () => {
-      const field = defineArrayMember({
-        name: "foo",
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-          }),
-          defineField({
-            name: "tar",
-            type: "number",
-          }),
-        ],
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "document",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                    }),
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<
-        {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          bar?: boolean;
-          tar?: number;
-        } & {
-          _key: string;
-        }
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
+      >().toStrictEqual<
+        Simplify<
+          SanityDocument & {
+            _key: string;
+            bar?: boolean;
+            tar?: number;
+          }
+        >
       >();
     });
 
-    it("infers nested objects", () => {
-      const field = defineArrayMember({
-        name: "foo",
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "object",
-            fields: [
-              defineField({
-                name: "tar",
-                type: "number",
-              }),
-            ],
-          }),
-        ],
+    it("overwrites `_type` with `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "document",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                    }),
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<
-        {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          bar?: {
-            tar?: number;
-          };
-        } & {
-          _key: string;
-        }
+      expectType<
+        InferSchemaValues<typeof config>["foo"][number]["_type"]
+      >().toStrictEqual<"bar">();
+    });
+
+    it("infers nested objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "document",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "object",
+                      fields: [
+                        defineField({
+                          name: "tar",
+                          type: "number",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
+      >().toStrictEqual<
+        Simplify<
+          SanityDocument & {
+            _key: string;
+            bar?: {
+              tar?: number;
+            };
+          }
+        >
       >();
     });
 
     it("infers required fields", () => {
-      const field = defineArrayMember({
-        name: "foo",
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-            validation: (Rule) => Rule.required(),
-          }),
-        ],
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "document",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                      validation: (Rule) => Rule.required(),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<
-        {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          bar: boolean;
-        } & {
-          _key: string;
-        }
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
+      >().toStrictEqual<
+        Simplify<
+          SanityDocument & {
+            _key: string;
+            bar: boolean;
+          }
+        >
       >();
     });
   });
 
   describe("defineField", () => {
     it("infers SanityDocument with fields", () => {
-      const field = defineField({
-        name: "foo",
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-          }),
-          defineField({
-            name: "tar",
-            type: "number",
-          }),
-        ],
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "document",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                    }),
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
 
-      // TODO documents as field have _type: "document";
-      expectType<_InferValue<typeof field>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: "foo";
-        _updatedAt: string;
-        bar?: boolean;
-        tar?: number;
-      }>();
+      expectType<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >().toStrictEqual<
+        Simplify<
+          SanityDocument & {
+            bar?: boolean;
+            tar?: number;
+          }
+        >
+      >();
     });
 
     it("infers nested objects", () => {
-      const field = defineField({
-        name: "foo",
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "object",
-            fields: [
-              defineField({
-                name: "tar",
-                type: "number",
-              }),
-            ],
-          }),
-        ],
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "document",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "object",
+                      fields: [
+                        defineField({
+                          name: "tar",
+                          type: "number",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: "foo";
-        _updatedAt: string;
-        bar?: {
-          tar?: number;
-        };
-      }>();
+      expectType<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >().toStrictEqual<
+        Simplify<
+          SanityDocument & {
+            bar?: {
+              tar?: number;
+            };
+          }
+        >
+      >();
     });
 
     it("infers required fields", () => {
-      const field = defineField({
-        name: "foo",
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-            validation: (Rule) => Rule.required(),
-          }),
-        ],
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "document",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                      validation: (Rule) => Rule.required(),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
 
-      expectType<_InferValue<typeof field>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: "foo";
-        _updatedAt: string;
-        bar: boolean;
-      }>();
+      expectType<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >().toStrictEqual<
+        Simplify<
+          SanityDocument & {
+            bar: boolean;
+          }
+        >
+      >();
     });
   });
 
   describe("defineType", () => {
-    it("infers SanityDocument with fields", () => {
-      const type = defineType({
-        name: "foo",
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-          }),
-          defineField({
-            name: "tar",
-            type: "number",
-          }),
-        ],
-      });
-
-      expectType<_InferValue<typeof type>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: "foo";
-        _updatedAt: string;
-        bar?: boolean;
-        tar?: number;
-      }>();
-    });
-
-    it("infers nested objects", () => {
-      const type = defineType({
-        name: "foo",
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "object",
-            fields: [
-              defineField({
-                name: "tar",
-                type: "number",
-              }),
-            ],
-          }),
-        ],
-      });
-
-      expectType<_InferValue<typeof type>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: "foo";
-        _updatedAt: string;
-        bar?: {
-          tar?: number;
-        };
-      }>();
-    });
-
-    it("infers required fields", () => {
-      const type = defineType({
-        name: "foo",
-        type: "document",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-            validation: (Rule) => Rule.required(),
-          }),
-        ],
-      });
-
-      expectType<_InferValue<typeof type>>().toStrictEqual<{
-        _createdAt: string;
-        _id: string;
-        _rev: string;
-        _type: "foo";
-        _updatedAt: string;
-        bar: boolean;
-      }>();
-    });
-  });
-
-  describe("defineConfig", () => {
     it("infers SanityDocument with fields", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -286,31 +311,33 @@ describe("document", () => {
                   name: "bar",
                   type: "boolean",
                 }),
+                defineField({
+                  name: "tar",
+                  type: "number",
+                }),
               ],
             }),
           ],
         },
       });
 
-      type Values = InferSchemaValues<typeof config>;
-
-      expectType<Values>().toStrictEqual<{
-        foo: {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          bar?: boolean;
-        };
-      }>();
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
+        Simplify<
+          Omit<SanityDocument, "_type"> & {
+            _type: "foo";
+            bar?: boolean;
+            tar?: number;
+          }
+        >
+      >();
     });
-  });
 
-  describe("definePlugin", () => {
-    it("infers SanityDocument with fields", () => {
-      const plugin = definePlugin({
-        name: "plugin",
+    it("overwrites `_type` with defineArrayMember `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
         schema: {
           types: [
             defineType({
@@ -321,24 +348,102 @@ describe("document", () => {
                   name: "bar",
                   type: "boolean",
                 }),
+                defineField({
+                  name: "tar",
+                  type: "number",
+                }),
+              ],
+            }),
+            defineType({
+              name: "bar",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "foo",
+                }),
               ],
             }),
           ],
         },
-      })();
+      });
 
-      type Values = InferSchemaValues<typeof plugin>;
+      expectType<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >().toStrictEqual<"bar">();
+    });
 
-      expectType<Values>().toStrictEqual<{
-        foo: {
-          _createdAt: string;
-          _id: string;
-          _rev: string;
-          _type: "foo";
-          _updatedAt: string;
-          bar?: boolean;
-        };
-      }>();
+    it("infers nested objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "document",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "object",
+                  fields: [
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
+        Simplify<
+          Omit<SanityDocument, "_type"> & {
+            _type: "foo";
+            bar?: {
+              tar?: number;
+            };
+          }
+        >
+      >();
+    });
+
+    it("infers required fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "document",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "boolean",
+                  validation: (Rule) => Rule.required(),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
+        Simplify<
+          Omit<SanityDocument, "_type"> & {
+            _type: "foo";
+            bar: boolean;
+          }
+        >
+      >();
     });
   });
 });
