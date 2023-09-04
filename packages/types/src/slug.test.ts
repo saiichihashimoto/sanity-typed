@@ -110,7 +110,7 @@ describe("slug", () => {
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >().toStrictEqual<
         Simplify<
-          SlugValue & {
+          Omit<SlugValue, "_type"> & {
             _type: "foo";
           }
         >

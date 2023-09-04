@@ -33,8 +33,25 @@ describe("expectType", () => {
     >();
   });
 
+  it("expectType<never>.toBeNever()", () => {
+    expectType<never>().toBeNever();
+    // @ts-expect-error
+    expectType<never>().toBeAssignableTo<"foo">();
+    // @ts-expect-error
+    expectType<never>().toStrictEqual<"foo">();
+  });
+
   describe("toBeAssignableTo", () => {
     /* eslint-disable @typescript-eslint/no-unused-vars,@typescript-eslint/prefer-as-const -- we set variables to see if they work like the assignables do */
+
+    it('expectType<"foo">().toBeAssignableTo<never>()', () => {
+      expectType<"foo">()
+        // @ts-expect-error
+        .toBeAssignableTo<never>();
+
+      // @ts-expect-error
+      const test: never = null as "foo";
+    });
 
     it("expectType<boolean>().toBeAssignableTo<boolean>()", () => {
       expectType<boolean>().toBeAssignableTo<boolean>();
@@ -274,15 +291,6 @@ describe("expectType", () => {
       const test: unknown = null as null;
     });
 
-    it.skip("expectType<null>().not.toBeAssignableTo<never>()", () => {
-      expectType<null>().not.toBeAssignableTo<never>();
-      expectType<null>().toBeAssignableTo<// TODO can't @ts-expect-error when the second type is never
-      never>();
-
-      // @ts-expect-error
-      const test: never = null as null;
-    });
-
     /* eslint-disable @typescript-eslint/no-invalid-void-type -- tests for void */
 
     it("expectType<null>().not.toBeAssignableTo<void>()", () => {
@@ -327,15 +335,6 @@ describe("expectType", () => {
       const test: unknown = undefined as undefined;
     });
 
-    it.skip("expectType<undefined>().not.toBeAssignableTo<never>()", () => {
-      expectType<undefined>().not.toBeAssignableTo<never>();
-      expectType<undefined>().toBeAssignableTo<// TODO can't @ts-expect-error when the second type is never
-      never>();
-
-      // @ts-expect-error
-      const test: never = undefined as undefined;
-    });
-
     it("expectType<undefined>().toBeAssignableTo<void>()", () => {
       expectType<undefined>().toBeAssignableTo<void>();
       expectType<undefined>().not.toBeAssignableTo<// @ts-expect-error
@@ -374,15 +373,6 @@ describe("expectType", () => {
       unknown>();
 
       const test: unknown = {} as any;
-    });
-
-    it.skip("expectType<any>().not.toBeAssignableTo<never>()", () => {
-      expectType<any>().not.toBeAssignableTo<never>();
-      expectType<any>().toBeAssignableTo<// TODO can't @ts-expect-error when the second type is never
-      never>();
-
-      // @ts-expect-error
-      const test: never = {} as any;
     });
 
     it("expectType<any>().toBeAssignableTo<void>()", () => {
@@ -425,15 +415,6 @@ describe("expectType", () => {
       any>();
 
       const test: any = {} as unknown;
-    });
-
-    it.skip("expectType<unknown>().not.toBeAssignableTo<never>()", () => {
-      expectType<unknown>().not.toBeAssignableTo<never>();
-      expectType<unknown>().toBeAssignableTo<// TODO can't @ts-expect-error when the second type is never
-      never>();
-
-      // @ts-expect-error
-      const test: never = {} as unknown;
     });
 
     it("expectType<unknown>().not.toBeAssignableTo<void>()", () => {
@@ -487,20 +468,17 @@ describe("expectType", () => {
       const test: unknown = undefined as void;
     });
 
-    it.skip("expectType<void>().not.toBeAssignableTo<never>()", () => {
-      expectType<void>().not.toBeAssignableTo<never>();
-      expectType<void>().toBeAssignableTo<// TODO can't @ts-expect-error when the second type is never
-      never>();
-
-      // @ts-expect-error
-      const test: never = undefined as void;
-    });
-
     /* eslint-enable @typescript-eslint/no-invalid-void-type */
     /* eslint-enable @typescript-eslint/no-unused-vars,@typescript-eslint/prefer-as-const */
   });
 
   describe("toStrictEqual", () => {
+    it('expectType<"foo">().toStrictEqual<never>()', () => {
+      expectType<"foo">()
+        // @ts-expect-error
+        .toStrictEqual<never>();
+    });
+
     it("expectType<boolean>().toStrictEqual<boolean>()", () => {
       expectType<boolean>().toStrictEqual<boolean>();
       expectType<boolean>().not.toStrictEqual<// @ts-expect-error
@@ -681,12 +659,6 @@ describe("expectType", () => {
       unknown>();
     });
 
-    it.skip("expectType<null>().not.toStrictEqual<never>()", () => {
-      expectType<null>().not.toStrictEqual<never>();
-      expectType<null>().toStrictEqual<// TODO can't @ts-expect-error when the second type is never
-      never>();
-    });
-
     /* eslint-disable @typescript-eslint/no-invalid-void-type -- tests for void */
 
     it("expectType<null>().not.toStrictEqual<void>()", () => {
@@ -719,12 +691,6 @@ describe("expectType", () => {
       unknown>();
     });
 
-    it.skip("expectType<undefined>().not.toStrictEqual<never>()", () => {
-      expectType<undefined>().not.toStrictEqual<never>();
-      expectType<undefined>().toStrictEqual<// TODO can't @ts-expect-error when the second type is never
-      never>();
-    });
-
     it("expectType<undefined>().not.toStrictEqual<void>()", () => {
       expectType<undefined>().not.toStrictEqual<void>();
       expectType<undefined>().toStrictEqual<// @ts-expect-error
@@ -755,12 +721,6 @@ describe("expectType", () => {
       unknown>();
     });
 
-    it.skip("expectType<any>().not.toStrictEqual<never>()", () => {
-      expectType<any>().not.toStrictEqual<never>();
-      expectType<any>().toStrictEqual<// TODO can't @ts-expect-error when the second type is never
-      never>();
-    });
-
     it("expectType<any>().not.toStrictEqual<void>()", () => {
       expectType<any>().not.toStrictEqual<void>();
       expectType<any>().toStrictEqual<// @ts-expect-error
@@ -789,12 +749,6 @@ describe("expectType", () => {
       expectType<unknown>().not.toStrictEqual<any>();
       expectType<unknown>().toStrictEqual<// @ts-expect-error
       any>();
-    });
-
-    it.skip("expectType<unknown>().not.toStrictEqual<never>()", () => {
-      expectType<unknown>().not.toStrictEqual<never>();
-      expectType<unknown>().toStrictEqual<// TODO can't @ts-expect-error when the second type is never
-      never>();
     });
 
     it("expectType<unknown>().not.toStrictEqual<void>()", () => {
@@ -831,12 +785,6 @@ describe("expectType", () => {
       expectType<void>().not.toStrictEqual<unknown>();
       expectType<void>().toStrictEqual<// @ts-expect-error
       unknown>();
-    });
-
-    it.skip("expectType<void>().not.toStrictEqual<never>()", () => {
-      expectType<void>().not.toStrictEqual<never>();
-      expectType<void>().toStrictEqual<// TODO can't @ts-expect-error when the second type is never
-      never>();
     });
 
     /* eslint-enable @typescript-eslint/no-invalid-void-type */
