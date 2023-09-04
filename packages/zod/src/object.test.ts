@@ -257,12 +257,14 @@ describe("object", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             bar: true,
             tar: 1,
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           bar: true,
           tar: 1,
@@ -311,11 +313,13 @@ describe("object", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             bar: { tar: 1 },
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           bar: { tar: 1 },
         },
@@ -358,11 +362,13 @@ describe("object", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             bar: true,
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           bar: true,
         },
@@ -372,7 +378,7 @@ describe("object", () => {
   });
 
   describe("defineType", () => {
-    it.failing("builds parser for object with fields", () => {
+    it("builds parser for object with fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -398,7 +404,6 @@ describe("object", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
@@ -469,7 +474,7 @@ describe("object", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("infers nested objects", () => {
+    it("infers nested objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -497,7 +502,6 @@ describe("object", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
@@ -512,7 +516,7 @@ describe("object", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("infers required fields", () => {
+    it("infers required fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -535,7 +539,6 @@ describe("object", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(

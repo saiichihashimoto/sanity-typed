@@ -132,12 +132,14 @@ describe("slug", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             ...fields,
             _type: "slug",
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           ...fields,
           _type: "slug",
@@ -148,7 +150,7 @@ describe("slug", () => {
   });
 
   describe("defineType", () => {
-    it.failing("builds parser for SlugValue", () => {
+    it("builds parser for SlugValue", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -164,7 +166,6 @@ describe("slug", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(

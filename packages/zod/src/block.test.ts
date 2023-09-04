@@ -233,7 +233,7 @@ describe("block", () => {
   });
 
   describe("defineType", () => {
-    it.failing("infers PortableTextBlock", () => {
+    it("infers PortableTextBlock", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -249,7 +249,6 @@ describe("block", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
@@ -296,7 +295,6 @@ describe("block", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>["_type"]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["_type"]
       >();
       expect(
@@ -317,7 +315,7 @@ describe("block", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("infers array of members", () => {
+    it("infers array of members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -356,7 +354,7 @@ describe("block", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("infers unions if there are multiple members", () => {
+    it("infers unions if there are multiple members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",

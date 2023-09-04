@@ -69,7 +69,15 @@ describe("number", () => {
       >().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
-      expect(zods.foo.parse({ bar: 1 })).toStrictEqual({ bar: 1 });
+      expect(
+        zods.foo.parse({
+          _type: "foo",
+          bar: 1,
+        })
+      ).toStrictEqual({
+        _type: "foo",
+        bar: 1,
+      });
       expect(() => zods.foo.parse({ bar: true })).toThrow();
     });
   });

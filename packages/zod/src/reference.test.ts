@@ -135,12 +135,14 @@ describe("reference", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             ...fields,
             _type: "reference",
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           ...fields,
           _type: "reference",
@@ -151,7 +153,7 @@ describe("reference", () => {
   });
 
   describe("defineType", () => {
-    it.failing("builds parser for ReferenceValue", () => {
+    it("builds parser for ReferenceValue", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -168,7 +170,6 @@ describe("reference", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(

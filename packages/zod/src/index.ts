@@ -117,12 +117,16 @@ type AddType<
     >
   : Zod;
 
-const addType =
-  <Type extends string | undefined>(type: Type) =>
-  <Zod extends z.ZodTypeAny>(zod: Zod) =>
-    (typeof type !== "string" || !(zod instanceof z.ZodObject)
-      ? zod
-      : zod.extend(addTypeFieldsZods(type))) as AddType<Type, Zod>;
+const addType = <
+  const Type extends string | undefined,
+  Zod extends z.ZodTypeAny
+>(
+  type: Type,
+  zod: Zod
+) =>
+  (typeof type !== "string" || !(zod instanceof z.ZodObject)
+    ? zod
+    : zod.extend(addTypeFieldsZods(type))) as AddType<Type, Zod>;
 
 const addKeyFieldsZods = {
   _key: z.string(),
@@ -193,7 +197,7 @@ const memberZods = <
     const zod = schemaTypeToZod(member);
 
     // TODO use lodash-fp flow
-    return "name" in member ? addType(member.name)(addKey(zod)) : addKey(zod);
+    return "name" in member ? addType(member.name, addKey(zod)) : addKey(zod);
   }) as MembersZods<TMemberDefinitions>;
 
 type ArrayZod<
@@ -626,10 +630,14 @@ export const sanityConfigToZods = <
 
   return Array.isArray(types)
     ? (Object.fromEntries(
-        types.map((type) => [type.name, schemaTypeToZod(type)])
+        types.map((type) => [
+          type.name,
+          addType(type.name, schemaTypeToZod(type)),
+        ])
       ) as {
-        [Name in TTypeDefinition["name"]]: SanityTypeToZod<
-          Extract<TTypeDefinition, { name: Name }>
+        [Name in TTypeDefinition["name"]]: AddType<
+          Name,
+          SanityTypeToZod<Extract<TTypeDefinition, { name: Name }>>
         >;
       })
     : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e

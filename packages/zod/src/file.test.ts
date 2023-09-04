@@ -309,12 +309,14 @@ describe("file", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             ...fields,
             _type: "file",
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           ...fields,
           _type: "file",
@@ -361,6 +363,7 @@ describe("file", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             ...fields,
             _type: "file",
@@ -369,6 +372,7 @@ describe("file", () => {
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           ...fields,
           _type: "file",
@@ -419,6 +423,7 @@ describe("file", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             ...fields,
             _type: "file",
@@ -426,6 +431,7 @@ describe("file", () => {
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           ...fields,
           _type: "file",
@@ -470,6 +476,7 @@ describe("file", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             ...fields,
             _type: "file",
@@ -477,6 +484,7 @@ describe("file", () => {
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           ...fields,
           _type: "file",
@@ -488,7 +496,7 @@ describe("file", () => {
   });
 
   describe("defineType", () => {
-    it.failing("builds parser for FileValue", () => {
+    it("builds parser for FileValue", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -504,7 +512,6 @@ describe("file", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
@@ -519,7 +526,7 @@ describe("file", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("builds parser for FileValue with fields", () => {
+    it("builds parser for FileValue with fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -545,7 +552,6 @@ describe("file", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
@@ -620,7 +626,7 @@ describe("file", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("infers nested objects", () => {
+    it("infers nested objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -648,7 +654,6 @@ describe("file", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
@@ -665,7 +670,7 @@ describe("file", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("infers required fields", () => {
+    it("infers required fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -688,7 +693,6 @@ describe("file", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(

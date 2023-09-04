@@ -42,7 +42,15 @@ describe("array", () => {
       >().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
-      expect(zods.foo.parse({ bar: [true] })).toStrictEqual({ bar: [true] });
+      expect(
+        zods.foo.parse({
+          _type: "foo",
+          bar: [true],
+        })
+      ).toStrictEqual({
+        _type: "foo",
+        bar: [true],
+      });
       expect(() => zods.foo.parse({ bar: ["foo"] })).toThrow();
     });
 
@@ -76,7 +84,13 @@ describe("array", () => {
       >().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
-      expect(zods.foo.parse({ bar: [true, "foo"] })).toStrictEqual({
+      expect(
+        zods.foo.parse({
+          _type: "foo",
+          bar: [true, "foo"],
+        })
+      ).toStrictEqual({
+        _type: "foo",
         bar: [true, "foo"],
       });
       expect(() => zods.foo.parse({ bar: [1] })).toThrow();
@@ -134,12 +148,14 @@ describe("array", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: [
             { _key: "key", _type: "bar", bar: true },
             { _key: "key", _type: "qux", qux: true },
           ],
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: [
           { _key: "key", _type: "bar", bar: true },
           { _key: "key", _type: "qux", qux: true },

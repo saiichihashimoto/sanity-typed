@@ -137,12 +137,14 @@ describe("geopoint", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             ...fields,
             _type: "geopoint",
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           ...fields,
           _type: "geopoint",
@@ -153,7 +155,7 @@ describe("geopoint", () => {
   });
 
   describe("defineType", () => {
-    it.failing("builds parser for ReferenceValue", () => {
+    it("builds parser for ReferenceValue", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -169,7 +171,6 @@ describe("geopoint", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(

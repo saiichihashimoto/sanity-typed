@@ -323,12 +323,14 @@ describe("image", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             ...fields,
             _type: "image",
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           ...fields,
           _type: "image",
@@ -375,6 +377,7 @@ describe("image", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             ...fields,
             _type: "image",
@@ -383,6 +386,7 @@ describe("image", () => {
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           ...fields,
           _type: "image",
@@ -433,6 +437,7 @@ describe("image", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             ...fields,
             _type: "image",
@@ -440,6 +445,7 @@ describe("image", () => {
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           ...fields,
           _type: "image",
@@ -484,6 +490,7 @@ describe("image", () => {
       >();
       expect(
         zods.foo.parse({
+          _type: "foo",
           bar: {
             ...fields,
             _type: "image",
@@ -491,6 +498,7 @@ describe("image", () => {
           },
         })
       ).toStrictEqual({
+        _type: "foo",
         bar: {
           ...fields,
           _type: "image",
@@ -502,7 +510,7 @@ describe("image", () => {
   });
 
   describe("defineType", () => {
-    it.failing("builds parser for ImageValue", () => {
+    it("builds parser for ImageValue", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -518,7 +526,6 @@ describe("image", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
@@ -533,7 +540,7 @@ describe("image", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("builds parser for ImageValue with fields", () => {
+    it("builds parser for ImageValue with fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -559,7 +566,6 @@ describe("image", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
@@ -634,7 +640,7 @@ describe("image", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("infers nested objects", () => {
+    it("infers nested objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -662,7 +668,6 @@ describe("image", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
@@ -679,7 +684,7 @@ describe("image", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("infers required fields", () => {
+    it("infers required fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -702,7 +707,6 @@ describe("image", () => {
       const zods = sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
