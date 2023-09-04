@@ -1,276 +1,246 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, it } from "@jest/globals";
+import type { Simplify } from "type-fest";
 import type { z } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
   defineArrayMember,
+  defineConfig,
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { _InferRawValue } from "@sanity-typed/types";
+import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityTypeToZod } from ".";
+import { sanityConfigToZods } from ".";
 
 describe("array", () => {
   describe("defineField", () => {
-    it("builds parser for array of the member", () => {
-      const field = defineField({
-        name: "foo",
-        type: "array",
-        of: [defineArrayMember({ type: "boolean" })],
+    it("builds parser for array of members", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "array",
+                  of: [defineArrayMember({ type: "boolean" })],
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(field);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof field>
+      expectType<
+        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+      >().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
-      expect(zod.parse([true, false])).toStrictEqual([true, false]);
-      expect(() => zod.parse(true)).toThrow();
+      expect(zods.foo.parse({ bar: [true] })).toStrictEqual({ bar: [true] });
+      expect(() => zods.foo.parse({ bar: ["foo"] })).toThrow();
     });
 
-    it("builds unions if there are multiple members", () => {
-      const field = defineField({
-        name: "foo",
-        type: "array",
-        of: [
-          defineArrayMember({ type: "boolean" }),
-          defineArrayMember({ type: "string" }),
-        ],
+    it("infers unions if there are multiple members", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "array",
+                  of: [
+                    defineArrayMember({ type: "boolean" }),
+                    defineArrayMember({ type: "string" }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(field);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof field>
+      expectType<
+        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+      >().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
-      expect(zod.parse([true, "false"])).toStrictEqual([true, "false"]);
-      expect(() => zod.parse(true)).toThrow();
+      expect(zods.foo.parse({ bar: [true, "foo"] })).toStrictEqual({
+        bar: [true, "foo"],
+      });
+      expect(() => zods.foo.parse({ bar: [1] })).toThrow();
     });
 
-    it('adds "_key" to objects', () => {
-      const field = defineField({
-        name: "foo",
-        type: "array",
-        of: [
-          defineArrayMember({
-            type: "object",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "boolean",
-              }),
-            ],
-          }),
-        ],
+    it("infers unions with objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "array",
+                  of: [
+                    defineArrayMember({
+                      type: "object",
+                      name: "bar",
+                      fields: [
+                        defineField({
+                          name: "bar",
+                          type: "boolean",
+                        }),
+                      ],
+                    }),
+                    defineArrayMember({
+                      type: "object",
+                      name: "qux",
+                      fields: [
+                        defineField({
+                          name: "qux",
+                          type: "boolean",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(field);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof field>
-      >();
-      expect(zod.parse([{ _key: "key", bar: true }])).toStrictEqual([
-        { _key: "key", bar: true },
-      ]);
-      expect(() => zod.parse(true)).toThrow();
-    });
-
-    it('adds "_type" to named objects', () => {
-      const field = defineField({
-        name: "foo",
-        type: "array",
-        of: [
-          defineArrayMember({
-            name: "inlineMemberName",
-            type: "object",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "boolean",
-              }),
-            ],
-          }),
-        ],
-      });
-      const zod = _sanityTypeToZod(field);
-
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof field>
+      expectType<
+        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+      >().toStrictEqual<
+        Simplify<
+          Required<InferSchemaValues<typeof config>["foo"]>["bar"][number]
+        >[]
       >();
       expect(
-        zod.parse([{ _key: "key", _type: "inlineMemberName", bar: true }])
-      ).toStrictEqual([{ _key: "key", _type: "inlineMemberName", bar: true }]);
-      expect(() => zod.parse(true)).toThrow();
-    });
-
-    it("builds unions with objects", () => {
-      const field = defineField({
-        name: "foo",
-        type: "array",
-        of: [
-          defineArrayMember({
-            type: "object",
-            name: "bar",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "boolean",
-              }),
-            ],
-          }),
-          defineArrayMember({
-            type: "object",
-            name: "qux",
-            fields: [
-              defineField({
-                name: "qux",
-                type: "boolean",
-              }),
-            ],
-          }),
-        ],
-      });
-      const zod = _sanityTypeToZod(field);
-
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof field>
-      >();
-      expect(
-        zod.parse([
+        zods.foo.parse({
+          bar: [
+            { _key: "key", _type: "bar", bar: true },
+            { _key: "key", _type: "qux", qux: true },
+          ],
+        })
+      ).toStrictEqual({
+        bar: [
           { _key: "key", _type: "bar", bar: true },
           { _key: "key", _type: "qux", qux: true },
-        ])
-      ).toStrictEqual([
-        { _key: "key", _type: "bar", bar: true },
-        { _key: "key", _type: "qux", qux: true },
-      ]);
-      expect(() => zod.parse(true)).toThrow();
+        ],
+      });
+      expect(() => zods.foo.parse({ bar: [true] })).toThrow();
     });
-
-    it.todo('adds "_type" to named alias values');
   });
 
   describe("defineType", () => {
-    it("builds parser for array of the member", () => {
-      const type = defineType({
-        name: "foo",
-        type: "array",
-        of: [defineArrayMember({ type: "boolean" })],
+    it("builds parser for array of members", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [defineArrayMember({ type: "boolean" })],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(type);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
-      expect(zod.parse([true, false])).toStrictEqual([true, false]);
-      expect(() => zod.parse(true)).toThrow();
+      expect(zods.foo.parse([true])).toStrictEqual([true]);
+      expect(() => zods.foo.parse(["foo"])).toThrow();
     });
 
-    it("builds unions if there are multiple members", () => {
-      const type = defineType({
-        name: "foo",
-        type: "array",
-        of: [
-          defineArrayMember({ type: "boolean" }),
-          defineArrayMember({ type: "string" }),
-        ],
+    it("infers unions if there are multiple members", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({ type: "boolean" }),
+                defineArrayMember({ type: "string" }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(type);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
-      expect(zod.parse([true, "false"])).toStrictEqual([true, "false"]);
-      expect(() => zod.parse(true)).toThrow();
+      expect(zods.foo.parse([true, "foo"])).toStrictEqual([true, "foo"]);
+      expect(() => zods.foo.parse([1])).toThrow();
     });
 
-    it('adds "_key" to objects', () => {
-      const type = defineType({
-        name: "foo",
-        type: "array",
-        of: [
-          defineArrayMember({
-            type: "object",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "boolean",
-              }),
-            ],
-          }),
-        ],
+    it("infers unions with objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "object",
+                  name: "bar",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                    }),
+                  ],
+                }),
+                defineArrayMember({
+                  type: "object",
+                  name: "qux",
+                  fields: [
+                    defineField({
+                      name: "qux",
+                      type: "boolean",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(type);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
-      >();
-      expect(zod.parse([{ _key: "key", bar: true }])).toStrictEqual([
-        { _key: "key", bar: true },
-      ]);
-      expect(() => zod.parse(true)).toThrow();
-    });
-
-    it('adds "_type" to named objects', () => {
-      const type = defineType({
-        name: "foo",
-        type: "array",
-        of: [
-          defineArrayMember({
-            name: "inlineMemberName",
-            type: "object",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "boolean",
-              }),
-            ],
-          }),
-        ],
-      });
-      const zod = _sanityTypeToZod(type);
-
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>[]
       >();
       expect(
-        zod.parse([{ _key: "key", _type: "inlineMemberName", bar: true }])
-      ).toStrictEqual([{ _key: "key", _type: "inlineMemberName", bar: true }]);
-      expect(() => zod.parse(true)).toThrow();
-    });
-
-    it("builds unions with objects", () => {
-      const type = defineType({
-        name: "foo",
-        type: "array",
-        of: [
-          defineArrayMember({
-            type: "object",
-            name: "bar",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "boolean",
-              }),
-            ],
-          }),
-          defineArrayMember({
-            type: "object",
-            name: "qux",
-            fields: [
-              defineField({
-                name: "qux",
-                type: "boolean",
-              }),
-            ],
-          }),
-        ],
-      });
-      const zod = _sanityTypeToZod(type);
-
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
-      >();
-      expect(
-        zod.parse([
+        zods.foo.parse([
           { _key: "key", _type: "bar", bar: true },
           { _key: "key", _type: "qux", qux: true },
         ])
@@ -278,21 +248,7 @@ describe("array", () => {
         { _key: "key", _type: "bar", bar: true },
         { _key: "key", _type: "qux", qux: true },
       ]);
-      expect(() => zod.parse(true)).toThrow();
+      expect(() => zods.foo.parse([true])).toThrow();
     });
-
-    it.todo('adds "_type" to named alias values');
-  });
-
-  describe("defineConfig", () => {
-    it.todo('adds "_type" to inferred types');
-
-    it.todo('overrides "_type" with arrayMember name');
-  });
-
-  describe("definePlugin", () => {
-    it.todo('adds "_type" to inferred types');
-
-    it.todo('overrides "_type" with arrayMember name');
   });
 });

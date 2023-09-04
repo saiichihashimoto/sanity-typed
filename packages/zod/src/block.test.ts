@@ -1,154 +1,444 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, it } from "@jest/globals";
+import type { Simplify } from "type-fest";
 import type { z } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
   defineArrayMember,
-  defineField,
+  defineConfig,
   defineType,
 } from "@sanity-typed/types";
-import type { _InferRawValue } from "@sanity-typed/types";
+import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityTypeToZod } from ".";
+import { sanityConfigToZods } from ".";
 
 describe("block", () => {
   describe("defineArrayMember", () => {
-    it("builds parser for PortableTextBlock", () => {
-      const arrayMember = defineArrayMember({
-        type: "block",
+    it("infers PortableTextBlock", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(arrayMember);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferRawValue<typeof arrayMember>, "_key">
+      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >();
       expect(
-        zod.parse({
-          _type: "block",
-          children: [{ _type: "span", _key: "key", text: "foo" }],
-        })
-      ).toStrictEqual({
-        _type: "block",
-        children: [{ _type: "span", _key: "key", text: "foo" }],
-      });
-      expect(() => zod.parse(true)).toThrow();
-    });
-
-    it("builds parser for children", () => {
-      const arrayMember = defineArrayMember({
-        type: "block",
-        of: [
-          defineArrayMember({
-            name: "foo",
-            type: "object",
-            fields: [
-              defineField({
-                name: "baz",
-                type: "boolean",
-              }),
+        zods.foo.parse([
+          {
+            _key: "key",
+            _type: "block",
+            children: [
+              { _key: "key", _type: "span", marks: ["mark"], text: "text" },
             ],
-          }),
-          defineArrayMember({
-            type: "reference",
-            to: [{ type: "qux" as const }],
-          }),
-        ],
-      });
-      const zod = _sanityTypeToZod(arrayMember);
-
-      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-      expectType<z.infer<typeof zod>>()
-        //
-        .toStrictEqual<Omit<_InferRawValue<typeof arrayMember>, "_key">>();
-      expect(
-        zod.parse({
+            level: 1,
+            listItem: "listItem",
+            markDefs: [{ _key: "key", _type: "type" }],
+            style: "style",
+          },
+        ])
+      ).toStrictEqual([
+        {
+          _key: "key",
           _type: "block",
           children: [
-            { _type: "span", _key: "key", text: "foo" },
-            { _type: "foo", _key: "key", baz: true },
-            { _type: "reference", _key: "key", _ref: "ref" },
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
           ],
-        })
-      ).toStrictEqual({
-        _type: "block",
-        children: [
-          { _type: "span", _key: "key", text: "foo" },
-          { _type: "foo", _key: "key", baz: true },
-          { _type: "reference", _key: "key", _ref: "ref" },
-        ],
+          level: 1,
+          listItem: "listItem",
+          markDefs: [{ _key: "key", _type: "type" }],
+          style: "style",
+        },
+      ]);
+      expect(() => zods.foo.parse([true])).toThrow();
+    });
+
+    it("overwrites `_type` with `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "block",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      expect(() => zod.parse(true)).toThrow();
+      const zods = sanityConfigToZods(config);
+
+      expectType<
+        z.infer<(typeof zods)["foo"]>[number]["_type"]
+      >().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]["_type"]
+      >();
+      expect(
+        zods.foo.parse([
+          {
+            _key: "key",
+            _type: "bar",
+            children: [
+              { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+            ],
+            level: 1,
+            listItem: "listItem",
+            markDefs: [{ _key: "key", _type: "type" }],
+            style: "style",
+          },
+        ])
+      ).toStrictEqual([
+        {
+          _key: "key",
+          _type: "bar",
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+          ],
+          level: 1,
+          listItem: "listItem",
+          markDefs: [{ _key: "key", _type: "type" }],
+          style: "style",
+        },
+      ]);
+      expect(() => zods.foo.parse([true])).toThrow();
+    });
+
+    it("infers array of members", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  of: [defineArrayMember({ type: "slug" })],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZods(config);
+
+      expectType<
+        z.infer<(typeof zods)["foo"]>[number]["children"]
+      >().toStrictEqual<
+        Simplify<
+          InferSchemaValues<typeof config>["foo"][number]["children"][number]
+        >[]
+      >();
+      expect(
+        zods.foo.parse([
+          {
+            _key: "key",
+            _type: "block",
+            children: [
+              { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+              { _key: "key", _type: "slug", current: "foo" },
+            ],
+            level: 1,
+            listItem: "listItem",
+            markDefs: [{ _key: "key", _type: "type" }],
+            style: "style",
+          },
+        ])
+      ).toStrictEqual([
+        {
+          _key: "key",
+          _type: "block",
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+            { _key: "key", _type: "slug", current: "foo" },
+          ],
+          level: 1,
+          listItem: "listItem",
+          markDefs: [{ _key: "key", _type: "type" }],
+          style: "style",
+        },
+      ]);
+      expect(() => zods.foo.parse([true])).toThrow();
+    });
+
+    it("infers unions if there are multiple members", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  of: [
+                    defineArrayMember({ type: "slug" }),
+                    defineArrayMember({ type: "geopoint" }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZods(config);
+
+      expectType<
+        z.infer<(typeof zods)["foo"]>[number]["children"]
+      >().toStrictEqual<
+        Simplify<
+          InferSchemaValues<typeof config>["foo"][number]["children"][number]
+        >[]
+      >();
+      expect(
+        zods.foo.parse([
+          {
+            _key: "key",
+            _type: "block",
+            children: [
+              { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+              { _key: "key", _type: "slug", current: "foo" },
+              { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
+            ],
+            level: 1,
+            listItem: "listItem",
+            markDefs: [{ _key: "key", _type: "type" }],
+            style: "style",
+          },
+        ])
+      ).toStrictEqual([
+        {
+          _key: "key",
+          _type: "block",
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+            { _key: "key", _type: "slug", current: "foo" },
+            { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
+          ],
+          level: 1,
+          listItem: "listItem",
+          markDefs: [{ _key: "key", _type: "type" }],
+          style: "style",
+        },
+      ]);
+      expect(() => zods.foo.parse([true])).toThrow();
     });
   });
 
   describe("defineType", () => {
-    it("builds parser for PortableTextBlock", () => {
-      const type = defineType({
-        name: "foo",
-        type: "block",
+    it.failing("infers PortableTextBlock", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(type);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        // @ts-expect-error -- FIXME
+        Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
-        zod.parse({
-          _type: "block",
-          children: [{ _type: "span", _key: "key", text: "foo" }],
+        zods.foo.parse({
+          _type: "foo",
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+          ],
+          level: 1,
+          listItem: "listItem",
+          markDefs: [{ _key: "key", _type: "type" }],
+          style: "style",
         })
       ).toStrictEqual({
-        _type: "block",
-        children: [{ _type: "span", _key: "key", text: "foo" }],
+        _type: "foo",
+        children: [
+          { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+        ],
+        level: 1,
+        listItem: "listItem",
+        markDefs: [{ _key: "key", _type: "type" }],
+        style: "style",
       });
-      expect(() => zod.parse(true)).toThrow();
+      expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it("builds parser for children", () => {
-      const type = defineType({
-        name: "foo",
-        type: "block",
-        of: [
-          defineArrayMember({
-            name: "foo",
-            type: "object",
-            fields: [
-              defineField({
-                name: "baz",
-                type: "boolean",
-              }),
-            ],
-          }),
-          defineArrayMember({
-            type: "reference",
-            to: [{ type: "qux" as const }],
-          }),
-        ],
-      });
-      const zod = _sanityTypeToZod(type);
-
-      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-      expectType<z.infer<typeof zod>>()
-        //
-        .toStrictEqual<_InferRawValue<typeof type>>();
-      expect(
-        zod.parse({
-          _type: "block",
-          children: [
-            { _type: "span", _key: "key", text: "foo" },
-            { _type: "foo", _key: "key", baz: true },
-            { _type: "reference", _key: "key", _ref: "ref" },
+    it.failing("overwrites `_type` with defineArrayMember `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+            }),
+            defineType({
+              name: "bar",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "foo",
+                }),
+              ],
+            }),
           ],
+        },
+      });
+      const zods = sanityConfigToZods(config);
+
+      expectType<z.infer<(typeof zods)["foo"]>["_type"]>().toStrictEqual<
+        // @ts-expect-error -- FIXME
+        InferSchemaValues<typeof config>["foo"]["_type"]
+      >();
+      expect(
+        zods.foo.parse({
+          _type: "bar",
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+          ],
+          level: 1,
+          listItem: "listItem",
+          markDefs: [{ _key: "key", _type: "type" }],
+          style: "style",
         })
       ).toStrictEqual({
-        _type: "block",
+        _type: "bar",
         children: [
-          { _type: "span", _key: "key", text: "foo" },
-          { _type: "foo", _key: "key", baz: true },
-          { _type: "reference", _key: "key", _ref: "ref" },
+          { _key: "key", _type: "span", marks: ["mark"], text: "text" },
         ],
+        level: 1,
+        listItem: "listItem",
+        markDefs: [{ _key: "key", _type: "type" }],
+        style: "style",
       });
-      expect(() => zod.parse(true)).toThrow();
+      expect(() => zods.foo.parse(true)).toThrow();
+    });
+
+    it.failing("infers array of members", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              of: [defineArrayMember({ type: "slug" })],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZods(config);
+
+      expectType<z.infer<(typeof zods)["foo"]>["children"]>().toStrictEqual<
+        Simplify<InferSchemaValues<typeof config>["foo"]["children"][number]>[]
+      >();
+      expect(
+        zods.foo.parse({
+          _type: "foo",
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+            { _key: "key", _type: "slug", current: "foo" },
+          ],
+          level: 1,
+          listItem: "listItem",
+          markDefs: [{ _key: "key", _type: "type" }],
+          style: "style",
+        })
+      ).toStrictEqual({
+        _type: "foo",
+        children: [
+          { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+          { _key: "key", _type: "slug", current: "foo" },
+        ],
+        level: 1,
+        listItem: "listItem",
+        markDefs: [{ _key: "key", _type: "type" }],
+        style: "style",
+      });
+      expect(() => zods.foo.parse(true)).toThrow();
+    });
+
+    it.failing("infers unions if there are multiple members", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              of: [
+                defineArrayMember({ type: "slug" }),
+                defineArrayMember({ type: "geopoint" }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZods(config);
+
+      expectType<z.infer<(typeof zods)["foo"]>["children"]>().toStrictEqual<
+        Simplify<InferSchemaValues<typeof config>["foo"]["children"][number]>[]
+      >();
+      expect(
+        zods.foo.parse({
+          _type: "foo",
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+            { _key: "key", _type: "slug", current: "foo" },
+            { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
+          ],
+          level: 1,
+          listItem: "listItem",
+          markDefs: [{ _key: "key", _type: "type" }],
+          style: "style",
+        })
+      ).toStrictEqual({
+        _type: "foo",
+        children: [
+          { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+          { _key: "key", _type: "slug", current: "foo" },
+          { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
+        ],
+        level: 1,
+        listItem: "listItem",
+        markDefs: [{ _key: "key", _type: "type" }],
+        style: "style",
+      });
+      expect(() => zods.foo.parse(true)).toThrow();
     });
   });
 });

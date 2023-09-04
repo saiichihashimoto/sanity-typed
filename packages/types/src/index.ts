@@ -262,10 +262,8 @@ export type PortableTextMarkDefinition =
 export type PortableTextSpan = SetRequired<PortableTextSpanNative, "_key">;
 
 export type PortableTextBlock<
-  M extends PortableTextMarkDefinition = PortableTextMarkDefinition,
-  C extends SetRequired<TypedObject, "_key"> = PortableTextSpan & {
-    _key: string;
-  },
+  M extends PortableTextMarkDefinitionNative = PortableTextMarkDefinition,
+  C extends TypedObject = PortableTextSpan,
   S extends string = string,
   L extends string = string
 > = Omit<PortableTextBlockNative<M, C, S, L> & { _type: "block" }, "_key">;
@@ -279,12 +277,18 @@ export type BlockDefinition<
     TRequired,
     PortableTextBlock<
       PortableTextMarkDefinition,
-      _InferRawValue<TMemberDefinition> | PortableTextSpan
+      | PortableTextSpan
+      | (TMemberDefinition extends never
+          ? never
+          : _InferRawValue<TMemberDefinition> & { _key: string })
     >,
     RewriteValue<
       PortableTextBlock<
         PortableTextMarkDefinition,
-        _InferRawValue<TMemberDefinition> | PortableTextSpan
+        | PortableTextSpan
+        | (TMemberDefinition extends never
+            ? never
+            : _InferRawValue<TMemberDefinition> & { _key: string })
       >,
       BlockRule
     >
@@ -887,16 +891,8 @@ type ExpandAliasValues<
           ? TOverwriteType
           : TType;
       }
-  : Value extends PortableTextBlock<infer M, infer C, infer S, infer L>
-  ? PortableTextBlock<
-      M,
-      | PortableTextSpan
-      | (C extends PortableTextSpan
-          ? never
-          : ExpandAliasValues<C[], TAliasedDefinition>[number]),
-      S,
-      L
-    >
+  : Value extends Omit<PortableTextBlock<any, any, any, any>, "_type">
+  ? Value
   : Value extends (infer Item)[]
   ? (Item extends never
       ? never

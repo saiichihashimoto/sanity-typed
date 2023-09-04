@@ -162,14 +162,16 @@ type MembersZods<
     any,
     any
   >)[]
-    ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-      AddType<
-        TMemberDefinition["name"],
-        AddKey<
-          // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-          SanityTypeToZod<TMemberDefinition>
-        >
-      >[]
+    ? TMemberDefinition extends never
+      ? never
+      : // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+        AddType<
+          TMemberDefinition["name"],
+          AddKey<
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+            SanityTypeToZod<TMemberDefinition>
+          >
+        >[]
     : never;
 
 const memberZods = <

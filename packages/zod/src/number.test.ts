@@ -34,8 +34,8 @@ describe("number", () => {
       });
       const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"]
+      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
       >();
       expect(zods.foo.parse([1])).toStrictEqual([1]);
       expect(() => zods.foo.parse([true])).toThrow();
