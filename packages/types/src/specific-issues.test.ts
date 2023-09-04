@@ -56,7 +56,6 @@ describe("specific issues", () => {
     });
 
     expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<{
-      _type: "foo";
       foo?: {
         _key: string;
         foo?: {

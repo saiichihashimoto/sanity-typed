@@ -1334,7 +1334,6 @@ describe("field depth test", () => {
     });
 
     expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<{
-      _type: "foo";
       foo: {
         foo: {
           foo: {

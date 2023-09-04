@@ -76,7 +76,6 @@ describe("<alias>", () => {
 
       expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
         bar: {
-          _type: "bar";
           baz?: boolean;
         };
         foo: {
@@ -86,8 +85,6 @@ describe("<alias>", () => {
           _type: "document";
           _updatedAt: string;
           bar?: {
-            _type: "bar";
-          } & {
             baz?: boolean;
           };
         };
@@ -221,8 +218,6 @@ describe("<alias>", () => {
           _type: "document";
           _updatedAt: string;
           pluginValue?: {
-            _type: "pluginValue";
-          } & {
             baz?: boolean;
           };
         };
@@ -302,7 +297,6 @@ describe("<alias>", () => {
 
       expectType<Values>().toStrictEqual<{
         bar: {
-          _type: "bar";
           baz?: boolean;
         };
         foo: {
@@ -312,8 +306,6 @@ describe("<alias>", () => {
           _type: "document";
           _updatedAt: string;
           bar?: {
-            _type: "bar";
-          } & {
             baz?: boolean;
           };
         };
@@ -446,8 +438,6 @@ describe("<alias>", () => {
           _type: "document";
           _updatedAt: string;
           pluginValue?: {
-            _type: "pluginValue";
-          } & {
             baz?: boolean;
           };
         };

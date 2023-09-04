@@ -262,7 +262,6 @@ describe("object", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<{
-        _type: "foo";
         bar?: boolean;
         tar?: number;
       }>();
@@ -295,7 +294,6 @@ describe("object", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<{
-        _type: "foo";
         bar?: {
           tar?: number;
         };
@@ -324,7 +322,6 @@ describe("object", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<{
-        _type: "foo";
         bar: boolean;
       }>();
     });

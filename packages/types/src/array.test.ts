@@ -136,12 +136,10 @@ describe("array", () => {
         (
           | {
               _key: string;
-              _type: "bar";
               bar?: boolean;
             }
           | {
               _key: string;
-              _type: "qux";
               qux?: boolean;
             }
         )[]
@@ -233,12 +231,10 @@ describe("array", () => {
         (
           | {
               _key: string;
-              _type: "bar";
               bar?: boolean;
             }
           | {
               _key: string;
-              _type: "qux";
               qux?: boolean;
             }
         )[]

@@ -70,6 +70,7 @@ import type {
 } from "sanity";
 import type {
   Except,
+  IsNever,
   IsStringLiteral,
   OmitIndexSignature,
   SetRequired,
@@ -236,7 +237,7 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
   UrlDefinitionNative,
   DefinitionBase<TRequired, string, UrlRule>
 >;
-type InferValue<Def extends DefinitionBase<any, any, any>> =
+type InferRawValue<Def extends DefinitionBase<any, any, any>> =
   Def extends DefinitionBase<any, infer Value, any> ? Value : never;
 
 export type ArrayDefinition<
@@ -246,8 +247,8 @@ export type ArrayDefinition<
   ArrayDefinitionNative,
   DefinitionBase<
     TRequired,
-    InferValue<TMemberDefinition>[],
-    ArrayRule<InferValue<TMemberDefinition>[]>
+    InferRawValue<TMemberDefinition>[],
+    ArrayRule<InferRawValue<TMemberDefinition>[]>
   > & {
     of: TupleOfLength<TMemberDefinition, 1>;
   }
@@ -274,12 +275,12 @@ export type BlockDefinition<
     TRequired,
     PortableTextBlock<
       PortableTextMarkDefinition,
-      InferValue<TMemberDefinition> | PortableTextSpan
+      InferRawValue<TMemberDefinition> | PortableTextSpan
     >,
     RewriteValue<
       PortableTextBlock<
         PortableTextMarkDefinition,
-        InferValue<TMemberDefinition> | PortableTextSpan
+        InferRawValue<TMemberDefinition> | PortableTextSpan
       >,
       BlockRule
     >
@@ -298,12 +299,12 @@ type ObjectValue<
     [Name in Extract<
       TFieldDefinition,
       { [required]?: false }
-    >["name"]]?: InferValue<Extract<TFieldDefinition, { name: Name }>>;
+    >["name"]]?: InferRawValue<Extract<TFieldDefinition, { name: Name }>>;
   } & {
     [Name in Extract<
       TFieldDefinition,
       { [required]?: true }
-    >["name"]]: InferValue<Extract<TFieldDefinition, { name: Name }>>;
+    >["name"]]: InferRawValue<Extract<TFieldDefinition, { name: Name }>>;
   }
 >;
 
@@ -492,67 +493,13 @@ export type _ArrayMemberDefinition<
               TMemberDefinition,
               TReferenced,
               any
-            >[type] extends DefinitionBase<any, infer Value, infer Rule>
-              ? Merge<
-                  IntrinsicDefinitions<
-                    TFieldDefinition,
-                    TMemberDefinition,
-                    TReferenced,
-                    any
-                  >[type],
-                  DefinitionBase<
-                    any,
-                    Value &
-                      (Value extends any[]
-                        ? unknown
-                        : Value extends { [key: string]: any }
-                        ? (string extends TName
-                            ? unknown
-                            : Value["_type"] extends TName
-                            ? unknown
-                            : { _type: TName }) & { _key: string }
-                        : unknown),
-                    // @ts-expect-error -- TODO Doesn't match the rule for some reason
-                    RewriteValue<
-                      Value &
-                        (Value extends any[]
-                          ? unknown
-                          : Value extends { [key: string]: any }
-                          ? (string extends TName
-                              ? unknown
-                              : Value["_type"] extends TName
-                              ? unknown
-                              : { _type: TName }) & { _key: string }
-                          : unknown),
-                      Rule
-                    >
-                  >
-                >
-              : IntrinsicDefinitions<
-                  TFieldDefinition,
-                  TMemberDefinition,
-                  TReferenced,
-                  any
-                >[type],
+            >[type],
             "name"
           >;
         }[IntrinsicTypeName],
         { type: TType }
       >
-    : Omit<
-        Merge<
-          TypeAliasDefinition<TType, TAlias, any>,
-          DefinitionBase<
-            any,
-            AliasValue<TType> &
-              (string extends TName ? unknown : { _type: TName }) & {
-                _key: string;
-              },
-            any
-          >
-        >,
-        "name"
-      >) &
+    : Omit<TypeAliasDefinition<TType, TAlias, any>, "name">) &
   (IsStringLiteral<TName> extends false
     ? unknown
     : {
@@ -860,12 +807,7 @@ export const defineConfig = <
     ? Extract<typeof config, any[]>
     : Exclude<typeof config, any[]>;
 
-type OmitToUnknown<T, K extends number | string | symbol> = Exclude<
-  keyof T,
-  K
-> extends never
-  ? unknown
-  : Omit<T, K>;
+type IsObject<T> = T extends any[] ? false : T extends object ? true : false;
 
 type ExpandAliasValues<
   Value,
@@ -873,28 +815,35 @@ type ExpandAliasValues<
 > = Value extends AliasValue<infer TType>
   ? Extract<TAliasedDefinition, { name: TType }> extends never
     ? unknown
-    : ExpandAliasValues<
-        InferValue<Extract<TAliasedDefinition, { name: TType }>>,
+    : IsObject<
+        ExpandAliasValues<
+          InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
+          TAliasedDefinition
+        >
+      > extends false
+    ? ExpandAliasValues<
+        InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
         TAliasedDefinition
+      >
+    : IsNever<Exclude<keyof Value, keyof AliasValue<TType>>> extends true
+    ? ExpandAliasValues<
+        InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
+        TAliasedDefinition
+      >
+    : Omit<
+        ExpandAliasValues<
+          InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
+          TAliasedDefinition
+        >,
+        Exclude<keyof Value, keyof AliasValue<TType>>
       > &
-        OmitToUnknown<Value, keyof AliasValue<TType>> &
-        (Extract<
-          TAliasedDefinition,
-          {
-            name: TType;
-            type: "object";
-          }
-        > extends never
-          ? unknown
-          : OmitToUnknown<
-              {
-                _type: TType;
-              },
-              keyof Value
-            >)
+        Omit<Value, keyof AliasValue<TType>>
   : Value extends (infer Item)[]
-  ? ExpandAliasValues<Item, TAliasedDefinition>[]
-  : Value extends { [key: string]: any }
+  ? ExpandAliasValues<
+      IsObject<Item> extends false ? Item : Item & { _key: string },
+      TAliasedDefinition
+    >[]
+  : Value extends object
   ? {
       [key in keyof Value]: ExpandAliasValues<Value[key], TAliasedDefinition>;
     }
@@ -906,38 +855,8 @@ export type InferSchemaValues<
   ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
 >
   ? {
-      [TName in TTypeDefinition extends _TypeDefinition<
-        any,
-        infer TName extends string,
-        any,
-        any,
-        any,
-        any,
-        any
-      >
-        ? TName
-        : never]: ExpandAliasValues<
-        TTypeDefinition extends _TypeDefinition<
-          "object",
-          TName,
-          any,
-          any,
-          any,
-          any,
-          any
-        >
-          ? InferValue<TTypeDefinition> & { _type: TName }
-          : TTypeDefinition extends _TypeDefinition<
-              any,
-              TName,
-              any,
-              any,
-              any,
-              any,
-              any
-            >
-          ? InferValue<TTypeDefinition>
-          : never,
+      [TType in TTypeDefinition as TType["name"]]: ExpandAliasValues<
+        InferRawValue<TType>,
         // TPluginTypeDefinition | TTypeDefinition
         | (_TypeDefinition<
             any,
