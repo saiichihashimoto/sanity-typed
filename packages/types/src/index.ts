@@ -72,6 +72,7 @@ import type {
   Except,
   IsStringLiteral,
   OmitIndexSignature,
+  SetRequired,
   Simplify,
 } from "type-fest";
 
@@ -121,14 +122,6 @@ type DefinitionBase<
   preview?: PreviewConfig;
   validation?: ValidationBuilder<TRequired, Value, Rule>;
 };
-
-/**
- * Infers the Value of a Definition, without aliased types.
- *
- * @private
- */
-export type _InferValue<Def extends DefinitionBase<any, any, any>> =
-  Def extends DefinitionBase<any, infer Value, any> ? Value : never;
 
 type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = Merge<
   {
@@ -243,6 +236,8 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
   UrlDefinitionNative,
   DefinitionBase<TRequired, string, UrlRule>
 >;
+type InferRawValue<Def extends DefinitionBase<any, any, any>> =
+  Def extends DefinitionBase<any, infer Value, any> ? Value : never;
 
 export type ArrayDefinition<
   TRequired extends boolean,
@@ -251,8 +246,8 @@ export type ArrayDefinition<
   ArrayDefinitionNative,
   DefinitionBase<
     TRequired,
-    _InferValue<TMemberDefinition>[],
-    ArrayRule<_InferValue<TMemberDefinition>[]>
+    InferRawValue<TMemberDefinition>[],
+    ArrayRule<InferRawValue<TMemberDefinition>[]>
   > & {
     of: TupleOfLength<TMemberDefinition, 1>;
   }
@@ -261,7 +256,7 @@ export type ArrayDefinition<
 export type PortableTextMarkDefinition =
   OmitIndexSignature<PortableTextMarkDefinitionNative>;
 
-export type PortableTextSpan = Omit<PortableTextSpanNative, "_key">;
+export type PortableTextSpan = SetRequired<PortableTextSpanNative, "_key">;
 
 export type PortableTextBlock<
   M extends PortableTextMarkDefinition = PortableTextMarkDefinition,
@@ -279,17 +274,17 @@ export type BlockDefinition<
     TRequired,
     PortableTextBlock<
       PortableTextMarkDefinition,
-      _InferValue<TMemberDefinition> | PortableTextSpan
+      InferRawValue<TMemberDefinition> | PortableTextSpan
     >,
     RewriteValue<
       PortableTextBlock<
         PortableTextMarkDefinition,
-        _InferValue<TMemberDefinition> | PortableTextSpan
+        InferRawValue<TMemberDefinition> | PortableTextSpan
       >,
       BlockRule
     >
   > & {
-    of?: (TMemberDefinition & { name: string; type: "object" | "reference" })[];
+    of?: TupleOfLength<TMemberDefinition, 1>;
   }
 >;
 
@@ -303,12 +298,12 @@ type ObjectValue<
     [Name in Extract<
       TFieldDefinition,
       { [required]?: false }
-    >["name"]]?: _InferValue<Extract<TFieldDefinition, { name: Name }>>;
+    >["name"]]?: InferRawValue<Extract<TFieldDefinition, { name: Name }>>;
   } & {
     [Name in Extract<
       TFieldDefinition,
       { [required]?: true }
-    >["name"]]: _InferValue<Extract<TFieldDefinition, { name: Name }>>;
+    >["name"]]: InferRawValue<Extract<TFieldDefinition, { name: Name }>>;
   }
 >;
 
@@ -330,19 +325,17 @@ export type ObjectDefinition<
 >;
 
 export type SanityDocument<
-  TType extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  }
+  } = never
 > = Simplify<
   OmitIndexSignature<ObjectValue<TFieldDefinition> & SanityDocumentNative> & {
-    _type: TType;
+    _type: "document";
   }
 >;
 
 export type DocumentDefinition<
-  TName extends string,
   TRequired extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -352,8 +345,8 @@ export type DocumentDefinition<
   DocumentDefinitionNative,
   DefinitionBase<
     TRequired,
-    SanityDocument<TName, TFieldDefinition>,
-    RewriteValue<SanityDocument<TName, TFieldDefinition>, DocumentRule>
+    SanityDocument<TFieldDefinition>,
+    RewriteValue<SanityDocument<TFieldDefinition>, DocumentRule>
   > & {
     fields: TupleOfLength<TFieldDefinition, 1>;
   }
@@ -422,7 +415,6 @@ type ImageDefinition<
 >;
 
 type IntrinsicDefinitions<
-  TName extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -437,7 +429,7 @@ type IntrinsicDefinitions<
   crossDatasetReference: CrossDatasetReferenceDefinition<TRequired>;
   date: DateDefinition<TRequired>;
   datetime: DatetimeDefinition<TRequired>;
-  document: DocumentDefinition<TName, TRequired, TFieldDefinition>;
+  document: DocumentDefinition<TRequired, TFieldDefinition>;
   email: EmailDefinition<TRequired>;
   file: FileDefinition<TRequired, TFieldDefinition>;
   geopoint: GeopointDefinition<TRequired>;
@@ -451,11 +443,13 @@ type IntrinsicDefinitions<
   url: UrlDefinition<TRequired>;
 };
 
-type IntrinsicTypeName = keyof IntrinsicDefinitions<any, any, any, any, any>;
+export type IntrinsicTypeName = Simplify<
+  keyof IntrinsicDefinitions<any, any, any, any>
+>;
 
 declare const aliasedType: unique symbol;
 
-export type AliasValue<TType extends string> = {
+type AliasValue<TType extends string> = {
   [aliasedType]: TType;
 };
 
@@ -467,10 +461,12 @@ type TypeAliasDefinition<
   TypeAliasDefinitionNative<TType, TAlias>,
   DefinitionBase<TRequired, AliasValue<TType>, any> & {
     options?: TAlias extends IntrinsicTypeName
-      ? IntrinsicDefinitions<any, any, any, any, TRequired>[TAlias]["options"]
+      ? IntrinsicDefinitions<any, any, any, TRequired>[TAlias]["options"]
       : unknown;
   }
 >;
+
+type IsObject<T> = T extends any[] ? false : T extends object ? true : false;
 
 /** @private */
 export type _ArrayMemberDefinition<
@@ -496,7 +492,6 @@ export type _ArrayMemberDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TName,
               TFieldDefinition,
               TMemberDefinition,
               TReferenced,
@@ -504,7 +499,6 @@ export type _ArrayMemberDefinition<
             >[type] extends DefinitionBase<any, infer Value, infer Rule>
               ? Merge<
                   IntrinsicDefinitions<
-                    TName,
                     TFieldDefinition,
                     TMemberDefinition,
                     TReferenced,
@@ -512,34 +506,23 @@ export type _ArrayMemberDefinition<
                   >[type],
                   DefinitionBase<
                     any,
-                    Value &
-                      (Value extends any[]
-                        ? unknown
-                        : Value extends { [key: string]: any }
-                        ? (string extends TName
-                            ? unknown
-                            : Value["_type"] extends TName
-                            ? unknown
-                            : { _type: TName }) & { _key: string }
-                        : unknown),
+                    IsObject<Value> extends false
+                      ? Value
+                      : IsStringLiteral<TName> extends false
+                      ? Value
+                      : Omit<Value, "_type"> & { _type: TName },
                     // @ts-expect-error -- TODO Doesn't match the rule for some reason
                     RewriteValue<
-                      Value &
-                        (Value extends any[]
-                          ? unknown
-                          : Value extends { [key: string]: any }
-                          ? (string extends TName
-                              ? unknown
-                              : Value["_type"] extends TName
-                              ? unknown
-                              : { _type: TName }) & { _key: string }
-                          : unknown),
+                      IsObject<Value> extends false
+                        ? Value
+                        : IsStringLiteral<TName> extends false
+                        ? Value
+                        : Omit<Value, "_type"> & { _type: TName },
                       Rule
                     >
                   >
                 >
               : IntrinsicDefinitions<
-                  TName,
                   TFieldDefinition,
                   TMemberDefinition,
                   TReferenced,
@@ -556,9 +539,9 @@ export type _ArrayMemberDefinition<
           DefinitionBase<
             any,
             AliasValue<TType> &
-              (string extends TName ? unknown : { _type: TName }) & {
-                _key: string;
-              },
+              (IsStringLiteral<TName> extends false
+                ? unknown
+                : { _type: TName }),
             any
           >
         >,
@@ -641,7 +624,6 @@ export type _FieldDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TName,
               TFieldDefinition,
               TMemberDefinition,
               TReferenced,
@@ -705,7 +687,6 @@ type _TypeDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TName,
               TFieldDefinition,
               TMemberDefinition,
               TReferenced,
@@ -873,39 +854,95 @@ export const defineConfig = <
     ? Extract<typeof config, any[]>
     : Exclude<typeof config, any[]>;
 
-export const castToTyped = <Untyped>(untyped: Untyped) =>
-  untyped as Untyped extends ReturnType<
-    typeof defineTypeNative<
-      infer TType extends string,
-      infer TName extends string,
-      any,
-      any,
-      infer TAlias extends IntrinsicTypeName | undefined,
-      infer TStrict extends StrictDefinition
-    >
-  >
-    ? _TypeDefinition<TType, TName, NonNullable<TAlias>, TStrict, any, any, any>
-    : Untyped extends ReturnType<
-        typeof defineFieldNative<
-          infer TType extends string,
-          infer TName extends string,
-          any,
-          any,
-          infer TAlias extends IntrinsicTypeName | undefined,
-          infer TStrict extends StrictDefinition
+type ExpandAliasValues<
+  Value,
+  TAliasedDefinition extends _TypeDefinition<any, any, any, any, any, any, any>
+> = Value extends AliasValue<infer TType>
+  ? Extract<TAliasedDefinition, { name: TType }> extends never
+    ? unknown
+    : IsObject<
+        ExpandAliasValues<
+          InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
+          TAliasedDefinition
         >
+      > extends false
+    ? ExpandAliasValues<
+        InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
+        TAliasedDefinition
       >
-    ? _FieldDefinition<
-        TType,
-        TName,
-        NonNullable<TAlias>,
-        TStrict,
-        any,
-        any,
-        any,
-        any
-      >
-    : Untyped extends ReturnType<
+    : Omit<
+        ExpandAliasValues<
+          InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
+          TAliasedDefinition
+        >,
+        "_type"
+      > & {
+        _type: Value extends { _type: infer TOverwriteType }
+          ? TOverwriteType
+          : TType;
+      }
+  : Value extends PortableTextBlock<infer M, infer C, infer S, infer L>
+  ? PortableTextBlock<
+      M,
+      | PortableTextSpan
+      | (C extends PortableTextSpan
+          ? never
+          : ExpandAliasValues<C[], TAliasedDefinition>[number]),
+      S,
+      L
+    >
+  : Value extends (infer Item)[]
+  ? (Item extends never
+      ? never
+      : IsObject<Item> extends false
+      ? ExpandAliasValues<Item, TAliasedDefinition>
+      : ExpandAliasValues<Item, TAliasedDefinition> & {
+          _key: string;
+        })[]
+  : Value extends object
+  ? {
+      [key in keyof Value]: ExpandAliasValues<Value[key], TAliasedDefinition>;
+    }
+  : Value;
+
+export type InferSchemaValues<
+  TConfig extends MaybeArray<ConfigBase<any, any>>
+> = TConfig extends MaybeArray<
+  ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
+>
+  ? {
+      [TName in TTypeDefinition["name"]]: ExpandAliasValues<
+        AliasValue<TName>,
+        // TPluginTypeDefinition | TTypeDefinition
+        | (_TypeDefinition<
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any
+          > extends TPluginTypeDefinition
+            ? never
+            : TPluginTypeDefinition)
+        | (_TypeDefinition<
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any
+          > extends TTypeDefinition
+            ? never
+            : TTypeDefinition)
+      >;
+    }
+  : never;
+
+export const castToTyped = <Untyped>(untyped: Untyped) =>
+  untyped as Untyped extends
+    | ReturnType<
         typeof defineArrayMemberNative<
           infer TType extends string,
           infer TName extends string,
@@ -915,16 +952,75 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
           infer TStrict extends StrictDefinition
         >
       >
-    ? _ArrayMemberDefinition<
-        TType,
-        TName,
-        NonNullable<TAlias>,
-        TStrict,
-        any,
-        any,
-        any,
-        any
+    | ReturnType<
+        typeof defineFieldNative<
+          infer TType extends string,
+          infer TName extends string,
+          any,
+          any,
+          infer TAlias extends IntrinsicTypeName | undefined,
+          infer TStrict extends StrictDefinition
+        >
       >
+    | ReturnType<
+        typeof defineTypeNative<
+          infer TType extends string,
+          infer TName extends string,
+          any,
+          any,
+          infer TAlias extends IntrinsicTypeName | undefined,
+          infer TStrict extends StrictDefinition
+        >
+      >
+    ?
+        | (Untyped extends ReturnType<
+            typeof defineArrayMemberNative<
+              TType,
+              TName,
+              any,
+              any,
+              TAlias,
+              TStrict
+            >
+          >
+            ? _ArrayMemberDefinition<
+                TType,
+                TName,
+                NonNullable<TAlias>,
+                TStrict,
+                any,
+                any,
+                any,
+                any
+              >
+            : never)
+        | (Untyped extends ReturnType<
+            typeof defineFieldNative<TType, TName, any, any, TAlias, TStrict>
+          >
+            ? _FieldDefinition<
+                TType,
+                TName,
+                NonNullable<TAlias>,
+                TStrict,
+                any,
+                any,
+                any,
+                any
+              >
+            : never)
+        | (Untyped extends ReturnType<
+            typeof defineTypeNative<TType, TName, any, any, TAlias, TStrict>
+          >
+            ? _TypeDefinition<
+                TType,
+                TName,
+                NonNullable<TAlias>,
+                TStrict,
+                any,
+                any,
+                any
+              >
+            : never)
     : Untyped extends PluginOptionsNative
     ? ReturnType<typeof definePlugin<any, any>>
     : {
@@ -975,108 +1071,3 @@ export const castFromTyped = <Untyped>(untyped: Untyped) =>
     : {
         [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
       };
-
-type OmitToUnknown<T, K extends number | string | symbol> = Exclude<
-  keyof T,
-  K
-> extends never
-  ? unknown
-  : Omit<T, K>;
-
-type ExpandAliasValues<
-  Value,
-  TAliasedDefinition extends _TypeDefinition<any, any, any, any, any, any, any>
-> = Value extends AliasValue<infer TType>
-  ? Extract<TAliasedDefinition, { name: TType }> extends never
-    ? unknown
-    : ExpandAliasValues<
-        _InferValue<Extract<TAliasedDefinition, { name: TType }>>,
-        TAliasedDefinition
-      > &
-        OmitToUnknown<Value, keyof AliasValue<TType>> &
-        (Extract<
-          TAliasedDefinition,
-          {
-            name: TType;
-            type: "object";
-          }
-        > extends never
-          ? unknown
-          : OmitToUnknown<
-              {
-                _type: TType;
-              },
-              keyof Value
-            >)
-  : Value extends (infer Item)[]
-  ? ExpandAliasValues<Item, TAliasedDefinition>[]
-  : Value extends { [key: string]: any }
-  ? {
-      [key in keyof Value]: ExpandAliasValues<Value[key], TAliasedDefinition>;
-    }
-  : Value;
-
-export type InferSchemaValues<
-  TConfig extends MaybeArray<ConfigBase<any, any>>
-> = TConfig extends MaybeArray<
-  ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
->
-  ? {
-      [TName in TTypeDefinition extends _TypeDefinition<
-        any,
-        infer TName extends string,
-        any,
-        any,
-        any,
-        any,
-        any
-      >
-        ? TName
-        : never]: ExpandAliasValues<
-        TTypeDefinition extends _TypeDefinition<
-          "object",
-          TName,
-          any,
-          any,
-          any,
-          any,
-          any
-        >
-          ? _InferValue<TTypeDefinition> & { _type: TName }
-          : TTypeDefinition extends _TypeDefinition<
-              any,
-              TName,
-              any,
-              any,
-              any,
-              any,
-              any
-            >
-          ? _InferValue<TTypeDefinition>
-          : never,
-        // TPluginTypeDefinition | TTypeDefinition
-        | (_TypeDefinition<
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any
-          > extends TPluginTypeDefinition
-            ? never
-            : TPluginTypeDefinition)
-        | (_TypeDefinition<
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any
-          > extends TTypeDefinition
-            ? never
-            : TTypeDefinition)
-      >;
-    }
-  : never;

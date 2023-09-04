@@ -151,6 +151,12 @@ const nav = defineType({
 
 ## Breaking Changes
 
+### 4 to 5
+
+#### Removed `_InferValue` and `AliasValue`
+
+Use [`InferSchemaValues`](#inferschemavalues) instead. Neither `_InferValue` nor `AliasValue` are directly usable, while `InferSchemaValues` is the only real world use case.
+
 ### 3 to 4
 
 #### Referenced `_type` needs `as const`
@@ -228,7 +234,7 @@ type Values = InferSchemaValues<typeof config>;
 + export type Product = Values["product"];
 ```
 
-You can still use `_InferValue` but this is discouraged, because it will be missing the context from the config:
+You can still use `_InferValue` but this is discouraged, because it will be missing the context from the config (and is removed in v5):
 
 ```diff
 const product = defineType({
