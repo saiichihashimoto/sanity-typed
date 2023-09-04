@@ -4,58 +4,97 @@ import type { z } from "zod";
 import { expectType } from "@sanity-typed/test-utils";
 import {
   defineArrayMember,
+  defineConfig,
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { _InferRawValue } from "@sanity-typed/types";
+import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityTypeToZod } from ".";
+import { sanityConfigToZods } from ".";
 
 describe("number", () => {
   describe("defineArrayMember", () => {
     it("builds parser for number", () => {
-      const arrayMember = defineArrayMember({
-        type: "number",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "number",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(arrayMember);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof arrayMember>
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
-      expect(zod.parse(5)).toBe(5);
-      expect(() => zod.parse(true)).toThrow();
+      expect(zods.foo.parse([1])).toStrictEqual([1]);
+      expect(() => zods.foo.parse([true])).toThrow();
     });
   });
 
   describe("defineField", () => {
     it("builds parser for number", () => {
-      const field = defineField({
-        name: "foo",
-        type: "number",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "number",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(field);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof field>
+      expectType<
+        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+      >().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
-      expect(zod.parse(5)).toBe(5);
-      expect(() => zod.parse(true)).toThrow();
+      expect(zods.foo.parse({ bar: 1 })).toStrictEqual({ bar: 1 });
+      expect(() => zods.foo.parse({ bar: true })).toThrow();
     });
   });
 
   describe("defineType", () => {
     it("builds parser for number", () => {
-      const type = defineType({
-        name: "foo",
-        type: "number",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "number",
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(type);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
-      expect(zod.parse(5)).toBe(5);
-      expect(() => zod.parse(true)).toThrow();
+      expect(zods.foo.parse(1)).toBe(1);
+      expect(() => zods.foo.parse(true)).toThrow();
     });
   });
 });

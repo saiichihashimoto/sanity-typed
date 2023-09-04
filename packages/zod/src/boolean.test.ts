@@ -4,58 +4,97 @@ import type { z } from "zod";
 import { expectType } from "@sanity-typed/test-utils";
 import {
   defineArrayMember,
+  defineConfig,
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { _InferRawValue } from "@sanity-typed/types";
+import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityTypeToZod } from ".";
+import { sanityConfigToZods } from ".";
 
 describe("boolean", () => {
   describe("defineArrayMember", () => {
     it("builds parser for boolean", () => {
-      const arrayMember = defineArrayMember({
-        type: "boolean",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "boolean",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(arrayMember);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof arrayMember>
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
-      expect(zod.parse(true)).toBe(true);
-      expect(() => zod.parse("foo")).toThrow();
+      expect(zods.foo.parse([true])).toStrictEqual([true]);
+      expect(() => zods.foo.parse(["foo"])).toThrow();
     });
   });
 
   describe("defineField", () => {
     it("builds parser for boolean", () => {
-      const field = defineField({
-        name: "foo",
-        type: "boolean",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "boolean",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(field);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof field>
+      expectType<
+        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+      >().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
-      expect(zod.parse(true)).toBe(true);
-      expect(() => zod.parse("foo")).toThrow();
+      expect(zods.foo.parse({ bar: true })).toStrictEqual({ bar: true });
+      expect(() => zods.foo.parse({ bar: "foo" })).toThrow();
     });
   });
 
   describe("defineType", () => {
     it("builds parser for boolean", () => {
-      const type = defineType({
-        name: "foo",
-        type: "boolean",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "boolean",
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(type);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
-      expect(zod.parse(true)).toBe(true);
-      expect(() => zod.parse("foo")).toThrow();
+      expect(zods.foo.parse(true)).toBe(true);
+      expect(() => zods.foo.parse("foo")).toThrow();
     });
   });
 });
