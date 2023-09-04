@@ -8,9 +8,16 @@ import {
   defineConfig,
   defineType,
 } from "@sanity-typed/types";
-import type { InferSchemaValues } from "@sanity-typed/types";
+import type { InferSchemaValues, PortableTextBlock } from "@sanity-typed/types";
 
 import { sanityConfigToZods } from ".";
+
+const fields: Omit<PortableTextBlock, "_type" | "children"> = {
+  level: 1,
+  listItem: "listItem",
+  markDefs: [{ _key: "key", _type: "type" }],
+  style: "style",
+};
 
 describe("block", () => {
   describe("defineArrayMember", () => {
@@ -40,28 +47,22 @@ describe("block", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
             _type: "block",
             children: [
               { _key: "key", _type: "span", marks: ["mark"], text: "text" },
             ],
-            level: 1,
-            listItem: "listItem",
-            markDefs: [{ _key: "key", _type: "type" }],
-            style: "style",
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
           _type: "block",
           children: [
             { _key: "key", _type: "span", marks: ["mark"], text: "text" },
           ],
-          level: 1,
-          listItem: "listItem",
-          markDefs: [{ _key: "key", _type: "type" }],
-          style: "style",
         },
       ]);
       expect(() => zods.foo.parse([true])).toThrow();
@@ -96,28 +97,22 @@ describe("block", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
             _type: "bar",
             children: [
               { _key: "key", _type: "span", marks: ["mark"], text: "text" },
             ],
-            level: 1,
-            listItem: "listItem",
-            markDefs: [{ _key: "key", _type: "type" }],
-            style: "style",
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
           _type: "bar",
           children: [
             { _key: "key", _type: "span", marks: ["mark"], text: "text" },
           ],
-          level: 1,
-          listItem: "listItem",
-          markDefs: [{ _key: "key", _type: "type" }],
-          style: "style",
         },
       ]);
       expect(() => zods.foo.parse([true])).toThrow();
@@ -154,30 +149,24 @@ describe("block", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
             _type: "block",
             children: [
               { _key: "key", _type: "span", marks: ["mark"], text: "text" },
               { _key: "key", _type: "slug", current: "foo" },
             ],
-            level: 1,
-            listItem: "listItem",
-            markDefs: [{ _key: "key", _type: "type" }],
-            style: "style",
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
           _type: "block",
           children: [
             { _key: "key", _type: "span", marks: ["mark"], text: "text" },
             { _key: "key", _type: "slug", current: "foo" },
           ],
-          level: 1,
-          listItem: "listItem",
-          markDefs: [{ _key: "key", _type: "type" }],
-          style: "style",
         },
       ]);
       expect(() => zods.foo.parse([true])).toThrow();
@@ -217,6 +206,7 @@ describe("block", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
             _type: "block",
             children: [
@@ -224,14 +214,11 @@ describe("block", () => {
               { _key: "key", _type: "slug", current: "foo" },
               { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
             ],
-            level: 1,
-            listItem: "listItem",
-            markDefs: [{ _key: "key", _type: "type" }],
-            style: "style",
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
           _type: "block",
           children: [
@@ -239,10 +226,6 @@ describe("block", () => {
             { _key: "key", _type: "slug", current: "foo" },
             { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
           ],
-          level: 1,
-          listItem: "listItem",
-          markDefs: [{ _key: "key", _type: "type" }],
-          style: "style",
         },
       ]);
       expect(() => zods.foo.parse([true])).toThrow();
@@ -271,24 +254,18 @@ describe("block", () => {
       >();
       expect(
         zods.foo.parse({
+          ...fields,
           _type: "foo",
           children: [
             { _key: "key", _type: "span", marks: ["mark"], text: "text" },
           ],
-          level: 1,
-          listItem: "listItem",
-          markDefs: [{ _key: "key", _type: "type" }],
-          style: "style",
         })
       ).toStrictEqual({
+        ...fields,
         _type: "foo",
         children: [
           { _key: "key", _type: "span", marks: ["mark"], text: "text" },
         ],
-        level: 1,
-        listItem: "listItem",
-        markDefs: [{ _key: "key", _type: "type" }],
-        style: "style",
       });
       expect(() => zods.foo.parse(true)).toThrow();
     });
@@ -324,24 +301,18 @@ describe("block", () => {
       >();
       expect(
         zods.foo.parse({
+          ...fields,
           _type: "bar",
           children: [
             { _key: "key", _type: "span", marks: ["mark"], text: "text" },
           ],
-          level: 1,
-          listItem: "listItem",
-          markDefs: [{ _key: "key", _type: "type" }],
-          style: "style",
         })
       ).toStrictEqual({
+        ...fields,
         _type: "bar",
         children: [
           { _key: "key", _type: "span", marks: ["mark"], text: "text" },
         ],
-        level: 1,
-        listItem: "listItem",
-        markDefs: [{ _key: "key", _type: "type" }],
-        style: "style",
       });
       expect(() => zods.foo.parse(true)).toThrow();
     });
@@ -367,26 +338,20 @@ describe("block", () => {
       >();
       expect(
         zods.foo.parse({
+          ...fields,
           _type: "foo",
           children: [
             { _key: "key", _type: "span", marks: ["mark"], text: "text" },
             { _key: "key", _type: "slug", current: "foo" },
           ],
-          level: 1,
-          listItem: "listItem",
-          markDefs: [{ _key: "key", _type: "type" }],
-          style: "style",
         })
       ).toStrictEqual({
+        ...fields,
         _type: "foo",
         children: [
           { _key: "key", _type: "span", marks: ["mark"], text: "text" },
           { _key: "key", _type: "slug", current: "foo" },
         ],
-        level: 1,
-        listItem: "listItem",
-        markDefs: [{ _key: "key", _type: "type" }],
-        style: "style",
       });
       expect(() => zods.foo.parse(true)).toThrow();
     });
@@ -415,28 +380,22 @@ describe("block", () => {
       >();
       expect(
         zods.foo.parse({
+          ...fields,
           _type: "foo",
           children: [
             { _key: "key", _type: "span", marks: ["mark"], text: "text" },
             { _key: "key", _type: "slug", current: "foo" },
             { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
           ],
-          level: 1,
-          listItem: "listItem",
-          markDefs: [{ _key: "key", _type: "type" }],
-          style: "style",
         })
       ).toStrictEqual({
+        ...fields,
         _type: "foo",
         children: [
           { _key: "key", _type: "span", marks: ["mark"], text: "text" },
           { _key: "key", _type: "slug", current: "foo" },
           { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
         ],
-        level: 1,
-        listItem: "listItem",
-        markDefs: [{ _key: "key", _type: "type" }],
-        style: "style",
       });
       expect(() => zods.foo.parse(true)).toThrow();
     });

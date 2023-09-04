@@ -9,9 +9,18 @@ import {
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { InferSchemaValues } from "@sanity-typed/types";
+import type {
+  CrossDatasetReferenceValue,
+  InferSchemaValues,
+} from "@sanity-typed/types";
 
 import { sanityConfigToZods } from ".";
+
+const fields: Omit<CrossDatasetReferenceValue, "_type"> = {
+  _dataset: "dataset",
+  _projectId: "projectId",
+  _ref: "foo",
+};
 
 describe("crossDatasetReference", () => {
   describe("defineArrayMember", () => {
@@ -43,19 +52,15 @@ describe("crossDatasetReference", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
-            _dataset: "dataset",
-            _projectId: "projectId",
-            _ref: "foo",
             _type: "crossDatasetReference",
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
-          _dataset: "dataset",
-          _projectId: "projectId",
-          _ref: "foo",
           _type: "crossDatasetReference",
         },
       ]);
@@ -93,19 +98,15 @@ describe("crossDatasetReference", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
-            _dataset: "dataset",
-            _projectId: "projectId",
-            _ref: "foo",
             _type: "foo",
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
-          _dataset: "dataset",
-          _projectId: "projectId",
-          _ref: "foo",
           _type: "foo",
         },
       ]);
@@ -145,17 +146,13 @@ describe("crossDatasetReference", () => {
       expect(
         zods.foo.parse({
           bar: {
-            _dataset: "dataset",
-            _projectId: "projectId",
-            _ref: "foo",
+            ...fields,
             _type: "crossDatasetReference",
           },
         })
       ).toStrictEqual({
         bar: {
-          _dataset: "dataset",
-          _projectId: "projectId",
-          _ref: "foo",
+          ...fields,
           _type: "crossDatasetReference",
         },
       });
@@ -187,15 +184,11 @@ describe("crossDatasetReference", () => {
       >();
       expect(
         zods.foo.parse({
-          _dataset: "dataset",
-          _projectId: "projectId",
-          _ref: "foo",
+          ...fields,
           _type: "foo",
         })
       ).toStrictEqual({
-        _dataset: "dataset",
-        _projectId: "projectId",
-        _ref: "foo",
+        ...fields,
         _type: "foo",
       });
       expect(() => zods.foo.parse(true)).toThrow();
@@ -236,17 +229,13 @@ describe("crossDatasetReference", () => {
       expect(
         zods.bar.parse([
           {
-            _dataset: "dataset",
-            _projectId: "projectId",
-            _ref: "foo",
+            ...fields,
             _type: "bar",
           },
         ])
       ).toStrictEqual([
         {
-          _dataset: "dataset",
-          _projectId: "projectId",
-          _ref: "foo",
+          ...fields,
           _type: "bar",
         },
       ]);

@@ -413,33 +413,17 @@ const objectZod = <
   schema: TSchemaType
 ) => z.object(fieldsZods(schema)) as ObjectZod<TSchemaType>;
 
-const documentFieldsZods = <
-  TSchemaType extends _SchemaTypeDefinition<"document", any, any, any, any>
->({
-  name,
-}: TSchemaType) => ({
+const documentFieldsZods = {
   _createdAt: z.string(),
   _id: z.string(),
   _rev: z.string(),
-  _type: z.literal(
-    name as TSchemaType extends _SchemaTypeDefinition<
-      "document",
-      infer TName extends string,
-      any,
-      any,
-      any
-    >
-      ? TName
-      : never
-  ),
+  _type: z.literal("document"),
   _updatedAt: z.string(),
-});
+};
 
 type DocumentZod<
   TSchemaType extends _SchemaTypeDefinition<"document", any, any, any, any>
-> = z.ZodObject<
-  FieldsZods<TSchemaType> & ReturnType<typeof documentFieldsZods<TSchemaType>>
->;
+> = z.ZodObject<FieldsZods<TSchemaType> & typeof documentFieldsZods>;
 
 const documentZod = <
   TSchemaType extends _SchemaTypeDefinition<"document", any, any, any, any>
@@ -448,7 +432,7 @@ const documentZod = <
 ) =>
   z.object({
     ...fieldsZods(schema),
-    ...documentFieldsZods(schema),
+    ...documentFieldsZods,
   }) as unknown as DocumentZod<TSchemaType>;
 
 const assetZod = z.object({

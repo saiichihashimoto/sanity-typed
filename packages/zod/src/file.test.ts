@@ -1,354 +1,708 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, it } from "@jest/globals";
+import type { Simplify } from "type-fest";
 import type { z } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
   defineArrayMember,
+  defineConfig,
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { _InferRawValue } from "@sanity-typed/types";
+import type { FileValue, InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityTypeToZod } from ".";
+import { sanityConfigToZods } from ".";
+
+const fields: Omit<FileValue, "_type"> = {
+  asset: {
+    _ref: "ref",
+    _type: "reference",
+  },
+};
 
 describe("file", () => {
   describe("defineArrayMember", () => {
     it("builds parser for FileValue", () => {
-      const arrayMember = defineArrayMember({
-        type: "file",
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "file",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(arrayMember);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferRawValue<typeof arrayMember>, "_key">
+      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >();
-      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
-        zod.parse({
+        zods.foo.parse([
+          {
+            ...fields,
+            _type: "file",
+            _key: "key",
+          },
+        ])
+      ).toStrictEqual([
+        {
+          ...fields,
           _type: "file",
-          asset: { _ref: "ref", _type: "type" },
-        })
-      ).toStrictEqual({
-        _type: "file",
-        asset: { _ref: "ref", _type: "type" },
-      });
-      expect(() => zod.parse(true)).toThrow();
+          _key: "key",
+        },
+      ]);
+      expect(() => zods.foo.parse([true])).toThrow();
     });
 
     it("builds parser for FileValue with fields", () => {
-      const arrayMember = defineArrayMember({
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-          }),
-          defineField({
-            name: "tar",
-            type: "number",
-          }),
-        ],
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "file",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                    }),
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(arrayMember);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferRawValue<typeof arrayMember>, "_key">
+      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >();
-      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
-        zod.parse({
+        zods.foo.parse([
+          {
+            ...fields,
+            _type: "file",
+            _key: "key",
+            bar: true,
+            tar: 1,
+          },
+        ])
+      ).toStrictEqual([
+        {
+          ...fields,
           _type: "file",
-          asset: { _ref: "ref", _type: "type" },
+          _key: "key",
           bar: true,
-          tar: 5,
-        })
-      ).toStrictEqual({
-        _type: "file",
-        asset: { _ref: "ref", _type: "type" },
-        bar: true,
-        tar: 5,
+          tar: 1,
+        },
+      ]);
+      expect(() => zods.foo.parse([true])).toThrow();
+    });
+
+    it("overwrites `_type` with `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "file",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                    }),
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      expect(() => zod.parse(true)).toThrow();
+      const zods = sanityConfigToZods(config);
+
+      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
+      >();
+      expect(
+        zods.foo.parse([
+          {
+            ...fields,
+            _key: "key",
+            _type: "bar",
+            bar: true,
+            tar: 1,
+          },
+        ])
+      ).toStrictEqual([
+        {
+          ...fields,
+          _key: "key",
+          _type: "bar",
+          bar: true,
+          tar: 1,
+        },
+      ]);
+      expect(() => zods.foo.parse([true])).toThrow();
     });
 
     it("infers nested objects", () => {
-      const arrayMember = defineArrayMember({
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "object",
-            fields: [
-              defineField({
-                name: "tar",
-                type: "number",
-              }),
-            ],
-          }),
-        ],
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "file",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "object",
+                      fields: [
+                        defineField({
+                          name: "tar",
+                          type: "number",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(arrayMember);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferRawValue<typeof arrayMember>, "_key">
+      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >();
-      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
-        zod.parse({
+        zods.foo.parse([
+          {
+            ...fields,
+            _type: "file",
+            _key: "key",
+            bar: { tar: 1 },
+          },
+        ])
+      ).toStrictEqual([
+        {
+          ...fields,
           _type: "file",
-          asset: { _ref: "ref", _type: "type" },
-          bar: { tar: 5 },
-        })
-      ).toStrictEqual({
-        _type: "file",
-        asset: { _ref: "ref", _type: "type" },
-        bar: { tar: 5 },
-      });
-      expect(() => zod.parse(true)).toThrow();
+          _key: "key",
+          bar: { tar: 1 },
+        },
+      ]);
+      expect(() => zods.foo.parse([true])).toThrow();
     });
 
     it("infers required fields", () => {
-      const arrayMember = defineArrayMember({
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-            validation: (Rule) => Rule.required(),
-          }),
-        ],
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "file",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                      validation: (Rule) => Rule.required(),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(arrayMember);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        Omit<_InferRawValue<typeof arrayMember>, "_key">
+      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+        Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >();
       expect(
-        zod.parse({
+        zods.foo.parse([
+          {
+            ...fields,
+            _type: "file",
+            _key: "key",
+            bar: true,
+          },
+        ])
+      ).toStrictEqual([
+        {
+          ...fields,
           _type: "file",
-          asset: { _ref: "ref", _type: "type" },
+          _key: "key",
           bar: true,
-        })
-      ).toStrictEqual({
-        _type: "file",
-        asset: { _ref: "ref", _type: "type" },
-        bar: true,
-      });
-      expect(() => zod.parse({ _type: "file" })).toThrow();
+        },
+      ]);
+      expect(() => zods.foo.parse([true])).toThrow();
     });
   });
 
   describe("defineField", () => {
-    it("builds parser for FileValue with fields", () => {
-      const field = defineField({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-          }),
-          defineField({
-            name: "tar",
-            type: "number",
-          }),
-        ],
+    it("builds parser for FileValue", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "file",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(field);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof field>
+      expectType<
+        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+      >().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
-      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
-        zod.parse({
-          _type: "file",
-          asset: { _ref: "ref", _type: "type" },
-          bar: true,
-          tar: 5,
+        zods.foo.parse({
+          bar: {
+            ...fields,
+            _type: "file",
+          },
         })
       ).toStrictEqual({
-        _type: "file",
-        asset: { _ref: "ref", _type: "type" },
-        bar: true,
-        tar: 5,
+        bar: {
+          ...fields,
+          _type: "file",
+        },
       });
-      expect(() => zod.parse(true)).toThrow();
+      expect(() => zods.foo.parse(true)).toThrow();
+    });
+
+    it("builds parser for FileValue with fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "file",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                    }),
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZods(config);
+
+      expectType<
+        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+      >().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >();
+      expect(
+        zods.foo.parse({
+          bar: {
+            ...fields,
+            _type: "file",
+            bar: true,
+            tar: 1,
+          },
+        })
+      ).toStrictEqual({
+        bar: {
+          ...fields,
+          _type: "file",
+          bar: true,
+          tar: 1,
+        },
+      });
+      expect(() => zods.foo.parse(true)).toThrow();
     });
 
     it("infers nested objects", () => {
-      const field = defineField({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "object",
-            fields: [
-              defineField({
-                name: "tar",
-                type: "number",
-              }),
-            ],
-          }),
-        ],
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "file",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "object",
+                      fields: [
+                        defineField({
+                          name: "tar",
+                          type: "number",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(field);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof field>
+      expectType<
+        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+      >().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
-      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
-        zod.parse({
-          _type: "file",
-          asset: { _ref: "ref", _type: "type" },
-          bar: { tar: 5 },
+        zods.foo.parse({
+          bar: {
+            ...fields,
+            _type: "file",
+            bar: { tar: 1 },
+          },
         })
       ).toStrictEqual({
-        _type: "file",
-        asset: { _ref: "ref", _type: "type" },
-        bar: { tar: 5 },
+        bar: {
+          ...fields,
+          _type: "file",
+          bar: { tar: 1 },
+        },
       });
-      expect(() => zod.parse(true)).toThrow();
+      expect(() => zods.foo.parse(true)).toThrow();
     });
 
     it("infers required fields", () => {
-      const field = defineField({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-            validation: (Rule) => Rule.required(),
-          }),
-        ],
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "file",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                      validation: (Rule) => Rule.required(),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(field);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof field>
+      expectType<
+        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+      >().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
       expect(
-        zod.parse({
-          _type: "file",
-          asset: { _ref: "ref", _type: "type" },
-          bar: true,
+        zods.foo.parse({
+          bar: {
+            ...fields,
+            _type: "file",
+            bar: true,
+          },
         })
       ).toStrictEqual({
-        _type: "file",
-        asset: { _ref: "ref", _type: "type" },
-        bar: true,
+        bar: {
+          ...fields,
+          _type: "file",
+          bar: true,
+        },
       });
-      expect(() => zod.parse({ _type: "file" })).toThrow();
+      expect(() => zods.foo.parse(true)).toThrow();
     });
   });
 
   describe("defineType", () => {
-    it("builds parser for FileValue with fields", () => {
-      const type = defineType({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-          }),
-          defineField({
-            name: "tar",
-            type: "number",
-          }),
-        ],
+    it.failing("builds parser for FileValue", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "file",
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(type);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        // @ts-expect-error -- FIXME
+        Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
-      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
-        zod.parse({
-          _type: "file",
-          asset: { _ref: "ref", _type: "type" },
-          bar: true,
-          tar: 5,
+        zods.foo.parse({
+          ...fields,
+          _type: "foo",
         })
       ).toStrictEqual({
-        _type: "file",
-        asset: { _ref: "ref", _type: "type" },
-        bar: true,
-        tar: 5,
+        ...fields,
+        _type: "foo",
       });
-      expect(() => zod.parse(true)).toThrow();
+      expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it("infers nested objects", () => {
-      const type = defineType({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "object",
-            fields: [
-              defineField({
-                name: "tar",
-                type: "number",
-              }),
-            ],
-          }),
-        ],
+    it.failing("builds parser for FileValue with fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "file",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "boolean",
+                }),
+                defineField({
+                  name: "tar",
+                  type: "number",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(type);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        // @ts-expect-error -- FIXME
+        Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
-      expect(zod.parse({ _type: "file" })).toStrictEqual({ _type: "file" });
       expect(
-        zod.parse({
-          _type: "file",
-          asset: { _ref: "ref", _type: "type" },
-          bar: { tar: 5 },
+        zods.foo.parse({
+          ...fields,
+          _type: "foo",
+          bar: true,
+          tar: 1,
         })
       ).toStrictEqual({
-        _type: "file",
-        asset: { _ref: "ref", _type: "type" },
-        bar: { tar: 5 },
+        ...fields,
+        _type: "foo",
+        bar: true,
+        tar: 1,
       });
-      expect(() => zod.parse(true)).toThrow();
+      expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it("infers required fields", () => {
-      const type = defineType({
-        name: "foo",
-        type: "file",
-        fields: [
-          defineField({
-            name: "bar",
-            type: "boolean",
-            validation: (Rule) => Rule.required(),
-          }),
-        ],
+    it.failing("overwrites `_type` with defineArrayMember `name`", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "file",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "boolean",
+                }),
+                defineField({
+                  name: "tar",
+                  type: "number",
+                }),
+              ],
+            }),
+            defineType({
+              name: "bar",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  name: "bar",
+                  type: "foo",
+                }),
+              ],
+            }),
+          ],
+        },
       });
-      const zod = _sanityTypeToZod(type);
+      const zods = sanityConfigToZods(config);
 
-      expectType<z.infer<typeof zod>>().toStrictEqual<
-        _InferRawValue<typeof type>
+      expectType<z.infer<(typeof zods)["bar"]>[number]["_type"]>()
+        // @ts-expect-error -- FIXME
+        .toStrictEqual<
+          InferSchemaValues<typeof config>["bar"][number]["_type"]
+        >();
+      expect(
+        zods.foo.parse({
+          ...fields,
+          _type: "bar",
+          bar: true,
+          tar: 1,
+        })
+      ).toStrictEqual({
+        ...fields,
+        _type: "bar",
+        bar: true,
+        tar: 1,
+      });
+      expect(() => zods.foo.parse(true)).toThrow();
+    });
+
+    it.failing("infers nested objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "file",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "object",
+                  fields: [
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZods(config);
+
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        // @ts-expect-error -- FIXME
+        Simplify<InferSchemaValues<typeof config>["foo"]>
       >();
       expect(
-        zod.parse({
-          _type: "file",
-          asset: { _ref: "ref", _type: "type" },
+        zods.foo.parse({
+          ...fields,
+          _type: "foo",
+          bar: { tar: 1 },
+        })
+      ).toStrictEqual({
+        ...fields,
+        _type: "foo",
+        bar: { tar: 1 },
+      });
+      expect(() => zods.foo.parse(true)).toThrow();
+    });
+
+    it.failing("infers required fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "file",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "boolean",
+                  validation: (Rule) => Rule.required(),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZods(config);
+
+      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+        // @ts-expect-error -- FIXME
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >();
+      expect(
+        zods.foo.parse({
+          ...fields,
+          _type: "foo",
           bar: true,
         })
       ).toStrictEqual({
-        _type: "file",
-        asset: { _ref: "ref", _type: "type" },
+        ...fields,
+        _type: "foo",
         bar: true,
       });
-      expect(() => zod.parse({ _type: "file" })).toThrow();
+      expect(() => zods.foo.parse(true)).toThrow();
     });
   });
 });

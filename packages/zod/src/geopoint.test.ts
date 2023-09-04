@@ -1,4 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
+import type { GeopointValue } from "sanity";
 import type { Simplify } from "type-fest";
 import type { z } from "zod";
 
@@ -12,6 +13,12 @@ import {
 import type { InferSchemaValues } from "@sanity-typed/types";
 
 import { sanityConfigToZods } from ".";
+
+const fields: Omit<GeopointValue, "_type"> = {
+  alt: 0,
+  lat: 0,
+  lng: 0,
+};
 
 describe("geopoint", () => {
   describe("defineArrayMember", () => {
@@ -41,18 +48,16 @@ describe("geopoint", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
             _type: "geopoint",
-            lat: 0,
-            lng: 0,
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
           _type: "geopoint",
-          lat: 0,
-          lng: 0,
         },
       ]);
       expect(() => zods.foo.parse([true])).toThrow();
@@ -87,18 +92,16 @@ describe("geopoint", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
             _type: "foo",
-            lat: 0,
-            lng: 0,
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
           _type: "foo",
-          lat: 0,
-          lng: 0,
         },
       ]);
       expect(() => zods.foo.parse([true])).toThrow();
@@ -135,16 +138,14 @@ describe("geopoint", () => {
       expect(
         zods.foo.parse({
           bar: {
+            ...fields,
             _type: "geopoint",
-            lat: 0,
-            lng: 0,
           },
         })
       ).toStrictEqual({
         bar: {
+          ...fields,
           _type: "geopoint",
-          lat: 0,
-          lng: 0,
         },
       });
       expect(() => zods.foo.parse(true)).toThrow();
@@ -173,14 +174,12 @@ describe("geopoint", () => {
       >();
       expect(
         zods.foo.parse({
+          ...fields,
           _type: "foo",
-          lat: 0,
-          lng: 0,
         })
       ).toStrictEqual({
+        ...fields,
         _type: "foo",
-        lat: 0,
-        lng: 0,
       });
       expect(() => zods.foo.parse(true)).toThrow();
     });
@@ -218,16 +217,14 @@ describe("geopoint", () => {
       expect(
         zods.bar.parse([
           {
+            ...fields,
             _type: "bar",
-            lat: 0,
-            lng: 0,
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _type: "bar",
-          lat: 0,
-          lng: 0,
         },
       ]);
       expect(() => zods.bar.parse(true)).toThrow();

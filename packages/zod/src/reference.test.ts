@@ -9,9 +9,11 @@ import {
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { InferSchemaValues } from "@sanity-typed/types";
+import type { InferSchemaValues, ReferenceValue } from "@sanity-typed/types";
 
 import { sanityConfigToZods } from ".";
+
+const fields: Omit<ReferenceValue<"other">, symbol | "_type"> = { _ref: "foo" };
 
 describe("reference", () => {
   describe("defineArrayMember", () => {
@@ -42,15 +44,15 @@ describe("reference", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
-            _ref: "foo",
             _type: "reference",
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
-          _ref: "foo",
           _type: "reference",
         },
       ]);
@@ -87,15 +89,15 @@ describe("reference", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
-            _ref: "foo",
             _type: "foo",
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
-          _ref: "foo",
           _type: "foo",
         },
       ]);
@@ -134,13 +136,13 @@ describe("reference", () => {
       expect(
         zods.foo.parse({
           bar: {
-            _ref: "foo",
+            ...fields,
             _type: "reference",
           },
         })
       ).toStrictEqual({
         bar: {
-          _ref: "foo",
+          ...fields,
           _type: "reference",
         },
       });
@@ -171,11 +173,11 @@ describe("reference", () => {
       >();
       expect(
         zods.foo.parse({
-          _ref: "foo",
+          ...fields,
           _type: "foo",
         })
       ).toStrictEqual({
-        _ref: "foo",
+        ...fields,
         _type: "foo",
       });
       expect(() => zods.foo.parse(true)).toThrow();
@@ -215,13 +217,13 @@ describe("reference", () => {
       expect(
         zods.bar.parse([
           {
-            _ref: "foo",
+            ...fields,
             _type: "bar",
           },
         ])
       ).toStrictEqual([
         {
-          _ref: "foo",
+          ...fields,
           _type: "bar",
         },
       ]);

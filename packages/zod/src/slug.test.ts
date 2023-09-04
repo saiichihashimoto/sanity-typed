@@ -9,9 +9,11 @@ import {
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { InferSchemaValues } from "@sanity-typed/types";
+import type { InferSchemaValues, SlugValue } from "@sanity-typed/types";
 
 import { sanityConfigToZods } from ".";
+
+const fields: Omit<SlugValue, "_type"> = { current: "current" };
 
 describe("slug", () => {
   describe("defineArrayMember", () => {
@@ -41,16 +43,16 @@ describe("slug", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
             _type: "slug",
-            current: "foo",
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
           _type: "slug",
-          current: "foo",
         },
       ]);
       expect(() => zods.foo.parse([true])).toThrow();
@@ -85,16 +87,16 @@ describe("slug", () => {
       expect(
         zods.foo.parse([
           {
+            ...fields,
             _key: "key",
             _type: "foo",
-            current: "foo",
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _key: "key",
           _type: "foo",
-          current: "foo",
         },
       ]);
       expect(() => zods.foo.parse([true])).toThrow();
@@ -131,14 +133,14 @@ describe("slug", () => {
       expect(
         zods.foo.parse({
           bar: {
+            ...fields,
             _type: "slug",
-            current: "foo",
           },
         })
       ).toStrictEqual({
         bar: {
+          ...fields,
           _type: "slug",
-          current: "foo",
         },
       });
       expect(() => zods.foo.parse(true)).toThrow();
@@ -167,12 +169,12 @@ describe("slug", () => {
       >();
       expect(
         zods.foo.parse({
+          ...fields,
           _type: "foo",
-          current: "foo",
         })
       ).toStrictEqual({
+        ...fields,
         _type: "foo",
-        current: "foo",
       });
       expect(() => zods.foo.parse(true)).toThrow();
     });
@@ -210,14 +212,14 @@ describe("slug", () => {
       expect(
         zods.bar.parse([
           {
+            ...fields,
             _type: "bar",
-            current: "foo",
           },
         ])
       ).toStrictEqual([
         {
+          ...fields,
           _type: "bar",
-          current: "foo",
         },
       ]);
       expect(() => zods.bar.parse(true)).toThrow();
