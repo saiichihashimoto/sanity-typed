@@ -12,7 +12,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { sanityConfigToZods } from ".";
+import { _sanityConfigToZods } from ".";
 
 const fields: Omit<GeopointValue, "_type"> = {
   alt: 0,
@@ -40,7 +40,7 @@ describe("geopoint", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
@@ -82,7 +82,7 @@ describe("geopoint", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
         z.infer<(typeof zods)["foo"]>[number]["_type"]
@@ -128,7 +128,7 @@ describe("geopoint", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
         Required<z.infer<(typeof zods)["foo"]>>["bar"]
@@ -168,7 +168,7 @@ describe("geopoint", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"]>
@@ -208,13 +208,13 @@ describe("geopoint", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["bar"]>[number]["_type"]>()
-        // @ts-expect-error -- FIXME
-        .toStrictEqual<
-          InferSchemaValues<typeof config>["bar"][number]["_type"]
-        >();
+      expectType<
+        z.infer<(typeof zods)["bar"]>[number]["_type"]
+      >().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >();
       expect(
         zods.bar.parse([
           {

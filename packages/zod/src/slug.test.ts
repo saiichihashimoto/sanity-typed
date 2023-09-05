@@ -11,7 +11,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues, SlugValue } from "@sanity-typed/types";
 
-import { sanityConfigToZods } from ".";
+import { _sanityConfigToZods } from ".";
 
 const fields: Omit<SlugValue, "_type"> = { current: "current" };
 
@@ -35,7 +35,7 @@ describe("slug", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
@@ -77,7 +77,7 @@ describe("slug", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
         z.infer<(typeof zods)["foo"]>[number]["_type"]
@@ -123,7 +123,7 @@ describe("slug", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
         Required<z.infer<(typeof zods)["foo"]>>["bar"]
@@ -163,7 +163,7 @@ describe("slug", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"]>
@@ -203,13 +203,13 @@ describe("slug", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["bar"]>[number]["_type"]>()
-        // @ts-expect-error -- FIXME
-        .toStrictEqual<
-          InferSchemaValues<typeof config>["bar"][number]["_type"]
-        >();
+      expectType<
+        z.infer<(typeof zods)["bar"]>[number]["_type"]
+      >().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >();
       expect(
         zods.bar.parse([
           {

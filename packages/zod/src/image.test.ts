@@ -11,7 +11,7 @@ import {
 } from "@sanity-typed/types";
 import type { ImageValue, InferSchemaValues } from "@sanity-typed/types";
 
-import { sanityConfigToZods } from ".";
+import { _sanityConfigToZods } from ".";
 
 const fields: Omit<ImageValue, "_type"> = {
   asset: {
@@ -54,7 +54,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
@@ -105,7 +105,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
@@ -161,7 +161,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
@@ -218,7 +218,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
@@ -268,7 +268,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
@@ -314,7 +314,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
         Required<z.infer<(typeof zods)["foo"]>>["bar"]
@@ -368,7 +368,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
         Required<z.infer<(typeof zods)["foo"]>>["bar"]
@@ -428,7 +428,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
         Required<z.infer<(typeof zods)["foo"]>>["bar"]
@@ -481,7 +481,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
         Required<z.infer<(typeof zods)["foo"]>>["bar"]
@@ -523,7 +523,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"]>
@@ -563,7 +563,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"]>
@@ -617,13 +617,13 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["bar"]>[number]["_type"]>()
-        // @ts-expect-error -- FIXME
-        .toStrictEqual<
-          InferSchemaValues<typeof config>["bar"][number]["_type"]
-        >();
+      expectType<
+        z.infer<(typeof zods)["bar"]>[number]["_type"]
+      >().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >();
       expect(
         zods.foo.parse({
           ...fields,
@@ -665,7 +665,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"]>
@@ -704,7 +704,7 @@ describe("image", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"]>

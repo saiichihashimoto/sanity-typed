@@ -10,7 +10,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { sanityConfigToZods } from ".";
+import { _sanityConfigToZods } from ".";
 
 describe("datetime", () => {
   describe("defineArrayMember", () => {
@@ -32,7 +32,7 @@ describe("datetime", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
@@ -62,7 +62,7 @@ describe("datetime", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
         Required<z.infer<(typeof zods)["foo"]>>["bar"]
@@ -96,7 +96,7 @@ describe("datetime", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]

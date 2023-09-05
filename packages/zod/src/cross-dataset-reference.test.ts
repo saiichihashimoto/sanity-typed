@@ -14,7 +14,7 @@ import type {
   InferSchemaValues,
 } from "@sanity-typed/types";
 
-import { sanityConfigToZods } from ".";
+import { _sanityConfigToZods } from ".";
 
 const fields: Omit<CrossDatasetReferenceValue, "_type"> = {
   _dataset: "dataset",
@@ -44,7 +44,7 @@ describe("crossDatasetReference", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
@@ -88,7 +88,7 @@ describe("crossDatasetReference", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
         z.infer<(typeof zods)["foo"]>[number]["_type"]
@@ -136,10 +136,14 @@ describe("crossDatasetReference", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
-        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+        Required<
+          // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+          z.infer<(typeof zods)["foo"]>
+        >["bar"]
       >().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -178,7 +182,7 @@ describe("crossDatasetReference", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"]>
@@ -220,13 +224,13 @@ describe("crossDatasetReference", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["bar"]>[number]["_type"]>()
-        // @ts-expect-error -- FIXME
-        .toStrictEqual<
-          InferSchemaValues<typeof config>["bar"][number]["_type"]
-        >();
+      expectType<
+        z.infer<(typeof zods)["bar"]>[number]["_type"]
+      >().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >();
       expect(
         zods.bar.parse([
           {

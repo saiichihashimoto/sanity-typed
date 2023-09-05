@@ -564,14 +564,10 @@ export type _ArrayMemberDefinition<
     type: TType;
   };
 
-/**
- * Arrays shouldn't be children of arrays, ever.
- * https://www.sanity.io/docs/array-type#fNBIr84P
- *
- * But we give an option to do so, only so we can test the depth limit
- *
- * @private
- */
+// Arrays shouldn't be children of arrays, ever.
+// https://www.sanity.io/docs/array-type#fNBIr84P
+// But we give an option to do so, only so we can test the depth limit
+/** @private */
 export const _makeDefineArrayMember =
   <AllowArrays extends boolean>() =>
   <

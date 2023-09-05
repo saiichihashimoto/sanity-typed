@@ -11,7 +11,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues, SanityDocument } from "@sanity-typed/types";
 
-import { sanityConfigToZods } from ".";
+import { _sanityConfigToZods } from ".";
 
 const fields: Omit<SanityDocument, "_type"> = {
   _id: "id",
@@ -50,9 +50,13 @@ describe("document", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      expectType<
+        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+        z.infer<(typeof zods)["foo"]>[number]
+      >().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >();
       expect(
@@ -106,9 +110,13 @@ describe("document", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      expectType<
+        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+        z.infer<(typeof zods)["foo"]>[number]
+      >().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >();
       expect(
@@ -163,9 +171,15 @@ describe("document", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+      expectType<
+        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+        z.infer<
+          // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+          (typeof zods)["foo"]
+        >[number]
+      >().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >();
       expect(
@@ -213,9 +227,13 @@ describe("document", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      expectType<
+        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+        z.infer<(typeof zods)["foo"]>[number]
+      >().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
       >();
       expect(
@@ -269,9 +287,10 @@ describe("document", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
+        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
         Required<z.infer<(typeof zods)["foo"]>>["bar"]
       >().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
@@ -329,10 +348,15 @@ describe("document", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
-        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+        Required<
+          z.infer<
+            // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+            (typeof zods)["foo"]
+          >
+        >["bar"]
       >().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -382,10 +406,15 @@ describe("document", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<
-        Required<z.infer<(typeof zods)["foo"]>>["bar"]
+        Required<
+          z.infer<
+            // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+            (typeof zods)["foo"]
+          >
+        >["bar"]
       >().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -434,7 +463,7 @@ describe("document", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"]>
@@ -488,13 +517,13 @@ describe("document", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["bar"]>[number]["_type"]>()
-        // @ts-expect-error -- FIXME
-        .toStrictEqual<
-          InferSchemaValues<typeof config>["bar"][number]["_type"]
-        >();
+      expectType<
+        z.infer<(typeof zods)["bar"]>[number]["_type"]
+      >().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >();
       expect(
         zods.foo.parse({
           ...fields,
@@ -536,7 +565,7 @@ describe("document", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"]>
@@ -575,7 +604,7 @@ describe("document", () => {
           ],
         },
       });
-      const zods = sanityConfigToZods(config);
+      const zods = _sanityConfigToZods(config);
 
       expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
         Simplify<InferSchemaValues<typeof config>["foo"]>
