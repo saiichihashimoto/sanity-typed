@@ -570,7 +570,7 @@ describe("file", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("overwrites `_type` with defineArrayMember `name`", () => {
+    it("overwrites `_type` with defineArrayMember `name`", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -611,19 +611,25 @@ describe("file", () => {
         InferSchemaValues<typeof config>["bar"][number]["_type"]
       >();
       expect(
-        zods.foo.parse({
+        zods.bar.parse([
+          {
+            ...fields,
+            _key: "key",
+            _type: "bar",
+            bar: true,
+            tar: 1,
+          },
+        ])
+      ).toStrictEqual([
+        {
           ...fields,
+          _key: "key",
           _type: "bar",
           bar: true,
           tar: 1,
-        })
-      ).toStrictEqual({
-        ...fields,
-        _type: "bar",
-        bar: true,
-        tar: 1,
-      });
-      expect(() => zods.foo.parse(true)).toThrow();
+        },
+      ]);
+      expect(() => zods.bar.parse([true])).toThrow();
     });
 
     it("infers nested objects", () => {
