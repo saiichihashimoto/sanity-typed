@@ -1,6 +1,6 @@
 import { describe, it } from "@jest/globals";
 import type { GeopointValue } from "sanity";
-import type { Simplify } from "type-fest";
+import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -193,8 +193,9 @@ describe("block", () => {
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >().toStrictEqual<
-        Simplify<
-          Omit<PortableTextBlock, "_type"> & {
+        Merge<
+          PortableTextBlock,
+          {
             _type: "foo";
           }
         >
@@ -248,14 +249,12 @@ describe("block", () => {
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >().toStrictEqual<
-        Simplify<
-          Omit<
-            PortableTextBlock<
-              PortableTextMarkDefinition,
-              PortableTextSpan | (SlugValue & { _key: string })
-            >,
-            "_type"
-          > & {
+        Merge<
+          PortableTextBlock<
+            PortableTextMarkDefinition,
+            PortableTextSpan | (SlugValue & { _key: string })
+          >,
+          {
             _type: "foo";
           }
         >
@@ -283,16 +282,14 @@ describe("block", () => {
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >().toStrictEqual<
-        Simplify<
-          Omit<
-            PortableTextBlock<
-              PortableTextMarkDefinition,
-              | PortableTextSpan
-              | (GeopointValue & { _key: string })
-              | (SlugValue & { _key: string })
-            >,
-            "_type"
-          > & {
+        Merge<
+          PortableTextBlock<
+            PortableTextMarkDefinition,
+            | PortableTextSpan
+            | (GeopointValue & { _key: string })
+            | (SlugValue & { _key: string })
+          >,
+          {
             _type: "foo";
           }
         >

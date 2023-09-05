@@ -5,6 +5,7 @@ import type {
   ClientPerspective,
   RequestFetchOptions,
 } from "@sanity/client";
+import type { Merge } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 import type { SanityDocument } from "@sanity-typed/types";
@@ -17,7 +18,7 @@ describe("createClient", () => {
     it("returns the same type", () => {
       const exec = () => {
         const client = createClient<{
-          foo: Omit<SanityDocument, "_type"> & { _type: "foo" };
+          foo: Merge<SanityDocument, { _type: "foo" }>;
         }>()({});
 
         return client;
@@ -25,7 +26,7 @@ describe("createClient", () => {
 
       const execClone = () => {
         const client = createClient<{
-          foo: Omit<SanityDocument, "_type"> & { _type: "foo" };
+          foo: Merge<SanityDocument, { _type: "foo" }>;
         }>()({});
 
         return client.clone();
@@ -77,7 +78,7 @@ describe("createClient", () => {
     it("returns the altered type", () => {
       const exec = () => {
         const client = createClient<{
-          foo: Omit<SanityDocument, "_type"> & { _type: "foo" };
+          foo: Merge<SanityDocument, { _type: "foo" }>;
         }>()({
           dataset: "dataset",
           projectId: "newProjectId",
@@ -88,7 +89,7 @@ describe("createClient", () => {
 
       const execWithConfig = () => {
         const client = createClient<{
-          foo: Omit<SanityDocument, "_type"> & { _type: "foo" };
+          foo: Merge<SanityDocument, { _type: "foo" }>;
         }>()({
           dataset: "dataset",
           projectId: "projectId",
@@ -109,7 +110,7 @@ describe("createClient", () => {
     it("returns the altered type", () => {
       const exec = () => {
         const client = createClient<{
-          foo: Omit<SanityDocument, "_type"> & { _type: "foo" };
+          foo: Merge<SanityDocument, { _type: "foo" }>;
         }>()({
           dataset: "dataset",
           projectId: "newProjectId",
@@ -120,7 +121,7 @@ describe("createClient", () => {
 
       const execWithConfig = () => {
         const client = createClient<{
-          foo: Omit<SanityDocument, "_type"> & { _type: "foo" };
+          foo: Merge<SanityDocument, { _type: "foo" }>;
         }>()({
           dataset: "dataset",
           projectId: "projectId",
@@ -141,14 +142,14 @@ describe("createClient", () => {
     it("returns the groq query result", () => {
       const exec = () => {
         const client = createClient<{
-          foo: Omit<SanityDocument, "_type"> & { _type: "foo" };
+          foo: Merge<SanityDocument, { _type: "foo" }>;
         }>()({});
 
         return client.fetch("*");
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<(Omit<SanityDocument, "_type"> & { _type: "foo" })[]>
+        Promise<Merge<SanityDocument, { _type: "foo" }>[]>
       >();
     });
 
@@ -156,14 +157,14 @@ describe("createClient", () => {
       const exec = () => {
         const client = createClient<{
           bar: { _type: "bar"; bar: "bar" };
-          foo: Omit<SanityDocument, "_type"> & { _type: "foo" };
+          foo: Merge<SanityDocument, { _type: "foo" }>;
         }>()({});
 
         return client.fetch("*");
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<(Omit<SanityDocument, "_type"> & { _type: "foo" })[]>
+        Promise<Merge<SanityDocument, { _type: "foo" }>[]>
       >();
     });
 
@@ -206,8 +207,8 @@ describe("createClient", () => {
     it("adds _originalId when perspective is `previewDrafts`", () => {
       const exec = () => {
         const client = createClient<{
-          foo: Omit<SanityDocument, "_type"> & { _type: "foo" };
-          qux: Omit<SanityDocument, "_type"> & { _type: "qux" };
+          foo: Merge<SanityDocument, { _type: "foo" }>;
+          qux: Merge<SanityDocument, { _type: "qux" }>;
         }>()({
           perspective: "previewDrafts",
         });
@@ -218,15 +219,11 @@ describe("createClient", () => {
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<
           (
-            | (Omit<SanityDocument, "_type"> & {
+            | (Merge<SanityDocument, { _type: "foo" }> & {
                 _originalId: string;
-              } & {
-                _type: "foo";
               })
-            | (Omit<SanityDocument, "_type"> & {
+            | (Merge<SanityDocument, { _type: "qux" }> & {
                 _originalId: string;
-              } & {
-                _type: "qux";
               })
           )[]
         >
@@ -243,8 +240,8 @@ describe("createClient", () => {
       const exec = () => {
         const client = createClient<{
           bar: { _type: "bar"; bar: "bar" };
-          foo: Omit<SanityDocument, "_type"> & { _type: "foo" };
-          qux: Omit<SanityDocument, "_type"> & { _type: "qux" };
+          foo: Merge<SanityDocument, { _type: "foo" }>;
+          qux: Merge<SanityDocument, { _type: "qux" }>;
         }>()({});
 
         return client.getDocument("id");
@@ -252,8 +249,8 @@ describe("createClient", () => {
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<
-          | (Omit<SanityDocument, "_type"> & { _id: "id" } & { _type: "foo" })
-          | (Omit<SanityDocument, "_type"> & { _id: "id" } & { _type: "qux" })
+          | (Merge<SanityDocument, { _type: "foo" }> & { _id: "id" })
+          | (Merge<SanityDocument, { _type: "qux" }> & { _id: "id" })
           | undefined
         >
       >();
@@ -265,8 +262,8 @@ describe("createClient", () => {
       const exec = () => {
         const client = createClient<{
           bar: { _type: "bar"; bar: "bar" };
-          foo: Omit<SanityDocument, "_type"> & { _type: "foo" };
-          qux: Omit<SanityDocument, "_type"> & { _type: "qux" };
+          foo: Merge<SanityDocument, { _type: "foo" }>;
+          qux: Merge<SanityDocument, { _type: "qux" }>;
         }>()({});
 
         return client.getDocuments(["id", "id2"]);
@@ -276,29 +273,13 @@ describe("createClient", () => {
         Promise<
           [
             (
-              | (Omit<SanityDocument, "_type"> & {
-                  _id: "id";
-                } & {
-                  _type: "foo";
-                })
-              | (Omit<SanityDocument, "_type"> & {
-                  _id: "id";
-                } & {
-                  _type: "qux";
-                })
+              | (Merge<SanityDocument, { _type: "foo" }> & { _id: "id" })
+              | (Merge<SanityDocument, { _type: "qux" }> & { _id: "id" })
               | null
             ),
             (
-              | (Omit<SanityDocument, "_type"> & {
-                  _id: "id2";
-                } & {
-                  _type: "foo";
-                })
-              | (Omit<SanityDocument, "_type"> & {
-                  _id: "id2";
-                } & {
-                  _type: "qux";
-                })
+              | (Merge<SanityDocument, { _type: "foo" }> & { _id: "id2" })
+              | (Merge<SanityDocument, { _type: "qux" }> & { _id: "id2" })
               | null
             )
           ]

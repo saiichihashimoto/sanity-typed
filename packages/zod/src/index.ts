@@ -1,5 +1,5 @@
 import type { StrictDefinition } from "sanity";
-import type { IsStringLiteral } from "type-fest";
+import type { IsStringLiteral, Merge } from "type-fest";
 import { z } from "zod";
 
 import { _referenced } from "@sanity-typed/types";
@@ -142,7 +142,7 @@ const addKeyFieldsZods = {
 type AddKey<Zod extends z.ZodTypeAny> = Zod extends z.ZodObject<infer T>
   ? z.ZodObject<
       // TODO Should be able to get this from ZodObject<...>['extend']<...> somehow
-      Omit<T, keyof typeof addKeyFieldsZods> & typeof addKeyFieldsZods
+      Merge<T, typeof addKeyFieldsZods>
     >
   : Zod extends z.ZodLazy<infer TZod extends z.ZodTypeAny>
   ? z.ZodLazy<AddKey<TZod>>

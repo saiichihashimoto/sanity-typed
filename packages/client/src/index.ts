@@ -13,6 +13,8 @@ import type { Merge, WritableDeep } from "type-fest";
 import type { ExecuteQuery, RootScope } from "@sanity-typed/groq";
 import type { SanityDocument } from "@sanity-typed/types";
 
+type AnySanityDocument = Omit<SanityDocument, "_type">;
+
 export type InitializedClientConfig<TClientConfig extends ClientConfig> = Merge<
   InitializedClientConfigNative,
   TClientConfig
@@ -36,15 +38,14 @@ type MaybeRawQueryResponse<
   ? RawQueryResponse<Result, Query>
   : Result;
 
-type GetDocuments<
-  Ids extends string[],
-  TDocument extends Omit<SanityDocument, "_type">
-> = { [index in keyof Ids]: (TDocument & { _id: Ids[index] }) | null };
+type GetDocuments<Ids extends string[], TDocument extends AnySanityDocument> = {
+  [index in keyof Ids]: (TDocument & { _id: Ids[index] }) | null;
+};
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- recursive type
 export interface SanityClient<
   TClientConfig extends ClientConfig,
-  TDocument extends Omit<SanityDocument, "_type">
+  TDocument extends AnySanityDocument
 > extends Omit<
     SanityClientNative,
     "clone" | "config" | "fetch" | "getDocument" | "getDocuments" | "withConfig"
@@ -108,5 +109,5 @@ export const createClient =
   <const Config extends ClientConfig>(config: Config) =>
     createClientNative(config) as unknown as SanityClient<
       Config,
-      Extract<Values[keyof Values], Omit<SanityDocument, "_type">>
+      Extract<Values[keyof Values], AnySanityDocument>
     >;
