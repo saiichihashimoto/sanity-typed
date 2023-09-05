@@ -91,7 +91,6 @@ describe("block", () => {
       const zods = _sanityConfigToZods(config);
 
       expectType<
-        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
         z.infer<
           // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
           (typeof zods)["foo"]
@@ -306,6 +305,7 @@ describe("block", () => {
       const zods = _sanityConfigToZods(config);
 
       expectType<
+        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
         z.infer<(typeof zods)["bar"]>[number]["_type"]
       >().toStrictEqual<
         InferSchemaValues<typeof config>["bar"][number]["_type"]

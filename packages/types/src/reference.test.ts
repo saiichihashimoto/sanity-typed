@@ -1,5 +1,5 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
+import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -110,10 +110,15 @@ describe("reference", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        Omit<ReferenceValue<"other">, "_type"> & {
-          _type: "foo";
-        }
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
+        Merge<
+          ReferenceValue<"other">,
+          {
+            _type: "foo";
+          }
+        >
       >();
     });
 

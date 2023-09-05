@@ -1,5 +1,5 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
+import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -356,10 +356,15 @@ describe("file", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        Omit<FileValue, "_type"> & {
-          _type: "foo";
-        }
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
+        Merge<
+          FileValue,
+          {
+            _type: "foo";
+          }
+        >
       >();
     });
 
@@ -419,8 +424,9 @@ describe("file", () => {
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >().toStrictEqual<
-        Simplify<
-          Omit<FileValue, "_type"> & {
+        Merge<
+          FileValue,
+          {
             _type: "foo";
             bar?: boolean;
             tar?: number;
@@ -458,8 +464,9 @@ describe("file", () => {
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >().toStrictEqual<
-        Simplify<
-          Omit<FileValue, "_type"> & {
+        Merge<
+          FileValue,
+          {
             _type: "foo";
             bar?: {
               tar?: number;
@@ -493,8 +500,9 @@ describe("file", () => {
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >().toStrictEqual<
-        Simplify<
-          Omit<FileValue, "_type"> & {
+        Merge<
+          FileValue,
+          {
             _type: "foo";
             bar: boolean;
           }

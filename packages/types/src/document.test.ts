@@ -1,5 +1,5 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
+import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -324,8 +324,9 @@ describe("document", () => {
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >().toStrictEqual<
-        Simplify<
-          Omit<SanityDocument, "_type"> & {
+        Merge<
+          SanityDocument,
+          {
             _type: "foo";
             bar?: boolean;
             tar?: number;
@@ -402,8 +403,9 @@ describe("document", () => {
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >().toStrictEqual<
-        Simplify<
-          Omit<SanityDocument, "_type"> & {
+        Merge<
+          SanityDocument,
+          {
             _type: "foo";
             bar?: {
               tar?: number;
@@ -437,8 +439,9 @@ describe("document", () => {
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
       >().toStrictEqual<
-        Simplify<
-          Omit<SanityDocument, "_type"> & {
+        Merge<
+          SanityDocument,
+          {
             _type: "foo";
             bar: boolean;
           }

@@ -1,6 +1,6 @@
 import { describe, it } from "@jest/globals";
 import type { GeopointValue } from "sanity";
-import type { Simplify } from "type-fest";
+import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -107,10 +107,15 @@ describe("geopoint", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        Omit<GeopointValue, "_type"> & {
-          _type: "foo";
-        }
+      expectType<
+        Simplify<InferSchemaValues<typeof config>["foo"]>
+      >().toStrictEqual<
+        Merge<
+          GeopointValue,
+          {
+            _type: "foo";
+          }
+        >
       >();
     });
 
