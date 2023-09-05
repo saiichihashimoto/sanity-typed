@@ -185,7 +185,7 @@ describe("geopoint", () => {
       expect(() => zods.foo.parse(true)).toThrow();
     });
 
-    it.failing("overwrites `_type` with defineArrayMember `name`", () => {
+    it("overwrites `_type` with defineArrayMember `name`", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -219,16 +219,18 @@ describe("geopoint", () => {
         zods.bar.parse([
           {
             ...fields,
+            _key: "key",
             _type: "bar",
           },
         ])
       ).toStrictEqual([
         {
           ...fields,
+          _key: "key",
           _type: "bar",
         },
       ]);
-      expect(() => zods.bar.parse(true)).toThrow();
+      expect(() => zods.bar.parse([true])).toThrow();
     });
   });
 });
