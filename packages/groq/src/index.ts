@@ -1360,6 +1360,27 @@ type Functions<
     now: TArgs extends [] ? DateTime : never;
   };
   /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Delta-namespace
+   */
+  delta: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_operation()
+     */
+    operation: TArgs extends []
+      ? TScope extends {
+          context: { delta: { after: infer TAfter; before: infer TBefore } };
+        }
+        ? TBefore extends null
+          ? TAfter extends null
+            ? never
+            : "create"
+          : TAfter extends null
+          ? "delete"
+          : "update"
+        : never
+      : never;
+  };
+  /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Geography-Extension
    */
   geo: {
@@ -1488,23 +1509,6 @@ type Functions<
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_now()
      */
     now: TArgs extends [] ? string : never;
-    // TODO https://github.com/sanity-io/groq-js/issues/140
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_operation()
-     */
-    operation: TArgs extends []
-      ? TScope extends {
-          context: { delta: { after: infer TAfter; before: infer TBefore } };
-        }
-        ? TBefore extends null
-          ? TAfter extends null
-            ? never
-            : "create"
-          : TAfter extends null
-          ? "delete"
-          : "update"
-        : never
-      : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
      */

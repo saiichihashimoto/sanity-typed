@@ -875,113 +875,6 @@ describe("functions", () => {
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<string>();
     });
 
-    it.failing("operation() (without delta)", async () => {
-      const query = "operation()";
-      // TODO https://github.com/sanity-io/groq-js/issues/140
-      const tree = parse(query, { mode: "delta" });
-      const result = await (await evaluate(tree)).get();
-
-      const desiredTree = {
-        args: [],
-        func: (() => {}) as unknown as GroqFunction,
-        name: "operation",
-        type: "FuncCall",
-      } as const;
-
-      expect(tree).toStrictEqual({
-        ...desiredTree,
-        func: expect.any(Function),
-      });
-      expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
-      >();
-
-      expect(result).toBeNull();
-      expectType<ExecuteQuery<typeof query>>().toBeNever();
-    });
-
-    it.failing("operation() (with create)", async () => {
-      const query = "operation()";
-      // TODO https://github.com/sanity-io/groq-js/issues/140
-      const tree = parse(query, { mode: "delta" });
-      const result = await (
-        await evaluate(tree, { after: { _type: "foo" }, before: null })
-      ).get();
-
-      expect(result).toBe("create");
-      expectType<
-        ExecuteQuery<
-          typeof query,
-          _ScopeFromPartialContext<{
-            delta: { after: { _type: "foo" }; before: null };
-          }>
-        >
-      >().toStrictEqual<"create">();
-    });
-
-    it.failing("operation() (with delete)", async () => {
-      const query = "operation()";
-      // TODO https://github.com/sanity-io/groq-js/issues/140
-      const tree = parse(query, { mode: "delta" });
-      const result = await (
-        await evaluate(tree, { after: null, before: { _type: "foo" } })
-      ).get();
-
-      expect(result).toBe("delete");
-      expectType<
-        ExecuteQuery<
-          typeof query,
-          _ScopeFromPartialContext<{
-            delta: { after: null; before: { _type: "foo" } };
-          }>
-        >
-      >().toStrictEqual<"delete">();
-    });
-
-    it.failing("operation() (with update)", async () => {
-      const query = "operation()";
-      // TODO https://github.com/sanity-io/groq-js/issues/140
-      const tree = parse(query, { mode: "delta" });
-      const result = await (
-        await evaluate(tree, {
-          after: { _type: "foo" },
-          before: { _type: "foo" },
-        })
-      ).get();
-
-      expect(result).toBe("update");
-      expectType<
-        ExecuteQuery<
-          typeof query,
-          _ScopeFromPartialContext<{
-            delta: { after: { _type: "foo" }; before: { _type: "foo" } };
-          }>
-        >
-      >().toStrictEqual<"update">();
-    });
-
-    it.failing("global::operation()", async () => {
-      const query = "global::operation()";
-      // TODO https://github.com/sanity-io/groq-js/issues/140
-      const tree = parse(query, { mode: "delta" });
-      const result = await (
-        await evaluate(tree, {
-          after: { _type: "foo" },
-          before: { _type: "foo" },
-        })
-      ).get();
-
-      expect(result).toBe("update");
-      expectType<
-        ExecuteQuery<
-          typeof query,
-          _ScopeFromPartialContext<{
-            delta: { after: { _type: "foo" }; before: { _type: "foo" } };
-          }>
-        >
-      >().toStrictEqual<"update">();
-    });
-
     it("references([])", async () => {
       const query = "references([])";
       const tree = parse(query);
@@ -1498,12 +1391,97 @@ describe("functions", () => {
       expect(tree).toStrictEqual({
         ...desiredTree,
         func: expect.any(Function),
+        name: "now",
       });
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof desiredTree>
       >();
 
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<DateTime>();
+    });
+  });
+
+  describe("delta", () => {
+    it("delta::operation() (without delta)", async () => {
+      const query = "delta::operation()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (await evaluate(tree)).get();
+
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "delta::operation",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+        name: "operation",
+      });
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
+      >();
+
+      expect(result).toBeNull();
+      expectType<ExecuteQuery<typeof query>>().toBeNever();
+    });
+
+    it("delta::operation() (with create)", async () => {
+      const query = "delta::operation()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, { after: { _type: "foo" }, before: null })
+      ).get();
+
+      expect(result).toBe("create");
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            delta: { after: { _type: "foo" }; before: null };
+          }>
+        >
+      >().toStrictEqual<"create">();
+    });
+
+    it("delta::operation() (with delete)", async () => {
+      const query = "delta::operation()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, { after: null, before: { _type: "foo" } })
+      ).get();
+
+      expect(result).toBe("delete");
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            delta: { after: null; before: { _type: "foo" } };
+          }>
+        >
+      >().toStrictEqual<"delete">();
+    });
+
+    it("delta::operation() (with update)", async () => {
+      const query = "delta::operation()";
+      const tree = parse(query, { mode: "delta" });
+      const result = await (
+        await evaluate(tree, {
+          after: { _type: "foo" },
+          before: { _type: "foo" },
+        })
+      ).get();
+
+      expect(result).toBe("update");
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            delta: { after: { _type: "foo" }; before: { _type: "foo" } };
+          }>
+        >
+      >().toStrictEqual<"update">();
     });
   });
 

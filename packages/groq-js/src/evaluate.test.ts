@@ -82,9 +82,8 @@ describe("evaluate", () => {
     expectType<typeof result>().toStrictEqual<symbol>();
   });
 
-  it.failing("`operation()` should be never", async () => {
-    const query = "operation()";
-    // TODO https://github.com/sanity-io/groq-js/issues/140
+  it("`delta::operation()` should be never", async () => {
+    const query = "delta::operation()";
     const tree = parse(query, { mode: "delta" });
     const result = await (await evaluate(tree)).get();
 
@@ -92,9 +91,8 @@ describe("evaluate", () => {
     expectType<typeof result>().toBeNever();
   });
 
-  it.failing("`operation()` should be `delete` when `before`", async () => {
-    const query = "operation()";
-    // TODO https://github.com/sanity-io/groq-js/issues/140
+  it("`delta::operation()` should be `delete` when `before`", async () => {
+    const query = "delta::operation()";
     const tree = parse(query, { mode: "delta" });
     const result = await (await evaluate(tree, { before: FOO })).get();
 
@@ -102,9 +100,8 @@ describe("evaluate", () => {
     expectType<typeof result>().toStrictEqual<"delete">();
   });
 
-  it.failing("`operation()` should be `create` when `after`", async () => {
-    const query = "operation()";
-    // TODO https://github.com/sanity-io/groq-js/issues/140
+  it("`delta::operation()` should be `create` when `after`", async () => {
+    const query = "delta::operation()";
     const tree = parse(query, { mode: "delta" });
     const result = await (await evaluate(tree, { after: FOO })).get();
 
@@ -112,20 +109,16 @@ describe("evaluate", () => {
     expectType<typeof result>().toStrictEqual<"create">();
   });
 
-  it.failing(
-    "`operation()` should be `update` when both `before` and `after`",
-    async () => {
-      const query = "operation()";
-      // TODO https://github.com/sanity-io/groq-js/issues/140
-      const tree = parse(query, { mode: "delta" });
-      const result = await (
-        await evaluate(tree, { before: FOO, after: FOO })
-      ).get();
+  it("`delta::operation()` should be `update` when both `before` and `after`", async () => {
+    const query = "delta::operation()";
+    const tree = parse(query, { mode: "delta" });
+    const result = await (
+      await evaluate(tree, { before: FOO, after: FOO })
+    ).get();
 
-      expect(result).toBe("update");
-      expectType<typeof result>().toStrictEqual<"update">();
-    }
-  );
+    expect(result).toBe("update");
+    expectType<typeof result>().toStrictEqual<"update">();
+  });
 
   it("uses `sanity.projectId` as `sanity::projectId()`", async () => {
     const query = "sanity::projectId()";
