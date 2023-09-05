@@ -79,6 +79,7 @@ export interface SanityClient<
               ? { _originalId: string }
               : unknown))[];
           delta: { after: null; before: null };
+          identity: string;
           parameters: NonNullable<Q>;
         }>
       >,

@@ -1419,6 +1419,64 @@ describe("functions", () => {
       expect(result).toBe("STRING");
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<"STRING">();
     });
+
+    it("identity()", async () => {
+      const query = "identity()";
+      const tree = parse(query);
+      const result = await (await evaluate(tree, { identity: "foo" })).get();
+
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "identity",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
+      >();
+
+      expect(result).toBe("foo");
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{ identity: "foo" }>
+        >
+      >().toStrictEqual<"foo">();
+    });
+
+    it("global::identity()", async () => {
+      const query = "global::identity()";
+      const tree = parse(query);
+      const result = await (await evaluate(tree, { identity: "foo" })).get();
+
+      const desiredTree = {
+        args: [],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "identity",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...desiredTree,
+        func: expect.any(Function),
+      });
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof desiredTree>
+      >();
+
+      expect(result).toBe("foo");
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{ identity: "foo" }>
+        >
+      >().toStrictEqual<"foo">();
+    });
   });
 
   // TODO https://github.com/sanity-io/groq-js/issues/145

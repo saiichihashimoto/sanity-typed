@@ -70,6 +70,7 @@ type Context<Dataset extends any[], DeltaElement extends Dataset[number]> = {
   client: ClientConfig;
   dataset: Dataset;
   delta: { after: DeltaElement | null; before: DeltaElement | null };
+  identity: string;
   parameters: { [param: string]: any };
 };
 
@@ -1458,6 +1459,14 @@ type Functions<
       ? TBase extends Geo
         ? TBase
         : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-identity-
+     */
+    identity: TArgs extends []
+      ? TScope extends { context: { identity: infer TIdentity } }
+        ? TIdentity
+        : never
       : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_length()
