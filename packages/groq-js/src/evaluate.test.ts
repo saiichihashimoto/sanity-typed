@@ -55,7 +55,14 @@ describe("evaluate", () => {
     expectType<typeof result>().toStrictEqual<symbol>();
   });
 
-  it.todo("uses `identity` as `identity()`");
+  it("uses `identity` as `identity()`", async () => {
+    const query = "identity()";
+    const tree = parse(query);
+    const result = await (await evaluate(tree, { identity: "foo" })).get();
+
+    expect(result).toBe("foo");
+    expectType<typeof result>().toStrictEqual<"foo">();
+  });
 
   it("uses `before` as `before()`", async () => {
     const query = "before()";

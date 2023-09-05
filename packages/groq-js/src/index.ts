@@ -37,6 +37,7 @@ export const evaluate = <
   const Node extends ExprNode,
   const Dataset extends readonly any[],
   const Parameters extends { [param: string]: unknown },
+  const Identity extends string,
   const SanityProjectId extends string,
   const SanityDataset extends string,
   const Before extends Dataset[number] | null = null,
@@ -48,7 +49,7 @@ export const evaluate = <
     after?: After;
     before?: Before;
     dataset?: Dataset;
-    identity?: string;
+    identity?: Identity;
     params?: Parameters;
     root?: This;
     sanity?: {
@@ -70,6 +71,7 @@ export const evaluate = <
             };
             dataset: WritableDeep<Dataset>;
             delta: { after: WritableDeep<After>; before: WritableDeep<Before> };
+            identity: Identity;
             parameters: WritableDeep<Parameters>;
           };
           parent: null;
