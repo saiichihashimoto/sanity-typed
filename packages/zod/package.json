@@ -40,7 +40,7 @@
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "sanity": "3.16.2",
-    "zod": "3.21.4"
+    "zod": "3.22.2"
   },
   "peerDependencies": {
     "sanity": "^3.12.0",
