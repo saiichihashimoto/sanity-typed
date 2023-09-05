@@ -56,7 +56,7 @@ import type {
   SchemaPluginOptions as SchemaPluginOptionsNative,
   SlugDefinition as SlugDefinitionNative,
   SlugRule,
-  SlugValue,
+  SlugValue as SlugValueNative,
   StrictDefinition,
   StringDefinition as StringDefinitionNative,
   StringRule,
@@ -76,7 +76,7 @@ import type {
   Simplify,
 } from "type-fest";
 
-import type { TupleOfLength } from "./utils";
+import type { MaybeArray, TupleOfLength } from "./utils";
 
 // TODO Couldn't use type-fest's Merge >=3.0.0
 type Merge_<FirstType, SecondType> = Except<
@@ -103,8 +103,6 @@ type WithRequired<
     [required]: TRequired;
   }
 >;
-
-type MaybeArray<T> = T | T[];
 
 type ValidationBuilder<
   TRequired extends boolean,
@@ -142,7 +140,7 @@ export type BooleanDefinition<TRequired extends boolean> = Merge<
 >;
 
 export type CrossDatasetReferenceValue = Merge<
-  CrossDatasetReferenceValueNative,
+  Omit<CrossDatasetReferenceValueNative, "_key">,
   { _type: "crossDatasetReference" }
 >;
 
@@ -185,21 +183,23 @@ export type NumberDefinition<TRequired extends boolean> = Merge<
   DefinitionBase<TRequired, number, NumberRule>
 >;
 
-declare const referenced: unique symbol;
+/** @private */
+export const _referenced: unique symbol = Symbol("referenced");
 
 export type ReferenceValue<TReferenced extends string> = Merge<
   Omit<ReferenceValueNative, "_key"> & { _type: "reference" },
-  { [referenced]: TReferenced }
+  { [_referenced]: TReferenced }
 >;
 
 export type TypeReference<TReferenced extends string> = Merge<
   TypeReferenceNative,
   {
-    type: string extends TReferenced
-      ? TReferenced & {
-          [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-        }
-      : TReferenced;
+    type: TReferenced &
+      (IsStringLiteral<TReferenced> extends false
+        ? TReferenced & {
+            [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+          }
+        : TReferenced);
   }
 >;
 
@@ -217,9 +217,11 @@ export type ReferenceDefinition<
   }
 >;
 
+export type SlugValue = Required<SlugValueNative>;
+
 export type SlugDefinition<TRequired extends boolean> = Merge<
   SlugDefinitionNative,
-  DefinitionBase<TRequired, SlugValue, SlugRule>
+  DefinitionBase<TRequired, SlugValue, RewriteValue<SlugValue, SlugRule>>
 >;
 
 export type StringDefinition<TRequired extends boolean> = Merge<
@@ -236,7 +238,7 @@ export type UrlDefinition<TRequired extends boolean> = Merge<
   UrlDefinitionNative,
   DefinitionBase<TRequired, string, UrlRule>
 >;
-type InferRawValue<Def extends DefinitionBase<any, any, any>> =
+export type InferRawValue<Def extends DefinitionBase<any, any, any>> =
   Def extends DefinitionBase<any, infer Value, any> ? Value : never;
 
 export type ArrayDefinition<
@@ -259,7 +261,7 @@ export type PortableTextMarkDefinition =
 export type PortableTextSpan = SetRequired<PortableTextSpanNative, "_key">;
 
 export type PortableTextBlock<
-  M extends PortableTextMarkDefinition = PortableTextMarkDefinition,
+  M extends PortableTextMarkDefinitionNative = PortableTextMarkDefinition,
   C extends TypedObject = PortableTextSpan,
   S extends string = string,
   L extends string = string
@@ -274,12 +276,18 @@ export type BlockDefinition<
     TRequired,
     PortableTextBlock<
       PortableTextMarkDefinition,
-      InferRawValue<TMemberDefinition> | PortableTextSpan
+      | PortableTextSpan
+      | (TMemberDefinition extends never
+          ? never
+          : InferRawValue<TMemberDefinition> & { _key: string })
     >,
     RewriteValue<
       PortableTextBlock<
         PortableTextMarkDefinition,
-        InferRawValue<TMemberDefinition> | PortableTextSpan
+        | PortableTextSpan
+        | (TMemberDefinition extends never
+            ? never
+            : InferRawValue<TMemberDefinition> & { _key: string })
       >,
       BlockRule
     >
@@ -556,14 +564,10 @@ export type _ArrayMemberDefinition<
     type: TType;
   };
 
-/**
- * Arrays shouldn't be children of arrays, ever.
- * https://www.sanity.io/docs/array-type#fNBIr84P
- *
- * But we give an option to do so, only so we can test the depth limit
- *
- * @private
- */
+// Arrays shouldn't be children of arrays, ever.
+// https://www.sanity.io/docs/array-type#fNBIr84P
+// But we give an option to do so, only so we can test the depth limit
+/** @private */
 export const _makeDefineArrayMember =
   <AllowArrays extends boolean>() =>
   <
@@ -613,7 +617,7 @@ export type _FieldDefinition<
   TMemberDefinition extends DefinitionBase<any, any, any> & {
     name?: string;
   },
-  TRequired extends boolean = false
+  TRequired extends boolean
 > = FieldDefinitionBase &
   MaybeAllowUnknownProps<TStrict> &
   (TType extends "block"
@@ -669,17 +673,17 @@ export const defineField = <
 ) => defineFieldNative(schemaField as any, defineOptions) as typeof schemaField;
 
 /** @private */
-type _TypeDefinition<
+export type _TypeDefinition<
   TType extends string,
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
+  TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   },
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
-  TReferenced extends string
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
 > = MaybeAllowUnknownProps<TStrict> &
   (TType extends IntrinsicTypeName
     ? // HACK Why can't I just index off of IntrinsicDefinitions?
@@ -721,9 +725,9 @@ export const defineType = <
     TName,
     TAlias,
     TStrict,
+    TReferenced,
     TFieldDefinition,
-    TMemberDefinition,
-    TReferenced
+    TMemberDefinition
   >,
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ) =>
@@ -732,7 +736,8 @@ export const defineType = <
     defineOptions
   ) as typeof schemaDefinition;
 
-type ConfigBase<
+/** @private */
+export type _ConfigBase<
   TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
   TPluginTypeDefinition extends _TypeDefinition<
     any,
@@ -773,7 +778,7 @@ export type PluginOptions<
     any,
     any
   > = _TypeDefinition<string, any, any, any, any, any, any>
-> = ConfigBase<TTypeDefinition, TPluginTypeDefinition> &
+> = _ConfigBase<TTypeDefinition, TPluginTypeDefinition> &
   Omit<PluginOptionsNative, "plugins" | "schema">;
 
 export const definePlugin = <
@@ -812,7 +817,7 @@ type WorkspaceOptions<
   >
 > = Merge<
   WorkspaceOptionsNative,
-  ConfigBase<TTypeDefinition, TPluginTypeDefinition>
+  _ConfigBase<TTypeDefinition, TPluginTypeDefinition>
 >;
 
 export type Config<
@@ -881,16 +886,8 @@ type ExpandAliasValues<
           ? TOverwriteType
           : TType;
       }
-  : Value extends PortableTextBlock<infer M, infer C, infer S, infer L>
-  ? PortableTextBlock<
-      M,
-      | PortableTextSpan
-      | (C extends PortableTextSpan
-          ? never
-          : ExpandAliasValues<C[], TAliasedDefinition>[number]),
-      S,
-      L
-    >
+  : Value extends Omit<PortableTextBlock<any, any, any, any>, "_type">
+  ? Value
   : Value extends (infer Item)[]
   ? (Item extends never
       ? never
@@ -906,9 +903,9 @@ type ExpandAliasValues<
   : Value;
 
 export type InferSchemaValues<
-  TConfig extends MaybeArray<ConfigBase<any, any>>
+  TConfig extends MaybeArray<_ConfigBase<any, any>>
 > = TConfig extends MaybeArray<
-  ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
+  _ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
 >
   ? {
       [TName in TTypeDefinition["name"]]: ExpandAliasValues<

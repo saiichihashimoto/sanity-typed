@@ -1,5 +1,5 @@
 import { describe, it } from "@jest/globals";
-import type { GeopointValue, SlugValue } from "sanity";
+import type { GeopointValue } from "sanity";
 import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
@@ -10,6 +10,7 @@ import type {
   PortableTextBlock,
   PortableTextMarkDefinition,
   PortableTextSpan,
+  SlugValue,
 } from ".";
 
 describe("block", () => {

@@ -81,8 +81,6 @@ export const product = defineType({
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
-import { deskTool } from "sanity/desk";
-
 // import { defineConfig } from "sanity";
 import { defineConfig } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
@@ -93,16 +91,17 @@ import { product } from "./schemas/product";
 const config = defineConfig({
   projectId: "your-project-id",
   dataset: "your-dataset-name",
-  plugins: [deskTool()],
   schema: {
-    types: [product],
+    types: [
+      product,
+      // ...
+    ],
   },
 });
 
 export default config;
 
 /** Typescript type of all types! */
-/** Provide this to @sanity-typed/client! */
 export type SanityValues = InferSchemaValues<typeof config>;
 /**
  *  SanityValues === {
@@ -119,6 +118,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *        value?: string;
  *      }[];
  *    };
+ *    // ... all your types!
  *  }
  */
 ```

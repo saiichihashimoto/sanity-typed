@@ -2028,9 +2028,9 @@ describe("functions", () => {
         .toBeAssignableTo<WritableDeep<typeof desiredTree>>();
 
       expect(result).toStrictEqual([{}, {}]);
-      expectType<ExecuteQuery<typeof query>>()
-        // TODO toStrictEqual
-        .toBeAssignableTo<[{ [x: string]: never }, { [x: string]: never }]>();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        [NonNullable<unknown>, NonNullable<unknown>]
+      >();
     });
 
     it("array::unique($param)", async () => {

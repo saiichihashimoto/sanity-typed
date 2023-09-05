@@ -1,3 +1,5 @@
+import type { IsNumericLiteral } from "type-fest";
+
 // TODO TupleOfLength somewhere more reusable
 
 export type TupleOfLength<
@@ -6,7 +8,7 @@ export type TupleOfLength<
   Max extends number = number,
   Result extends T[] = []
 > = Result["length"] extends Min
-  ? number extends Max
+  ? IsNumericLiteral<Max> extends false
     ? [...Result, ...T[]]
     : Result["length"] extends Max
     ? Result
@@ -19,3 +21,5 @@ export type TupleOfLength<
             [T, ...Result]
           >
   : TupleOfLength<T, Min, Max, [T, ...Result]>;
+
+export type MaybeArray<T> = T | T[];

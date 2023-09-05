@@ -10,13 +10,13 @@ describe("createClient", () => {
   describe("fetch", () => {
     it("returns the groq query result", () => {
       const exec = async () => {
-        const client = createClient<{ foo: SanityDocument<any> }>()({});
+        const client = createClient<{ foo: SanityDocument }>()({});
 
         return client.fetch("*");
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<SanityDocument<any>[]>
+        Promise<SanityDocument[]>
       >();
     });
 
@@ -24,14 +24,14 @@ describe("createClient", () => {
       const exec = async () => {
         const client = createClient<{
           bar: { _type: "bar"; bar: "bar" };
-          foo: SanityDocument<any>;
+          foo: SanityDocument;
         }>()({});
 
         return client.fetch("*");
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<SanityDocument<any>[]>
+        Promise<SanityDocument[]>
       >();
     });
 
@@ -65,7 +65,7 @@ describe("createClient", () => {
   describe("clone", () => {
     it("returns the same type", () => {
       const exec = () => {
-        const client = createClient<{ foo: SanityDocument<any> }>()({});
+        const client = createClient<{ foo: SanityDocument }>()({});
 
         return client;
       };
@@ -80,7 +80,7 @@ describe("createClient", () => {
     it("returns the altered type", () => {
       const exec = () => {
         const client = createClient<{
-          foo: SanityDocument<any>;
+          foo: SanityDocument;
         }>()({
           dataset: "dataset",
           projectId: "projectId",
@@ -92,7 +92,7 @@ describe("createClient", () => {
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         SanityClient<
           { dataset: "dataset"; projectId: "projectId" },
-          SanityDocument<any>[]
+          SanityDocument[]
         >
       >();
 
@@ -107,7 +107,7 @@ describe("createClient", () => {
       expectType<ReturnType<typeof exec2>>().toStrictEqual<
         SanityClient<
           { dataset: "dataset"; projectId: "newProjectId" },
-          SanityDocument<any>[]
+          SanityDocument[]
         >
       >();
     });

@@ -19,20 +19,104 @@ Typed Sanity Client Results, all inferred, no client changes!
 ## Install
 
 ```bash
-npm install @sanity-typed/client
+npm install sanity @sanity-typed/client
 ```
 
 ## Usage
 
 Use `createClient` exactly as you would from [`@sanity/client`](https://github.com/sanity-io/client) with a minor change for proper type inference.
 
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
+```product.ts```:
+```typescript
+// import { defineArrayMember, defineField, defineType } from "sanity";
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+} from "@sanity-typed/types";
+
+/** No changes using defineType, defineField, and defineArrayMember */
+export const product = defineType({
+  name: "product",
+  type: "document",
+  title: "Product",
+  fields: [
+    defineField({
+      name: "productName",
+      type: "string",
+      title: "Product name",
+    }),
+    defineField({
+      name: "tags",
+      type: "array",
+      title: "Tags for item",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "tag",
+          fields: [
+            { type: "string", name: "label" },
+            { type: "string", name: "value" },
+          ],
+        }),
+      ],
+    }),
+  ],
+});
+```
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
+```sanity.config.ts```:
+```typescript
+// import { defineConfig } from "sanity";
+import { defineConfig } from "@sanity-typed/types";
+import type { InferSchemaValues } from "@sanity-typed/types";
+
+import { product } from "./schemas/product";
+
+/** No changes using defineConfig */
+const config = defineConfig({
+  projectId: "your-project-id",
+  dataset: "your-dataset-name",
+  schema: {
+    types: [
+      product,
+      // ...
+    ],
+  },
+});
+
+export default config;
+
+/** Typescript type of all types! */
+export type SanityValues = InferSchemaValues<typeof config>;
+/**
+ *  SanityValues === {
+ *    product: {
+ *      _createdAt: string;
+ *      _id: string;
+ *      _rev: string;
+ *      _type: "product";
+ *      _updatedAt: string;
+ *      productName?: string;
+ *      tags?: {
+ *        _key: string;
+ *        label?: string;
+ *        value?: string;
+ *      }[];
+ *    };
+ *    // ... all your types!
+ *  }
+ */
+```
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/client/docs/your-super-cool-application.ts -->
 ```your-super-cool-application.ts```:
 ```typescript
 // import { createClient } from "@sanity/client";
 import { createClient } from "@sanity-typed/client";
 
-// Get this from @sanity-typed/types!
 import type { SanityValues } from "./sanity.schema";
 
 /** Small change using createClient */

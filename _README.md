@@ -31,8 +31,9 @@ npm install sanity @sanity-typed/client @sanity-typed/types
 ### Other
 
 - [`@sanity-typed/groq-js`](packages/groq-js): Typed [GROQ-JS](https://github.com/sanity-io/groq-js) Results, all inferred, no query changes!
-- [`@sanity-typed/groq`](packages/groq): Typed GROQ Results, all inferred, no query changes!
+- [`@sanity-typed/groq`](packages/groq): Typed [GROQ](https://github.com/sanity-io/groq) Results, all inferred, no query changes!
   - Typically, this isn't used directly, but via [`@sanity-typed/client`'s](packages/client) and [`@sanity-typed/groq-js`'s](packages/groq-js) methods that use groq strings.
+- [`@sanity-typed/zod`](packages/zod): Typed [Zod](https://zod.dev) Parsers, all inferred, no config changes!
 
 ## Goals
 

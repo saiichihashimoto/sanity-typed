@@ -23,59 +23,14 @@ npm install groq-js @sanity-typed/groq-js
 
 Use `parse` and `evaluate` exactly as you would from [`groq-js`](https://github.com/sanity-io/groq-js). Then, use the results with the typescript types!
 
-```typescript
-// import { evaluate, parse } from "groq-js";
-import { evaluate, parse } from "@sanity-typed/groq-js";
+@[typescript](docs/your-typed-groq-js.ts)
 
-const input = '*[_type == "user"]{name}';
+You can also use [your typed schema](../types) and creative use of the [`satisfies` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator) to keep parity with your schema!
 
-const tree = parse(input);
-/**
- *  typeof tree === {
- *    type: "Projection";
- *    base: {
- *      type: "Filter";
- *      base: {
- *        type: "Everything";
- *      };
- *      expr: {
- *        type: "OpCall";
- *        op: "==";
- *        left: {
- *          name: "_type";
- *          type: "AccessAttribute";
- *        };
- *        right: {
- *          type: "Value";
- *          value: "user";
- *        };
- *      };
- *    };
- *    expr: {
- *      type: "Object";
- *      attributes: [{
- *        type: "ObjectAttributeValue";
- *        name: "name";
- *        value: {
- *          type: "AccessAttribute";
- *          name: "name";
- *        };
- *      }];
- *    };
- *  }
- */
-
-const value = await evaluate(tree, {
-  dataset: [
-    { _type: "user", name: "Michael" },
-    { _type: "company", name: "Bluth Company" },
-  ],
-});
-
-const result = await value.get();
-/**
- *  typeof result === {
- *    name: "Michael";
- *  }[]
- */
+```bash
+npm install sanity groq-js @sanity-typed/types @sanity-typed/groq-js
 ```
+
+@[typescript](../types/docs/schemas/product.ts)
+@[typescript](../types/docs/sanity.config.ts)
+@[typescript](docs/your-provided-types-groq-js.ts)

@@ -597,7 +597,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<typeof query>
         >().toStrictEqual<// @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
-        number>();
+        boolean>();
       });
 
       it("1==2+3==4", async () => {
@@ -906,7 +906,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<typeof query>
         >().toStrictEqual<// @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
-        number>();
+        boolean>();
       });
 
       it("1==2*3==4", async () => {
