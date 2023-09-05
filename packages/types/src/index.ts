@@ -84,7 +84,7 @@ type Merge_<FirstType, SecondType> = Except<
   Extract<keyof FirstType, keyof SecondType>
 > &
   SecondType;
-type Merge<FirstType, SecondType> = Simplify<Merge_<FirstType, SecondType>>;
+type MergeOld<FirstType, SecondType> = Simplify<Merge_<FirstType, SecondType>>;
 
 declare const README: unique symbol;
 declare const required: unique symbol;
@@ -92,7 +92,7 @@ declare const required: unique symbol;
 type WithRequired<
   TRequired extends boolean,
   Rule extends RuleDef<Rule, any>
-> = Merge<
+> = MergeOld<
   {
     [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule
       ? (...args: Args) => WithRequired<TRequired, Rule>
@@ -121,7 +121,7 @@ type DefinitionBase<
   validation?: ValidationBuilder<TRequired, Value, Rule>;
 };
 
-type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = Merge<
+type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = MergeOld<
   {
     [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule
       ? (...args: Args) => RewriteValue<Value, Rule>
@@ -134,12 +134,12 @@ type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = Merge<
   }
 >;
 
-export type BooleanDefinition<TRequired extends boolean> = Merge<
+export type BooleanDefinition<TRequired extends boolean> = MergeOld<
   BooleanDefinitionNative,
   DefinitionBase<TRequired, boolean, BooleanRule>
 >;
 
-export type CrossDatasetReferenceValue = Merge<
+export type CrossDatasetReferenceValue = MergeOld<
   Omit<CrossDatasetReferenceValueNative, "_key">,
   { _type: "crossDatasetReference" }
 >;
@@ -149,36 +149,37 @@ type CrossDatasetReferenceRule = RuleDef<
   CrossDatasetReferenceValue
 >;
 
-export type CrossDatasetReferenceDefinition<TRequired extends boolean> = Merge<
-  CrossDatasetReferenceDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    CrossDatasetReferenceValue,
-    CrossDatasetReferenceRule
-  >
->;
+export type CrossDatasetReferenceDefinition<TRequired extends boolean> =
+  MergeOld<
+    CrossDatasetReferenceDefinitionNative,
+    DefinitionBase<
+      TRequired,
+      CrossDatasetReferenceValue,
+      CrossDatasetReferenceRule
+    >
+  >;
 
-export type DateDefinition<TRequired extends boolean> = Merge<
+export type DateDefinition<TRequired extends boolean> = MergeOld<
   DateDefinitionNative,
   DefinitionBase<TRequired, string, DateRule>
 >;
 
-export type DatetimeDefinition<TRequired extends boolean> = Merge<
+export type DatetimeDefinition<TRequired extends boolean> = MergeOld<
   DatetimeDefinitionNative,
   DefinitionBase<TRequired, string, DatetimeRule>
 >;
 
-export type EmailDefinition<TRequired extends boolean> = Merge<
+export type EmailDefinition<TRequired extends boolean> = MergeOld<
   EmailDefinitionNative,
   DefinitionBase<TRequired, string, EmailRule>
 >;
 
-export type GeopointDefinition<TRequired extends boolean> = Merge<
+export type GeopointDefinition<TRequired extends boolean> = MergeOld<
   GeopointDefinitionNative,
   DefinitionBase<TRequired, GeopointValue, GeopointRule>
 >;
 
-export type NumberDefinition<TRequired extends boolean> = Merge<
+export type NumberDefinition<TRequired extends boolean> = MergeOld<
   NumberDefinitionNative,
   DefinitionBase<TRequired, number, NumberRule>
 >;
@@ -186,12 +187,12 @@ export type NumberDefinition<TRequired extends boolean> = Merge<
 /** @private */
 export const _referenced: unique symbol = Symbol("referenced");
 
-export type ReferenceValue<TReferenced extends string> = Merge<
+export type ReferenceValue<TReferenced extends string> = MergeOld<
   Omit<ReferenceValueNative, "_key"> & { _type: "reference" },
   { [_referenced]: TReferenced }
 >;
 
-export type TypeReference<TReferenced extends string> = Merge<
+export type TypeReference<TReferenced extends string> = MergeOld<
   TypeReferenceNative,
   {
     type: TReferenced &
@@ -206,7 +207,7 @@ export type TypeReference<TReferenced extends string> = Merge<
 export type ReferenceDefinition<
   TRequired extends boolean,
   TReferenced extends string
-> = Merge<
+> = MergeOld<
   ReferenceDefinitionNative,
   DefinitionBase<
     TRequired,
@@ -219,22 +220,22 @@ export type ReferenceDefinition<
 
 export type SlugValue = Required<SlugValueNative>;
 
-export type SlugDefinition<TRequired extends boolean> = Merge<
+export type SlugDefinition<TRequired extends boolean> = MergeOld<
   SlugDefinitionNative,
   DefinitionBase<TRequired, SlugValue, RewriteValue<SlugValue, SlugRule>>
 >;
 
-export type StringDefinition<TRequired extends boolean> = Merge<
+export type StringDefinition<TRequired extends boolean> = MergeOld<
   StringDefinitionNative,
   DefinitionBase<TRequired, string, StringRule>
 >;
 
-export type TextDefinition<TRequired extends boolean> = Merge<
+export type TextDefinition<TRequired extends boolean> = MergeOld<
   TextDefinitionNative,
   DefinitionBase<TRequired, string, TextRule>
 >;
 
-export type UrlDefinition<TRequired extends boolean> = Merge<
+export type UrlDefinition<TRequired extends boolean> = MergeOld<
   UrlDefinitionNative,
   DefinitionBase<TRequired, string, UrlRule>
 >;
@@ -244,7 +245,7 @@ export type InferRawValue<Def extends DefinitionBase<any, any, any>> =
 export type ArrayDefinition<
   TRequired extends boolean,
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
-> = Merge<
+> = MergeOld<
   ArrayDefinitionNative,
   DefinitionBase<
     TRequired,
@@ -270,7 +271,7 @@ export type PortableTextBlock<
 export type BlockDefinition<
   TRequired extends boolean,
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
-> = Merge<
+> = MergeOld<
   BlockDefinitionNative,
   DefinitionBase<
     TRequired,
@@ -321,7 +322,7 @@ export type ObjectDefinition<
     name: string;
     [required]?: boolean;
   }
-> = Merge<
+> = MergeOld<
   ObjectDefinitionNative,
   DefinitionBase<
     TRequired,
@@ -349,7 +350,7 @@ export type DocumentDefinition<
     name: string;
     [required]?: boolean;
   }
-> = Merge<
+> = MergeOld<
   DocumentDefinitionNative,
   DefinitionBase<
     TRequired,
@@ -380,7 +381,7 @@ type FileDefinition<
     name: string;
     [required]?: boolean;
   }
-> = Merge<
+> = MergeOld<
   FileDefinitionNative,
   DefinitionBase<
     TRequired,
@@ -411,7 +412,7 @@ type ImageDefinition<
     name: string;
     [required]?: boolean;
   }
-> = Merge<
+> = MergeOld<
   ImageDefinitionNative,
   DefinitionBase<
     TRequired,
@@ -465,7 +466,7 @@ type TypeAliasDefinition<
   TType extends string,
   TAlias extends IntrinsicTypeName,
   TRequired extends boolean
-> = Merge<
+> = MergeOld<
   TypeAliasDefinitionNative<TType, TAlias>,
   DefinitionBase<TRequired, AliasValue<TType>, any> & {
     options?: TAlias extends IntrinsicTypeName
@@ -505,7 +506,7 @@ export type _ArrayMemberDefinition<
               TReferenced,
               any
             >[type] extends DefinitionBase<any, infer Value, infer Rule>
-              ? Merge<
+              ? MergeOld<
                   IntrinsicDefinitions<
                     TFieldDefinition,
                     TMemberDefinition,
@@ -542,7 +543,7 @@ export type _ArrayMemberDefinition<
         { type: TType }
       >
     : Omit<
-        Merge<
+        MergeOld<
           TypeAliasDefinition<TType, TAlias, any>,
           DefinitionBase<
             any,
@@ -751,7 +752,7 @@ export type _ConfigBase<
 > = {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive type
   plugins?: (PluginOptions<TPluginTypeDefinition, any> | PluginOptionsNative)[];
-  schema?: Merge<
+  schema?: MergeOld<
     SchemaPluginOptionsNative,
     {
       types?:
@@ -815,7 +816,7 @@ type WorkspaceOptions<
     any,
     any
   >
-> = Merge<
+> = MergeOld<
   WorkspaceOptionsNative,
   _ConfigBase<TTypeDefinition, TPluginTypeDefinition>
 >;
