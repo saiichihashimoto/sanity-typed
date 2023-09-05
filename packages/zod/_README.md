@@ -9,16 +9,44 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-FIXME
+Typed [Zod](https://zod.dev) Parsers, all inferred, no config changes!
 
 @[:page_toc](## Page Contents)
 
 ## Install
 
 ```bash
-npm install @sanity-typed/zod
+npm install sanity zod @sanity-typed/zod
 ```
 
 ## Usage
 
-FIXME
+@[typescript](../types/docs/schemas/product.ts)
+@[typescript](../types/docs/sanity.config.ts)
+@[typescript](docs/your-zod-parsers.ts)
+
+## Considerations
+
+### Config in Runtime
+
+`@sanity-typed/*` generally has the goal of only having effect to types and no runtime effects. This package is an exception. This means that, to do `const zods = sanityConfigToZods(config)`, you will have to import your sanity config into the environment you're using the parsers. While sanity v3 is better than v2 at having a standard build environment, you will have to handle any nuances, including having a much larger build.
+
+If this is something you cannot have, there's still a (mostly) manual option:
+
+```typescript
+import { z } from "zod";
+
+import type { SanityValues } from "./sanity.schema";
+
+const productZod: z.Type<SanityValues["product"]> = z.object({
+  // All the zod fields
+});
+```
+
+It isn't perfect and is prone to errors, but it's a decent option if importing the config isn't an option.
+
+### `ZodType` instead of `ZodObject`, `ZodString`, etc.
+
+You'll notice that all the returned types are a `z.ZodType` of the same type from `InferSchemaValues<typeof config>`, rather than the more specific zod types. The "Type instantiation is excessively deep and possibly infinite" errors were excessive and proved difficult to solve. Under the hood, it does correctly use the specific types and `sanityConfigToZods` overwrites their types with `z.ZodType` so typescript won't complain.
+
+If you absolutely must have the exact zod schemas (eg. you need to `extend` a `z.ZodObject`), it is exported at `_sanityConfigToZods`, but it is **NOT** officially supported and any changes (or removal) are not considered breaking changes.

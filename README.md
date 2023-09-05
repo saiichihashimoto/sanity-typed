@@ -68,8 +68,6 @@ export const product = defineType({
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
-import { deskTool } from "sanity/desk";
-
 // import { defineConfig } from "sanity";
 import { defineConfig } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
@@ -80,16 +78,17 @@ import { product } from "./schemas/product";
 const config = defineConfig({
   projectId: "your-project-id",
   dataset: "your-dataset-name",
-  plugins: [deskTool()],
   schema: {
-    types: [product],
+    types: [
+      product,
+      // ...
+    ],
   },
 });
 
 export default config;
 
 /** Typescript type of all types! */
-/** Provide this to @sanity-typed/client! */
 export type SanityValues = InferSchemaValues<typeof config>;
 /**
  *  SanityValues === {
@@ -106,6 +105,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *        value?: string;
  *      }[];
  *    };
+ *    // ... all your types!
  *  }
  */
 ```
@@ -116,7 +116,6 @@ export type SanityValues = InferSchemaValues<typeof config>;
 // import { createClient } from "@sanity/client";
 import { createClient } from "@sanity-typed/client";
 
-// Get this from @sanity-typed/types!
 import type { SanityValues } from "./sanity.schema";
 
 /** Small change using createClient */
@@ -156,9 +155,9 @@ const data = await client.fetch('*[_type=="product"]');
 ### Other
 
 - [`@sanity-typed/groq-js`](packages/groq-js): Typed [GROQ-JS](https://github.com/sanity-io/groq-js) Results, all inferred, no query changes!
-- [`@sanity-typed/groq`](packages/groq): Typed GROQ Results, all inferred, no query changes!
+- [`@sanity-typed/groq`](packages/groq): Typed [GROQ](https://github.com/sanity-io/groq) Results, all inferred, no query changes!
   - Typically, this isn't used directly, but via [`@sanity-typed/client`'s](packages/client) and [`@sanity-typed/groq-js`'s](packages/groq-js) methods that use groq strings.
-- [`@sanity-typed/zod`](packages/zod): FIXME
+- [`@sanity-typed/zod`](packages/zod): Typed [Zod](https://zod.dev) Parsers, all inferred, no config changes!
 
 ## Goals
 
