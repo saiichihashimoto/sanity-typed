@@ -20,7 +20,6 @@ const value = await evaluate(tree, {
       otherField: "foo",
       // ...
     },
-    // The satisfies will throw an error if any inconsistent types are provided
   ] satisfies Extract<
     SanityValues[keyof SanityValues],
     Omit<SanityDocument, "_type">
@@ -30,6 +29,11 @@ const value = await evaluate(tree, {
 const result = await value.get();
 /**
  *  typeof result === {
- *    productName: "Some Cool Product";
+ *    productName: string;
  *  }[]
  */
+
+// Notice how `productName` is inferred as a `string`, not as `"Some Cool Product"`.
+// Also, it's in an array as opposed to a tuple.
+// This resembles the types you'd receive from @sanity-typed/client,
+// which wouldn't be statically aware of `"Some Cool Product"` either.

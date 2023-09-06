@@ -56,7 +56,7 @@ const value = await evaluate(tree, {
 
 const result = await value.get();
 /**
- *  typeof result === {
+ *  typeof result === [{
  *    productName: "Some Cool Product";
- *  }[]
+ *  }]
  */

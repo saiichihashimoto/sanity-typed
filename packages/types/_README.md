@@ -149,6 +149,10 @@ const nav = defineType({
 });
 ```
 
+## Considerations
+
+@[:markdown](docs/considerations/types-vs-content-lake.md)
+
 ## Breaking Changes
 
 ### 4 to 5
