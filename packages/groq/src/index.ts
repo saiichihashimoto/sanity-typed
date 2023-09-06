@@ -18,6 +18,7 @@ import type {
   ArrayElementNode,
   ArrayNode,
   AscNode,
+  ContextNode,
   DateTime,
   DerefNode,
   DescNode,
@@ -509,7 +510,7 @@ type Desc<TExpression extends string> =
         }
     : never;
 
-type FuncParse<TExpression extends string, TFuncFullName extends string> =
+type FuncArgParse<TExpression extends string, TFuncFullName extends string> =
   | _Parse<TExpression>
   | (TFuncFullName extends "order"
       ? Asc<TExpression> | Desc<TExpression>
@@ -522,21 +523,35 @@ type FuncArgs<
 > = `${_Prefix}${TArgs}` extends ""
   ? []
   :
-      | (FuncParse<`${_Prefix}${TArgs}`, TFuncFullName> extends never
+      | (FuncArgParse<`${_Prefix}${TArgs}`, TFuncFullName> extends never
           ? never
-          : [FuncParse<`${_Prefix}${TArgs}`, TFuncFullName>])
+          : [FuncArgParse<`${_Prefix}${TArgs}`, TFuncFullName>])
       | (TArgs extends `${infer TFuncArg},${infer TFuncArgs}`
           ?
               | FuncArgs<TFuncArgs, TFuncFullName, `${_Prefix}${TFuncArg},`>
-              | (FuncParse<`${_Prefix}${TFuncArg}`, TFuncFullName> extends never
+              | (FuncArgParse<
+                  `${_Prefix}${TFuncArg}`,
+                  TFuncFullName
+                > extends never
                   ? never
                   : FuncArgs<TFuncArgs, TFuncFullName> extends never
                   ? never
                   : [
-                      FuncParse<`${_Prefix}${TFuncArg}`, TFuncFullName>,
+                      FuncArgParse<`${_Prefix}${TFuncArg}`, TFuncFullName>,
                       ...FuncArgs<TFuncArgs, TFuncFullName>
                     ])
           : never);
+
+// https://github.com/sanity-io/groq-js/blob/28dee3d75e9e32722dfb2291e1f58e1418e11bb8/src/parser.ts#L382
+// before() and after() return ContextNodes instead
+type FuncCallToContext<TFuncCall extends FuncCallNode> = TFuncCall extends {
+  name: infer TKey extends "after" | "before";
+}
+  ? {
+      key: TKey;
+      type: "Context";
+    }
+  : TFuncCall;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#FuncCall
@@ -550,22 +565,22 @@ type FuncCall<TExpression extends string> =
         ? never
         : Identifier<TFuncIdentifier> extends never
         ? never
-        : {
+        : FuncCallToContext<{
             args: Simplify<FuncArgs<TFuncCallArgs>>;
             func: GroqFunction;
             name: TFuncNamespace extends "global"
               ? TFuncIdentifier
               : TFuncFullName;
             type: "FuncCall";
-          }
+          }>
       : Identifier<TFuncFullName> extends never
       ? never
-      : {
+      : FuncCallToContext<{
           args: Simplify<FuncArgs<TFuncCallArgs>>;
           func: GroqFunction;
           name: TFuncFullName;
           type: "FuncCall";
-        }
+        }>
     : never;
 
 /**
@@ -1186,6 +1201,21 @@ type EvaluateComparison<TNode extends ExprNode> = TNode extends OpCallNode & {
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_after()
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_before()
+ */
+type EvaluateContext<
+  TNode extends ExprNode,
+  TScope extends Scope<Context<any[], any>>
+> = TNode extends ContextNode
+  ? TNode extends { key: infer TKey extends "after" | "before" }
+    ? TScope extends { context: { delta: { [key in TKey]: infer TValue } } }
+      ? TValue
+      : null
+    : never
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateDereference()
  */
 type EvaluateDereference<
@@ -1419,26 +1449,6 @@ type Functions<
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
    */
   global: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_after()
-     */
-    after: TArgs extends []
-      ? TScope extends {
-          context: { delta: { after: infer TAfter } };
-        }
-        ? TAfter
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_before()
-     */
-    before: TArgs extends []
-      ? TScope extends {
-          context: { delta: { before: infer TBefore } };
-        }
-        ? TBefore
-        : null
-      : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_coalesce()
      */
@@ -1985,6 +1995,7 @@ type EvaluateExpression<
   | EvaluateArrayPostfix<TNode, TScope>
   | EvaluateBooleanOperator<TNode, TScope>
   | EvaluateComparison<TNode>
+  | EvaluateContext<TNode, TScope>
   | EvaluateDereference<TNode, TScope>
   | EvaluateEquality<TNode, TScope>
   | EvaluateEverything<TNode, TScope>
