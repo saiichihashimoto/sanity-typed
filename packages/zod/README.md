@@ -18,6 +18,7 @@ Typed [Zod](https://zod.dev) Parsers, all inferred, no config changes!
 - [Considerations](#considerations)
   - [Config in Runtime](#config-in-runtime)
   - [`ZodType` instead of `ZodObject`, `ZodString`, etc.](#zodtype-instead-of-zodobject-zodstring-etc)
+  - [Types match config but not actual documents](#types-match-config-but-not-actual-documents)
 
 ## Install
 
@@ -167,11 +168,43 @@ const productZod: z.Type<SanityValues["product"]> = z.object({
 });
 ```
 
-It isn't perfect and is prone to errors, but it's a decent option if importing the config isn't an option.
+It isn't perfect and is prone to errors, but it's a decent option if importing the config isn't viable.
 
 ### `ZodType` instead of `ZodObject`, `ZodString`, etc.
 
 You'll notice that all the returned types are a `z.ZodType` of the same type from `InferSchemaValues<typeof config>`, rather than the more specific zod types. The "Type instantiation is excessively deep and possibly infinite" errors were excessive and proved difficult to solve. Under the hood, it does correctly use the specific types and `sanityConfigToZods` overwrites their types with `z.ZodType` so typescript won't complain.
 
 If you absolutely must have the exact zod schemas (eg. you need to `extend` a `z.ZodObject`), it is exported at `_sanityConfigToZods`, but it is **NOT** officially supported and any changes (or removal) are not considered breaking changes.
+
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE packages/types/docs/types/docs/considerations/types-vs-content-lake.md -->
+### Types match config but not actual documents
+
+As your sanity driven application grows over time, your config is likely to change. Keep in mind that you can only derive types of your current config, while documents in your Sanity Content Lake will have shapes from older configs. This can be a problem when adding new fields or changing the type of old fields, as the types won't can clash with the old documents.
+
+Ultimately, there's nothing that can automatically solve this; we can't derive types from a no longer existing config. This is a consideration with or without types: your application needs to handle all existing documents. Be sure to make changes in a backwards compatible manner (ie, make new fields optional, don't change the type of old fields, etc).
+
+Another solution would be to keep old configs around, just to derive their types:
+
+```typescript
+const config = defineConfig({
+  schema: {
+    types: [foo],
+  },
+  plugins: [myPlugin()],
+});
+
+const oldConfig = defineConfig({
+  schema: {
+    types: [oldFoo],
+  },
+  plugins: [myPlugin()],
+});
+
+type SanityValues =
+  | InferSchemaValues<typeof config>
+  | InferSchemaValues<typeof oldConfig>;
+```
+
+This can get unweildy although, if you're deligent about data migrations of your old documents to your new types, you may be able to deprecate old configs and remove them from your codebase.
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/types/docs/types/docs/considerations/types-vs-content-lake.md -->
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/zod/_README.md -->

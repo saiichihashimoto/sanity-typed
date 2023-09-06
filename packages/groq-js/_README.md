@@ -25,7 +25,11 @@ Use `parse` and `evaluate` exactly as you would from [`groq-js`](https://github.
 
 @[typescript](docs/your-typed-groq-js.ts)
 
-You can also use [your typed schema](../types) and creative use of the [`satisfies` operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator) to keep parity with your schema!
+## Considerations
+
+### Using your derived types
+
+You can also use [your typed schema](../types) to keep parity with the types [your typed client](../client) would receive.
 
 ```bash
 npm install sanity groq-js @sanity-typed/types @sanity-typed/groq-js
@@ -33,4 +37,7 @@ npm install sanity groq-js @sanity-typed/types @sanity-typed/groq-js
 
 @[typescript](../types/docs/schemas/product.ts)
 @[typescript](../types/docs/sanity.config.ts)
-@[typescript](docs/your-provided-types-groq-js.ts)
+@[typescript](docs/your-typed-groq-js-with-sanity-types.ts)
+
+@[:markdown](../groq/docs/considerations/parse-type-flakiness.md)
+@[:markdown](docs/considerations/evaluate-type-flakiness.md)
