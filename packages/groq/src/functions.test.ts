@@ -26,23 +26,17 @@ import type {
 
 describe("functions", () => {
   describe("global", () => {
-    it.failing("after() (without delta)", async () => {
+    it("after() (without delta)", async () => {
       const query = "after()";
       const tree = parse(query, { mode: "delta" });
       const result = await (await evaluate(tree)).get();
 
       const desiredTree = {
-        args: [],
-        func: (() => {}) as unknown as GroqFunction,
-        name: "after",
-        type: "FuncCall",
+        key: "after",
+        type: "Context",
       } as const;
 
-      // TODO before() and after() create ContextNode
-      expect(tree).toStrictEqual({
-        ...desiredTree,
-        func: expect.any(Function),
-      });
+      expect(tree).toStrictEqual(desiredTree);
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof desiredTree>
       >();
@@ -95,16 +89,11 @@ describe("functions", () => {
       ).get();
 
       const desiredTree = {
-        args: [],
-        func: (() => {}) as unknown as GroqFunction,
-        name: "after",
-        type: "FuncCall",
+        key: "after",
+        type: "Context",
       } as const;
 
-      // expect(tree).toStrictEqual({
-      //   ...desiredTree,
-      //   func: expect.any(Function),
-      // });
+      expect(tree).toStrictEqual(desiredTree);
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof desiredTree>
       >();
@@ -126,16 +115,11 @@ describe("functions", () => {
       const result = await (await evaluate(tree)).get();
 
       const desiredTree = {
-        args: [],
-        func: (() => {}) as unknown as GroqFunction,
-        name: "before",
-        type: "FuncCall",
+        key: "before",
+        type: "Context",
       } as const;
 
-      // expect(tree).toStrictEqual({
-      //   ...desiredTree,
-      //   func: expect.any(Function),
-      // });
+      expect(tree).toStrictEqual(desiredTree);
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof desiredTree>
       >();
@@ -148,7 +132,7 @@ describe("functions", () => {
       const query = "before()";
       const tree = parse(query, { mode: "delta" });
       const result = await (
-        await evaluate(tree, { after: { _type: "foo" }, before: null })
+        await evaluate(tree, { before: null, after: { _type: "foo" } })
       ).get();
 
       expect(result).toBeNull();
@@ -166,7 +150,7 @@ describe("functions", () => {
       const query = "before()";
       const tree = parse(query, { mode: "delta" });
       const result = await (
-        await evaluate(tree, { after: null, before: { _type: "foo" } })
+        await evaluate(tree, { before: { _type: "foo" }, after: null })
       ).get();
 
       expect(result).toStrictEqual({ _type: "foo" });
@@ -184,20 +168,15 @@ describe("functions", () => {
       const query = "global::before()";
       const tree = parse(query, { mode: "delta" });
       const result = await (
-        await evaluate(tree, { after: null, before: { _type: "foo" } })
+        await evaluate(tree, { before: { _type: "foo" }, after: null })
       ).get();
 
       const desiredTree = {
-        args: [],
-        func: (() => {}) as unknown as GroqFunction,
-        name: "before",
-        type: "FuncCall",
+        key: "before",
+        type: "Context",
       } as const;
 
-      // expect(tree).toStrictEqual({
-      //   ...desiredTree,
-      //   func: expect.any(Function),
-      // });
+      expect(tree).toStrictEqual(desiredTree);
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof desiredTree>
       >();
