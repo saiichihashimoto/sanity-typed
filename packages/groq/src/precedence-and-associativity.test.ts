@@ -143,7 +143,7 @@ describe("precendence and associativity", () => {
     it.failing("true!=false!=true", async () => {
       const query = "true!=false!=true";
 
-      // TODO https://github.com/sanity-io/groq-js/issues/147
+      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/147
       expect(() => parse(query)).toThrow();
       expectType<Parse<typeof query>>().toBeNever();
 

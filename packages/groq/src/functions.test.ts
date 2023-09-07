@@ -23,6 +23,7 @@ import type {
   _ScopeFromPartialScope,
 } from ".";
 
+// TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/143
 const newDateTime = async (date: Date): Promise<DateTime> =>
   (await evaluate(parse(`dateTime("${date.toISOString()}")`))).get();
 
@@ -680,7 +681,7 @@ describe("functions", () => {
       const query = 'dateTime("2023-08-29T03:16:25.883Z")';
 
       const tree = parse(query);
-      // TODO https://github.com/sanity-io/groq-js/issues/144
+      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/144
 
       const expectedTree = {
         args: [{ type: "Value", value: "2023-08-29T03:16:25.883Z" }],
@@ -713,7 +714,7 @@ describe("functions", () => {
       const query = "dateTime($param)";
 
       const tree = parse(query);
-      // TODO https://github.com/sanity-io/groq-js/issues/144
+      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/144
 
       const expectedTree = {
         args: [{ name: "param", type: "Parameter" }],
@@ -753,7 +754,7 @@ describe("functions", () => {
       const query = "global::dateTime($param)";
 
       const tree = parse(query);
-      // TODO https://github.com/sanity-io/groq-js/issues/144
+      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/144
 
       const expectedTree = {
         args: [{ name: "param", type: "Parameter" }],
@@ -1699,15 +1700,14 @@ describe("functions", () => {
     });
   });
 
-  // TODO https://github.com/sanity-io/groq-js/issues/145
+  // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/145
 
   describe("dateTime", () => {
     it.failing("dateTime::now()", async () => {
       const query = "dateTime::now()";
 
       const tree = parse(query);
-      // TODO https://github.com/sanity-io/groq-js/issues/144
-      // TODO https://github.com/sanity-io/groq-js/issues/143
+      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/144
 
       const expectedTree = {
         args: [],
