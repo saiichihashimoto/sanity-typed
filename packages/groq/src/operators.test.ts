@@ -7,6 +7,7 @@ import { expectType } from "@sanity-typed/test-utils";
 
 import type { ExecuteQuery, Parse, _ScopeFromPartialContext } from ".";
 
+// TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/143
 const newDateTime = async (date: Date): Promise<DateTime> =>
   (await evaluate(parse(`dateTime("${date.toISOString()}")`))).get();
 
@@ -1192,7 +1193,7 @@ describe("operators", () => {
     it('dateTime("2023-09-06T09:39:45.496Z")+5', async () => {
       const query = 'dateTime("2023-09-06T09:39:45.496Z")+5';
 
-      // TODO https://github.com/sanity-io/groq-js/issues/144
+      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/144
       const tree = parse(query);
 
       const expectedTree = {
@@ -1263,7 +1264,7 @@ describe("operators", () => {
       const query =
         'dateTime("2023-09-06T09:39:45.496Z")-dateTime("2023-09-06T09:39:45.496Z")';
 
-      // TODO https://github.com/sanity-io/groq-js/issues/144
+      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/144
       const tree = parse(query);
 
       const expectedTree = {
@@ -1311,7 +1312,7 @@ describe("operators", () => {
     it('dateTime("2023-09-06T09:39:45.496Z")-5', async () => {
       const query = 'dateTime("2023-09-06T09:39:45.496Z")-5';
 
-      // TODO https://github.com/sanity-io/groq-js/issues/144
+      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/144
       const tree = parse(query);
 
       const expectedTree = {
