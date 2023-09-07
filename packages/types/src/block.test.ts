@@ -171,7 +171,7 @@ describe("block", () => {
           keyof Required<InferSchemaValues<typeof config>["foo"]>,
           "_type"
         >
-      >().toBeNever();
+      >().toStrictEqual<never>();
     });
   });
 

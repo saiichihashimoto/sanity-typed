@@ -28,7 +28,9 @@ describe("array", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"][number]>().toBeNever();
+      expectType<
+        InferSchemaValues<typeof config>["foo"][number]
+      >().toStrictEqual<never>();
     });
   });
 

@@ -1,30 +1,24 @@
-import type { IsAny, IsEqual, IsNever } from "type-fest";
+import type { IsEqual } from "type-fest";
 
 declare const EXPECTED: unique symbol;
 declare const RECEIVED: unique symbol;
 
 type Negate<Value extends boolean> = Value extends true ? false : true;
 
-declare const README: unique symbol;
-
 type ToStrictEqual<Received, Inverted extends boolean> = <
   Expected extends IsEqual<Received, Expected> extends Negate<Inverted>
     ? any
-    : IsAny<Expected> extends true
-    ? // Typescript can only create errors when a type mismatch occurs, which is why TypeMatchers has Expected extends ToStrictEqual<Received, Expected, Inverted>
-      // The is generally fine, unless Expected is `any`, because it can be assigned to anything.
-      // Anything except `never`.
-      never
     : {
         [EXPECTED]: Expected;
         [RECEIVED]: Received;
       }
 >(
-  ...args: IsNever<Expected> extends false
+  ...args: IsEqual<Received, Expected> extends Negate<Inverted>
     ? []
     : [
-        warning: {
-          [README]: "⛔️ The provided type should never be `never` ⛔️";
+        error: {
+          [EXPECTED]: Expected;
+          [RECEIVED]: Received;
         }
       ]
 ) => void;
@@ -36,31 +30,23 @@ type AssignableTo<Received, Expected> = [Received] extends [Expected]
 type ToBeAssignableTo<Received, Inverted extends boolean> = <
   Expected extends AssignableTo<Received, Expected> extends Negate<Inverted>
     ? any
-    : IsAny<Expected> extends true
-    ? // Typescript can only create errors when a type mismatch occurs, which is why TypeMatchers has Expected extends ToStrictEqual<Received, Expected, Inverted>
-      // The is generally fine, unless Expected is `any`, because it can be assigned to anything.
-      // Anything except `never`.
-      never
     : {
         [EXPECTED]: Expected;
         [RECEIVED]: Received;
       }
 >(
-  ...args: IsNever<Expected> extends false
+  ...args: AssignableTo<Received, Expected> extends Negate<Inverted>
     ? []
     : [
-        warning: {
-          [README]: "⛔️ The provided type should never be `never` ⛔️";
+        error: {
+          [EXPECTED]: Expected;
+          [RECEIVED]: Received;
         }
       ]
 ) => void;
 
 // https://twitter.com/mattpocockuk/status/1625173887590842369
 declare const inverted: unique symbol;
-
-type NeverTypeMatchers = {
-  toBeNever: () => void;
-};
 
 type TypeMatchers<Received, Inverted extends boolean = false> = {
   [inverted]: Inverted;
@@ -87,21 +73,15 @@ type TypeMatchers<Received, Inverted extends boolean = false> = {
 };
 
 export const expectType = <Received>() => {
-  const valWithoutNot: Omit<
-    NeverTypeMatchers & TypeMatchers<Received>,
-    typeof inverted | "not"
-  > = {
+  const valWithoutNot: Omit<TypeMatchers<Received>, typeof inverted | "not"> = {
     toBeAssignableTo: () => {},
-    toBeNever: () => {},
     toStrictEqual: () => {},
   };
 
-  const val = valWithoutNot as NeverTypeMatchers & TypeMatchers<Received>;
+  const val = valWithoutNot as TypeMatchers<Received>;
 
   // eslint-disable-next-line fp/no-mutation -- recursion requires mutation
   val.not = val as unknown as typeof val.not;
 
-  return val as IsNever<Received> extends true
-    ? NeverTypeMatchers
-    : TypeMatchers<Received>;
+  return val;
 };

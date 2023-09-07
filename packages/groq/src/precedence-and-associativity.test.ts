@@ -135,9 +135,9 @@ describe("precendence and associativity", () => {
       const query = "true==false==true";
 
       expect(() => parse(query)).toThrow();
-      expectType<Parse<typeof query>>().toBeNever();
+      expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-      expectType<ExecuteQuery<typeof query>>().toBeNever();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
     });
 
     it.failing("true!=false!=true", async () => {
@@ -145,45 +145,45 @@ describe("precendence and associativity", () => {
 
       // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/147
       expect(() => parse(query)).toThrow();
-      expectType<Parse<typeof query>>().toBeNever();
+      expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-      expectType<ExecuteQuery<typeof query>>().toBeNever();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
     });
 
     it("true>false>true", async () => {
       const query = "true>false>true";
 
       expect(() => parse(query)).toThrow();
-      expectType<Parse<typeof query>>().toBeNever();
+      expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-      expectType<ExecuteQuery<typeof query>>().toBeNever();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
     });
 
     it("true>=false>=true", async () => {
       const query = "true>=false>=true";
 
       expect(() => parse(query)).toThrow();
-      expectType<Parse<typeof query>>().toBeNever();
+      expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-      expectType<ExecuteQuery<typeof query>>().toBeNever();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
     });
 
     it("true<false<true", async () => {
       const query = "true<false<true";
 
       expect(() => parse(query)).toThrow();
-      expectType<Parse<typeof query>>().toBeNever();
+      expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-      expectType<ExecuteQuery<typeof query>>().toBeNever();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
     });
 
     it("true<=false<=true", async () => {
       const query = "true<=false<=true";
 
       expect(() => parse(query)).toThrow();
-      expectType<Parse<typeof query>>().toBeNever();
+      expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-      expectType<ExecuteQuery<typeof query>>().toBeNever();
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
     });
 
     // https://github.com/saiichihashimoto/sanity-typed/issues/214
@@ -685,19 +685,18 @@ describe("precendence and associativity", () => {
         const expectedResult = false as boolean;
 
         expect(result).toStrictEqual(expectedResult);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        expectType<ExecuteQuery<typeof query>>()
           // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
-          WritableDeep<typeof expectedResult>
-        >();
+          .toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
       it("1==2+3==4", async () => {
         const query = "1==2+3==4";
 
         expect(() => parse(query)).toThrow();
-        expectType<Parse<typeof query>>().toBeNever();
+        expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-        expectType<ExecuteQuery<typeof query>>().toBeNever();
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
       });
     });
 
@@ -1052,19 +1051,18 @@ describe("precendence and associativity", () => {
         const expectedResult = false;
 
         expect(result).toStrictEqual(expectedResult);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        expectType<ExecuteQuery<typeof query>>()
           // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
-          WritableDeep<typeof expectedTree>
-        >();
+          .toStrictEqual<WritableDeep<typeof expectedTree>>();
       });
 
       it("1==2*3==4", async () => {
         const query = "1==2*3==4";
 
         expect(() => parse(query)).toThrow();
-        expectType<Parse<typeof query>>().toBeNever();
+        expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-        expectType<ExecuteQuery<typeof query>>().toBeNever();
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
       });
     });
 
@@ -1547,19 +1545,18 @@ describe("precendence and associativity", () => {
         const expectedResult = false as boolean;
 
         expect(result).toStrictEqual(expectedResult);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        expectType<ExecuteQuery<typeof query>>()
           // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
-          WritableDeep<typeof expectedResult>
-        >();
+          .toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
       it("2==3**4==5", async () => {
         const query = "2==3**4==5";
 
         expect(() => parse(query)).toThrow();
-        expectType<Parse<typeof query>>().toBeNever();
+        expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-        expectType<ExecuteQuery<typeof query>>().toBeNever();
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
       });
     });
 
@@ -2482,9 +2479,9 @@ describe("precendence and associativity", () => {
         const query = "foo==bar.value==baz";
 
         expect(() => parse(query)).toThrow();
-        expectType<Parse<typeof query>>().toBeNever();
+        expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-        expectType<ExecuteQuery<typeof query>>().toBeNever();
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
       });
     });
 
