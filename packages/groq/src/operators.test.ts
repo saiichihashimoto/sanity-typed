@@ -614,6 +614,40 @@ describe("operators", () => {
         WritableDeep<typeof expectedResult>
       >();
     });
+
+    it("$param1==$param2 (both non-literals)", async () => {
+      const query = "$param1==$param2";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { name: "param1", type: "Parameter" },
+        op: "==",
+        right: { name: "param2", type: "Parameter" },
+        type: "OpCall",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param1: 5 as number, param2: 4 as number } as const;
+
+      const result = await (await evaluate(tree, { params })).get();
+
+      const expectedResult = false as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+    });
   });
 
   describe("!=", () => {
@@ -669,6 +703,40 @@ describe("operators", () => {
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<
         WritableDeep<typeof expectedResult>
       >();
+    });
+
+    it("$param1!=$param2 (both non-literals)", async () => {
+      const query = "$param1!=$param2";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { name: "param1", type: "Parameter" },
+        op: "!=",
+        right: { name: "param2", type: "Parameter" },
+        type: "OpCall",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param1: 5 as number, param2: 4 as number } as const;
+
+      const result = await (await evaluate(tree, { params })).get();
+
+      const expectedResult = true as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
   });
 

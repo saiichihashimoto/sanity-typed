@@ -48,6 +48,7 @@ import type {
   ValueNode,
 } from "groq-js";
 import type {
+  IsLiteral,
   IsNever,
   IsUnknown,
   Join,
@@ -1247,6 +1248,20 @@ type Not<TBoolean, Enabled extends boolean = true> = TBoolean extends boolean
     : true
   : null;
 
+type AreLiteralsEqual<TLeft, TRight> =
+  | (TLeft extends TRight ? true : false)
+  | (TRight extends TLeft ? true : false);
+
+type TrueIsBoolean<TValue extends boolean> = true extends TValue
+  ? boolean
+  : TValue extends false
+  ? false
+  : boolean;
+
+type AreNonLiteralsEqual<TLeft, TRight> = TrueIsBoolean<
+  AreLiteralsEqual<TLeft, TRight>
+>;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateEquality()
  */
@@ -1255,14 +1270,20 @@ type EvaluateEquality<
   TScope extends Scope<Context<any[], any>>
 > = TNode extends OpCallNode & { op: "!=" | "==" }
   ? Not<
-      Evaluate<TNode["left"], TScope> extends Evaluate<TNode["right"], TScope>
-        ? true
-        : Evaluate<TNode["right"], TScope> extends Evaluate<
-            TNode["left"],
-            TScope
+      IsLiteral<Evaluate<TNode["left"], TScope>> extends false
+        ? AreNonLiteralsEqual<
+            Evaluate<TNode["left"], TScope>,
+            Evaluate<TNode["right"], TScope>
           >
-        ? true
-        : false,
+        : IsLiteral<Evaluate<TNode["right"], TScope>> extends false
+        ? AreNonLiteralsEqual<
+            Evaluate<TNode["left"], TScope>,
+            Evaluate<TNode["right"], TScope>
+          >
+        : AreLiteralsEqual<
+            Evaluate<TNode["left"], TScope>,
+            Evaluate<TNode["right"], TScope>
+          >,
       TNode["op"] extends "!=" ? true : false
     >
   : never;

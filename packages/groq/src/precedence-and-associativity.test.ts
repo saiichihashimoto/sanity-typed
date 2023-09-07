@@ -685,9 +685,9 @@ describe("precendence and associativity", () => {
         const expectedResult = false as boolean;
 
         expect(result).toStrictEqual(expectedResult);
-        expectType<ExecuteQuery<typeof query>>()
-          // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
-          .toStrictEqual<WritableDeep<typeof expectedResult>>();
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("1==2+3==4", async () => {
@@ -1048,12 +1048,12 @@ describe("precendence and associativity", () => {
 
         const result = await (await evaluate(tree)).get();
 
-        const expectedResult = false;
+        const expectedResult = false as boolean;
 
         expect(result).toStrictEqual(expectedResult);
-        expectType<ExecuteQuery<typeof query>>()
-          // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
-          .toStrictEqual<WritableDeep<typeof expectedTree>>();
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("1==2*3==4", async () => {
@@ -1545,9 +1545,9 @@ describe("precendence and associativity", () => {
         const expectedResult = false as boolean;
 
         expect(result).toStrictEqual(expectedResult);
-        expectType<ExecuteQuery<typeof query>>()
-          // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
-          .toStrictEqual<WritableDeep<typeof expectedResult>>();
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("2==3**4==5", async () => {
