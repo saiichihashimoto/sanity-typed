@@ -3,7 +3,7 @@ import { describe, it } from "@jest/globals";
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { ImageValue, InferSchemaValues } from ".";
+import type { ImageValue, InferSchemaValues, ReferenceValue } from ".";
 
 describe("specific issues", () => {
   it("#108 object -> array -> object -> object -> array -> object -> image", () => {
@@ -70,6 +70,52 @@ describe("specific issues", () => {
             })[];
           };
         })[];
+      }
+    >();
+  });
+
+  it("#299 object -> array -> reference", () => {
+    // https://github.com/saiichihashimoto/sanity-typed/issues/299
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            title: "Project slider",
+            name: "section.projectSlider",
+            type: "object",
+            fields: [
+              defineField({
+                type: "string",
+                name: "title",
+              }),
+              defineField({
+                title: "Projects",
+                name: "projects",
+                type: "array",
+                validation: (rule) => rule.min(3),
+                of: [
+                  defineArrayMember({
+                    type: "reference",
+                    to: [{ type: "project" as const }],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    expectType<
+      InferSchemaValues<typeof config>["section.projectSlider"]
+    >().toStrictEqual<
+      {
+        _type: "section.projectSlider";
+      } & {
+        projects?: (ReferenceValue<"project"> & { _key: string })[];
+        title?: string;
       }
     >();
   });
