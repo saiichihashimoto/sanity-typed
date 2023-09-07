@@ -74,7 +74,7 @@ describe("specific issues", () => {
     >();
   });
 
-  it("#299", () => {
+  it("#299 object -> array -> reference", () => {
     // https://github.com/saiichihashimoto/sanity-typed/issues/299
     const config = defineConfig({
       dataset: "dataset",
