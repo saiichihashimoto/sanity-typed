@@ -116,7 +116,6 @@ describe("reference", () => {
         },
       });
 
-      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();

@@ -188,8 +188,8 @@ export type NumberDefinition<TRequired extends boolean> = MergeOld<
 export const _referenced: unique symbol = Symbol("referenced");
 
 export type ReferenceValue<TReferenced extends string> = MergeOld<
-  Omit<ReferenceValueNative, "_key"> & { _type: "reference" },
-  { [_referenced]: TReferenced }
+  Omit<ReferenceValueNative, "_key">,
+  { [_referenced]: TReferenced; _type: "reference" }
 >;
 
 export type TypeReference<TReferenced extends string> = MergeOld<
@@ -197,10 +197,10 @@ export type TypeReference<TReferenced extends string> = MergeOld<
   {
     type: TReferenced &
       (IsStringLiteral<TReferenced> extends false
-        ? TReferenced & {
+        ? {
             [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
           }
-        : TReferenced);
+        : unknown);
   }
 >;
 
