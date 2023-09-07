@@ -732,7 +732,7 @@ type SquareBracketTraversal<
               | (ConstantEvaluate<_Parse<TBracketExpression>> extends never
                   ? never
                   : ConstantEvaluate<_Parse<TBracketExpression>> extends string
-                  ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+                  ? // @ts-expect-error -- Type instantiation is excessively deep and possibly infinite.
                     MaybeMap<
                       Exclude<_Parse<`${_Prefix}${TBase}`>, Level10>,
                       {
@@ -1919,7 +1919,7 @@ type EvaluatePipeFuncCall<
       ? TFuncIdentifier extends keyof PipeFunctions<any, any>[TFuncNamespace]
         ? EvaluateFuncArgs<TNode["args"], TScope> extends any[]
           ? Evaluate<TNode["base"], TScope> extends any[]
-            ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+            ? // @ts-expect-error -- Type instantiation is excessively deep and possibly infinite.
               PipeFunctions<
                 Evaluate<TNode["base"], TScope>,
                 EvaluateFuncArgs<TNode["args"], TScope>

@@ -242,7 +242,7 @@ type MembersZods<
 >)[]
   ? TMemberDefinition extends never
     ? never
-    : // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+    : // @ts-expect-error -- Type instantiation is excessively deep and possibly infinite.
       AddKey<
         AddType<
           TMemberDefinition["name"],
