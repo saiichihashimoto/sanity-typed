@@ -37,14 +37,14 @@
     "type-fest": "4.3.1"
   },
   "devDependencies": {
-    "@jest/globals": "29.6.2",
-    "@portabletext/types": "2.0.5",
+    "@jest/globals": "29.6.4",
+    "@portabletext/types": "2.0.6",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity/client": "6.4.9",
     "@types/geojson": "7946.0.10",
-    "groq-js": "1.1.12",
-    "typescript": "5.1.6"
+    "groq-js": "1.2.0",
+    "typescript": "5.2.2"
   },
   "peerDependencies": {
     "@portabletext/types": "^2.0.2",
