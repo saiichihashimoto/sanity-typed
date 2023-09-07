@@ -7,17 +7,14 @@ import { expectType } from "@sanity-typed/test-utils";
 
 import type { ExecuteQuery, Parse, _ScopeFromPartialContext } from ".";
 
-const FOO: unique symbol = Symbol("foo");
-type Foo = typeof FOO;
-
 describe("pipe functions", () => {
   describe("global", () => {
     it("false|order(name)", async () => {
       const query = "false|order(name)";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         args: [{ name: "name", type: "AccessAttribute" }],
         base: { type: "Value", value: false },
         func: (() => {}) as unknown as GroqPipeFunction,
@@ -26,23 +23,29 @@ describe("pipe functions", () => {
       } as const;
 
       expect(tree).toStrictEqual({
-        ...desiredTree,
+        ...expectedTree,
         func: expect.any(Function),
       });
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBeNull();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = null;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("*|order(name)", async () => {
       const query = "*|order(name)";
-      const tree = parse(query);
-      const result = await (await evaluate(tree, { dataset: [FOO] })).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         args: [{ name: "name", type: "AccessAttribute" }],
         base: { type: "Everything" },
         func: (() => {}) as unknown as GroqPipeFunction,
@@ -51,25 +54,36 @@ describe("pipe functions", () => {
       } as const;
 
       expect(tree).toStrictEqual({
-        ...desiredTree,
+        ...expectedTree,
         func: expect.any(Function),
       });
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toStrictEqual([FOO]);
+      const dataset = ["foo", "bar"] as const;
+
+      const result = await (await evaluate(tree, { dataset })).get();
+
+      const expectedResult = ["foo", "bar"] as ["bar" | "foo", "bar" | "foo"];
+
+      expect(result).toStrictEqual(expectedResult);
       expectType<
-        ExecuteQuery<typeof query, _ScopeFromPartialContext<{ dataset: Foo[] }>>
-      >().toStrictEqual<Foo[]>();
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            dataset: WritableDeep<typeof dataset>;
+          }>
+        >
+      >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
 
     it("*|order(name asc)", async () => {
       const query = "*|order(name asc)";
-      const tree = parse(query);
-      const result = await (await evaluate(tree, { dataset: [FOO] })).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         args: [
           { base: { name: "name", type: "AccessAttribute" }, type: "Asc" },
         ],
@@ -80,25 +94,36 @@ describe("pipe functions", () => {
       } as const;
 
       expect(tree).toStrictEqual({
-        ...desiredTree,
+        ...expectedTree,
         func: expect.any(Function),
       });
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toStrictEqual([FOO]);
+      const dataset = ["foo", "bar"] as const;
+
+      const result = await (await evaluate(tree, { dataset })).get();
+
+      const expectedResult = ["foo", "bar"] as ["bar" | "foo", "bar" | "foo"];
+
+      expect(result).toStrictEqual(expectedResult);
       expectType<
-        ExecuteQuery<typeof query, _ScopeFromPartialContext<{ dataset: Foo[] }>>
-      >().toStrictEqual<Foo[]>();
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            dataset: WritableDeep<typeof dataset>;
+          }>
+        >
+      >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
 
     it("*|order(name desc)", async () => {
       const query = "*|order(name desc)";
-      const tree = parse(query);
-      const result = await (await evaluate(tree, { dataset: [FOO] })).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         args: [
           { base: { name: "name", type: "AccessAttribute" }, type: "Desc" },
         ],
@@ -109,25 +134,36 @@ describe("pipe functions", () => {
       } as const;
 
       expect(tree).toStrictEqual({
-        ...desiredTree,
+        ...expectedTree,
         func: expect.any(Function),
       });
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toStrictEqual([FOO]);
+      const dataset = ["foo", "bar"] as const;
+
+      const result = await (await evaluate(tree, { dataset })).get();
+
+      const expectedResult = ["foo", "bar"] as ["bar" | "foo", "bar" | "foo"];
+
+      expect(result).toStrictEqual(expectedResult);
       expectType<
-        ExecuteQuery<typeof query, _ScopeFromPartialContext<{ dataset: Foo[] }>>
-      >().toStrictEqual<Foo[]>();
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            dataset: WritableDeep<typeof dataset>;
+          }>
+        >
+      >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
 
     it("[1,2,3]|order(name)", async () => {
       const query = "[1,2,3]|order(name)";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         args: [{ name: "name", type: "AccessAttribute" }],
         base: {
           elements: [
@@ -155,23 +191,29 @@ describe("pipe functions", () => {
       } as const;
 
       expect(tree).toStrictEqual({
-        ...desiredTree,
+        ...expectedTree,
         func: expect.any(Function),
       });
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toStrictEqual([1, 2, 3]);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<(1 | 2 | 3)[]>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = [1, 2, 3] as [1 | 2 | 3, 1 | 2 | 3, 1 | 2 | 3];
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("*|global::order(name)", async () => {
       const query = "*|global::order(name)";
-      const tree = parse(query);
-      const result = await (await evaluate(tree, { dataset: [FOO] })).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         args: [{ name: "name", type: "AccessAttribute" }],
         base: { type: "Everything" },
         func: (() => {}) as unknown as GroqPipeFunction,
@@ -180,17 +222,28 @@ describe("pipe functions", () => {
       } as const;
 
       expect(tree).toStrictEqual({
-        ...desiredTree,
+        ...expectedTree,
         func: expect.any(Function),
       });
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toStrictEqual([FOO]);
+      const dataset = ["foo", "bar"] as const;
+
+      const result = await (await evaluate(tree, { dataset })).get();
+
+      const expectedResult = ["foo", "bar"] as ["bar" | "foo", "bar" | "foo"];
+
+      expect(result).toStrictEqual(expectedResult);
       expectType<
-        ExecuteQuery<typeof query, _ScopeFromPartialContext<{ dataset: Foo[] }>>
-      >().toStrictEqual<Foo[]>();
+        ExecuteQuery<
+          typeof query,
+          _ScopeFromPartialContext<{
+            dataset: WritableDeep<typeof dataset>;
+          }>
+        >
+      >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
   });
 });

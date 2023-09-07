@@ -11,181 +11,212 @@ import type {
   _ScopeFromPartialScope,
 } from ".";
 
-const FOO: unique symbol = Symbol("foo");
-type Foo = typeof FOO;
-
 describe("simple expressions", () => {
   it("@", async () => {
     const query = "@";
+
     const tree = parse(query);
-    const result = await (await evaluate(tree, { root: FOO })).get();
 
-    const desiredTree = { type: "This" } as const;
+    const expectedTree = { type: "This" } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toBe(FOO);
+    const root = "foo";
+
+    const result = await (await evaluate(tree, { root })).get();
+
+    const expectedResult = "foo";
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<
-      ExecuteQuery<typeof query, _ScopeFromPartialScope<{ this: Foo }>>
-    >().toStrictEqual<Foo>();
+      ExecuteQuery<typeof query, _ScopeFromPartialScope<{ this: typeof root }>>
+    >().toStrictEqual<typeof expectedResult>();
   });
 
   it("key", async () => {
     const query = "key";
-    const tree = parse(query);
-    const result = await (await evaluate(tree, { root: { key: FOO } })).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       name: "key",
       type: "AccessAttribute",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toBe(FOO);
+    const root = { key: "foo" } as const;
+
+    const result = await (await evaluate(tree, { root })).get();
+
+    const expectedResult = "foo";
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<
-      ExecuteQuery<typeof query, _ScopeFromPartialScope<{ this: { key: Foo } }>>
-    >().toStrictEqual<Foo>();
+      ExecuteQuery<
+        typeof query,
+        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
+      >
+    >().toStrictEqual<typeof expectedResult>();
   });
 
   it("*", async () => {
     const query = "*";
+
     const tree = parse(query);
-    const result = await (
-      await evaluate(tree, { dataset: [{ _type: "bar" }, { _type: "foo" }] })
-    ).get();
 
-    const desiredTree = { type: "Everything" } as const;
+    const expectedTree = { type: "Everything" } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual([{ _type: "bar" }, { _type: "foo" }]);
+    const dataset = [{ _type: "bar" }, { _type: "foo" }] as const;
+
+    const result = await (await evaluate(tree, { dataset })).get();
+
+    const expectedResult = dataset;
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<
       ExecuteQuery<
         typeof query,
         _ScopeFromPartialContext<{
-          dataset: ({ _type: "bar" } | { _type: "foo" })[];
+          dataset: WritableDeep<typeof dataset>;
         }>
       >
-    >().toStrictEqual<({ _type: "bar" } | { _type: "foo" })[]>();
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 
   it("^", async () => {
     const query = "^";
+
     const tree = parse(query);
 
-    const desiredTree = {
+    const expectedTree = {
       n: 1,
       type: "Parent",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
+
+    const expectedResult = "foo";
 
     expectType<
       ExecuteQuery<
         typeof query,
         _ScopeFromPartialScope<{
-          parent: { context: never; parent: null; this: Foo };
+          parent: _ScopeFromPartialScope<{
+            this: "foo";
+          }>;
         }>
       >
-    >().toStrictEqual<Foo>();
+    >().toStrictEqual<typeof expectedResult>();
   });
 
   it("^.^", async () => {
     const query = "^.^";
+
     const tree = parse(query);
 
-    const desiredTree = {
+    const expectedTree = {
       n: 2,
       type: "Parent",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
+
+    const expectedResult = "foo";
 
     expectType<
       ExecuteQuery<
         typeof query,
         _ScopeFromPartialScope<{
-          parent: {
-            context: never;
-            parent: { context: never; parent: null; this: Foo };
-            this: Foo;
-          };
+          parent: _ScopeFromPartialScope<{
+            parent: _ScopeFromPartialScope<{
+              this: "foo";
+            }>;
+          }>;
         }>
       >
-    >().toStrictEqual<Foo>();
+    >().toStrictEqual<typeof expectedResult>();
   });
 
   it("^.^.^", async () => {
     const query = "^.^.^";
+
     const tree = parse(query);
 
-    const desiredTree = {
+    const expectedTree = {
       n: 3,
       type: "Parent",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
+
+    const expectedResult = "foo";
 
     expectType<
       ExecuteQuery<
         typeof query,
         _ScopeFromPartialScope<{
-          parent: {
-            context: never;
-            parent: {
-              context: never;
-              parent: { context: never; parent: null; this: Foo };
-              this: Foo;
-            };
-            this: Foo;
-          };
+          parent: _ScopeFromPartialScope<{
+            parent: _ScopeFromPartialScope<{
+              parent: _ScopeFromPartialScope<{
+                this: "foo";
+              }>;
+            }>;
+          }>;
         }>
       >
-    >().toStrictEqual<Foo>();
+    >().toStrictEqual<typeof expectedResult>();
   });
 
   it("$param", async () => {
     const query = "$param";
-    const tree = parse(query);
-    const result = await (
-      await evaluate(tree, { params: { param: FOO } })
-    ).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       name: "param",
       type: "Parameter",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual(FOO);
+    const params = { param: "foo" } as const;
+
+    const result = await (await evaluate(tree, { params })).get();
+
+    const expectedResult = "foo";
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{ parameters: { param: Foo } }>
+        _ScopeFromPartialContext<{
+          parameters: WritableDeep<typeof params>;
+        }>
       >
-    >().toStrictEqual<Foo>();
+    >().toStrictEqual<typeof expectedResult>();
   });
 });

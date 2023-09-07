@@ -1,5 +1,5 @@
 import type { StrictDefinition } from "sanity";
-import type { IsStringLiteral, Merge } from "type-fest";
+import type { IsStringLiteral } from "type-fest";
 import { z } from "zod";
 
 import { _referenced } from "@sanity-typed/types";
@@ -107,14 +107,44 @@ type AddType<
   Zod extends z.ZodTypeAny
 > = IsStringLiteral<Type> extends false
   ? Zod
-  : Zod extends z.ZodObject<infer T>
+  : Zod extends z.ZodObject<infer T, infer UnknownKeys, infer CatchAll>
   ? z.ZodObject<
       // TODO Should be able to get this from ZodObject<...>['extend']<...> somehow
       Omit<
         T,
         keyof ReturnType<typeof addTypeFieldsZods<Exclude<Type, undefined>>>
       > &
-        ReturnType<typeof addTypeFieldsZods<Exclude<Type, undefined>>>
+        ReturnType<typeof addTypeFieldsZods<Exclude<Type, undefined>>>,
+      UnknownKeys,
+      CatchAll,
+      /* eslint-disable @typescript-eslint/sort-type-constituents -- It's getting stuck in a loop */
+      z.objectOutputType<
+        Omit<
+          T,
+          keyof ReturnType<typeof addTypeFieldsZods<Exclude<Type, undefined>>>
+        >,
+        CatchAll,
+        UnknownKeys
+      > &
+        z.objectOutputType<
+          ReturnType<typeof addTypeFieldsZods<Exclude<Type, undefined>>>,
+          CatchAll,
+          UnknownKeys
+        >,
+      z.objectInputType<
+        Omit<
+          T,
+          keyof ReturnType<typeof addTypeFieldsZods<Exclude<Type, undefined>>>
+        >,
+        CatchAll,
+        UnknownKeys
+      > &
+        z.objectInputType<
+          ReturnType<typeof addTypeFieldsZods<Exclude<Type, undefined>>>,
+          CatchAll,
+          UnknownKeys
+        >
+      /* eslint-enable @typescript-eslint/sort-type-constituents */
     >
   : Zod extends z.ZodLazy<infer TZod extends z.ZodTypeAny>
   ? z.ZodLazy<AddType<Type, TZod>>
@@ -139,10 +169,28 @@ const addKeyFieldsZods = {
   _key: z.string(),
 };
 
-type AddKey<Zod extends z.ZodTypeAny> = Zod extends z.ZodObject<infer T>
+type AddKey<Zod extends z.ZodTypeAny> = Zod extends z.ZodObject<
+  infer T,
+  infer UnknownKeys,
+  infer CatchAll
+>
   ? z.ZodObject<
       // TODO Should be able to get this from ZodObject<...>['extend']<...> somehow
-      Merge<T, typeof addKeyFieldsZods>
+      Omit<T, keyof typeof addKeyFieldsZods> & typeof addKeyFieldsZods,
+      UnknownKeys,
+      CatchAll,
+      z.objectOutputType<
+        Omit<T, keyof typeof addKeyFieldsZods>,
+        CatchAll,
+        UnknownKeys
+      > &
+        z.objectOutputType<typeof addKeyFieldsZods, CatchAll, UnknownKeys>,
+      z.objectInputType<
+        Omit<T, keyof typeof addKeyFieldsZods>,
+        CatchAll,
+        UnknownKeys
+      > &
+        z.objectInputType<typeof addKeyFieldsZods, CatchAll, UnknownKeys>
     >
   : Zod extends z.ZodLazy<infer TZod extends z.ZodTypeAny>
   ? z.ZodLazy<AddKey<TZod>>
@@ -195,9 +243,9 @@ type MembersZods<
   ? TMemberDefinition extends never
     ? never
     : // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-      AddType<
-        TMemberDefinition["name"],
-        AddKey<
+      AddKey<
+        AddType<
+          TMemberDefinition["name"],
           // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
           SanityTypeToZod<TMemberDefinition, TSanityConfigZods>
         >
@@ -227,7 +275,7 @@ const memberZods = <
     const zod = schemaTypeToZod(member, getZods);
 
     // TODO use lodash-fp flow
-    return "name" in member ? addType(member.name, addKey(zod)) : addKey(zod);
+    return addKey("name" in member ? addType(member.name, zod) : zod);
   }) as MembersZods<TMemberDefinitions, TSanityConfigZods>;
 
 type ArrayZod<
@@ -268,13 +316,12 @@ const arrayZod = <
     )
   ) as ArrayZod<TSchemaType, TSanityConfigZods>;
 
-const spanZod = addKey(
-  z.object({
-    _type: z.literal("span"),
-    marks: z.optional(z.array(z.string())),
-    text: z.string(),
-  })
-);
+const spanZod = z.object({
+  _key: z.string(),
+  _type: z.literal("span"),
+  marks: z.optional(z.array(z.string())),
+  text: z.string(),
+});
 
 type SpanZod = typeof spanZod;
 
