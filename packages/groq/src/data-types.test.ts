@@ -11,9 +11,9 @@ describe("base case", () => {
     const query = "";
 
     expect(() => parse(query)).toThrow();
-    expectType<Parse<typeof query>>().toBeNever();
+    expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-    expectType<ExecuteQuery<typeof query>>().toBeNever();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
   });
 });
 
@@ -172,9 +172,9 @@ describe("data types", () => {
     const query = '"double" "quoted" "string"';
 
     expect(() => parse(query)).toThrow();
-    expectType<Parse<typeof query>>().toBeNever();
+    expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-    expectType<ExecuteQuery<typeof query>>().toBeNever();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
   });
 
   it("'single quoted string'", async () => {
@@ -231,9 +231,9 @@ describe("data types", () => {
     const query = "'single' 'quoted' 'string'";
 
     expect(() => parse(query)).toThrow();
-    expectType<Parse<typeof query>>().toBeNever();
+    expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-    expectType<ExecuteQuery<typeof query>>().toBeNever();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
   });
 
   it("[]", async () => {
@@ -363,9 +363,9 @@ describe("data types", () => {
     const query = "[1,[]";
 
     expect(() => parse(query)).toThrow();
-    expectType<Parse<typeof query>>().toBeNever();
+    expectType<Parse<typeof query>>().toStrictEqual<never>();
 
-    expectType<ExecuteQuery<typeof query>>().toBeNever();
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
   });
 
   it("[null,true,false,5.6,\"double quoted string\",'single quoted string']", async () => {
