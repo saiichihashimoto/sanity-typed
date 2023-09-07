@@ -15,24 +15,111 @@ Typed Sanity Client Results, all inferred, no client changes!
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
+- [Considerations](#considerations)
+  - [Types match config but not actual documents](#types-match-config-but-not-actual-documents)
+  - [GROQ Query results changes in seemingly breaking ways](#groq-query-results-changes-in-seemingly-breaking-ways)
 
 ## Install
 
 ```bash
-npm install @sanity-typed/client
+npm install sanity @sanity-typed/client
 ```
 
 ## Usage
 
 Use `createClient` exactly as you would from [`@sanity/client`](https://github.com/sanity-io/client) with a minor change for proper type inference.
 
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
+```product.ts```:
+```typescript
+// import { defineArrayMember, defineField, defineType } from "sanity";
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+} from "@sanity-typed/types";
+
+/** No changes using defineType, defineField, and defineArrayMember */
+export const product = defineType({
+  name: "product",
+  type: "document",
+  title: "Product",
+  fields: [
+    defineField({
+      name: "productName",
+      type: "string",
+      title: "Product name",
+    }),
+    defineField({
+      name: "tags",
+      type: "array",
+      title: "Tags for item",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "tag",
+          fields: [
+            { type: "string", name: "label" },
+            { type: "string", name: "value" },
+          ],
+        }),
+      ],
+    }),
+  ],
+});
+```
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
+```sanity.config.ts```:
+```typescript
+// import { defineConfig } from "sanity";
+import { defineConfig } from "@sanity-typed/types";
+import type { InferSchemaValues } from "@sanity-typed/types";
+
+import { product } from "./schemas/product";
+
+/** No changes using defineConfig */
+const config = defineConfig({
+  projectId: "your-project-id",
+  dataset: "your-dataset-name",
+  schema: {
+    types: [
+      product,
+      // ...
+    ],
+  },
+});
+
+export default config;
+
+/** Typescript type of all types! */
+export type SanityValues = InferSchemaValues<typeof config>;
+/**
+ *  SanityValues === {
+ *    product: {
+ *      _createdAt: string;
+ *      _id: string;
+ *      _rev: string;
+ *      _type: "product";
+ *      _updatedAt: string;
+ *      productName?: string;
+ *      tags?: {
+ *        _key: string;
+ *        label?: string;
+ *        value?: string;
+ *      }[];
+ *    };
+ *    // ... all your types!
+ *  }
+ */
+```
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/client/docs/your-super-cool-application.ts -->
 ```your-super-cool-application.ts```:
 ```typescript
 // import { createClient } from "@sanity/client";
 import { createClient } from "@sanity-typed/client";
 
-// Get this from @sanity-typed/types!
 import type { SanityValues } from "./sanity.schema";
 
 /** Small change using createClient */
@@ -65,4 +152,43 @@ const data = await client.fetch('*[_type=="product"]');
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/client/docs/your-super-cool-application.ts -->
 
 The `createClient<SanityValues>()(config)` syntax is due to having to infer one generic (the config shape) while explicitly providing the Sanity Values' type, [which can't be done in the same generics](https://github.com/microsoft/TypeScript/issues/10571).
+
+## Considerations
+
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE packages/types/docs/types/docs/considerations/types-vs-content-lake.md -->
+### Types match config but not actual documents
+
+As your sanity driven application grows over time, your config is likely to change. Keep in mind that you can only derive types of your current config, while documents in your Sanity Content Lake will have shapes from older configs. This can be a problem when adding new fields or changing the type of old fields, as the types won't can clash with the old documents.
+
+Ultimately, there's nothing that can automatically solve this; we can't derive types from a no longer existing config. This is a consideration with or without types: your application needs to handle all existing documents. Be sure to make changes in a backwards compatible manner (ie, make new fields optional, don't change the type of old fields, etc).
+
+Another solution would be to keep old configs around, just to derive their types:
+
+```typescript
+const config = defineConfig({
+  schema: {
+    types: [foo],
+  },
+  plugins: [myPlugin()],
+});
+
+const oldConfig = defineConfig({
+  schema: {
+    types: [oldFoo],
+  },
+  plugins: [myPlugin()],
+});
+
+type SanityValues =
+  | InferSchemaValues<typeof config>
+  | InferSchemaValues<typeof oldConfig>;
+```
+
+This can get unweildy although, if you're deligent about data migrations of your old documents to your new types, you may be able to deprecate old configs and remove them from your codebase.
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/types/docs/types/docs/considerations/types-vs-content-lake.md -->
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE packages/groq-js/docs/groq-js/docs/considerations/evaluate-type-flakiness.md -->
+### GROQ Query results changes in seemingly breaking ways
+
+Similar to [parsing](#the-parsed-tree-changes-in-seemingly-breaking-ways), evaluating groq queries will attempt to match how sanity actually evaluates queries. Again, any fixes to match that or changes to groq evaluation will likely not be considered a major change but, rather, a bug fix.
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/groq-js/docs/groq-js/docs/considerations/evaluate-type-flakiness.md -->
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/client/_README.md -->

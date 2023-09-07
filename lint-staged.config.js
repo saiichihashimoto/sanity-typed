@@ -17,7 +17,7 @@ const config = {
   "{.prettier*,package.json}": () => [`${prettierCmd} .`],
   "{package-lock.json,package.json}": () => ["npm install"],
   "package.json": () => ["manypkg fix", "manypkg check"],
-  "*.md": (filenames) =>
+  "{README,_README}.md": (filenames) =>
     filenames.flatMap((filename) => [
       `bundle exec markdown_helper include ${path.resolve(
         path.dirname(filename),

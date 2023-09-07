@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { evaluate as evaluateNative, parse as parseNative } from "groq-js";
+import type { WritableDeep } from "type-fest";
 
 import type { ExecuteQuery } from "@sanity-typed/groq";
 import { expectType } from "@sanity-typed/test-utils";
@@ -7,7 +8,6 @@ import { expectType } from "@sanity-typed/test-utils";
 import { evaluate, parse } from ".";
 
 const FOO: unique symbol = Symbol("foo");
-type Foo = typeof FOO;
 
 describe("evaluate", () => {
   it("returns same value as groq-js", () => {
@@ -31,8 +31,12 @@ describe("evaluate", () => {
     const tree = parse(query);
     const result = await (await evaluate(tree, { root: FOO })).get();
 
-    expect(result).toStrictEqual(FOO);
-    expectType<typeof result>().toStrictEqual<symbol>();
+    const expectedResult = FOO;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("uses `dataset` as `*`", async () => {
@@ -40,8 +44,12 @@ describe("evaluate", () => {
     const tree = parse(query);
     const result = await (await evaluate(tree, { dataset: [FOO] })).get();
 
-    expect(result).toStrictEqual([FOO]);
-    expectType<typeof result>().toStrictEqual<[Foo]>();
+    const expectedResult = [FOO] as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("uses `params` as parameters", async () => {
@@ -51,19 +59,38 @@ describe("evaluate", () => {
       await evaluate(tree, { params: { param: FOO } })
     ).get();
 
-    expect(result).toStrictEqual(FOO);
-    expectType<typeof result>().toStrictEqual<symbol>();
+    const expectedResult = FOO;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
-  it.todo("uses `identity` as `identity()`");
+  it("uses `identity` as `identity()`", async () => {
+    const query = "identity()";
+    const tree = parse(query);
+    const result = await (await evaluate(tree, { identity: "foo" })).get();
+
+    const expectedResult = "foo";
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
 
   it("uses `before` as `before()`", async () => {
     const query = "before()";
     const tree = parse(query, { mode: "delta" });
     const result = await (await evaluate(tree, { before: FOO })).get();
 
-    expect(result).toStrictEqual(FOO);
-    expectType<typeof result>().toStrictEqual<symbol>();
+    const expectedResult = FOO;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("uses `after` as `after()`", async () => {
@@ -71,54 +98,67 @@ describe("evaluate", () => {
     const tree = parse(query, { mode: "delta" });
     const result = await (await evaluate(tree, { after: FOO })).get();
 
-    expect(result).toStrictEqual(FOO);
-    expectType<typeof result>().toStrictEqual<symbol>();
+    const expectedResult = FOO;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
-  it.failing("`operation()` should be never", async () => {
-    const query = "operation()";
-    // TODO https://github.com/sanity-io/groq-js/issues/140
+  it("`delta::operation()` should be null", async () => {
+    const query = "delta::operation()";
     const tree = parse(query, { mode: "delta" });
     const result = await (await evaluate(tree)).get();
 
-    expect(result).toBeNull();
-    expectType<typeof result>().toBeNever();
+    const expectedResult = null;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
-  it.failing("`operation()` should be `delete` when `before`", async () => {
-    const query = "operation()";
-    // TODO https://github.com/sanity-io/groq-js/issues/140
+  it("`delta::operation()` should be `delete` when `before`", async () => {
+    const query = "delta::operation()";
     const tree = parse(query, { mode: "delta" });
     const result = await (await evaluate(tree, { before: FOO })).get();
 
-    expect(result).toBe("delete");
-    expectType<typeof result>().toStrictEqual<"delete">();
+    const expectedResult = "delete";
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
-  it.failing("`operation()` should be `create` when `after`", async () => {
-    const query = "operation()";
-    // TODO https://github.com/sanity-io/groq-js/issues/140
+  it("`delta::operation()` should be `create` when `after`", async () => {
+    const query = "delta::operation()";
     const tree = parse(query, { mode: "delta" });
     const result = await (await evaluate(tree, { after: FOO })).get();
 
-    expect(result).toBe("create");
-    expectType<typeof result>().toStrictEqual<"create">();
+    const expectedResult = "create";
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
-  it.failing(
-    "`operation()` should be `update` when both `before` and `after`",
-    async () => {
-      const query = "operation()";
-      // TODO https://github.com/sanity-io/groq-js/issues/140
-      const tree = parse(query, { mode: "delta" });
-      const result = await (
-        await evaluate(tree, { before: FOO, after: FOO })
-      ).get();
+  it("`delta::operation()` should be `update` when both `before` and `after`", async () => {
+    const query = "delta::operation()";
+    const tree = parse(query, { mode: "delta" });
+    const result = await (
+      await evaluate(tree, { before: FOO, after: FOO })
+    ).get();
 
-      expect(result).toBe("update");
-      expectType<typeof result>().toStrictEqual<"update">();
-    }
-  );
+    const expectedResult = "update";
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
 
   it("uses `sanity.projectId` as `sanity::projectId()`", async () => {
     const query = "sanity::projectId()";
@@ -129,8 +169,12 @@ describe("evaluate", () => {
       })
     ).get();
 
-    expect(result).toBe("projectId");
-    expectType<typeof result>().toStrictEqual<"projectId">();
+    const expectedResult = "projectId";
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("uses `sanity.dataset` as `sanity::dataset()`", async () => {
@@ -142,7 +186,11 @@ describe("evaluate", () => {
       })
     ).get();
 
-    expect(result).toBe("dataset");
-    expectType<typeof result>().toStrictEqual<"dataset">();
+    const expectedResult = "dataset";
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<typeof result>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 });

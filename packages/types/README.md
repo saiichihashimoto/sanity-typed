@@ -18,7 +18,11 @@ Typed Sanity Documents, all inferred, no config changes!
 - [Plugins](#plugins)
   - [Writing typed plugins](#writing-typed-plugins)
   - [Using external untyped plugins](#using-external-untyped-plugins)
+- [Considerations](#considerations)
+  - [Types match config but not actual documents](#types-match-config-but-not-actual-documents)
 - [Breaking Changes](#breaking-changes)
+  - [4 to 5](#4-to-5)
+    - [Removed `_InferValue` and `AliasValue`](#removed-_infervalue-and-aliasvalue)
   - [3 to 4](#3-to-4)
     - [Referenced `_type` needs `as const`](#referenced-_type-needs-as-const)
     - [Renamed `DocumentValue` to `SanityDocument`](#renamed-documentvalue-to-sanitydocument)
@@ -79,8 +83,6 @@ export const product = defineType({
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
-import { deskTool } from "sanity/desk";
-
 // import { defineConfig } from "sanity";
 import { defineConfig } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
@@ -91,16 +93,17 @@ import { product } from "./schemas/product";
 const config = defineConfig({
   projectId: "your-project-id",
   dataset: "your-dataset-name",
-  plugins: [deskTool()],
   schema: {
-    types: [product],
+    types: [
+      product,
+      // ...
+    ],
   },
 });
 
 export default config;
 
 /** Typescript type of all types! */
-/** Provide this to @sanity-typed/client! */
 export type SanityValues = InferSchemaValues<typeof config>;
 /**
  *  SanityValues === {
@@ -117,6 +120,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *        value?: string;
  *      }[];
  *    };
+ *    // ... all your types!
  *  }
  */
 ```
@@ -245,7 +249,47 @@ const nav = defineType({
 });
 ```
 
+## Considerations
+
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE packages/types/docs/considerations/docs/considerations/types-vs-content-lake.md -->
+### Types match config but not actual documents
+
+As your sanity driven application grows over time, your config is likely to change. Keep in mind that you can only derive types of your current config, while documents in your Sanity Content Lake will have shapes from older configs. This can be a problem when adding new fields or changing the type of old fields, as the types won't can clash with the old documents.
+
+Ultimately, there's nothing that can automatically solve this; we can't derive types from a no longer existing config. This is a consideration with or without types: your application needs to handle all existing documents. Be sure to make changes in a backwards compatible manner (ie, make new fields optional, don't change the type of old fields, etc).
+
+Another solution would be to keep old configs around, just to derive their types:
+
+```typescript
+const config = defineConfig({
+  schema: {
+    types: [foo],
+  },
+  plugins: [myPlugin()],
+});
+
+const oldConfig = defineConfig({
+  schema: {
+    types: [oldFoo],
+  },
+  plugins: [myPlugin()],
+});
+
+type SanityValues =
+  | InferSchemaValues<typeof config>
+  | InferSchemaValues<typeof oldConfig>;
+```
+
+This can get unweildy although, if you're deligent about data migrations of your old documents to your new types, you may be able to deprecate old configs and remove them from your codebase.
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/types/docs/considerations/docs/considerations/types-vs-content-lake.md -->
+
 ## Breaking Changes
+
+### 4 to 5
+
+#### Removed `_InferValue` and `AliasValue`
+
+Use [`InferSchemaValues`](#inferschemavalues) instead. Neither `_InferValue` nor `AliasValue` are directly usable, while `InferSchemaValues` is the only real world use case.
 
 ### 3 to 4
 
@@ -324,7 +368,7 @@ type Values = InferSchemaValues<typeof config>;
 + export type Product = Values["product"];
 ```
 
-You can still use `_InferValue` but this is discouraged, because it will be missing the context from the config:
+You can still use `_InferValue` but this is discouraged, because it will be missing the context from the config (and is removed in v5):
 
 ```diff
 const product = defineType({

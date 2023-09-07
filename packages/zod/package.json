@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@sanity-typed/zod",
+  "version": "0.0.0-development",
+  "description": "Typed Zod Parsers, all inferred, no config changes!",
+  "keywords": [
+    "sanity",
+    "sanity-io",
+    "types",
+    "typescript",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "zod",
+    "schema",
+    "validation",
+    "type",
+    "inference"
+  ],
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/zod",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Azod",
+  "repository": "github:saiichihashimoto/sanity-typed",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/saiichihashimoto"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "npm run build -- --no-dts"
+  },
+  "dependencies": {
+    "@sanity-typed/types": "0.0.0-development"
+  },
+  "devDependencies": {
+    "@jest/globals": "29.6.4",
+    "@sanity-typed/test-utils": "0.0.0-development",
+    "@sanity-typed/tsconfig": "0.0.0-development",
+    "sanity": "3.16.4",
+    "zod": "3.22.2"
+  },
+  "peerDependencies": {
+    "sanity": "^3.12.0",
+    "zod": "^3.21.4"
+  },
+  "engines": {
+    "node": "^18.15.0"
+  }
+}

@@ -35,7 +35,7 @@
     "@portabletext/types": "2.0.6",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "sanity": "3.16.2",
+    "sanity": "3.16.4",
     "typescript": "5.2.2"
   },
   "peerDependencies": {

@@ -16,13 +16,20 @@ Typed Sanity Client Results, all inferred, no client changes!
 ## Install
 
 ```bash
-npm install @sanity-typed/client
+npm install sanity @sanity-typed/client
 ```
 
 ## Usage
 
 Use `createClient` exactly as you would from [`@sanity/client`](https://github.com/sanity-io/client) with a minor change for proper type inference.
 
+@[typescript](../types/docs/schemas/product.ts)
+@[typescript](../types/docs/sanity.config.ts)
 @[typescript](docs/your-super-cool-application.ts)
 
 The `createClient<SanityValues>()(config)` syntax is due to having to infer one generic (the config shape) while explicitly providing the Sanity Values' type, [which can't be done in the same generics](https://github.com/microsoft/TypeScript/issues/10571).
+
+## Considerations
+
+@[:markdown](../types/docs/considerations/types-vs-content-lake.md)
+@[:markdown](../groq-js/docs/considerations/evaluate-type-flakiness.md)

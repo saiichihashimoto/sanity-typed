@@ -1,7 +1,6 @@
 // import { createClient } from "@sanity/client";
 import { createClient } from "@sanity-typed/client";
 
-// Get this from @sanity-typed/types!
 import type { SanityValues } from "./sanity.schema";
 
 /** Small change using createClient */

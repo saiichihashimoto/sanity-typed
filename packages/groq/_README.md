@@ -9,7 +9,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-Typed GROQ Results, all inferred, no query changes!
+Typed [GROQ](https://github.com/sanity-io/groq) Results, all inferred, no query changes!
 
 @[:page_toc](## Page Contents)
 
@@ -28,7 +28,11 @@ import { ExecuteQuery } from "@sanity-typed/groq";
 
 type Foo = ExecuteQuery<
   '*[_type=="foo"]',
-  { dataset: ({ _type: "bar" } | { _type: "foo" })[] }
+  {
+    dataset: ({ _type: "bar" } | { _type: "foo" })[];
+    // If you have SanityValues from @sanity-typed/types, use those types:
+    // dataset: Extract<SanityValues[keyof SanityValues], Omit<SanityDocument, "_type">>[]
+  }
 >;
 /**
  *  Foo === {
@@ -56,7 +60,14 @@ type Tree = Parse<'*[_type=="foo"]'>;
  *  }
  */
 
-type Foo = Evaluate<Tree, { dataset: ({ _type: "bar" } | { _type: "foo" })[] }>;
+type Foo = Evaluate<
+  Tree,
+  {
+    dataset: ({ _type: "bar" } | { _type: "foo" })[];
+    // If you have SanityValues from @sanity-typed/types, use those types:
+    // dataset: Extract<SanityValues[keyof SanityValues], Omit<SanityDocument, "_type">>[]
+  }
+>;
 /**
  *  Foo === {
  *    _type: "foo";
@@ -65,3 +76,7 @@ type Foo = Evaluate<Tree, { dataset: ({ _type: "bar" } | { _type: "foo" })[] }>;
 ```
 
 Chances are, you don't need this package directly.
+
+## Considerations
+
+@[:markdown](docs/considerations/parse-type-flakiness.md)

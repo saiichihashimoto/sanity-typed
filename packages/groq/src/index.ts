@@ -18,6 +18,7 @@ import type {
   ArrayElementNode,
   ArrayNode,
   AscNode,
+  ContextNode,
   DateTime,
   DerefNode,
   DescNode,
@@ -47,14 +48,16 @@ import type {
   ValueNode,
 } from "groq-js";
 import type {
-  IsStringLiteral,
+  IsNever,
+  IsUnknown,
   Join,
+  SetOptional,
   Simplify as SimplifyNative,
   Split,
   UnionToIntersection,
 } from "type-fest";
 
-import type { ReferenceValue } from "@sanity-typed/types";
+import type { ReferenceValue, _referenced } from "@sanity-typed/types";
 
 import type { TupleOfLength } from "./utils";
 
@@ -69,6 +72,7 @@ type Context<Dataset extends any[], DeltaElement extends Dataset[number]> = {
   client: ClientConfig;
   dataset: Dataset;
   delta: { after: DeltaElement | null; before: DeltaElement | null };
+  identity: string;
   parameters: { [param: string]: any };
 };
 
@@ -507,7 +511,7 @@ type Desc<TExpression extends string> =
         }
     : never;
 
-type FuncParse<TExpression extends string, TFuncFullName extends string> =
+type FuncArgParse<TExpression extends string, TFuncFullName extends string> =
   | _Parse<TExpression>
   | (TFuncFullName extends "order"
       ? Asc<TExpression> | Desc<TExpression>
@@ -520,21 +524,35 @@ type FuncArgs<
 > = `${_Prefix}${TArgs}` extends ""
   ? []
   :
-      | (FuncParse<`${_Prefix}${TArgs}`, TFuncFullName> extends never
+      | (FuncArgParse<`${_Prefix}${TArgs}`, TFuncFullName> extends never
           ? never
-          : [FuncParse<`${_Prefix}${TArgs}`, TFuncFullName>])
+          : [FuncArgParse<`${_Prefix}${TArgs}`, TFuncFullName>])
       | (TArgs extends `${infer TFuncArg},${infer TFuncArgs}`
           ?
               | FuncArgs<TFuncArgs, TFuncFullName, `${_Prefix}${TFuncArg},`>
-              | (FuncParse<`${_Prefix}${TFuncArg}`, TFuncFullName> extends never
+              | (FuncArgParse<
+                  `${_Prefix}${TFuncArg}`,
+                  TFuncFullName
+                > extends never
                   ? never
                   : FuncArgs<TFuncArgs, TFuncFullName> extends never
                   ? never
                   : [
-                      FuncParse<`${_Prefix}${TFuncArg}`, TFuncFullName>,
+                      FuncArgParse<`${_Prefix}${TFuncArg}`, TFuncFullName>,
                       ...FuncArgs<TFuncArgs, TFuncFullName>
                     ])
           : never);
+
+// https://github.com/sanity-io/groq-js/blob/28dee3d75e9e32722dfb2291e1f58e1418e11bb8/src/parser.ts#L382
+// before() and after() return ContextNodes instead
+type FuncCallToContext<TFuncCall extends FuncCallNode> = TFuncCall extends {
+  name: infer TKey extends "after" | "before";
+}
+  ? {
+      key: TKey;
+      type: "Context";
+    }
+  : TFuncCall;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#FuncCall
@@ -548,22 +566,22 @@ type FuncCall<TExpression extends string> =
         ? never
         : Identifier<TFuncIdentifier> extends never
         ? never
-        : {
+        : FuncCallToContext<{
             args: Simplify<FuncArgs<TFuncCallArgs>>;
             func: GroqFunction;
             name: TFuncNamespace extends "global"
               ? TFuncIdentifier
               : TFuncFullName;
             type: "FuncCall";
-          }
+          }>
       : Identifier<TFuncFullName> extends never
       ? never
-      : {
+      : FuncCallToContext<{
           args: Simplify<FuncArgs<TFuncCallArgs>>;
           func: GroqFunction;
           name: TFuncFullName;
           type: "FuncCall";
-        }
+        }>
     : never;
 
 /**
@@ -714,7 +732,7 @@ type SquareBracketTraversal<
               | (ConstantEvaluate<_Parse<TBracketExpression>> extends never
                   ? never
                   : ConstantEvaluate<_Parse<TBracketExpression>> extends string
-                  ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+                  ? // @ts-expect-error -- Type instantiation is excessively deep and possibly infinite.
                     MaybeMap<
                       Exclude<_Parse<`${_Prefix}${TBase}`>, Level10>,
                       {
@@ -1069,16 +1087,18 @@ type EvaluateAccessAttribute<
   TScope extends Scope<Context<any[], any>>
 > = TNode extends AccessAttributeNode
   ?
-      | (NonNullable<EvaluateBaseOrThis<TNode, TScope>> extends {
-          [name in TNode["name"]]: infer TValue;
-        }
-          ? TValue
-          : NonNullable<EvaluateBaseOrThis<TNode, TScope>> extends {
-              [name in TNode["name"]]?: infer TValue;
+      | (EvaluateBaseOrThis<TNode, TScope> extends null ? null : never)
+      | (EvaluateBaseOrThis<TNode, TScope> extends object
+          ? EvaluateBaseOrThis<TNode, TScope> extends {
+              [name in TNode["name"]]: infer TValue;
             }
-          ? TValue | undefined
+            ? TValue
+            : EvaluateBaseOrThis<TNode, TScope> extends {
+                [name in TNode["name"]]?: infer TValue;
+              }
+            ? TValue | null
+            : null
           : null)
-      | (null extends EvaluateBaseOrThis<TNode, TScope> ? null : never)
   : never;
 
 /**
@@ -1089,8 +1109,9 @@ type EvaluateAccessElement<
   TScope extends Scope<Context<any[], any>>
 > = TNode extends AccessElementNode
   ? Evaluate<TNode["base"], TScope> extends any[]
-    ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-      Evaluate<TNode["base"], TScope>[TNode["index"]]
+    ? TNode["index"] extends keyof Evaluate<TNode["base"], TScope>
+      ? Evaluate<TNode["base"], TScope>[TNode["index"]]
+      : null
     : null
   : never;
 
@@ -1183,19 +1204,37 @@ type EvaluateComparison<TNode extends ExprNode> = TNode extends OpCallNode & {
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_after()
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_before()
+ */
+type EvaluateContext<
+  TNode extends ExprNode,
+  TScope extends Scope<Context<any[], any>>
+> = TNode extends ContextNode
+  ? TNode extends { key: infer TKey extends "after" | "before" }
+    ? TScope extends { context: { delta: { [key in TKey]: infer TValue } } }
+      ? TValue
+      : null
+    : never
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateDereference()
  */
 type EvaluateDereference<
   TNode extends ExprNode,
   TScope extends Scope<Context<any[], any>>
 > = TNode extends DerefNode
-  ? Evaluate<TNode["base"], TScope> extends ReferenceValue<infer TReferenced>
+  ? Evaluate<TNode["base"], TScope> extends SetOptional<
+      ReferenceValue<infer TReferenced>,
+      typeof _referenced
+    > & { _ref: infer TRef }
     ? TScope["context"]["dataset"] extends (infer TDataset)[]
-      ?
-          | Extract<TDataset, { _type: TReferenced }>
-          | (Evaluate<TNode["base"], TScope> extends { weak: true }
-              ? null
-              : never)
+      ? IsNever<
+          Extract<TDataset, { _id: TRef; _type: TReferenced }>
+        > extends true
+        ? null
+        : Extract<TDataset, { _id: TRef; _type: TReferenced }>
       : null
     : null
   : never;
@@ -1320,9 +1359,7 @@ type Functions<
       ? TArr extends any[]
         ? TSep extends string
           ? Functions<[TArr[number]], TScope>["global"]["string"] extends string
-            ? IsStringLiteral<TSep> extends false
-              ? string
-              : Join<TArr, TSep>
+            ? Join<TArr, TSep>
             : null
           : null
         : null
@@ -1355,6 +1392,27 @@ type Functions<
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#dateTime_now()
      */
     now: TArgs extends [] ? DateTime : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Delta-namespace
+   */
+  delta: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_operation()
+     */
+    operation: TArgs extends []
+      ? TScope extends {
+          context: { delta: { after: infer TAfter; before: infer TBefore } };
+        }
+        ? TBefore extends null
+          ? TAfter extends null
+            ? null
+            : "create"
+          : TAfter extends null
+          ? "delete"
+          : "update"
+        : never
+      : never;
   };
   /**
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Geography-Extension
@@ -1395,26 +1453,6 @@ type Functions<
    * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
    */
   global: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_after()
-     */
-    after: TArgs extends []
-      ? TScope extends {
-          context: { delta: { after: infer TAfter } };
-        }
-        ? TAfter
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_before()
-     */
-    before: TArgs extends []
-      ? TScope extends {
-          context: { delta: { before: infer TBefore } };
-        }
-        ? TBefore
-        : null
-      : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_coalesce()
      */
@@ -1458,6 +1496,14 @@ type Functions<
         : null
       : never;
     /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-identity-
+     */
+    identity: TArgs extends []
+      ? TScope extends { context: { identity: infer TIdentity } }
+        ? TIdentity
+        : never
+      : never;
+    /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_length()
      */
     length: TArgs extends [infer TBase]
@@ -1477,23 +1523,6 @@ type Functions<
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_now()
      */
     now: TArgs extends [] ? string : never;
-    // TODO https://github.com/sanity-io/groq-js/issues/140
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_operation()
-     */
-    operation: TArgs extends []
-      ? TScope extends {
-          context: { delta: { after: infer TAfter; before: infer TBefore } };
-        }
-        ? TBefore extends null
-          ? TAfter extends null
-            ? never
-            : "create"
-          : TAfter extends null
-          ? "delete"
-          : "update"
-        : never
-      : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
      */
@@ -1515,7 +1544,7 @@ type Functions<
      */
     round: TArgs extends [infer TNum, infer TPrec] | [infer TNum]
       ? TNum extends number
-        ? unknown extends TPrec
+        ? IsUnknown<TPrec> extends true
           ? number
           : TPrec extends number
           ? number
@@ -1555,7 +1584,9 @@ type Functions<
           ? 0
           : null
         : TArr extends (number | null)[]
-        ? number
+        ? mathFn extends "max" | "min"
+          ? Exclude<TArr[number], null>
+          : number
         : null
       : never;
   };
@@ -1597,11 +1628,7 @@ type Functions<
     split: TArgs extends [infer TStr, infer TSep]
       ? TStr extends string
         ? TSep extends string
-          ? string extends TStr
-            ? string[]
-            : string extends TSep
-            ? string[]
-            : Split<TStr, TSep>
+          ? Split<TStr, TSep>
           : null
         : null
       : never;
@@ -1721,8 +1748,7 @@ type EvaluateMath<
               : null
             : Evaluate<TNode["left"], TScope> extends string
             ? Evaluate<TNode["right"], TScope> extends string
-              ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-                `${Evaluate<TNode["left"], TScope>}${Evaluate<
+              ? `${Evaluate<TNode["left"], TScope>}${Evaluate<
                   TNode["right"],
                   TScope
                 >}`
@@ -1789,37 +1815,29 @@ type EvaluateObjectAttribute<
   TScope extends Scope<Context<any[], any>>
 > =
   | (TAttribute extends ObjectAttributeValueNode
-      ? // ? undefined extends Evaluate<TAttribute["value"], TScope>
-        //   ? {
-        //       [key in TAttribute["name"]]?: Evaluate<TAttribute["value"], TScope>;
-        //     }
-        //   : { [key in TAttribute["name"]]: Evaluate<TAttribute["value"], TScope> }
-        { [key in TAttribute["name"]]: Evaluate<TAttribute["value"], TScope> }
+      ? {
+          [key in TAttribute["name"]]: undefined extends Evaluate<
+            TAttribute["value"],
+            TScope
+          >
+            ? NonNullable<Evaluate<TAttribute["value"], TScope>> | null
+            : Evaluate<TAttribute["value"], TScope>;
+        }
       : never)
   | (TAttribute extends ObjectSplatNode
       ? Evaluate<TAttribute["value"], TScope>
       : never);
 
-type PartialOnUndefined<T> = Simplify<
-  {
-    [Key in keyof T as undefined extends T[Key] ? Key : never]?: T[Key];
-  } & {
-    [Key in keyof T as undefined extends T[Key] ? never : Key]: T[Key];
-  }
->;
-
 type EvaluateObjectAttributes<
   TAttributes extends ObjectAttributeNode[],
   TScope extends Scope<Context<any[], any>>
-> = PartialOnUndefined<
-  UnionToIntersection<
-    {
-      [Index in keyof TAttributes]: EvaluateObjectAttribute<
-        TAttributes[Index],
-        TScope
-      >;
-    }[number]
-  >
+> = UnionToIntersection<
+  {
+    [Index in keyof TAttributes]-?: EvaluateObjectAttribute<
+      TAttributes[Index],
+      TScope
+    >;
+  }[number]
 >;
 
 /**
@@ -1829,8 +1847,7 @@ type EvaluateObject<
   TNode extends ExprNode,
   TScope extends Scope<Context<any[], any>>
 > = TNode extends ObjectNode
-  ? // Simplify<EvaluateObjectAttributes<TNode["attributes"], TScope>>
-    EvaluateObjectAttributes<TNode["attributes"], TScope>
+  ? Simplify<EvaluateObjectAttributes<TNode["attributes"], TScope>>
   : never;
 
 /**
@@ -1842,6 +1859,7 @@ type EvaluateParameter<
 > = TNode extends ParameterNode
   ? TScope["context"]["parameters"][TNode["name"]]
   : never;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateParent()
  */
@@ -1871,12 +1889,21 @@ type EvaluateParenthesis<
   TScope extends Scope<Context<any[], any>>
 > = TNode extends GroupNode ? Evaluate<TNode["base"], TScope> : never;
 
+/**
+ * Whenever a tuple is reordered, we can't be certain what the types are.
+ * So each member is a union of all members.
+ * We also map instead of TArray[number][] to ensure the length of the tuple is perserved.
+ */
+type TupleToUnionArray<TArray extends any[]> = {
+  [Index in keyof TArray]: TArray[number];
+};
+
 type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
   global: {
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#order()
      */
-    order: TArgs extends [] ? never : TBase[number][];
+    order: TArgs extends [] ? never : TupleToUnionArray<TBase>;
   };
 };
 
@@ -1892,7 +1919,7 @@ type EvaluatePipeFuncCall<
       ? TFuncIdentifier extends keyof PipeFunctions<any, any>[TFuncNamespace]
         ? EvaluateFuncArgs<TNode["args"], TScope> extends any[]
           ? Evaluate<TNode["base"], TScope> extends any[]
-            ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+            ? // @ts-expect-error -- Type instantiation is excessively deep and possibly infinite.
               PipeFunctions<
                 Evaluate<TNode["base"], TScope>,
                 EvaluateFuncArgs<TNode["args"], TScope>
@@ -1946,7 +1973,8 @@ type EvaluateSlice<
   TScope extends Scope<Context<any[], any>>
 > = TNode extends SliceNode
   ? Evaluate<TNode["base"], TScope> extends any[]
-    ? Evaluate<TNode["base"], TScope>
+    ? // HACK Since literally slicing a tuple in typescript isn't feasible, the most correct type is an array of unions
+      Evaluate<TNode["base"], TScope>[number][]
     : null
   : never;
 
@@ -1970,6 +1998,7 @@ type EvaluateExpression<
   | EvaluateArrayPostfix<TNode, TScope>
   | EvaluateBooleanOperator<TNode, TScope>
   | EvaluateComparison<TNode>
+  | EvaluateContext<TNode, TScope>
   | EvaluateDereference<TNode, TScope>
   | EvaluateEquality<TNode, TScope>
   | EvaluateEverything<TNode, TScope>

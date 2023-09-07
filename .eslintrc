@@ -48,7 +48,6 @@
     "dot-notation": "error",
     "eqeqeq": "error",
     "func-style": ["error", "expression"],
-    "id-length": "error",
     "max-classes-per-file": "off",
     "no-buffer-constructor": "off",
     "no-caller": "error",
@@ -178,6 +177,7 @@
     "promise/no-multiple-resolved": "error",
     "promise/prefer-await-to-callbacks": "error",
     "promise/prefer-await-to-then": "error",
+    "react/forbid-prop-types": "off",
     "unicorn/consistent-function-scoping": [
       "error",
       {
@@ -350,6 +350,7 @@
         ],
         "jest/no-alias-methods": "error",
         "jest/no-commented-out-tests": "error",
+        "jest/no-disabled-tests": "error",
         "jest/no-duplicate-hooks": "error",
         "jest/no-test-return-statement": "error",
         "jest/no-untyped-mock-factory": "error",
@@ -413,7 +414,8 @@
       "rules": {
         "@typescript-eslint/no-unused-vars": "off",
         "import/extensions": "off",
-        "import/no-extraneous-dependencies": "off"
+        "import/no-extraneous-dependencies": "off",
+        "import/no-unresolved": "off"
       }
     },
     {
