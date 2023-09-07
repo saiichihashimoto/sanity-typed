@@ -48,15 +48,16 @@ import type {
   ValueNode,
 } from "groq-js";
 import type {
-  IsStringLiteral,
+  IsNever,
   IsUnknown,
   Join,
+  SetOptional,
   Simplify as SimplifyNative,
   Split,
   UnionToIntersection,
 } from "type-fest";
 
-import type { ReferenceValue } from "@sanity-typed/types";
+import type { ReferenceValue, _referenced } from "@sanity-typed/types";
 
 import type { TupleOfLength } from "./utils";
 
@@ -1086,16 +1087,18 @@ type EvaluateAccessAttribute<
   TScope extends Scope<Context<any[], any>>
 > = TNode extends AccessAttributeNode
   ?
-      | (NonNullable<EvaluateBaseOrThis<TNode, TScope>> extends {
-          [name in TNode["name"]]: infer TValue;
-        }
-          ? TValue
-          : NonNullable<EvaluateBaseOrThis<TNode, TScope>> extends {
-              [name in TNode["name"]]?: infer TValue;
+      | (EvaluateBaseOrThis<TNode, TScope> extends null ? null : never)
+      | (EvaluateBaseOrThis<TNode, TScope> extends object
+          ? EvaluateBaseOrThis<TNode, TScope> extends {
+              [name in TNode["name"]]: infer TValue;
             }
-          ? TValue | undefined
+            ? TValue
+            : EvaluateBaseOrThis<TNode, TScope> extends {
+                [name in TNode["name"]]?: infer TValue;
+              }
+            ? TValue | null
+            : null
           : null)
-      | (null extends EvaluateBaseOrThis<TNode, TScope> ? null : never)
   : never;
 
 /**
@@ -1222,13 +1225,16 @@ type EvaluateDereference<
   TNode extends ExprNode,
   TScope extends Scope<Context<any[], any>>
 > = TNode extends DerefNode
-  ? Evaluate<TNode["base"], TScope> extends ReferenceValue<infer TReferenced>
+  ? Evaluate<TNode["base"], TScope> extends SetOptional<
+      ReferenceValue<infer TReferenced>,
+      typeof _referenced
+    > & { _ref: infer TRef }
     ? TScope["context"]["dataset"] extends (infer TDataset)[]
-      ?
-          | Extract<TDataset, { _type: TReferenced }>
-          | (Evaluate<TNode["base"], TScope> extends { weak: true }
-              ? null
-              : never)
+      ? IsNever<
+          Extract<TDataset, { _id: TRef; _type: TReferenced }>
+        > extends true
+        ? null
+        : Extract<TDataset, { _id: TRef; _type: TReferenced }>
       : null
     : null
   : never;
@@ -1353,9 +1359,7 @@ type Functions<
       ? TArr extends any[]
         ? TSep extends string
           ? Functions<[TArr[number]], TScope>["global"]["string"] extends string
-            ? IsStringLiteral<TSep> extends false
-              ? string
-              : Join<TArr, TSep>
+            ? Join<TArr, TSep>
             : null
           : null
         : null
@@ -1402,7 +1406,7 @@ type Functions<
         }
         ? TBefore extends null
           ? TAfter extends null
-            ? never
+            ? null
             : "create"
           : TAfter extends null
           ? "delete"
@@ -1580,7 +1584,9 @@ type Functions<
           ? 0
           : null
         : TArr extends (number | null)[]
-        ? number
+        ? mathFn extends "max" | "min"
+          ? Exclude<TArr[number], null>
+          : number
         : null
       : never;
   };
@@ -1622,11 +1628,7 @@ type Functions<
     split: TArgs extends [infer TStr, infer TSep]
       ? TStr extends string
         ? TSep extends string
-          ? string extends TStr
-            ? string[]
-            : string extends TSep
-            ? string[]
-            : Split<TStr, TSep>
+          ? Split<TStr, TSep>
           : null
         : null
       : never;
@@ -1813,37 +1815,29 @@ type EvaluateObjectAttribute<
   TScope extends Scope<Context<any[], any>>
 > =
   | (TAttribute extends ObjectAttributeValueNode
-      ? // ? undefined extends Evaluate<TAttribute["value"], TScope>
-        //   ? {
-        //       [key in TAttribute["name"]]?: Evaluate<TAttribute["value"], TScope>;
-        //     }
-        //   : { [key in TAttribute["name"]]: Evaluate<TAttribute["value"], TScope> }
-        { [key in TAttribute["name"]]: Evaluate<TAttribute["value"], TScope> }
+      ? {
+          [key in TAttribute["name"]]: undefined extends Evaluate<
+            TAttribute["value"],
+            TScope
+          >
+            ? NonNullable<Evaluate<TAttribute["value"], TScope>> | null
+            : Evaluate<TAttribute["value"], TScope>;
+        }
       : never)
   | (TAttribute extends ObjectSplatNode
       ? Evaluate<TAttribute["value"], TScope>
       : never);
 
-type PartialOnUndefined<T> = Simplify<
-  {
-    [Key in keyof T as undefined extends T[Key] ? Key : never]?: T[Key];
-  } & {
-    [Key in keyof T as undefined extends T[Key] ? never : Key]: T[Key];
-  }
->;
-
 type EvaluateObjectAttributes<
   TAttributes extends ObjectAttributeNode[],
   TScope extends Scope<Context<any[], any>>
-> = PartialOnUndefined<
-  UnionToIntersection<
-    {
-      [Index in keyof TAttributes]: EvaluateObjectAttribute<
-        TAttributes[Index],
-        TScope
-      >;
-    }[number]
-  >
+> = UnionToIntersection<
+  {
+    [Index in keyof TAttributes]-?: EvaluateObjectAttribute<
+      TAttributes[Index],
+      TScope
+    >;
+  }[number]
 >;
 
 /**
@@ -1853,8 +1847,7 @@ type EvaluateObject<
   TNode extends ExprNode,
   TScope extends Scope<Context<any[], any>>
 > = TNode extends ObjectNode
-  ? // Simplify<EvaluateObjectAttributes<TNode["attributes"], TScope>>
-    EvaluateObjectAttributes<TNode["attributes"], TScope>
+  ? Simplify<EvaluateObjectAttributes<TNode["attributes"], TScope>>
   : never;
 
 /**
@@ -1896,12 +1889,21 @@ type EvaluateParenthesis<
   TScope extends Scope<Context<any[], any>>
 > = TNode extends GroupNode ? Evaluate<TNode["base"], TScope> : never;
 
+/**
+ * Whenever a tuple is reordered, we can't be certain what the types are.
+ * So each member is a union of all members.
+ * We also map instead of TArray[number][] to ensure the length of the tuple is perserved.
+ */
+type TupleToUnionArray<TArray extends any[]> = {
+  [Index in keyof TArray]: TArray[number];
+};
+
 type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
   global: {
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#order()
      */
-    order: TArgs extends [] ? never : TBase[number][];
+    order: TArgs extends [] ? never : TupleToUnionArray<TBase>;
   };
 };
 
@@ -1971,7 +1973,8 @@ type EvaluateSlice<
   TScope extends Scope<Context<any[], any>>
 > = TNode extends SliceNode
   ? Evaluate<TNode["base"], TScope> extends any[]
-    ? Evaluate<TNode["base"], TScope>
+    ? // HACK Since literally slicing a tuple in typescript isn't feasible, the most correct type is an array of unions
+      Evaluate<TNode["base"], TScope>[number][]
     : null
   : never;
 

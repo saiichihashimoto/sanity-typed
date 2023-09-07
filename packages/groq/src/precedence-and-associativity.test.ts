@@ -12,9 +12,6 @@ import type {
   _ScopeFromPartialScope,
 } from ".";
 
-const BAZ: unique symbol = Symbol("baz");
-type Baz = typeof BAZ;
-
 describe("precendence and associativity", () => {
   describe("level 1", () => {
     // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
@@ -24,10 +21,10 @@ describe("precendence and associativity", () => {
   describe("level 2", () => {
     it("true||false||true", async () => {
       const query = "true||false||true";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: {
           left: { type: "Value", value: true },
           right: { type: "Value", value: false },
@@ -37,13 +34,19 @@ describe("precendence and associativity", () => {
         type: "Or",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(true);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = true;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     describe("& level 1", () => {
@@ -55,10 +58,10 @@ describe("precendence and associativity", () => {
   describe("level 3", () => {
     it("false && true && false", async () => {
       const query = "false && true && false";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: {
           left: { type: "Value", value: false },
           right: { type: "Value", value: true },
@@ -68,13 +71,19 @@ describe("precendence and associativity", () => {
         type: "And",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(false);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = false;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     describe("& level 1", () => {
@@ -85,10 +94,10 @@ describe("precendence and associativity", () => {
     describe("& level 2", () => {
       it("false||true&&true||false", async () => {
         const query = "false||true&&true||false";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: false },
             right: {
@@ -102,13 +111,19 @@ describe("precendence and associativity", () => {
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(true);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = true;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
   });
@@ -188,10 +203,10 @@ describe("precendence and associativity", () => {
     describe("& level 2", () => {
       it("true||false==false||true", async () => {
         const query = "true||false==false||true";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: true },
             right: {
@@ -206,21 +221,27 @@ describe("precendence and associativity", () => {
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(true);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = true;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("true==false||false==true", async () => {
         const query = "true==false||false==true";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: true },
             op: "==",
@@ -236,23 +257,29 @@ describe("precendence and associativity", () => {
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(false);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = false;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 3", () => {
       it("true&&false==false&&true", async () => {
         const query = "true&&false==false&&true";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: true },
             right: {
@@ -267,21 +294,27 @@ describe("precendence and associativity", () => {
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(true);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = true;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("true==false&&false==true", async () => {
         const query = "true==false&&false==true";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: true },
             op: "==",
@@ -297,13 +330,19 @@ describe("precendence and associativity", () => {
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(false);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = false;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
   });
@@ -336,10 +375,10 @@ describe("precendence and associativity", () => {
   describe("level 6", () => {
     it("1+2+3", async () => {
       const query = "1+2+3";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: {
           left: { type: "Value", value: 1 },
           op: "+",
@@ -351,21 +390,27 @@ describe("precendence and associativity", () => {
         type: "OpCall",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(6);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 6 as number;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("3-2-1", async () => {
       const query = "3-2-1";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: {
           left: { type: "Value", value: 3 },
           op: "-",
@@ -377,21 +422,27 @@ describe("precendence and associativity", () => {
         type: "OpCall",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(0);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 0 as number;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("3+2-1", async () => {
       const query = "3+2-1";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: {
           left: { type: "Value", value: 3 },
           op: "+",
@@ -403,21 +454,27 @@ describe("precendence and associativity", () => {
         type: "OpCall",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(4);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 4 as number;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("3-2+1", async () => {
       const query = "3-2+1";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: {
           left: { type: "Value", value: 3 },
           op: "-",
@@ -429,13 +486,19 @@ describe("precendence and associativity", () => {
         type: "OpCall",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(2);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 2 as number;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     describe("& level 1", () => {
@@ -446,10 +509,10 @@ describe("precendence and associativity", () => {
     describe("& level 2", () => {
       it("1+2||3+4", async () => {
         const query = "1+2||3+4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             op: "+",
@@ -465,21 +528,27 @@ describe("precendence and associativity", () => {
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("1||2+3||4", async () => {
         const query = "1||2+3||4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             right: {
@@ -494,23 +563,29 @@ describe("precendence and associativity", () => {
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 3", () => {
       it("1+2&&3+4", async () => {
         const query = "1+2&&3+4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             op: "+",
@@ -526,21 +601,27 @@ describe("precendence and associativity", () => {
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("1&&2+3&&4", async () => {
         const query = "1&&2+3&&4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             right: {
@@ -555,23 +636,29 @@ describe("precendence and associativity", () => {
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 4", () => {
       it("1+2==3+4", async () => {
         const query = "1+2==3+4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             op: "+",
@@ -588,16 +675,20 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(false);
-        expectType<
-          ExecuteQuery<typeof query>
-        >().toStrictEqual<// @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
-        boolean>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = false as boolean;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("1==2+3==4", async () => {
@@ -619,10 +710,10 @@ describe("precendence and associativity", () => {
   describe("level 7", () => {
     it("1*2*3", async () => {
       const query = "1*2*3";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: {
           left: { type: "Value", value: 1 },
           op: "*",
@@ -634,21 +725,27 @@ describe("precendence and associativity", () => {
         type: "OpCall",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(6);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 6 as number;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("6/3/2", async () => {
       const query = "6/3/2";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: {
           left: { type: "Value", value: 6 },
           op: "/",
@@ -660,21 +757,27 @@ describe("precendence and associativity", () => {
         type: "OpCall",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(1);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 1 as number;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("5%3%2", async () => {
       const query = "5%3%2";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: {
           left: { type: "Value", value: 5 },
           op: "%",
@@ -686,21 +789,27 @@ describe("precendence and associativity", () => {
         type: "OpCall",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(0);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 0 as number;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("3*2/6", async () => {
       const query = "3*2/6";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: {
           left: { type: "Value", value: 3 },
           op: "*",
@@ -712,21 +821,27 @@ describe("precendence and associativity", () => {
         type: "OpCall",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(1);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 1 as number;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("6/3*2", async () => {
       const query = "6/3*2";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: {
           left: { type: "Value", value: 6 },
           op: "/",
@@ -738,13 +853,19 @@ describe("precendence and associativity", () => {
         type: "OpCall",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(4);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 4 as number;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     describe("& level 1", () => {
@@ -755,10 +876,10 @@ describe("precendence and associativity", () => {
     describe("& level 2", () => {
       it("1*2||3*4", async () => {
         const query = "1*2||3*4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             op: "*",
@@ -774,21 +895,27 @@ describe("precendence and associativity", () => {
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("1||2*3||4", async () => {
         const query = "1||2*3||4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             right: {
@@ -803,23 +930,29 @@ describe("precendence and associativity", () => {
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 3", () => {
       it("1*2&&3*4", async () => {
         const query = "1*2&&3*4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             op: "*",
@@ -835,21 +968,27 @@ describe("precendence and associativity", () => {
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("1&&2*3&&4", async () => {
         const query = "1&&2*3&&4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             right: {
@@ -864,23 +1003,29 @@ describe("precendence and associativity", () => {
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 4", () => {
       it("1*2==3*4", async () => {
         const query = "1*2==3*4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             op: "*",
@@ -897,16 +1042,20 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(false);
-        expectType<
-          ExecuteQuery<typeof query>
-        >().toStrictEqual<// @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
-        boolean>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = false;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
+          WritableDeep<typeof expectedTree>
+        >();
       });
 
       it("1==2*3==4", async () => {
@@ -927,10 +1076,10 @@ describe("precendence and associativity", () => {
     describe("& level 6", () => {
       it("1*2+3*4", async () => {
         const query = "1*2+3*4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             op: "*",
@@ -947,21 +1096,27 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(14);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = 14 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("1+2*3+4", async () => {
         const query = "1+2*3+4";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 1 },
             op: "+",
@@ -978,13 +1133,19 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(11);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = 11 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
   });
@@ -992,21 +1153,27 @@ describe("precendence and associativity", () => {
   describe("level 8", () => {
     it("--1", async () => {
       const query = "--1";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         base: { base: { type: "Value", value: 1 }, type: "Neg" },
         type: "Neg",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(1);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<1>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 1;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     describe("& level 1", () => {
@@ -1017,67 +1184,85 @@ describe("precendence and associativity", () => {
     describe("& level 2", () => {
       it("-2||-3", async () => {
         const query = "-2||-3";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { base: { type: "Value", value: 2 }, type: "Neg" },
           right: { base: { type: "Value", value: 3 }, type: "Neg" },
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 3", () => {
       it("-2&&-3", async () => {
         const query = "-2&&-3";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { base: { type: "Value", value: 2 }, type: "Neg" },
           right: { base: { type: "Value", value: 3 }, type: "Neg" },
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 4", () => {
       it("-2==-3", async () => {
         const query = "-2==-3";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { base: { type: "Value", value: 2 }, type: "Neg" },
           op: "==",
           right: { base: { type: "Value", value: 3 }, type: "Neg" },
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(false);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = false;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
@@ -1089,46 +1274,58 @@ describe("precendence and associativity", () => {
     describe("& level 6", () => {
       it("-2--3", async () => {
         const query = "-2--3";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { base: { type: "Value", value: 2 }, type: "Neg" },
           op: "-",
           right: { base: { type: "Value", value: 3 }, type: "Neg" },
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(1);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = 1 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 7", () => {
       it("-2*-3", async () => {
         const query = "-2*-3";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { base: { type: "Value", value: 2 }, type: "Neg" },
           op: "*",
           right: { base: { type: "Value", value: 3 }, type: "Neg" },
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(6);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = 6 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
   });
@@ -1136,10 +1333,10 @@ describe("precendence and associativity", () => {
   describe("level 9", () => {
     it("4**3**2", async () => {
       const query = "4**3**2";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         left: { type: "Value", value: 4 },
         op: "**",
         right: {
@@ -1151,13 +1348,19 @@ describe("precendence and associativity", () => {
         type: "OpCall",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(262144);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 262144 as number;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     describe("& level 1", () => {
@@ -1168,10 +1371,10 @@ describe("precendence and associativity", () => {
     describe("& level 2", () => {
       it("2**3||4**5", async () => {
         const query = "2**3||4**5";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 2 },
             op: "**",
@@ -1187,21 +1390,27 @@ describe("precendence and associativity", () => {
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("2||3**4||5", async () => {
         const query = "2||3**4||5";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 2 },
             right: {
@@ -1216,23 +1425,29 @@ describe("precendence and associativity", () => {
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 3", () => {
       it("2**3&&4**5", async () => {
         const query = "2**3&&4**5";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 2 },
             op: "**",
@@ -1248,21 +1463,27 @@ describe("precendence and associativity", () => {
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("2&&3**4&&5", async () => {
         const query = "2&&3**4&&5";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 2 },
             right: {
@@ -1277,23 +1498,29 @@ describe("precendence and associativity", () => {
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBeNull();
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 4", () => {
       it("2**3==4**5", async () => {
         const query = "2**3==4**5";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 2 },
             op: "**",
@@ -1310,16 +1537,20 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(false);
-        expectType<
-          ExecuteQuery<typeof query>
-        >().toStrictEqual<// @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
-        boolean>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = false as boolean;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("2==3**4==5", async () => {
@@ -1340,10 +1571,10 @@ describe("precendence and associativity", () => {
     describe("& level 6", () => {
       it("2**3+4**5", async () => {
         const query = "2**3+4**5";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 2 },
             op: "**",
@@ -1360,21 +1591,27 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(1032);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = 1032 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("2+3**4+5", async () => {
         const query = "2+3**4+5";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 2 },
             op: "+",
@@ -1391,23 +1628,29 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(88);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = 88 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 7", () => {
       it("2**3*4**5", async () => {
         const query = "2**3*4**5";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 2 },
             op: "**",
@@ -1424,21 +1667,27 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(8192);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = 8192 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("2*3**4*5", async () => {
         const query = "2*3**4*5";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { type: "Value", value: 2 },
             op: "*",
@@ -1455,23 +1704,29 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(810);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = 810 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 8", () => {
       it("-2**-2", async () => {
         const query = "-2**-2";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           base: {
             left: { type: "Value", value: 2 },
             op: "**",
@@ -1481,13 +1736,19 @@ describe("precendence and associativity", () => {
           type: "Neg",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(-0.25);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = -0.25 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
   });
@@ -1495,78 +1756,102 @@ describe("precendence and associativity", () => {
   describe("level 10", () => {
     it("++5", async () => {
       const query = "++5";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         base: { base: { type: "Value", value: 5 }, type: "Pos" },
         type: "Pos",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(5);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<5>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 5;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("!!true", async () => {
       const query = "!!true";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         base: { base: { type: "Value", value: true }, type: "Not" },
         type: "Not",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(true);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = true;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("!+5", async () => {
       const query = "!+5";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         base: { base: { type: "Value", value: 5 }, type: "Pos" },
         type: "Not",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBeNull();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = null;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it("+!true", async () => {
       const query = "+!true";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         base: { base: { type: "Value", value: true }, type: "Not" },
         type: "Pos",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBeNull();
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = null;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     describe("& level 1", () => {
@@ -1577,67 +1862,85 @@ describe("precendence and associativity", () => {
     describe("& level 2", () => {
       it("!true||!false", async () => {
         const query = "!true||!false";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { base: { type: "Value", value: true }, type: "Not" },
           right: { base: { type: "Value", value: false }, type: "Not" },
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(true);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = true;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 3", () => {
       it("!true&&!false", async () => {
         const query = "!true&&!false";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { base: { type: "Value", value: true }, type: "Not" },
           right: { base: { type: "Value", value: false }, type: "Not" },
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(false);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = false;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 4", () => {
       it("!true!=!false", async () => {
         const query = "!true!=!false";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { base: { type: "Value", value: true }, type: "Not" },
           op: "!=",
           right: { base: { type: "Value", value: false }, type: "Not" },
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(true);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = true;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
@@ -1649,109 +1952,139 @@ describe("precendence and associativity", () => {
     describe("& level 6", () => {
       it("+1++2", async () => {
         const query = "+1++2";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { base: { type: "Value", value: 1 }, type: "Pos" },
           op: "+",
           right: { base: { type: "Value", value: 2 }, type: "Pos" },
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(3);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = 3 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 7", () => {
       it("+2*+3", async () => {
         const query = "+2*+3";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { base: { type: "Value", value: 2 }, type: "Pos" },
           op: "*",
           right: { base: { type: "Value", value: 3 }, type: "Pos" },
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(6);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = 6 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 8", () => {
       it("+-5", async () => {
         const query = "+-5";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           base: { base: { type: "Value", value: 5 }, type: "Neg" },
           type: "Pos",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(-5);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<-5>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = -5;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
 
       it("-+5", async () => {
         const query = "-+5";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           base: { base: { type: "Value", value: 5 }, type: "Pos" },
           type: "Neg",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(-5);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<-5>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = -5;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
 
     describe("& level 9", () => {
       it("+2**+3", async () => {
         const query = "+2**+3";
-        const tree = parse(query);
-        const result = await (await evaluate(tree)).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { base: { type: "Value", value: 2 }, type: "Pos" },
           op: "**",
           right: { base: { type: "Value", value: 3 }, type: "Pos" },
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(8);
-        expectType<ExecuteQuery<typeof query>>().toStrictEqual<number>();
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = 8 as number;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
       });
     });
   });
@@ -1759,10 +2092,10 @@ describe("precendence and associativity", () => {
   describe("level 11", () => {
     it("(((10)))", async () => {
       const query = "(((10)))";
-      const tree = parse(query);
-      const result = await (await evaluate(tree)).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         base: {
           base: { base: { type: "Value", value: 10 }, type: "Group" },
           type: "Group",
@@ -1770,23 +2103,27 @@ describe("precendence and associativity", () => {
         type: "Group",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(10);
-      expectType<ExecuteQuery<typeof query>>().toStrictEqual<10>();
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 10;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
     });
 
     it('foo.bar["baz"]', async () => {
       const query = 'foo.bar["baz"]';
-      const tree = parse(query);
-      const result = await (
-        await evaluate(tree, { root: { foo: { bar: { baz: BAZ } } } })
-      ).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         base: {
           base: { name: "foo", type: "AccessAttribute" },
           name: "bar",
@@ -1796,28 +2133,34 @@ describe("precendence and associativity", () => {
         type: "AccessAttribute",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(BAZ);
+      const root = { foo: { bar: { baz: "baz" } } } as const;
+
+      const result = await (await evaluate(tree, { root })).get();
+
+      const expectedResult = "baz";
+
+      expect(result).toStrictEqual(expectedResult);
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialScope<{ this: { foo: { bar: { baz: Baz } } } }>
+          _ScopeFromPartialScope<{
+            this: WritableDeep<typeof root>;
+          }>
         >
-      >().toStrictEqual<Baz>();
+      >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
 
     it('foo["bar"].baz', async () => {
       const query = 'foo["bar"].baz';
-      const tree = parse(query);
-      const result = await (
-        await evaluate(tree, { root: { foo: { bar: { baz: BAZ } } } })
-      ).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         base: {
           base: { name: "foo", type: "AccessAttribute" },
           name: "bar",
@@ -1827,33 +2170,34 @@ describe("precendence and associativity", () => {
         type: "AccessAttribute",
       } as const;
 
-      expect(tree).toStrictEqual(desiredTree);
+      expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toBe(BAZ);
+      const root = { foo: { bar: { baz: "baz" } } } as const;
+
+      const result = await (await evaluate(tree, { root })).get();
+
+      const expectedResult = "baz";
+
+      expect(result).toStrictEqual(expectedResult);
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialScope<{ this: { foo: { bar: { baz: Baz } } } }>
+          _ScopeFromPartialScope<{
+            this: WritableDeep<typeof root>;
+          }>
         >
-      >().toStrictEqual<Baz>();
+      >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
 
     it('*[_type=="foo"]|order(name)|{age}', async () => {
       const query = '*[_type=="foo"]|order(name)|{age}';
-      const tree = parse(query);
-      const result = await (
-        await evaluate(tree, {
-          dataset: [
-            { _type: "bar", name: "Bar", age: 4 },
-            { _type: "foo", name: "Foo", age: 5 },
-          ],
-        })
-      ).get();
 
-      const desiredTree = {
+      const tree = parse(query);
+
+      const expectedTree = {
         base: {
           args: [{ name: "name", type: "AccessAttribute" }],
           base: {
@@ -1888,28 +2232,34 @@ describe("precendence and associativity", () => {
       } as const;
 
       expect(tree).toStrictEqual({
-        ...desiredTree,
+        ...expectedTree,
         base: {
-          ...desiredTree.base,
+          ...expectedTree.base,
           func: expect.any(Function),
         },
       });
       expectType<Parse<typeof query>>().toStrictEqual<
-        WritableDeep<typeof desiredTree>
+        WritableDeep<typeof expectedTree>
       >();
 
-      expect(result).toStrictEqual([{ age: 5 }]);
+      const dataset = [
+        { _type: "bar", name: "Bar", age: 4 },
+        { _type: "foo", name: "Foo", age: 5 },
+      ] as const;
+
+      const result = await (await evaluate(tree, { dataset })).get();
+
+      const expectedResult = [{ age: 5 }] as const;
+
+      expect(result).toStrictEqual(expectedResult);
       expectType<
         ExecuteQuery<
           typeof query,
           _ScopeFromPartialContext<{
-            dataset: (
-              | { _type: "bar"; age: 4; name: "Bar" }
-              | { _type: "foo"; age: 5; name: "Foo" }
-            )[];
+            dataset: WritableDeep<typeof dataset>;
           }>
         >
-      >().toStrictEqual<{ age: 5 }[]>();
+      >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
 
     describe("& level 1", () => {
@@ -1920,14 +2270,10 @@ describe("precendence and associativity", () => {
     describe("& level 2", () => {
       it("foo.value||bar.value", async () => {
         const query = "foo.value||bar.value";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { bar: { value: true }, foo: { value: false } },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             base: { name: "foo", type: "AccessAttribute" },
             name: "value",
@@ -1941,32 +2287,34 @@ describe("precendence and associativity", () => {
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(true);
+        const root = { bar: { value: true }, foo: { value: false } } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = true;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { bar: { value: true }; foo: { value: false } };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<true>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
       it("foo||bar.value||baz", async () => {
         const query = "foo||bar.value||baz";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { bar: { value: true }, baz: false, foo: false },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { name: "foo", type: "AccessAttribute" },
             right: {
@@ -1980,34 +2328,36 @@ describe("precendence and associativity", () => {
           type: "Or",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(true);
+        const root = { bar: { value: true }, baz: false, foo: false } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = true;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { bar: { value: true }; baz: false; foo: false };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<true>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
     });
 
     describe("& level 3", () => {
       it("foo.value&&bar.value", async () => {
         const query = "foo.value&&bar.value";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { bar: { value: true }, foo: { value: false } },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             base: { name: "foo", type: "AccessAttribute" },
             name: "value",
@@ -2021,32 +2371,34 @@ describe("precendence and associativity", () => {
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(false);
+        const root = { bar: { value: true }, foo: { value: false } } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = false;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { bar: { value: true }; foo: { value: false } };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<false>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
       it("foo&&bar.value&&baz", async () => {
         const query = "foo&&bar.value&&baz";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { bar: { value: true }, baz: false, foo: false },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { name: "foo", type: "AccessAttribute" },
             right: {
@@ -2060,34 +2412,36 @@ describe("precendence and associativity", () => {
           type: "And",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(false);
+        const root = { bar: { value: true }, baz: false, foo: false } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = false;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { bar: { value: true }; baz: false; foo: false };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<false>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
     });
 
     describe("& level 4", () => {
       it("foo.value==bar.value", async () => {
         const query = "foo.value==bar.value";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { bar: { value: true }, foo: { value: false } },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             base: { name: "foo", type: "AccessAttribute" },
             name: "value",
@@ -2102,20 +2456,26 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(false);
+        const root = { bar: { value: true }, foo: { value: false } } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = false;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { bar: { value: true }; foo: { value: false } };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<false>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
       it("foo==bar.value==baz", async () => {
@@ -2136,14 +2496,10 @@ describe("precendence and associativity", () => {
     describe("& level 6", () => {
       it("foo.value+bar.value", async () => {
         const query = "foo.value+bar.value";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { bar: { value: 5 }, foo: { value: 4 } },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             base: { name: "foo", type: "AccessAttribute" },
             name: "value",
@@ -2158,32 +2514,34 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(9);
+        const root = { bar: { value: 5 }, foo: { value: 4 } } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = 9 as number;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { bar: { value: 5 }; foo: { value: 4 } };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<number>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
       it("foo+bar.value+baz", async () => {
         const query = "foo+bar.value+baz";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { bar: { value: 4 }, baz: 3, foo: 5 },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { name: "foo", type: "AccessAttribute" },
             op: "+",
@@ -2199,34 +2557,36 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(12);
+        const root = { bar: { value: 4 }, baz: 3, foo: 5 } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = 12 as number;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { bar: { value: 4 }; baz: 3; foo: 5 };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<number>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
     });
 
     describe("& level 7", () => {
       it("foo.value*bar.value", async () => {
         const query = "foo.value*bar.value";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { bar: { value: 5 }, foo: { value: 4 } },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             base: { name: "foo", type: "AccessAttribute" },
             name: "value",
@@ -2241,32 +2601,34 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(20);
+        const root = { bar: { value: 5 }, foo: { value: 4 } } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = 20 as number;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { bar: { value: 5 }; foo: { value: 4 } };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<number>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
       it("foo*bar.value*baz", async () => {
         const query = "foo*bar.value*baz";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { bar: { value: 4 }, baz: 3, foo: 5 },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             left: { name: "foo", type: "AccessAttribute" },
             op: "*",
@@ -2282,34 +2644,36 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(60);
+        const root = { bar: { value: 4 }, baz: 3, foo: 5 } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = 60 as number;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { bar: { value: 4 }; baz: 3; foo: 5 };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<number>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
     });
 
     describe("& level 8", () => {
       it("-foo.value", async () => {
         const query = "-foo.value";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { foo: { value: 4 } },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           base: {
             base: { name: "foo", type: "AccessAttribute" },
             name: "value",
@@ -2318,34 +2682,36 @@ describe("precendence and associativity", () => {
           type: "Neg",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(-4);
+        const root = { foo: { value: 4 } } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = -4;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { foo: { value: 4 } };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<-4>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
     });
 
     describe("& level 9", () => {
       it("foo.value**bar.value", async () => {
         const query = "foo.value**bar.value";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { bar: { value: 5 }, foo: { value: 4 } },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: {
             base: { name: "foo", type: "AccessAttribute" },
             name: "value",
@@ -2360,32 +2726,34 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(1024);
+        const root = { bar: { value: 5 }, foo: { value: 4 } } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = 1024 as number;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { bar: { value: 5 }; foo: { value: 4 } };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<number>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
       it("foo**bar.value**baz", async () => {
         const query = "foo**bar.value**baz";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { bar: { value: 3 }, baz: 2, foo: 4 },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           left: { name: "foo", type: "AccessAttribute" },
           op: "**",
           right: {
@@ -2401,34 +2769,36 @@ describe("precendence and associativity", () => {
           type: "OpCall",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(262144);
+        const root = { bar: { value: 3 }, baz: 2, foo: 4 } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = 262144 as number;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { bar: { value: 4 }; baz: 3; foo: 5 };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<number>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
     });
 
     describe("& level 10", () => {
       it("+foo.value", async () => {
         const query = "+foo.value";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { foo: { value: 4 } },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           base: {
             base: { name: "foo", type: "AccessAttribute" },
             name: "value",
@@ -2437,32 +2807,34 @@ describe("precendence and associativity", () => {
           type: "Pos",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(4);
+        const root = { foo: { value: 4 } } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = 4;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { foo: { value: 4 } };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<4>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
       it("!foo.value", async () => {
         const query = "!foo.value";
-        const tree = parse(query);
-        const result = await (
-          await evaluate(tree, {
-            root: { foo: { value: false } },
-          })
-        ).get();
 
-        const desiredTree = {
+        const tree = parse(query);
+
+        const expectedTree = {
           base: {
             base: { name: "foo", type: "AccessAttribute" },
             name: "value",
@@ -2471,20 +2843,26 @@ describe("precendence and associativity", () => {
           type: "Not",
         } as const;
 
-        expect(tree).toStrictEqual(desiredTree);
+        expect(tree).toStrictEqual(expectedTree);
         expectType<Parse<typeof query>>().toStrictEqual<
-          WritableDeep<typeof desiredTree>
+          WritableDeep<typeof expectedTree>
         >();
 
-        expect(result).toBe(true);
+        const root = { foo: { value: false } } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = true;
+
+        expect(result).toStrictEqual(expectedResult);
         expectType<
           ExecuteQuery<
             typeof query,
             _ScopeFromPartialScope<{
-              this: { foo: { value: false } };
+              this: WritableDeep<typeof root>;
             }>
           >
-        >().toStrictEqual<true>();
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
     });
   });

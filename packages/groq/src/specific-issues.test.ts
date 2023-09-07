@@ -10,26 +10,10 @@ describe("specific issues", () => {
   it("#242", async () => {
     // https://github.com/saiichihashimoto/sanity-typed/issues/242
     const query = '*[_type == "foo" && slug.current == $slug]{ title, slug }';
-    const tree = parse(query);
-    const result = await (
-      await evaluate(tree, {
-        dataset: [
-          {
-            _type: "bar",
-            slug: { _type: "slug", current: "bar" },
-            title: "nottitle",
-          },
-          {
-            _type: "foo",
-            slug: { _type: "slug", current: "foo" },
-            title: "title",
-          },
-        ],
-        params: { slug: "foo" },
-      })
-    ).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       base: {
         base: { type: "Everything" },
         expr: {
@@ -75,35 +59,40 @@ describe("specific issues", () => {
       type: "Map",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual([
+    const dataset = [
+      {
+        _type: "bar",
+        slug: { _type: "slug", current: "bar" },
+        title: "nottitle",
+      },
+      {
+        _type: "foo",
+        slug: { _type: "slug", current: "foo" },
+        title: "title",
+      },
+    ] as const;
+    const params = { slug: "foo" } as const;
+
+    const result = await (await evaluate(tree, { dataset, params })).get();
+
+    const expectedResult = [
       { slug: { _type: "slug", current: "foo" }, title: "title" },
-    ]);
+    ] as const;
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<
       ExecuteQuery<
         typeof query,
         _ScopeFromPartialContext<{
-          dataset: (
-            | {
-                _type: "bar";
-                slug: { _type: "slug"; current: "bar" };
-                title: "nottitle";
-              }
-            | {
-                _type: "foo";
-                slug: { _type: "slug"; current: "foo" };
-                title: "title";
-              }
-          )[];
-          params: { slug: "foo" };
+          dataset: WritableDeep<typeof dataset>;
+          params: WritableDeep<typeof params>;
         }>
       >
-    >().toStrictEqual<
-      { slug: { _type: "slug"; current: "foo" }; title: "title" }[]
-    >();
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 });

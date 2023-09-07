@@ -20,120 +20,152 @@ describe("base case", () => {
 describe("data types", () => {
   it("null", async () => {
     const query = "null";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       type: "Value",
       value: null,
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toBeNull();
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<null>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = null;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("true", async () => {
     const query = "true";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       type: "Value",
       value: true,
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toBe(true);
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<true>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = true as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("false", async () => {
     const query = "false";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       type: "Value",
       value: false,
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toBe(false);
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<false>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("5.6", async () => {
     const query = "5.6";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       type: "Value",
       value: 5.6,
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toBe(5.6);
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<5.6>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = 5.6 as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it('"double quoted string"', async () => {
     const query = '"double quoted string"';
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       type: "Value",
       value: "double quoted string",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toBe("double quoted string");
-    expectType<
-      ExecuteQuery<typeof query>
-    >().toStrictEqual<"double quoted string">();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = "double quoted string" as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it('"double\\" \\"quoted\\" \\"string\\""', async () => {
     const query = '"double\\" \\"quoted\\" \\"string\\""';
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       type: "Value",
       value: 'double" "quoted" "string"',
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toBe('double" "quoted" "string"');
-    expectType<
-      ExecuteQuery<typeof query>
-    >().toStrictEqual<'double" "quoted" "string"'>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = 'double" "quoted" "string"' as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it('"double" "quoted" "string"', async () => {
@@ -147,44 +179,52 @@ describe("data types", () => {
 
   it("'single quoted string'", async () => {
     const query = "'single quoted string'";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       type: "Value",
       value: "single quoted string",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toBe("single quoted string");
-    expectType<
-      ExecuteQuery<typeof query>
-    >().toStrictEqual<"single quoted string">();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = "single quoted string" as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("'single\\' \\'quoted\\' \\'string'", async () => {
     const query = "'single\\' \\'quoted\\' \\'string'";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       type: "Value",
       value: "single' 'quoted' 'string",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toBe("single' 'quoted' 'string");
-    expectType<
-      ExecuteQuery<typeof query>
-    >().toStrictEqual<"single' 'quoted' 'string">();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = "single' 'quoted' 'string" as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("'single' 'quoted' 'string'", async () => {
@@ -198,29 +238,35 @@ describe("data types", () => {
 
   it("[]", async () => {
     const query = "[]";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       elements: [],
       type: "Array",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual([]);
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<[]>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = [] as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("[true]", async () => {
     const query = "[true]";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       elements: [
         {
           isSplat: false,
@@ -231,21 +277,27 @@ describe("data types", () => {
       type: "Array",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual([true]);
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<[true]>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = [true] as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("[true,]", async () => {
     const query = "[true,]";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       elements: [
         {
           isSplat: false,
@@ -256,21 +308,27 @@ describe("data types", () => {
       type: "Array",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual([true]);
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<[true]>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = [true] as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("[true,false]", async () => {
     const query = "[true,false]";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       elements: [
         {
           isSplat: false,
@@ -286,13 +344,19 @@ describe("data types", () => {
       type: "Array",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual([true, false]);
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<[true, false]>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = [true, false] as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("[1,[]", async () => {
@@ -307,10 +371,10 @@ describe("data types", () => {
   it("[null,true,false,5.6,\"double quoted string\",'single quoted string']", async () => {
     const query =
       "[null,true,false,5.6,\"double quoted string\",'single quoted string']";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       elements: [
         {
           isSplat: false,
@@ -346,30 +410,34 @@ describe("data types", () => {
       type: "Array",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual([
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = [
       null,
       true,
       false,
       5.6,
       "double quoted string",
       "single quoted string",
-    ]);
+    ] as const;
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<
-      [null, true, false, 5.6, "double quoted string", "single quoted string"]
+      WritableDeep<typeof expectedResult>
     >();
   });
 
   it("[...[null]]", async () => {
     const query = "[...[null]]";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       elements: [
         {
           isSplat: true,
@@ -389,21 +457,27 @@ describe("data types", () => {
       type: "Array",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual([null]);
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<[null]>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = [null] as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("[[null,null],[null,null]]", async () => {
     const query = "[[null,null],[null,null]]";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       elements: [
         {
           isSplat: false,
@@ -447,47 +521,55 @@ describe("data types", () => {
       type: "Array",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>()
       // TODO toStrictEqual
-      .toBeAssignableTo<WritableDeep<typeof desiredTree>>();
+      .toBeAssignableTo<WritableDeep<typeof expectedTree>>();
 
-    expect(result).toStrictEqual([
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = [
       [null, null],
       [null, null],
-    ]);
+    ] as const;
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<
-      [[null, null], [null, null]]
+      WritableDeep<typeof expectedResult>
     >();
   });
 
   it("{}", async () => {
     const query = "{}";
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [],
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({});
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = {} as const;
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<
-      NonNullable<unknown>
+      WritableDeep<typeof expectedResult>
     >();
   });
 
   it('{"foo":"bar"}', async () => {
     const query = '{"foo":"bar"}';
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [
         {
           name: "foo",
@@ -498,21 +580,27 @@ describe("data types", () => {
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({ foo: "bar" });
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<{ foo: "bar" }>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = { foo: "bar" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it('{"foo":"bar",}', async () => {
     const query = '{"foo":"bar",}';
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [
         {
           name: "foo",
@@ -523,21 +611,27 @@ describe("data types", () => {
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({ foo: "bar" });
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<{ foo: "bar" }>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = { foo: "bar" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it('{"foo":"bar","baz":"qux"}', async () => {
     const query = '{"foo":"bar","baz":"qux"}';
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [
         {
           name: "foo",
@@ -553,27 +647,27 @@ describe("data types", () => {
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({
-      baz: "qux",
-      foo: "bar",
-    });
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<{
-      baz: "qux";
-      foo: "bar";
-    }>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = { baz: "qux", foo: "bar" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("{foo}", async () => {
     const query = "{foo}";
-    const tree = parse(query);
-    const result = await (await evaluate(tree, { root: { foo: "bar" } })).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [
         {
           name: "foo",
@@ -584,26 +678,32 @@ describe("data types", () => {
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({ foo: "bar" });
+    const root = { foo: "bar" } as const;
+
+    const result = await (await evaluate(tree, { root })).get();
+
+    const expectedResult = { foo: "bar" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: { foo: "bar" } }>
+        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
-    >().toStrictEqual<{ foo: "bar" }>();
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 
   it("{foo,}", async () => {
     const query = "{foo,}";
-    const tree = parse(query);
-    const result = await (await evaluate(tree, { root: { foo: "bar" } })).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [
         {
           name: "foo",
@@ -614,28 +714,32 @@ describe("data types", () => {
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({ foo: "bar" });
+    const root = { foo: "bar" } as const;
+
+    const result = await (await evaluate(tree, { root })).get();
+
+    const expectedResult = { foo: "bar" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: { foo: "bar" } }>
+        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
-    >().toStrictEqual<{ foo: "bar" }>();
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 
   it("{foo,baz}", async () => {
     const query = "{foo,baz}";
-    const tree = parse(query);
-    const result = await (
-      await evaluate(tree, { root: { baz: "qux", foo: "bar" } })
-    ).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [
         {
           name: "foo",
@@ -651,26 +755,32 @@ describe("data types", () => {
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({ baz: "qux", foo: "bar" });
+    const root = { baz: "qux", foo: "bar" } as const;
+
+    const result = await (await evaluate(tree, { root })).get();
+
+    const expectedResult = { baz: "qux", foo: "bar" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: { baz: "qux"; foo: "bar" } }>
+        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
-    >().toStrictEqual<{ baz: "qux"; foo: "bar" }>();
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 
   it('{...{"foo":"bar"}}', async () => {
     const query = '{...{"foo":"bar"}}';
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [
         {
           type: "ObjectSplat",
@@ -689,21 +799,27 @@ describe("data types", () => {
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({ foo: "bar" });
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<{ foo: "bar" }>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = { foo: "bar" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it('{...{"foo":"bar"},}', async () => {
     const query = '{...{"foo":"bar"},}';
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [
         {
           type: "ObjectSplat",
@@ -722,21 +838,27 @@ describe("data types", () => {
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({ foo: "bar" });
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<{ foo: "bar" }>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = { foo: "bar" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it('{...{"foo":"bar"},...{"baz":"qux"}}', async () => {
     const query = '{...{"foo":"bar"},...{"baz":"qux"}}';
-    const tree = parse(query);
-    const result = await (await evaluate(tree)).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [
         {
           type: "ObjectSplat",
@@ -768,75 +890,87 @@ describe("data types", () => {
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({
-      baz: "qux",
-      foo: "bar",
-    });
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<{
-      baz: "qux";
-      foo: "bar";
-    }>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = { foo: "bar", baz: "qux" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
   it("{...}", async () => {
     const query = "{...}";
-    const tree = parse(query);
-    const result = await (await evaluate(tree, { root: { foo: "bar" } })).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [{ type: "ObjectSplat", value: { type: "This" } }],
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({ foo: "bar" });
+    const root = { foo: "bar" } as const;
+
+    const result = await (await evaluate(tree, { root })).get();
+
+    const expectedResult = { foo: "bar" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: { foo: "bar" } }>
+        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
-    >().toStrictEqual<{ foo: "bar" }>();
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 
   it("{...,}", async () => {
     const query = "{...,}";
-    const tree = parse(query);
-    const result = await (await evaluate(tree, { root: { foo: "bar" } })).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [{ type: "ObjectSplat", value: { type: "This" } }],
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({ foo: "bar" });
+    const root = { foo: "bar" } as const;
+
+    const result = await (await evaluate(tree, { root })).get();
+
+    const expectedResult = { foo: "bar" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: { foo: "bar" } }>
+        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
-    >().toStrictEqual<{ foo: "bar" }>();
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 
   it('{...,"baz":"qux"}', async () => {
     const query = '{...,"baz":"qux"}';
-    const tree = parse(query);
-    const result = await (await evaluate(tree, { root: { foo: "bar" } })).get();
 
-    const desiredTree = {
+    const tree = parse(query);
+
+    const expectedTree = {
       attributes: [
         { type: "ObjectSplat", value: { type: "This" } },
         {
@@ -848,17 +982,23 @@ describe("data types", () => {
       type: "Object",
     } as const;
 
-    expect(tree).toStrictEqual(desiredTree);
+    expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
-      WritableDeep<typeof desiredTree>
+      WritableDeep<typeof expectedTree>
     >();
 
-    expect(result).toStrictEqual({ baz: "qux", foo: "bar" });
+    const root = { foo: "bar" } as const;
+
+    const result = await (await evaluate(tree, { root })).get();
+
+    const expectedResult = { foo: "bar", baz: "qux" } as const;
+
+    expect(result).toStrictEqual(expectedResult);
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: { foo: "bar" } }>
+        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
-    >().toStrictEqual<{ baz: "qux"; foo: "bar" }>();
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 });
