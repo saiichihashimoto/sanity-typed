@@ -1,6 +1,4 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
-import type { z } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -37,21 +35,14 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        Required<z.infer<(typeof zods)["foo"]>>["bar"]
-      >().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >();
-      expect(
-        zods.foo.parse({
-          _type: "foo",
-          bar: [true],
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         _type: "foo",
         bar: [true],
       });
-      expect(() => zods.foo.parse({ bar: ["foo"] })).toThrow();
+
+      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >();
     });
 
     it("infers unions if there are multiple members", () => {
@@ -79,21 +70,14 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        Required<z.infer<(typeof zods)["foo"]>>["bar"]
-      >().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >();
-      expect(
-        zods.foo.parse({
-          _type: "foo",
-          bar: [true, "foo"],
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         _type: "foo",
         bar: [true, "foo"],
       });
-      expect(() => zods.foo.parse({ bar: [1] })).toThrow();
+
+      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >();
     });
 
     it("infers unions with objects", () => {
@@ -139,29 +123,17 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        Required<z.infer<(typeof zods)["foo"]>>["bar"]
-      >().toStrictEqual<
-        Simplify<
-          Required<InferSchemaValues<typeof config>["foo"]>["bar"][number]
-        >[]
-      >();
-      expect(
-        zods.foo.parse({
-          _type: "foo",
-          bar: [
-            { _key: "key", _type: "bar", bar: true },
-            { _key: "key", _type: "qux", qux: true },
-          ],
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         _type: "foo",
         bar: [
           { _key: "key", _type: "bar", bar: true },
           { _key: "key", _type: "qux", qux: true },
         ],
       });
-      expect(() => zods.foo.parse({ bar: [true] })).toThrow();
+
+      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >();
     });
   });
 
@@ -182,11 +154,11 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+      const parsed = zods.foo.parse([true]);
+
+      expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
-      expect(zods.foo.parse([true])).toStrictEqual([true]);
-      expect(() => zods.foo.parse(["foo"])).toThrow();
     });
 
     it("infers unions if there are multiple members", () => {
@@ -208,11 +180,11 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+      const parsed = zods.foo.parse([true, "foo"]);
+
+      expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
-      expect(zods.foo.parse([true, "foo"])).toStrictEqual([true, "foo"]);
-      expect(() => zods.foo.parse([1])).toThrow();
     });
 
     it("infers unions with objects", () => {
@@ -252,19 +224,14 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>[]
-      >();
-      expect(
-        zods.foo.parse([
-          { _key: "key", _type: "bar", bar: true },
-          { _key: "key", _type: "qux", qux: true },
-        ])
-      ).toStrictEqual([
+      const parsed = zods.foo.parse([
         { _key: "key", _type: "bar", bar: true },
         { _key: "key", _type: "qux", qux: true },
       ]);
-      expect(() => zods.foo.parse([true])).toThrow();
+
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
   });
 });

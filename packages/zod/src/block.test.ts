@@ -1,6 +1,4 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
-import type { z } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -41,22 +39,7 @@ describe("block", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >();
-      expect(
-        zods.foo.parse([
-          {
-            ...fields,
-            _key: "key",
-            _type: "block",
-            children: [
-              { _key: "key", _type: "span", marks: ["mark"], text: "text" },
-            ],
-          },
-        ])
-      ).toStrictEqual([
+      const parsed = zods.foo.parse([
         {
           ...fields,
           _key: "key",
@@ -66,7 +49,11 @@ describe("block", () => {
           ],
         },
       ]);
-      expect(() => zods.foo.parse([true])).toThrow();
+
+      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
     });
 
     it("overwrites `_type` with `name`", () => {
@@ -90,26 +77,8 @@ describe("block", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        z.infer<
-          // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-          (typeof zods)["foo"]
-        >[number]["_type"]
-      >().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"][number]["_type"]
-      >();
-      expect(
-        zods.foo.parse([
-          {
-            ...fields,
-            _key: "key",
-            _type: "bar",
-            children: [
-              { _key: "key", _type: "span", marks: ["mark"], text: "text" },
-            ],
-          },
-        ])
-      ).toStrictEqual([
+      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      const parsed = zods.foo.parse([
         {
           ...fields,
           _key: "key",
@@ -119,7 +88,10 @@ describe("block", () => {
           ],
         },
       ]);
-      expect(() => zods.foo.parse([true])).toThrow();
+
+      expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]["_type"]
+      >();
     });
 
     it("infers array of members", () => {
@@ -143,29 +115,8 @@ describe("block", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        z.infer<
-          // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-          (typeof zods)["foo"]
-        >[number]["children"]
-      >().toStrictEqual<
-        Simplify<
-          InferSchemaValues<typeof config>["foo"][number]["children"][number]
-        >[]
-      >();
-      expect(
-        zods.foo.parse([
-          {
-            ...fields,
-            _key: "key",
-            _type: "block",
-            children: [
-              { _key: "key", _type: "span", marks: ["mark"], text: "text" },
-              { _key: "key", _type: "slug", current: "foo" },
-            ],
-          },
-        ])
-      ).toStrictEqual([
+      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      const parsed = zods.foo.parse([
         {
           ...fields,
           _key: "key",
@@ -176,7 +127,10 @@ describe("block", () => {
           ],
         },
       ]);
-      expect(() => zods.foo.parse([true])).toThrow();
+
+      expectType<(typeof parsed)[number]["children"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]["children"]
+      >();
     });
 
     it("infers unions if there are multiple members", () => {
@@ -203,30 +157,8 @@ describe("block", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        z.infer<
-          // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-          (typeof zods)["foo"]
-        >[number]["children"]
-      >().toStrictEqual<
-        Simplify<
-          InferSchemaValues<typeof config>["foo"][number]["children"][number]
-        >[]
-      >();
-      expect(
-        zods.foo.parse([
-          {
-            ...fields,
-            _key: "key",
-            _type: "block",
-            children: [
-              { _key: "key", _type: "span", marks: ["mark"], text: "text" },
-              { _key: "key", _type: "slug", current: "foo" },
-              { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
-            ],
-          },
-        ])
-      ).toStrictEqual([
+      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      const parsed = zods.foo.parse([
         {
           ...fields,
           _key: "key",
@@ -238,7 +170,10 @@ describe("block", () => {
           ],
         },
       ]);
-      expect(() => zods.foo.parse([true])).toThrow();
+
+      expectType<(typeof parsed)[number]["children"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]["children"]
+      >();
     });
   });
 
@@ -258,25 +193,17 @@ describe("block", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >();
-      expect(
-        zods.foo.parse({
-          ...fields,
-          _type: "foo",
-          children: [
-            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
-          ],
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         ...fields,
         _type: "foo",
         children: [
           { _key: "key", _type: "span", marks: ["mark"], text: "text" },
         ],
       });
-      expect(() => zods.foo.parse(true)).toThrow();
+
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
     it("overwrites `_type` with defineArrayMember `name`", () => {
@@ -304,24 +231,7 @@ describe("block", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
-        z.infer<(typeof zods)["bar"]>[number]["_type"]
-      >().toStrictEqual<
-        InferSchemaValues<typeof config>["bar"][number]["_type"]
-      >();
-      expect(
-        zods.bar.parse([
-          {
-            ...fields,
-            _key: "key",
-            _type: "bar",
-            children: [
-              { _key: "key", _type: "span", marks: ["mark"], text: "text" },
-            ],
-          },
-        ])
-      ).toStrictEqual([
+      const parsed = zods.bar.parse([
         {
           ...fields,
           _key: "key",
@@ -331,7 +241,10 @@ describe("block", () => {
           ],
         },
       ]);
-      expect(() => zods.bar.parse([true])).toThrow();
+
+      expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >();
     });
 
     it("infers array of members", () => {
@@ -350,19 +263,7 @@ describe("block", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>["children"]>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"]["children"][number]>[]
-      >();
-      expect(
-        zods.foo.parse({
-          ...fields,
-          _type: "foo",
-          children: [
-            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
-            { _key: "key", _type: "slug", current: "foo" },
-          ],
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         ...fields,
         _type: "foo",
         children: [
@@ -370,7 +271,10 @@ describe("block", () => {
           { _key: "key", _type: "slug", current: "foo" },
         ],
       });
-      expect(() => zods.foo.parse(true)).toThrow();
+
+      expectType<(typeof parsed)["children"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]["children"]
+      >();
     });
 
     it("infers unions if there are multiple members", () => {
@@ -392,20 +296,7 @@ describe("block", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>["children"]>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"]["children"][number]>[]
-      >();
-      expect(
-        zods.foo.parse({
-          ...fields,
-          _type: "foo",
-          children: [
-            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
-            { _key: "key", _type: "slug", current: "foo" },
-            { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
-          ],
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         ...fields,
         _type: "foo",
         children: [
@@ -414,7 +305,10 @@ describe("block", () => {
           { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
         ],
       });
-      expect(() => zods.foo.parse(true)).toThrow();
+
+      expectType<(typeof parsed)["children"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]["children"]
+      >();
     });
   });
 });

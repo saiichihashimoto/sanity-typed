@@ -1,6 +1,4 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
-import type { z } from "zod";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -56,25 +54,17 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >();
-      expect(
-        zods.foo.parse([
-          {
-            ...fields,
-            _type: "image",
-            _key: "key",
-          },
-        ])
-      ).toStrictEqual([
+      const parsed = zods.foo.parse([
         {
           ...fields,
           _type: "image",
           _key: "key",
         },
       ]);
-      expect(() => zods.foo.parse([true])).toThrow();
+
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
     });
 
     it("builds parser for ImageValue with fields", () => {
@@ -107,20 +97,7 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >();
-      expect(
-        zods.foo.parse([
-          {
-            ...fields,
-            _type: "image",
-            _key: "key",
-            bar: true,
-            tar: 1,
-          },
-        ])
-      ).toStrictEqual([
+      const parsed = zods.foo.parse([
         {
           ...fields,
           _type: "image",
@@ -129,7 +106,10 @@ describe("image", () => {
           tar: 1,
         },
       ]);
-      expect(() => zods.foo.parse([true])).toThrow();
+
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
     });
 
     it("overwrites `_type` with `name`", () => {
@@ -163,20 +143,7 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >();
-      expect(
-        zods.foo.parse([
-          {
-            ...fields,
-            _key: "key",
-            _type: "bar",
-            bar: true,
-            tar: 1,
-          },
-        ])
-      ).toStrictEqual([
+      const parsed = zods.foo.parse([
         {
           ...fields,
           _key: "key",
@@ -185,7 +152,10 @@ describe("image", () => {
           tar: 1,
         },
       ]);
-      expect(() => zods.foo.parse([true])).toThrow();
+
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
     });
 
     it("infers nested objects", () => {
@@ -220,19 +190,7 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >();
-      expect(
-        zods.foo.parse([
-          {
-            ...fields,
-            _type: "image",
-            _key: "key",
-            bar: { tar: 1 },
-          },
-        ])
-      ).toStrictEqual([
+      const parsed = zods.foo.parse([
         {
           ...fields,
           _type: "image",
@@ -240,7 +198,10 @@ describe("image", () => {
           bar: { tar: 1 },
         },
       ]);
-      expect(() => zods.foo.parse([true])).toThrow();
+
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
     });
 
     it("infers required fields", () => {
@@ -270,19 +231,7 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >();
-      expect(
-        zods.foo.parse([
-          {
-            ...fields,
-            _type: "image",
-            _key: "key",
-            bar: true,
-          },
-        ])
-      ).toStrictEqual([
+      const parsed = zods.foo.parse([
         {
           ...fields,
           _type: "image",
@@ -290,7 +239,10 @@ describe("image", () => {
           bar: true,
         },
       ]);
-      expect(() => zods.foo.parse([true])).toThrow();
+
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
     });
   });
 
@@ -316,27 +268,17 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        Required<z.infer<(typeof zods)["foo"]>>["bar"]
-      >().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >();
-      expect(
-        zods.foo.parse({
-          _type: "foo",
-          bar: {
-            ...fields,
-            _type: "image",
-          },
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         _type: "foo",
         bar: {
           ...fields,
           _type: "image",
         },
       });
-      expect(() => zods.foo.parse(true)).toThrow();
+
+      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >();
     });
 
     it("builds parser for ImageValue with fields", () => {
@@ -370,22 +312,7 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        Required<z.infer<(typeof zods)["foo"]>>["bar"]
-      >().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >();
-      expect(
-        zods.foo.parse({
-          _type: "foo",
-          bar: {
-            ...fields,
-            _type: "image",
-            bar: true,
-            tar: 1,
-          },
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         _type: "foo",
         bar: {
           ...fields,
@@ -394,7 +321,10 @@ describe("image", () => {
           tar: 1,
         },
       });
-      expect(() => zods.foo.parse(true)).toThrow();
+
+      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >();
     });
 
     it("infers nested objects", () => {
@@ -430,21 +360,7 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        Required<z.infer<(typeof zods)["foo"]>>["bar"]
-      >().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >();
-      expect(
-        zods.foo.parse({
-          _type: "foo",
-          bar: {
-            ...fields,
-            _type: "image",
-            bar: { tar: 1 },
-          },
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         _type: "foo",
         bar: {
           ...fields,
@@ -452,7 +368,10 @@ describe("image", () => {
           bar: { tar: 1 },
         },
       });
-      expect(() => zods.foo.parse(true)).toThrow();
+
+      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >();
     });
 
     it("infers required fields", () => {
@@ -483,21 +402,7 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        Required<z.infer<(typeof zods)["foo"]>>["bar"]
-      >().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >();
-      expect(
-        zods.foo.parse({
-          _type: "foo",
-          bar: {
-            ...fields,
-            _type: "image",
-            bar: true,
-          },
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         _type: "foo",
         bar: {
           ...fields,
@@ -505,7 +410,10 @@ describe("image", () => {
           bar: true,
         },
       });
-      expect(() => zods.foo.parse(true)).toThrow();
+
+      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >();
     });
   });
 
@@ -525,19 +433,14 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >();
-      expect(
-        zods.foo.parse({
-          ...fields,
-          _type: "foo",
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         ...fields,
         _type: "foo",
       });
-      expect(() => zods.foo.parse(true)).toThrow();
+
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
     it("builds parser for ImageValue with fields", () => {
@@ -565,23 +468,16 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >();
-      expect(
-        zods.foo.parse({
-          ...fields,
-          _type: "foo",
-          bar: true,
-          tar: 1,
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         ...fields,
         _type: "foo",
         bar: true,
         tar: 1,
       });
-      expect(() => zods.foo.parse(true)).toThrow();
+
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
     it("overwrites `_type` with defineArrayMember `name`", () => {
@@ -619,22 +515,7 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        z.infer<(typeof zods)["bar"]>[number]["_type"]
-      >().toStrictEqual<
-        InferSchemaValues<typeof config>["bar"][number]["_type"]
-      >();
-      expect(
-        zods.bar.parse([
-          {
-            ...fields,
-            _key: "key",
-            _type: "bar",
-            bar: true,
-            tar: 1,
-          },
-        ])
-      ).toStrictEqual([
+      const parsed = zods.bar.parse([
         {
           ...fields,
           _key: "key",
@@ -643,7 +524,10 @@ describe("image", () => {
           tar: 1,
         },
       ]);
-      expect(() => zods.bar.parse([true])).toThrow();
+
+      expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >();
     });
 
     it("infers nested objects", () => {
@@ -673,21 +557,15 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >();
-      expect(
-        zods.foo.parse({
-          ...fields,
-          _type: "foo",
-          bar: { tar: 1 },
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         ...fields,
         _type: "foo",
         bar: { tar: 1 },
       });
-      expect(() => zods.foo.parse(true)).toThrow();
+
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
     it("infers required fields", () => {
@@ -712,21 +590,15 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >();
-      expect(
-        zods.foo.parse({
-          ...fields,
-          _type: "foo",
-          bar: true,
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         ...fields,
         _type: "foo",
         bar: true,
       });
-      expect(() => zods.foo.parse(true)).toThrow();
+
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
   });
 });

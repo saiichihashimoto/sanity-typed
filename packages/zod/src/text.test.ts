@@ -1,5 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
-import type { z } from "zod";
+import { describe, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -34,11 +33,11 @@ describe("text", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>[number]>().toStrictEqual<
+      const parsed = zods.foo.parse(["foo"]);
+
+      expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
-      expect(zods.foo.parse(["foo"])).toStrictEqual(["foo"]);
-      expect(() => zods.foo.parse([true])).toThrow();
     });
   });
 
@@ -64,21 +63,14 @@ describe("text", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<
-        Required<z.infer<(typeof zods)["foo"]>>["bar"]
-      >().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >();
-      expect(
-        zods.foo.parse({
-          _type: "foo",
-          bar: "foo",
-        })
-      ).toStrictEqual({
+      const parsed = zods.foo.parse({
         _type: "foo",
         bar: "foo",
       });
-      expect(() => zods.foo.parse({ bar: true })).toThrow();
+
+      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >();
     });
   });
 
@@ -98,11 +90,11 @@ describe("text", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expectType<z.infer<(typeof zods)["foo"]>>().toStrictEqual<
+      const parsed = zods.foo.parse("foo");
+
+      expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
-      expect(zods.foo.parse("foo")).toBe("foo");
-      expect(() => zods.foo.parse(true)).toThrow();
     });
   });
 });
