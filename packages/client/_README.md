@@ -29,6 +29,8 @@ Use `createClient` exactly as you would from [`@sanity/client`](https://github.c
 
 The `createClient<SanityValues>()(config)` syntax is due to having to infer one generic (the config shape) while explicitly providing the Sanity Values' type, [which can't be done in the same generics](https://github.com/microsoft/TypeScript/issues/10571).
 
+@[:markdown](docs/cast-to-typed.md)
+
 ## Considerations
 
 @[:markdown](../types/docs/considerations/types-vs-content-lake.md)
