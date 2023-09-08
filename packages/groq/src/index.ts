@@ -561,17 +561,16 @@ type FuncCall<TExpression extends string> =
   TExpression extends `${infer TFuncFullName}(${infer TFuncCallArgs})`
     ? FuncArgs<TFuncCallArgs> extends never
       ? never
-      : TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncIdentifier}`
+      : TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncName}`
       ? Identifier<TFuncNamespace> extends never
         ? never
-        : Identifier<TFuncIdentifier> extends never
+        : Identifier<TFuncName> extends never
         ? never
         : FuncCallToContext<{
             args: Simplify<FuncArgs<TFuncCallArgs>>;
             func: GroqFunction;
-            name: TFuncNamespace extends "global"
-              ? TFuncIdentifier
-              : TFuncFullName;
+            name: TFuncName;
+            namespace: TFuncNamespace;
             type: "FuncCall";
           }>
       : Identifier<TFuncFullName> extends never
@@ -580,6 +579,7 @@ type FuncCall<TExpression extends string> =
           args: Simplify<FuncArgs<TFuncCallArgs>>;
           func: GroqFunction;
           name: TFuncFullName;
+          namespace: "global";
           type: "FuncCall";
         }>
     : never;
@@ -1661,23 +1661,19 @@ type EvaluateFuncCall<
   TNode extends ExprNode,
   TScope extends Scope<Context<any[], any>>
 > = TNode extends FuncCallNode
-  ? TNode["name"] extends `${infer TFuncNamespace}::${infer TFuncIdentifier}`
+  ? TNode extends {
+      name: infer TFuncName;
+      namespace: infer TFuncNamespace;
+    }
     ? TFuncNamespace extends keyof Functions<any, any>
-      ? TFuncIdentifier extends keyof Functions<any, any>[TFuncNamespace]
+      ? TFuncName extends keyof Functions<any, any>[TFuncNamespace]
         ? EvaluateFuncArgs<TNode["args"], TScope> extends any[]
           ? Functions<
               EvaluateFuncArgs<TNode["args"], TScope>,
               TScope
-            >[TFuncNamespace][TFuncIdentifier]
+            >[TFuncNamespace][TFuncName]
           : never
         : never
-      : never
-    : TNode["name"] extends keyof Functions<any, any>["global"]
-    ? EvaluateFuncArgs<TNode["args"], TScope> extends any[]
-      ? Functions<
-          EvaluateFuncArgs<TNode["args"], TScope>,
-          TScope
-        >["global"][TNode["name"]]
       : never
     : never
   : never;

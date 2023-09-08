@@ -140,10 +140,9 @@ describe("precendence and associativity", () => {
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
     });
 
-    it.failing("true!=false!=true", async () => {
+    it("true!=false!=true", async () => {
       const query = "true!=false!=true";
 
-      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/147
       expect(() => parse(query)).toThrow();
       expectType<Parse<typeof query>>().toStrictEqual<never>();
 

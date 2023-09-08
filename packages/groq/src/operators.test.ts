@@ -1,15 +1,11 @@
 import { describe, expect, it } from "@jest/globals";
-import { evaluate, parse } from "groq-js";
-import type { DateTime, GroqFunction } from "groq-js";
+import { DateTime, evaluate, parse } from "groq-js";
+import type { GroqFunction } from "groq-js";
 import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
 import type { ExecuteQuery, Parse, _ScopeFromPartialContext } from ".";
-
-// TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/143
-const newDateTime = async (date: Date): Promise<DateTime> =>
-  (await evaluate(parse(`dateTime("${date.toISOString()}")`))).get();
 
 describe("operators", () => {
   describe("&&", () => {
@@ -1193,7 +1189,6 @@ describe("operators", () => {
     it('dateTime("2023-09-06T09:39:45.496Z")+5', async () => {
       const query = 'dateTime("2023-09-06T09:39:45.496Z")+5';
 
-      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/144
       const tree = parse(query);
 
       const expectedTree = {
@@ -1201,6 +1196,7 @@ describe("operators", () => {
           args: [{ type: "Value", value: "2023-09-06T09:39:45.496Z" }],
           func: (() => {}) as unknown as GroqFunction,
           name: "dateTime",
+          namespace: "global",
           type: "FuncCall",
         },
         op: "+",
@@ -1221,9 +1217,7 @@ describe("operators", () => {
 
       const result = await (await evaluate(tree)).get();
 
-      const expectedResult = await newDateTime(
-        new Date("2023-09-06T09:39:50.496Z")
-      );
+      const expectedResult = new DateTime(new Date("2023-09-06T09:39:50.496Z"));
 
       expect(result).toStrictEqual(expectedResult);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<
@@ -1264,7 +1258,6 @@ describe("operators", () => {
       const query =
         'dateTime("2023-09-06T09:39:45.496Z")-dateTime("2023-09-06T09:39:45.496Z")';
 
-      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/144
       const tree = parse(query);
 
       const expectedTree = {
@@ -1272,6 +1265,7 @@ describe("operators", () => {
           args: [{ type: "Value", value: "2023-09-06T09:39:45.496Z" }],
           func: (() => {}) as unknown as GroqFunction,
           name: "dateTime",
+          namespace: "global",
           type: "FuncCall",
         },
         op: "-",
@@ -1279,6 +1273,7 @@ describe("operators", () => {
           args: [{ type: "Value", value: "2023-09-06T09:39:45.496Z" }],
           func: (() => {}) as unknown as GroqFunction,
           name: "dateTime",
+          namespace: "global",
           type: "FuncCall",
         },
         type: "OpCall",
@@ -1312,7 +1307,6 @@ describe("operators", () => {
     it('dateTime("2023-09-06T09:39:45.496Z")-5', async () => {
       const query = 'dateTime("2023-09-06T09:39:45.496Z")-5';
 
-      // TODO [groq-js@>1.2.0]: https://github.com/sanity-io/groq-js/issues/144
       const tree = parse(query);
 
       const expectedTree = {
@@ -1320,6 +1314,7 @@ describe("operators", () => {
           args: [{ type: "Value", value: "2023-09-06T09:39:45.496Z" }],
           func: (() => {}) as unknown as GroqFunction,
           name: "dateTime",
+          namespace: "global",
           type: "FuncCall",
         },
         op: "-",
@@ -1340,9 +1335,7 @@ describe("operators", () => {
 
       const result = await (await evaluate(tree)).get();
 
-      const expectedResult = await newDateTime(
-        new Date("2023-09-06T09:39:40.496Z")
-      );
+      const expectedResult = new DateTime(new Date("2023-09-06T09:39:40.496Z"));
 
       expect(result).toStrictEqual(expectedResult);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<
