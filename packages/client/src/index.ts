@@ -8,10 +8,12 @@ import type {
   SanityClient as SanityClientNative,
   UnfilteredResponseQueryOptions,
 } from "@sanity/client";
-import type { Merge, WritableDeep } from "type-fest";
+import type { IsNever, Merge, WritableDeep } from "type-fest";
 
 import type { ExecuteQuery, RootScope } from "@sanity-typed/groq";
 import type { SanityDocument } from "@sanity-typed/types";
+
+declare const README: unique symbol;
 
 type AnySanityDocument = Omit<SanityDocument, "_type">;
 
@@ -106,9 +108,34 @@ export interface SanityClient<
  * https://github.com/microsoft/TypeScript/issues/10571
  */
 export const createClient =
-  <Values extends { [type: string]: any }>() =>
+  <SanityValues extends { [type: string]: any }>() =>
   <const Config extends ClientConfig>(config: Config) =>
     createClientNative(config) as unknown as SanityClient<
       Config,
-      Extract<Values[keyof Values], AnySanityDocument>
+      Extract<SanityValues[keyof SanityValues], AnySanityDocument>
     >;
+
+export const castToTyped =
+  <SanityValues extends { [type: string]: any } = never>(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- not actually used
+    ...args: IsNever<SanityValues> extends false
+      ? []
+      : [
+          error: {
+            [README]: "⛔️ Without providing a SanityValues, castToTyped is meaningless. eg. castToTyped<SanityValues>()(untypedClient) ⛔️";
+          }
+        ]
+  ) =>
+  <Untyped extends SanityClientNative, const Config extends ClientConfig>(
+    untyped: Untyped,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- not actually used
+    config?: Config
+  ) =>
+    untyped as SanityClient<
+      Config,
+      Extract<SanityValues[keyof SanityValues], AnySanityDocument>
+    >;
+
+export const castFromTyped = <TSanityClient extends SanityClient<any, any>>(
+  typed: TSanityClient
+) => typed as unknown as SanityClientNative;
