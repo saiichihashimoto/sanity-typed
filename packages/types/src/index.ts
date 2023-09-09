@@ -43,6 +43,7 @@ import type {
   ImageValue as ImageValueNative,
   MaybeAllowUnknownProps,
   NumberDefinition as NumberDefinitionNative,
+  NumberOptions,
   NumberRule,
   ObjectDefinition as ObjectDefinitionNative,
   ObjectRule,
@@ -59,9 +60,11 @@ import type {
   SlugValue as SlugValueNative,
   StrictDefinition,
   StringDefinition as StringDefinitionNative,
+  StringOptions,
   StringRule,
   TextDefinition as TextDefinitionNative,
   TextRule,
+  TitledListValue,
   TypeAliasDefinition as TypeAliasDefinitionNative,
   TypeReference as TypeReferenceNative,
   UrlDefinition as UrlDefinitionNative,
@@ -70,6 +73,7 @@ import type {
 } from "sanity";
 import type {
   Except,
+  IsNumericLiteral,
   IsStringLiteral,
   OmitIndexSignature,
   SetRequired,
@@ -179,9 +183,30 @@ export type GeopointDefinition<TRequired extends boolean> = MergeOld<
   DefinitionBase<TRequired, GeopointValue, GeopointRule>
 >;
 
-export type NumberDefinition<TRequired extends boolean> = MergeOld<
+type MaybeTitledListValue<T> = T | TitledListValue<T>;
+
+export type NumberDefinition<
+  TOptionsHelper,
+  TRequired extends boolean
+> = MergeOld<
   NumberDefinitionNative,
-  DefinitionBase<TRequired, number, NumberRule>
+  DefinitionBase<
+    TRequired,
+    TOptionsHelper & number,
+    RewriteValue<TOptionsHelper & number, NumberRule>
+  > & {
+    options?: MergeOld<
+      NumberOptions,
+      {
+        list?: Array<MaybeTitledListValue<TOptionsHelper>> &
+          (IsNumericLiteral<TOptionsHelper> extends false
+            ? {
+                [README]: "⛔️ All values in the list need to be numbers ⛔️";
+              }
+            : unknown);
+      }
+    >;
+  }
 >;
 
 /** @private */
@@ -205,8 +230,8 @@ export type TypeReference<TReferenced extends string> = MergeOld<
 >;
 
 export type ReferenceDefinition<
-  TRequired extends boolean,
-  TReferenced extends string
+  TReferenced extends string,
+  TRequired extends boolean
 > = MergeOld<
   ReferenceDefinitionNative,
   DefinitionBase<
@@ -225,9 +250,28 @@ export type SlugDefinition<TRequired extends boolean> = MergeOld<
   DefinitionBase<TRequired, SlugValue, RewriteValue<SlugValue, SlugRule>>
 >;
 
-export type StringDefinition<TRequired extends boolean> = MergeOld<
+export type StringDefinition<
+  TOptionsHelper,
+  TRequired extends boolean
+> = MergeOld<
   StringDefinitionNative,
-  DefinitionBase<TRequired, string, StringRule>
+  DefinitionBase<
+    TRequired,
+    TOptionsHelper & string,
+    RewriteValue<TOptionsHelper & string, StringRule>
+  > & {
+    options?: MergeOld<
+      StringOptions,
+      {
+        list?: Array<MaybeTitledListValue<TOptionsHelper>> &
+          (IsStringLiteral<TOptionsHelper> extends false
+            ? {
+                [README]: "⛔️ All values in the list need to be strings ⛔️";
+              }
+            : unknown);
+      }
+    >;
+  }
 >;
 
 export type TextDefinition<TRequired extends boolean> = MergeOld<
@@ -243,8 +287,8 @@ export type InferRawValue<Def extends DefinitionBase<any, any, any>> =
   Def extends DefinitionBase<any, infer Value, any> ? Value : never;
 
 export type ArrayDefinition<
-  TRequired extends boolean,
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+  TRequired extends boolean
 > = MergeOld<
   ArrayDefinitionNative,
   DefinitionBase<
@@ -269,8 +313,8 @@ export type PortableTextBlock<
 > = Omit<PortableTextBlockNative<M, C, S, L> & { _type: "block" }, "_key">;
 
 export type BlockDefinition<
-  TRequired extends boolean,
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+  TRequired extends boolean
 > = MergeOld<
   BlockDefinitionNative,
   DefinitionBase<
@@ -317,11 +361,11 @@ type ObjectValue<
 >;
 
 export type ObjectDefinition<
-  TRequired extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  }
+  },
+  TRequired extends boolean
 > = MergeOld<
   ObjectDefinitionNative,
   DefinitionBase<
@@ -345,11 +389,11 @@ export type SanityDocument<
 >;
 
 export type DocumentDefinition<
-  TRequired extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  }
+  },
+  TRequired extends boolean
 > = MergeOld<
   DocumentDefinitionNative,
   DefinitionBase<
@@ -376,11 +420,11 @@ export type FileValue<
 >;
 
 type FileDefinition<
-  TRequired extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  }
+  },
+  TRequired extends boolean
 > = MergeOld<
   FileDefinitionNative,
   DefinitionBase<
@@ -407,11 +451,11 @@ export type ImageValue<
 >;
 
 type ImageDefinition<
-  TRequired extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  }
+  },
+  TRequired extends boolean
 > = MergeOld<
   ImageDefinitionNative,
   DefinitionBase<
@@ -424,36 +468,37 @@ type ImageDefinition<
 >;
 
 type IntrinsicDefinitions<
+  TOptionsHelper,
+  TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
-  TReferenced extends string,
   TRequired extends boolean
 > = {
-  array: ArrayDefinition<TRequired, TMemberDefinition>;
-  block: BlockDefinition<TRequired, TMemberDefinition>;
+  array: ArrayDefinition<TMemberDefinition, TRequired>;
+  block: BlockDefinition<TMemberDefinition, TRequired>;
   boolean: BooleanDefinition<TRequired>;
   crossDatasetReference: CrossDatasetReferenceDefinition<TRequired>;
   date: DateDefinition<TRequired>;
   datetime: DatetimeDefinition<TRequired>;
-  document: DocumentDefinition<TRequired, TFieldDefinition>;
+  document: DocumentDefinition<TFieldDefinition, TRequired>;
   email: EmailDefinition<TRequired>;
-  file: FileDefinition<TRequired, TFieldDefinition>;
+  file: FileDefinition<TFieldDefinition, TRequired>;
   geopoint: GeopointDefinition<TRequired>;
-  image: ImageDefinition<TRequired, TFieldDefinition>;
-  number: NumberDefinition<TRequired>;
-  object: ObjectDefinition<TRequired, TFieldDefinition>;
-  reference: ReferenceDefinition<TRequired, TReferenced>;
+  image: ImageDefinition<TFieldDefinition, TRequired>;
+  number: NumberDefinition<TOptionsHelper, TRequired>;
+  object: ObjectDefinition<TFieldDefinition, TRequired>;
+  reference: ReferenceDefinition<TReferenced, TRequired>;
   slug: SlugDefinition<TRequired>;
-  string: StringDefinition<TRequired>;
+  string: StringDefinition<TOptionsHelper, TRequired>;
   text: TextDefinition<TRequired>;
   url: UrlDefinition<TRequired>;
 };
 
 export type IntrinsicTypeName = Simplify<
-  keyof IntrinsicDefinitions<any, any, any, any>
+  keyof IntrinsicDefinitions<any, any, any, any, any>
 >;
 
 declare const aliasedType: unique symbol;
@@ -465,12 +510,25 @@ type AliasValue<TType extends string> = {
 type TypeAliasDefinition<
   TType extends string,
   TAlias extends IntrinsicTypeName,
+  TOptionsHelper,
+  TReferenced extends string,
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [required]?: boolean;
+  },
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TRequired extends boolean
 > = MergeOld<
   TypeAliasDefinitionNative<TType, TAlias>,
   DefinitionBase<TRequired, AliasValue<TType>, any> & {
     options?: TAlias extends IntrinsicTypeName
-      ? IntrinsicDefinitions<any, any, any, TRequired>[TAlias]["options"]
+      ? IntrinsicDefinitions<
+          TOptionsHelper,
+          TReferenced,
+          TFieldDefinition,
+          TMemberDefinition,
+          TRequired
+        >[TAlias]["options"]
       : unknown;
   }
 >;
@@ -483,6 +541,7 @@ export type _ArrayMemberDefinition<
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
+  TOptionsHelper,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -501,16 +560,18 @@ export type _ArrayMemberDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
+              TOptionsHelper,
+              TReferenced,
               TFieldDefinition,
               TMemberDefinition,
-              TReferenced,
               any
             >[type] extends DefinitionBase<any, infer Value, infer Rule>
               ? MergeOld<
                   IntrinsicDefinitions<
+                    TOptionsHelper,
+                    TReferenced,
                     TFieldDefinition,
                     TMemberDefinition,
-                    TReferenced,
                     any
                   >[type],
                   DefinitionBase<
@@ -532,9 +593,10 @@ export type _ArrayMemberDefinition<
                   >
                 >
               : IntrinsicDefinitions<
+                  TOptionsHelper,
+                  TReferenced,
                   TFieldDefinition,
                   TMemberDefinition,
-                  TReferenced,
                   any
                 >[type],
             "name"
@@ -544,7 +606,15 @@ export type _ArrayMemberDefinition<
       >
     : Omit<
         MergeOld<
-          TypeAliasDefinition<TType, TAlias, any>,
+          TypeAliasDefinition<
+            TType,
+            TAlias,
+            TOptionsHelper,
+            TReferenced,
+            TFieldDefinition,
+            TMemberDefinition,
+            any
+          >,
           DefinitionBase<
             any,
             AliasValue<TType> &
@@ -577,6 +647,7 @@ export const _makeDefineArrayMember =
     TAlias extends IntrinsicTypeName,
     TStrict extends StrictDefinition,
     TReferenced extends string,
+    const TOptionsHelper,
     TFieldDefinition extends DefinitionBase<any, any, any> & {
       name: string;
       [required]?: boolean;
@@ -590,6 +661,7 @@ export const _makeDefineArrayMember =
       TName,
       TAlias,
       TStrict,
+      TOptionsHelper,
       TReferenced,
       TFieldDefinition,
       TMemberDefinition,
@@ -610,6 +682,7 @@ export type _FieldDefinition<
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
+  TOptionsHelper,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -629,9 +702,10 @@ export type _FieldDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
+              TOptionsHelper,
+              TReferenced,
               TFieldDefinition,
               TMemberDefinition,
-              TReferenced,
               TRequired
             >[type],
             "TODO why does this fail without the omit? we're clearly not using it"
@@ -639,7 +713,15 @@ export type _FieldDefinition<
         }[IntrinsicTypeName],
         { type: TType }
       >
-    : TypeAliasDefinition<TType, TAlias, TRequired>) & {
+    : TypeAliasDefinition<
+        TType,
+        TAlias,
+        TOptionsHelper,
+        TReferenced,
+        TFieldDefinition,
+        TMemberDefinition,
+        TRequired
+      >) & {
     name: TName;
     [required]?: TRequired;
     type: TType;
@@ -650,6 +732,7 @@ export const defineField = <
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
+  const TOptionsHelper,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -665,6 +748,7 @@ export const defineField = <
     TName,
     TAlias,
     TStrict,
+    TOptionsHelper,
     TReferenced,
     TFieldDefinition,
     TMemberDefinition,
@@ -679,6 +763,7 @@ export type _TypeDefinition<
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
+  TOptionsHelper,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -692,9 +777,10 @@ export type _TypeDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
+              TOptionsHelper,
+              TReferenced,
               TFieldDefinition,
               TMemberDefinition,
-              TReferenced,
               any
             >[type],
             "TODO why does this fail without the omit? we're clearly not using it"
@@ -702,7 +788,15 @@ export type _TypeDefinition<
         }[IntrinsicTypeName],
         { type: TType }
       >
-    : TypeAliasDefinition<TType, TAlias, any>) & {
+    : TypeAliasDefinition<
+        TType,
+        TAlias,
+        TOptionsHelper,
+        TReferenced,
+        TFieldDefinition,
+        TMemberDefinition,
+        any
+      >) & {
     name: TName;
     type: TType;
   };
@@ -712,6 +806,7 @@ export const defineType = <
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
+  const TOptionsHelper,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -726,6 +821,7 @@ export const defineType = <
     TName,
     TAlias,
     TStrict,
+    TOptionsHelper,
     TReferenced,
     TFieldDefinition,
     TMemberDefinition
@@ -739,8 +835,18 @@ export const defineType = <
 
 /** @private */
 export type _ConfigBase<
-  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
+  TTypeDefinition extends _TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >,
   TPluginTypeDefinition extends _TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -769,8 +875,8 @@ export type _ConfigBase<
 };
 
 export type PluginOptions<
-  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends _TypeDefinition<
+  TTypeDefinition extends _TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -778,13 +884,23 @@ export type PluginOptions<
     any,
     any,
     any
-  > = _TypeDefinition<string, any, any, any, any, any, any>
+  >,
+  TPluginTypeDefinition extends _TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  > = _TypeDefinition<string, any, any, any, any, any, any, any>
 > = _ConfigBase<TTypeDefinition, TPluginTypeDefinition> &
   Omit<PluginOptionsNative, "plugins" | "schema">;
 
 export const definePlugin = <
-  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends _TypeDefinition<
+  TTypeDefinition extends _TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -792,22 +908,42 @@ export const definePlugin = <
     any,
     any,
     any
-  > = _TypeDefinition<string, any, any, any, any, any, any>,
-  TOptions = void
+  >,
+  TPluginTypeDefinition extends _TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  > = _TypeDefinition<string, any, any, any, any, any, any, any>,
+  TOptionsHelper = void
 >(
   arg:
     | PluginOptions<TTypeDefinition, TPluginTypeDefinition>
     | ((
-        options: TOptions
+        options: TOptionsHelper
       ) => PluginOptions<TTypeDefinition, TPluginTypeDefinition>)
 ) =>
   definePluginNative(arg as any) as (
-    options: TOptions
+    options: TOptionsHelper
   ) => PluginOptions<TTypeDefinition, TPluginTypeDefinition>;
 
 type WorkspaceOptions<
-  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
+  TTypeDefinition extends _TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >,
   TPluginTypeDefinition extends _TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -822,8 +958,8 @@ type WorkspaceOptions<
 >;
 
 export type Config<
-  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends _TypeDefinition<
+  TTypeDefinition extends _TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -831,7 +967,17 @@ export type Config<
     any,
     any,
     any
-  > = _TypeDefinition<string, any, any, any, any, any, any>
+  >,
+  TPluginTypeDefinition extends _TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  > = _TypeDefinition<string, any, any, any, any, any, any, any>
 > =
   | WorkspaceOptions<TTypeDefinition, TPluginTypeDefinition>[]
   | (Omit<
@@ -843,8 +989,8 @@ export type Config<
     });
 
 export const defineConfig = <
-  TTypeDefinition extends _TypeDefinition<any, any, any, any, any, any, any>,
-  TPluginTypeDefinition extends _TypeDefinition<
+  TTypeDefinition extends _TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -852,7 +998,17 @@ export const defineConfig = <
     any,
     any,
     any
-  > = _TypeDefinition<string, any, any, any, any, any, any>
+  >,
+  TPluginTypeDefinition extends _TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  > = _TypeDefinition<string, any, any, any, any, any, any, any>
 >(
   config: Config<TTypeDefinition, TPluginTypeDefinition>
 ) =>
@@ -862,7 +1018,16 @@ export const defineConfig = <
 
 type ExpandAliasValues<
   Value,
-  TAliasedDefinition extends _TypeDefinition<any, any, any, any, any, any, any>
+  TAliasedDefinition extends _TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >
 > = Value extends AliasValue<infer TType>
   ? Extract<TAliasedDefinition, { name: TType }> extends never
     ? unknown
@@ -919,11 +1084,13 @@ export type InferSchemaValues<
             any,
             any,
             any,
+            any,
             any
           > extends TPluginTypeDefinition
             ? never
             : TPluginTypeDefinition)
         | (_TypeDefinition<
+            any,
             any,
             any,
             any,
@@ -989,6 +1156,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
                 any
               >
             : never)
@@ -1003,6 +1171,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
                 any
               >
             : never)
@@ -1014,6 +1183,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 TName,
                 NonNullable<TAlias>,
                 TStrict,
+                any,
                 any,
                 any,
                 any
@@ -1034,6 +1204,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
     any,
     any,
     any,
+    any,
     any
   >
     ? ReturnType<
@@ -1046,6 +1217,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         infer TStrict extends StrictDefinition,
         any,
         any,
+        any,
         any
       >
     ? ReturnType<
@@ -1056,6 +1228,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         infer TName extends string,
         infer TAlias extends IntrinsicTypeName,
         infer TStrict extends StrictDefinition,
+        any,
         any,
         any,
         any,
