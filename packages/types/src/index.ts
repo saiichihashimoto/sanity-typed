@@ -73,7 +73,6 @@ import type {
 } from "sanity";
 import type {
   Except,
-  IsNumericLiteral,
   IsStringLiteral,
   OmitIndexSignature,
   SetRequired,
@@ -198,12 +197,7 @@ export type NumberDefinition<
     options?: MergeOld<
       NumberOptions,
       {
-        list?: Array<MaybeTitledListValue<TOptionsHelper>> &
-          (IsNumericLiteral<TOptionsHelper> extends false
-            ? {
-                [README]: "⛔️ All values in the list need to be numbers ⛔️";
-              }
-            : unknown);
+        list?: MaybeTitledListValue<TOptionsHelper>[];
       }
     >;
   }
@@ -263,12 +257,7 @@ export type StringDefinition<
     options?: MergeOld<
       StringOptions,
       {
-        list?: Array<MaybeTitledListValue<TOptionsHelper>> &
-          (IsStringLiteral<TOptionsHelper> extends false
-            ? {
-                [README]: "⛔️ All values in the list need to be strings ⛔️";
-              }
-            : unknown);
+        list?: MaybeTitledListValue<TOptionsHelper>[];
       }
     >;
   }
