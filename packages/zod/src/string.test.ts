@@ -39,6 +39,36 @@ describe("string", () => {
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
+
+    it("builds parser for literal string from list", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "string",
+                  options: {
+                    list: ["foo", { title: "Bar", value: "bar" }],
+                  },
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      const parsed = zods.foo.parse(["foo"]);
+
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
+    });
   });
 
   describe("defineField", () => {
@@ -72,6 +102,40 @@ describe("string", () => {
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
     });
+
+    it("builds parser for literal string from list", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "string",
+                  options: {
+                    list: ["foo", { title: "Bar", value: "bar" }],
+                  },
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      const parsed = zods.foo.parse({
+        _type: "foo",
+        bar: "foo",
+      });
+
+      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >();
+    });
   });
 
   describe("defineType", () => {
@@ -84,6 +148,31 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      const parsed = zods.foo.parse("foo");
+
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+    });
+
+    it("builds parser for literal string from lis", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "string",
+              options: {
+                list: ["foo", { title: "Bar", value: "bar" }],
+              },
             }),
           ],
         },
