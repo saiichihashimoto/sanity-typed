@@ -40,14 +40,17 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         {
           ...fields,
           _type: "file",
           _key: "key",
         },
-      ]);
+      ];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -83,7 +86,7 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         {
           ...fields,
           _type: "file",
@@ -91,8 +94,11 @@ describe("file", () => {
           bar: true,
           tar: 1,
         },
-      ]);
+      ];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -129,7 +135,7 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         {
           ...fields,
           _key: "key",
@@ -137,8 +143,11 @@ describe("file", () => {
           bar: true,
           tar: 1,
         },
-      ]);
+      ];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -176,15 +185,18 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         {
           ...fields,
           _type: "file",
           _key: "key",
           bar: { tar: 1 },
         },
-      ]);
+      ];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -217,15 +229,18 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         {
           ...fields,
           _type: "file",
           _key: "key",
           bar: true,
         },
-      ]);
+      ];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -254,14 +269,17 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: {
           ...fields,
           _type: "file",
         },
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -298,7 +316,7 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: {
           ...fields,
@@ -306,8 +324,11 @@ describe("file", () => {
           bar: true,
           tar: 1,
         },
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -346,15 +367,18 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: {
           ...fields,
           _type: "file",
           bar: { tar: 1 },
         },
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -388,15 +412,18 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: {
           ...fields,
           _type: "file",
           bar: true,
         },
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -419,11 +446,14 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         ...fields,
         _type: "foo",
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
@@ -454,13 +484,16 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         ...fields,
         _type: "foo",
         bar: true,
         tar: 1,
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
@@ -501,7 +534,7 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.bar.parse([
+      const unparsed = [
         {
           ...fields,
           _key: "key",
@@ -509,8 +542,11 @@ describe("file", () => {
           bar: true,
           tar: 1,
         },
-      ]);
+      ];
 
+      const parsed = zods.bar.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
         InferSchemaValues<typeof config>["bar"][number]["_type"]
       >();
@@ -543,12 +579,15 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         ...fields,
         _type: "foo",
         bar: { tar: 1 },
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
@@ -576,12 +615,15 @@ describe("file", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         ...fields,
         _type: "foo",
         bar: true,
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();

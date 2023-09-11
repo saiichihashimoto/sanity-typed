@@ -41,6 +41,7 @@ import type {
   ImageCrop,
   ImageDefinition as ImageDefinitionNative,
   ImageHotspot,
+  ImageOptions,
   ImageRule,
   MaybeAllowUnknownProps,
   NumberDefinition as NumberDefinitionNative,
@@ -396,8 +397,8 @@ export type DocumentDefinition<
   }
 >;
 
-// HACK Not sure why, but without this, the #108 specific test fails 🤷
-type FileValueNativeWithType = {
+// HACK #108 For whatever reason, typescript reduces complexity when "static" types are split out 🤷
+type FileValueNative = {
   _type: "file";
   asset: ReferenceValueNative;
 };
@@ -407,7 +408,7 @@ export type FileValue<
     name: string;
     [required]?: boolean;
   } = never
-> = Simplify<FileValueNativeWithType & ObjectValue<TFieldDefinition>>;
+> = Simplify<FileValueNative & ObjectValue<TFieldDefinition>>;
 
 type FileDefinition<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
@@ -426,22 +427,35 @@ type FileDefinition<
   }
 >;
 
-// HACK Not sure why, but without this, the #108 specific test fails 🤷
-type ImageValueNativeWithType = {
+// HACK #108 For whatever reason, typescript reduces complexity when "static" types are split out 🤷
+type ImageValueBase = {
   _type: "image";
   asset: ReferenceValueNative;
-  crop?: ImageCrop;
-  hotspot?: ImageHotspot;
+};
+
+type ImageValueExtra = {
+  crop: ImageCrop;
+  hotspot: ImageHotspot;
 };
 
 export type ImageValue<
+  THotspot extends boolean = boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   } = never
-> = Simplify<ImageValueNativeWithType & ObjectValue<TFieldDefinition>>;
+> = Simplify<
+  ImageValueBase &
+    ObjectValue<TFieldDefinition> &
+    (boolean extends THotspot
+      ? Partial<ImageValueExtra>
+      : THotspot extends true
+      ? ImageValueExtra
+      : unknown)
+>;
 
 type ImageDefinition<
+  TOptionsHelper,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -451,10 +465,25 @@ type ImageDefinition<
   ImageDefinitionNative,
   DefinitionBase<
     TRequired,
-    ImageValue<TFieldDefinition>,
-    RewriteValue<ImageValue<TFieldDefinition>, ImageRule>
+    ImageValue<
+      TOptionsHelper extends boolean ? TOptionsHelper : false,
+      TFieldDefinition
+    >,
+    RewriteValue<
+      ImageValue<
+        TOptionsHelper extends boolean ? TOptionsHelper : false,
+        TFieldDefinition
+      >,
+      ImageRule
+    >
   > & {
     fields?: TFieldDefinition[];
+    options?: MergeOld<
+      ImageOptions,
+      {
+        hotspot?: TOptionsHelper;
+      }
+    >;
   }
 >;
 
@@ -478,7 +507,7 @@ type IntrinsicDefinitions<
   email: EmailDefinition<TRequired>;
   file: FileDefinition<TFieldDefinition, TRequired>;
   geopoint: GeopointDefinition<TRequired>;
-  image: ImageDefinition<TFieldDefinition, TRequired>;
+  image: ImageDefinition<TOptionsHelper, TFieldDefinition, TRequired>;
   number: NumberDefinition<TOptionsHelper, TRequired>;
   object: ObjectDefinition<TFieldDefinition, TRequired>;
   reference: ReferenceDefinition<TReferenced, TRequired>;

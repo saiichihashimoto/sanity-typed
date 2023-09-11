@@ -35,14 +35,17 @@ describe("slug", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         {
           ...fields,
           _key: "key",
           _type: "slug",
         },
-      ]);
+      ];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -69,14 +72,17 @@ describe("slug", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         {
           ...fields,
           _key: "key",
           _type: "foo",
         },
-      ]);
+      ];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]["_type"]
       >();
@@ -105,14 +111,17 @@ describe("slug", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: {
           ...fields,
           _type: "slug",
         },
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -135,11 +144,14 @@ describe("slug", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         ...fields,
         _type: "foo",
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
@@ -170,14 +182,17 @@ describe("slug", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.bar.parse([
+      const unparsed = [
         {
           ...fields,
           _key: "key",
           _type: "bar",
         },
-      ]);
+      ];
 
+      const parsed = zods.bar.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
         InferSchemaValues<typeof config>["bar"][number]["_type"]
       >();

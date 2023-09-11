@@ -692,37 +692,42 @@ const fileZod = <
 const imageFieldsZods = {
   _type: z.literal("image"),
   asset: assetZod,
-  crop: z.optional(
-    z.object({
-      _type: z.optional(z.literal("sanity.imageCrop")),
-      bottom: z.number(),
-      left: z.number(),
-      right: z.number(),
-      top: z.number(),
-    })
-  ),
-  hotspot: z.optional(
-    z.object({
-      _type: z.optional(z.literal("sanity.imageHotspot")),
-      height: z.number(),
-      width: z.number(),
-      x: z.number(),
-      y: z.number(),
-    })
-  ),
+};
+
+const imageHotspotFields = {
+  crop: z.object({
+    _type: z.optional(z.literal("sanity.imageCrop")),
+    bottom: z.number(),
+    left: z.number(),
+    right: z.number(),
+    top: z.number(),
+  }),
+  hotspot: z.object({
+    _type: z.optional(z.literal("sanity.imageHotspot")),
+    height: z.number(),
+    width: z.number(),
+    x: z.number(),
+    y: z.number(),
+  }),
 };
 
 type ImageZod<
-  TSchemaType extends _SchemaTypeDefinition<"image", any>,
+  TSchemaType extends _SchemaTypeDefinition<"image", boolean>,
   TSanityConfigZods extends SanityConfigZods<
     _TypeDefinition<any, any, any, any, any, any, any, any>
   >
 > = z.ZodObject<
-  FieldsZods<TSchemaType, TSanityConfigZods> & typeof imageFieldsZods
+  FieldsZods<TSchemaType, TSanityConfigZods> &
+    typeof imageFieldsZods &
+    (TSchemaType extends _SchemaTypeDefinition<"image", infer THotspot>
+      ? THotspot extends true
+        ? typeof imageHotspotFields
+        : unknown
+      : unknown)
 >;
 
 const imageZod = <
-  TSchemaType extends _SchemaTypeDefinition<"image", any>,
+  TSchemaType extends _SchemaTypeDefinition<"image", boolean>,
   TSanityConfigZods extends SanityConfigZods<
     _TypeDefinition<any, any, any, any, any, any, any, any>
   >
@@ -733,6 +738,7 @@ const imageZod = <
   z.object({
     ...fieldsZods(schema, getZods),
     ...imageFieldsZods,
+    ...(!schema.options?.hotspot ? {} : imageHotspotFields),
   }) as unknown as ImageZod<TSchemaType, TSanityConfigZods>;
 
 type AliasZod<
