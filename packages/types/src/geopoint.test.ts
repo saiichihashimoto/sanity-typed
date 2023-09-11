@@ -1,5 +1,4 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -27,9 +26,7 @@ describe("geopoint", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "geopoint";
         alt?: number;
@@ -111,9 +108,7 @@ describe("geopoint", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
         alt?: number;
         lat: number;

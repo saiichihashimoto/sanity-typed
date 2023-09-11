@@ -1,11 +1,10 @@
 import { describe, it } from "@jest/globals";
 import type { ImageCrop, ImageHotspot, Reference } from "sanity";
-import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { ImageValue, InferSchemaValues } from ".";
+import type { InferSchemaValues } from ".";
 
 describe("image", () => {
   describe("defineArrayMember", () => {
@@ -28,9 +27,7 @@ describe("image", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
         asset?: Reference;
@@ -93,9 +90,7 @@ describe("image", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
         asset?: Reference;
@@ -137,9 +132,7 @@ describe("image", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
         asset?: Reference;
@@ -177,9 +170,7 @@ describe("image", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
         asset?: Reference;
@@ -362,16 +353,12 @@ describe("image", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          ImageValue,
-          {
-            _type: "foo";
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        asset?: Reference;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
     });
 
     it("overwrites `_type` with defineArrayMember `name`", () => {
@@ -427,18 +414,14 @@ describe("image", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          ImageValue,
-          {
-            _type: "foo";
-            bar?: boolean;
-            tar?: number;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        asset?: Reference;
+        bar?: boolean;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+        tar?: number;
+      }>();
     });
 
     it("infers nested objects", () => {
@@ -467,19 +450,15 @@ describe("image", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          ImageValue,
-          {
-            _type: "foo";
-            bar?: {
-              tar?: number;
-            };
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
     });
 
     it("infers required fields", () => {
@@ -503,17 +482,13 @@ describe("image", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          ImageValue,
-          {
-            _type: "foo";
-            bar: boolean;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        asset?: Reference;
+        bar: boolean;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
     });
   });
 });

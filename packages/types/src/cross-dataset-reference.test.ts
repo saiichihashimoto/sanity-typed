@@ -1,5 +1,4 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -29,9 +28,7 @@ describe("crossDatasetReference", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _dataset: string;
         _key: string;
         _projectId: string;
@@ -121,9 +118,7 @@ describe("crossDatasetReference", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _dataset: string;
         _projectId: string;
         _ref: string;

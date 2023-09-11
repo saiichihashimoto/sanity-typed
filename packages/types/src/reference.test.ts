@@ -1,5 +1,4 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -28,9 +27,7 @@ describe("reference", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _ref: string;
         [_referenced]: "other";
@@ -131,9 +128,7 @@ describe("reference", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _ref: string;
         [_referenced]: "other";
         _strengthenOnPublish?: {

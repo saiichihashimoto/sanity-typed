@@ -1,6 +1,5 @@
 import { describe, it } from "@jest/globals";
 import type { Reference } from "sanity";
-import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -28,9 +27,7 @@ describe("file", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
         asset?: Reference;
@@ -91,9 +88,7 @@ describe("file", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
         asset?: Reference;
@@ -133,9 +128,7 @@ describe("file", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
         asset?: Reference;
@@ -171,9 +164,7 @@ describe("file", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
         asset?: Reference;
@@ -346,9 +337,7 @@ describe("file", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
         asset?: Reference;
       }>();
@@ -407,9 +396,7 @@ describe("file", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
         asset?: Reference;
         bar?: boolean;
@@ -443,9 +430,7 @@ describe("file", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
         asset?: Reference;
         bar?: {
@@ -475,9 +460,7 @@ describe("file", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
         asset?: Reference;
         bar: boolean;
