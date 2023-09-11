@@ -35,11 +35,14 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: [true],
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -70,11 +73,14 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: [true, "foo"],
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -123,14 +129,17 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: [
           { _key: "key", _type: "bar", bar: true },
           { _key: "key", _type: "qux", qux: true },
         ],
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -154,8 +163,11 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([true]);
+      const unparsed = [true];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
@@ -180,8 +192,11 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([true, "foo"]);
+      const unparsed = [true, "foo"];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
@@ -224,11 +239,14 @@ describe("array", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         { _key: "key", _type: "bar", bar: true },
         { _key: "key", _type: "qux", qux: true },
-      ]);
+      ];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();

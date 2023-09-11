@@ -1,6 +1,4 @@
 import { describe, it } from "@jest/globals";
-import type { GeopointValue } from "sanity";
-import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -28,15 +26,13 @@ describe("geopoint", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          GeopointValue & {
-            _key: string;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "geopoint";
+        alt?: number;
+        lat: number;
+        lng: number;
+      }>();
     });
 
     it("overwrites `_type` with `name`", () => {
@@ -88,7 +84,12 @@ describe("geopoint", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<GeopointValue>();
+      >().toStrictEqual<{
+        _type: "geopoint";
+        alt?: number;
+        lat: number;
+        lng: number;
+      }>();
     });
   });
 
@@ -107,16 +108,12 @@ describe("geopoint", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          GeopointValue,
-          {
-            _type: "foo";
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        alt?: number;
+        lat: number;
+        lng: number;
+      }>();
     });
 
     it("overwrites `_type` with defineArrayMember `name`", () => {

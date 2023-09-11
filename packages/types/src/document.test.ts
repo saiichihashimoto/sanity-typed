@@ -1,10 +1,9 @@
 import { describe, it } from "@jest/globals";
-import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { InferSchemaValues, SanityDocument } from ".";
+import type { InferSchemaValues } from ".";
 
 describe("document", () => {
   describe("defineArrayMember", () => {
@@ -37,17 +36,16 @@ describe("document", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          SanityDocument & {
-            _key: string;
-            bar?: boolean;
-            tar?: number;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _createdAt: string;
+        _id: string;
+        _key: string;
+        _rev: string;
+        _type: "document";
+        _updatedAt: string;
+        bar?: boolean;
+        tar?: number;
+      }>();
     });
 
     it("overwrites `_type` with `name`", () => {
@@ -116,18 +114,17 @@ describe("document", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          SanityDocument & {
-            _key: string;
-            bar?: {
-              tar?: number;
-            };
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _createdAt: string;
+        _id: string;
+        _key: string;
+        _rev: string;
+        _type: "document";
+        _updatedAt: string;
+        bar?: {
+          tar?: number;
+        };
+      }>();
     });
 
     it("infers required fields", () => {
@@ -156,16 +153,15 @@ describe("document", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          SanityDocument & {
-            _key: string;
-            bar: boolean;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _createdAt: string;
+        _id: string;
+        _key: string;
+        _rev: string;
+        _type: "document";
+        _updatedAt: string;
+        bar: boolean;
+      }>();
     });
   });
 
@@ -202,14 +198,15 @@ describe("document", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<
-        Simplify<
-          SanityDocument & {
-            bar?: boolean;
-            tar?: number;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "document";
+        _updatedAt: string;
+        bar?: boolean;
+        tar?: number;
+      }>();
     });
 
     it("infers nested objects", () => {
@@ -246,15 +243,16 @@ describe("document", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<
-        Simplify<
-          SanityDocument & {
-            bar?: {
-              tar?: number;
-            };
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "document";
+        _updatedAt: string;
+        bar?: {
+          tar?: number;
+        };
+      }>();
     });
 
     it("infers required fields", () => {
@@ -286,13 +284,14 @@ describe("document", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<
-        Simplify<
-          SanityDocument & {
-            bar: boolean;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "document";
+        _updatedAt: string;
+        bar: boolean;
+      }>();
     });
   });
 
@@ -321,18 +320,15 @@ describe("document", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          SanityDocument,
-          {
-            _type: "foo";
-            bar?: boolean;
-            tar?: number;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar?: boolean;
+        tar?: number;
+      }>();
     });
 
     it("overwrites `_type` with defineArrayMember `name`", () => {
@@ -400,19 +396,16 @@ describe("document", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          SanityDocument,
-          {
-            _type: "foo";
-            bar?: {
-              tar?: number;
-            };
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar?: {
+          tar?: number;
+        };
+      }>();
     });
 
     it("infers required fields", () => {
@@ -436,17 +429,14 @@ describe("document", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          SanityDocument,
-          {
-            _type: "foo";
-            bar: boolean;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar: boolean;
+      }>();
     });
   });
 });
