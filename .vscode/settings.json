@@ -1,3 +1,6 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.tsserver.enableTracing": false,
+  "typescript.tsserver.maxTsServerMemory": 8192,
+  "typescript.tsserver.useSyntaxServer": "never"
 }
