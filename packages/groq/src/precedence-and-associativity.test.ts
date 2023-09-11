@@ -134,7 +134,9 @@ describe("precendence and associativity", () => {
     it("true==false==true", async () => {
       const query = "true==false==true";
 
-      expect(() => parse(query)).toThrow();
+      expect(() => parse(query)).toThrow(
+        "Syntax error in GROQ query at position 10"
+      );
       expectType<Parse<typeof query>>().toStrictEqual<never>();
 
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -143,7 +145,9 @@ describe("precendence and associativity", () => {
     it("true!=false!=true", async () => {
       const query = "true!=false!=true";
 
-      expect(() => parse(query)).toThrow();
+      expect(() => parse(query)).toThrow(
+        "Syntax error in GROQ query at position 10"
+      );
       expectType<Parse<typeof query>>().toStrictEqual<never>();
 
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -152,7 +156,9 @@ describe("precendence and associativity", () => {
     it("true>false>true", async () => {
       const query = "true>false>true";
 
-      expect(() => parse(query)).toThrow();
+      expect(() => parse(query)).toThrow(
+        "Syntax error in GROQ query at position 9"
+      );
       expectType<Parse<typeof query>>().toStrictEqual<never>();
 
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -161,7 +167,9 @@ describe("precendence and associativity", () => {
     it("true>=false>=true", async () => {
       const query = "true>=false>=true";
 
-      expect(() => parse(query)).toThrow();
+      expect(() => parse(query)).toThrow(
+        "Syntax error in GROQ query at position 10"
+      );
       expectType<Parse<typeof query>>().toStrictEqual<never>();
 
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -170,7 +178,9 @@ describe("precendence and associativity", () => {
     it("true<false<true", async () => {
       const query = "true<false<true";
 
-      expect(() => parse(query)).toThrow();
+      expect(() => parse(query)).toThrow(
+        "Syntax error in GROQ query at position 9"
+      );
       expectType<Parse<typeof query>>().toStrictEqual<never>();
 
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -179,7 +189,9 @@ describe("precendence and associativity", () => {
     it("true<=false<=true", async () => {
       const query = "true<=false<=true";
 
-      expect(() => parse(query)).toThrow();
+      expect(() => parse(query)).toThrow(
+        "Syntax error in GROQ query at position 10"
+      );
       expectType<Parse<typeof query>>().toStrictEqual<never>();
 
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -692,7 +704,9 @@ describe("precendence and associativity", () => {
       it("1==2+3==4", async () => {
         const query = "1==2+3==4";
 
-        expect(() => parse(query)).toThrow();
+        expect(() => parse(query)).toThrow(
+          "Syntax error in GROQ query at position 5"
+        );
         expectType<Parse<typeof query>>().toStrictEqual<never>();
 
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -1058,7 +1072,9 @@ describe("precendence and associativity", () => {
       it("1==2*3==4", async () => {
         const query = "1==2*3==4";
 
-        expect(() => parse(query)).toThrow();
+        expect(() => parse(query)).toThrow(
+          "Syntax error in GROQ query at position 5"
+        );
         expectType<Parse<typeof query>>().toStrictEqual<never>();
 
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -1552,7 +1568,9 @@ describe("precendence and associativity", () => {
       it("2==3**4==5", async () => {
         const query = "2==3**4==5";
 
-        expect(() => parse(query)).toThrow();
+        expect(() => parse(query)).toThrow(
+          "Syntax error in GROQ query at position 6"
+        );
         expectType<Parse<typeof query>>().toStrictEqual<never>();
 
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -2477,7 +2495,9 @@ describe("precendence and associativity", () => {
       it("foo==bar.value==baz", async () => {
         const query = "foo==bar.value==baz";
 
-        expect(() => parse(query)).toThrow();
+        expect(() => parse(query)).toThrow(
+          "Syntax error in GROQ query at position 13"
+        );
         expectType<Parse<typeof query>>().toStrictEqual<never>();
 
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
