@@ -663,7 +663,7 @@ const assetZod = z.object({
 
 const fileFieldsZods = {
   _type: z.literal("file"),
-  asset: z.optional(assetZod),
+  asset: assetZod,
 };
 
 type FileZod<
@@ -691,7 +691,7 @@ const fileZod = <
 
 const imageFieldsZods = {
   _type: z.literal("image"),
-  asset: z.optional(assetZod),
+  asset: assetZod,
   crop: z.optional(
     z.object({
       _type: z.optional(z.literal("sanity.imageCrop")),

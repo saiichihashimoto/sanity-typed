@@ -30,7 +30,7 @@ describe("image", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
-        asset?: Reference;
+        asset: Reference;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
       }>();
@@ -93,7 +93,7 @@ describe("image", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
-        asset?: Reference;
+        asset: Reference;
         bar?: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
@@ -135,7 +135,7 @@ describe("image", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
-        asset?: Reference;
+        asset: Reference;
         bar?: {
           tar?: number;
         };
@@ -173,7 +173,7 @@ describe("image", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
-        asset?: Reference;
+        asset: Reference;
         bar: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
@@ -206,7 +206,7 @@ describe("image", () => {
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >().toStrictEqual<{
         _type: "image";
-        asset?: Reference;
+        asset: Reference;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
       }>();
@@ -246,7 +246,7 @@ describe("image", () => {
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >().toStrictEqual<{
         _type: "image";
-        asset?: Reference;
+        asset: Reference;
         bar?: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
@@ -290,7 +290,7 @@ describe("image", () => {
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >().toStrictEqual<{
         _type: "image";
-        asset?: Reference;
+        asset: Reference;
         bar?: {
           tar?: number;
         };
@@ -330,7 +330,7 @@ describe("image", () => {
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >().toStrictEqual<{
         _type: "image";
-        asset?: Reference;
+        asset: Reference;
         bar: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
@@ -355,7 +355,7 @@ describe("image", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset?: Reference;
+        asset: Reference;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
       }>();
@@ -416,7 +416,7 @@ describe("image", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset?: Reference;
+        asset: Reference;
         bar?: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;
@@ -452,7 +452,7 @@ describe("image", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset?: Reference;
+        asset: Reference;
         bar?: {
           tar?: number;
         };
@@ -484,7 +484,7 @@ describe("image", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset?: Reference;
+        asset: Reference;
         bar: boolean;
         crop?: ImageCrop;
         hotspot?: ImageHotspot;

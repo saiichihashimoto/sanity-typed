@@ -30,7 +30,7 @@ describe("file", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
-        asset?: Reference;
+        asset: Reference;
       }>();
     });
 
@@ -91,7 +91,7 @@ describe("file", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
-        asset?: Reference;
+        asset: Reference;
         bar?: boolean;
         tar?: number;
       }>();
@@ -131,7 +131,7 @@ describe("file", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
-        asset?: Reference;
+        asset: Reference;
         bar?: {
           tar?: number;
         };
@@ -167,7 +167,7 @@ describe("file", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
-        asset?: Reference;
+        asset: Reference;
         bar: boolean;
       }>();
     });
@@ -198,7 +198,7 @@ describe("file", () => {
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >().toStrictEqual<{
         _type: "file";
-        asset?: Reference;
+        asset: Reference;
       }>();
     });
 
@@ -236,7 +236,7 @@ describe("file", () => {
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >().toStrictEqual<{
         _type: "file";
-        asset?: Reference;
+        asset: Reference;
         bar?: boolean;
         tar?: number;
       }>();
@@ -278,7 +278,7 @@ describe("file", () => {
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >().toStrictEqual<{
         _type: "file";
-        asset?: Reference;
+        asset: Reference;
         bar?: {
           tar?: number;
         };
@@ -316,7 +316,7 @@ describe("file", () => {
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >().toStrictEqual<{
         _type: "file";
-        asset?: Reference;
+        asset: Reference;
         bar: boolean;
       }>();
     });
@@ -339,7 +339,7 @@ describe("file", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset?: Reference;
+        asset: Reference;
       }>();
     });
 
@@ -398,7 +398,7 @@ describe("file", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset?: Reference;
+        asset: Reference;
         bar?: boolean;
         tar?: number;
       }>();
@@ -432,7 +432,7 @@ describe("file", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset?: Reference;
+        asset: Reference;
         bar?: {
           tar?: number;
         };
@@ -462,7 +462,7 @@ describe("file", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset?: Reference;
+        asset: Reference;
         bar: boolean;
       }>();
     });

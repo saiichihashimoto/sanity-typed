@@ -35,12 +35,13 @@ import type {
   FieldDefinitionBase,
   FileDefinition as FileDefinitionNative,
   FileRule,
-  FileValue as FileValueNative,
   GeopointDefinition as GeopointDefinitionNative,
   GeopointRule,
   GeopointValue,
+  ImageCrop,
   ImageDefinition as ImageDefinitionNative,
-  ImageValue as ImageValueNative,
+  ImageHotspot,
+  ImageRule,
   MaybeAllowUnknownProps,
   NumberDefinition as NumberDefinitionNative,
   NumberOptions,
@@ -158,7 +159,7 @@ export type CrossDatasetReferenceDefinition<TRequired extends boolean> =
     DefinitionBase<
       TRequired,
       CrossDatasetReferenceValue,
-      CrossDatasetReferenceRule
+      RewriteValue<CrossDatasetReferenceValue, CrossDatasetReferenceRule>
     >
   >;
 
@@ -372,9 +373,10 @@ export type SanityDocument<
     [required]?: boolean;
   } = never
 > = Simplify<
-  OmitIndexSignature<ObjectValue<TFieldDefinition> & SanityDocumentNative> & {
-    _type: "document";
-  }
+  ObjectValue<TFieldDefinition> &
+    OmitIndexSignature<SanityDocumentNative> & {
+      _type: "document";
+    }
 >;
 
 export type DocumentDefinition<
@@ -395,8 +397,9 @@ export type DocumentDefinition<
 >;
 
 // HACK Not sure why, but without this, the #108 specific test fails 🤷
-type FileValueNativeWithType = FileValueNative & {
+type FileValueNativeWithType = {
   _type: "file";
+  asset: ReferenceValueNative;
 };
 
 export type FileValue<
@@ -404,9 +407,7 @@ export type FileValue<
     name: string;
     [required]?: boolean;
   } = never
-> = Simplify<
-  ObjectValue<TFieldDefinition> & OmitIndexSignature<FileValueNativeWithType>
->;
+> = Simplify<FileValueNativeWithType & ObjectValue<TFieldDefinition>>;
 
 type FileDefinition<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
@@ -426,8 +427,11 @@ type FileDefinition<
 >;
 
 // HACK Not sure why, but without this, the #108 specific test fails 🤷
-type ImageValueNativeWithType = ImageValueNative & {
+type ImageValueNativeWithType = {
   _type: "image";
+  asset: ReferenceValueNative;
+  crop?: ImageCrop;
+  hotspot?: ImageHotspot;
 };
 
 export type ImageValue<
@@ -435,9 +439,7 @@ export type ImageValue<
     name: string;
     [required]?: boolean;
   } = never
-> = Simplify<
-  ObjectValue<TFieldDefinition> & OmitIndexSignature<ImageValueNativeWithType>
->;
+> = Simplify<ImageValueNativeWithType & ObjectValue<TFieldDefinition>>;
 
 type ImageDefinition<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
@@ -450,7 +452,7 @@ type ImageDefinition<
   DefinitionBase<
     TRequired,
     ImageValue<TFieldDefinition>,
-    RewriteValue<ImageValue<TFieldDefinition>, FileRule>
+    RewriteValue<ImageValue<TFieldDefinition>, ImageRule>
   > & {
     fields?: TFieldDefinition[];
   }
