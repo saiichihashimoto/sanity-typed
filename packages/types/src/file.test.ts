@@ -1,10 +1,11 @@
 import { describe, it } from "@jest/globals";
-import type { Merge, Simplify } from "type-fest";
+import type { Reference } from "sanity";
+import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { FileValue, InferSchemaValues } from ".";
+import type { InferSchemaValues } from ".";
 
 describe("file", () => {
   describe("defineArrayMember", () => {
@@ -29,13 +30,11 @@ describe("file", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          FileValue & {
-            _key: string;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _key: string;
+        _type: "file";
+        asset?: Reference;
+      }>();
     });
 
     it("overwrites `_type` with `name`", () => {
@@ -94,15 +93,13 @@ describe("file", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          FileValue & {
-            _key: string;
-            bar?: boolean;
-            tar?: number;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _key: string;
+        _type: "file";
+        asset?: Reference;
+        bar?: boolean;
+        tar?: number;
+      }>();
     });
 
     it("infers nested objects", () => {
@@ -138,16 +135,14 @@ describe("file", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          FileValue & {
-            _key: string;
-            bar?: {
-              tar?: number;
-            };
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _key: string;
+        _type: "file";
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+      }>();
     });
 
     it("infers required fields", () => {
@@ -178,14 +173,12 @@ describe("file", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          FileValue & {
-            _key: string;
-            bar: boolean;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _key: string;
+        _type: "file";
+        asset?: Reference;
+        bar: boolean;
+      }>();
     });
   });
 
@@ -212,7 +205,10 @@ describe("file", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<FileValue>();
+      >().toStrictEqual<{
+        _type: "file";
+        asset?: Reference;
+      }>();
     });
 
     it("infers FileValue with fields", () => {
@@ -247,14 +243,12 @@ describe("file", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<
-        Simplify<
-          FileValue & {
-            bar?: boolean;
-            tar?: number;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _type: "file";
+        asset?: Reference;
+        bar?: boolean;
+        tar?: number;
+      }>();
     });
 
     it("infers nested objects", () => {
@@ -291,15 +285,13 @@ describe("file", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<
-        Simplify<
-          FileValue & {
-            bar?: {
-              tar?: number;
-            };
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _type: "file";
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+      }>();
     });
 
     it("infers required fields", () => {
@@ -331,13 +323,11 @@ describe("file", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<
-        Simplify<
-          FileValue & {
-            bar: boolean;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _type: "file";
+        asset?: Reference;
+        bar: boolean;
+      }>();
     });
   });
 
@@ -358,14 +348,10 @@ describe("file", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          FileValue,
-          {
-            _type: "foo";
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _type: "foo";
+        asset?: Reference;
+      }>();
     });
 
     it("overwrites `_type` with defineArrayMember `name`", () => {
@@ -423,16 +409,12 @@ describe("file", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          FileValue,
-          {
-            _type: "foo";
-            bar?: boolean;
-            tar?: number;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _type: "foo";
+        asset?: Reference;
+        bar?: boolean;
+        tar?: number;
+      }>();
     });
 
     it("infers nested objects", () => {
@@ -463,17 +445,13 @@ describe("file", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          FileValue,
-          {
-            _type: "foo";
-            bar?: {
-              tar?: number;
-            };
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _type: "foo";
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+      }>();
     });
 
     it("infers required fields", () => {
@@ -499,15 +477,11 @@ describe("file", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          FileValue,
-          {
-            _type: "foo";
-            bar: boolean;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _type: "foo";
+        asset?: Reference;
+        bar: boolean;
+      }>();
     });
   });
 });

@@ -1,10 +1,10 @@
 import { describe, it } from "@jest/globals";
-import type { Merge, Simplify } from "type-fest";
+import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { CrossDatasetReferenceValue, InferSchemaValues } from ".";
+import type { InferSchemaValues } from ".";
 
 describe("crossDatasetReference", () => {
   describe("defineArrayMember", () => {
@@ -31,13 +31,14 @@ describe("crossDatasetReference", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          CrossDatasetReferenceValue & {
-            _key: string;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _dataset: string;
+        _key: string;
+        _projectId: string;
+        _ref: string;
+        _type: "crossDatasetReference";
+        _weak?: boolean;
+      }>();
     });
 
     it("overwrites `_type` with `name`", () => {
@@ -93,7 +94,13 @@ describe("crossDatasetReference", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<CrossDatasetReferenceValue>();
+      >().toStrictEqual<{
+        _dataset: string;
+        _projectId: string;
+        _ref: string;
+        _type: "crossDatasetReference";
+        _weak?: boolean;
+      }>();
     });
   });
 
@@ -116,14 +123,13 @@ describe("crossDatasetReference", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          CrossDatasetReferenceValue,
-          {
-            _type: "foo";
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _dataset: string;
+        _projectId: string;
+        _ref: string;
+        _type: "foo";
+        _weak?: boolean;
+      }>();
     });
 
     it("overwrites `_type` with defineArrayMember `name`", () => {

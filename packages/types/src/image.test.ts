@@ -1,4 +1,5 @@
 import { describe, it } from "@jest/globals";
+import type { ImageCrop, ImageHotspot, Reference } from "sanity";
 import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
@@ -29,13 +30,13 @@ describe("image", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          ImageValue & {
-            _key: string;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _key: string;
+        _type: "image";
+        asset?: Reference;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
     });
 
     it("overwrites `_type` with `name`", () => {
@@ -94,15 +95,15 @@ describe("image", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          ImageValue & {
-            _key: string;
-            bar?: boolean;
-            tar?: number;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _key: string;
+        _type: "image";
+        asset?: Reference;
+        bar?: boolean;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+        tar?: number;
+      }>();
     });
 
     it("infers nested objects", () => {
@@ -138,16 +139,16 @@ describe("image", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          ImageValue & {
-            _key: string;
-            bar?: {
-              tar?: number;
-            };
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _key: string;
+        _type: "image";
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
     });
 
     it("infers required fields", () => {
@@ -178,14 +179,14 @@ describe("image", () => {
 
       expectType<
         Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          ImageValue & {
-            _key: string;
-            bar: boolean;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _key: string;
+        _type: "image";
+        asset?: Reference;
+        bar: boolean;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
     });
   });
 
@@ -212,7 +213,12 @@ describe("image", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<ImageValue>();
+      >().toStrictEqual<{
+        _type: "image";
+        asset?: Reference;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
     });
 
     it("infers ImageValue with fields", () => {
@@ -247,14 +253,14 @@ describe("image", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<
-        Simplify<
-          ImageValue & {
-            bar?: boolean;
-            tar?: number;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _type: "image";
+        asset?: Reference;
+        bar?: boolean;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+        tar?: number;
+      }>();
     });
 
     it("infers nested objects", () => {
@@ -291,15 +297,15 @@ describe("image", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<
-        Simplify<
-          ImageValue & {
-            bar?: {
-              tar?: number;
-            };
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _type: "image";
+        asset?: Reference;
+        bar?: {
+          tar?: number;
+        };
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
     });
 
     it("infers required fields", () => {
@@ -331,13 +337,13 @@ describe("image", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<
-        Simplify<
-          ImageValue & {
-            bar: boolean;
-          }
-        >
-      >();
+      >().toStrictEqual<{
+        _type: "image";
+        asset?: Reference;
+        bar: boolean;
+        crop?: ImageCrop;
+        hotspot?: ImageHotspot;
+      }>();
     });
   });
 
