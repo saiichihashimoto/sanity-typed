@@ -33,8 +33,11 @@ describe("text", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse(["foo"]);
+      const unparsed = ["foo"];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -63,11 +66,14 @@ describe("text", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: "foo",
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -90,8 +96,11 @@ describe("text", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse("foo");
+      const unparsed = "foo";
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();

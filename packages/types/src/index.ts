@@ -35,12 +35,14 @@ import type {
   FieldDefinitionBase,
   FileDefinition as FileDefinitionNative,
   FileRule,
-  FileValue as FileValueNative,
   GeopointDefinition as GeopointDefinitionNative,
   GeopointRule,
   GeopointValue,
+  ImageCrop,
   ImageDefinition as ImageDefinitionNative,
-  ImageValue as ImageValueNative,
+  ImageHotspot,
+  ImageOptions,
+  ImageRule,
   MaybeAllowUnknownProps,
   NumberDefinition as NumberDefinitionNative,
   NumberOptions,
@@ -158,7 +160,7 @@ export type CrossDatasetReferenceDefinition<TRequired extends boolean> =
     DefinitionBase<
       TRequired,
       CrossDatasetReferenceValue,
-      CrossDatasetReferenceRule
+      RewriteValue<CrossDatasetReferenceValue, CrossDatasetReferenceRule>
     >
   >;
 
@@ -372,9 +374,10 @@ export type SanityDocument<
     [required]?: boolean;
   } = never
 > = Simplify<
-  OmitIndexSignature<ObjectValue<TFieldDefinition> & SanityDocumentNative> & {
-    _type: "document";
-  }
+  ObjectValue<TFieldDefinition> &
+    OmitIndexSignature<SanityDocumentNative> & {
+      _type: "document";
+    }
 >;
 
 export type DocumentDefinition<
@@ -394,9 +397,10 @@ export type DocumentDefinition<
   }
 >;
 
-// HACK Not sure why, but without this, the #108 specific test fails 🤷
-type FileValueNativeWithType = FileValueNative & {
+// HACK #108 For whatever reason, typescript reduces complexity when "static" types are split out 🤷
+type FileValueNative = {
   _type: "file";
+  asset: ReferenceValueNative;
 };
 
 export type FileValue<
@@ -404,9 +408,7 @@ export type FileValue<
     name: string;
     [required]?: boolean;
   } = never
-> = Simplify<
-  ObjectValue<TFieldDefinition> & OmitIndexSignature<FileValueNativeWithType>
->;
+> = Simplify<FileValueNative & ObjectValue<TFieldDefinition>>;
 
 type FileDefinition<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
@@ -425,21 +427,35 @@ type FileDefinition<
   }
 >;
 
-// HACK Not sure why, but without this, the #108 specific test fails 🤷
-type ImageValueNativeWithType = ImageValueNative & {
+// HACK #108 For whatever reason, typescript reduces complexity when "static" types are split out 🤷
+type ImageValueBase = {
   _type: "image";
+  asset: ReferenceValueNative;
+};
+
+type ImageValueExtra = {
+  crop: ImageCrop;
+  hotspot: ImageHotspot;
 };
 
 export type ImageValue<
+  THotspot extends boolean = boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   } = never
 > = Simplify<
-  ObjectValue<TFieldDefinition> & OmitIndexSignature<ImageValueNativeWithType>
+  ImageValueBase &
+    ObjectValue<TFieldDefinition> &
+    (boolean extends THotspot
+      ? Partial<ImageValueExtra>
+      : THotspot extends true
+      ? ImageValueExtra
+      : unknown)
 >;
 
 type ImageDefinition<
+  TOptionsHelper,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -449,10 +465,25 @@ type ImageDefinition<
   ImageDefinitionNative,
   DefinitionBase<
     TRequired,
-    ImageValue<TFieldDefinition>,
-    RewriteValue<ImageValue<TFieldDefinition>, FileRule>
+    ImageValue<
+      TOptionsHelper extends boolean ? TOptionsHelper : false,
+      TFieldDefinition
+    >,
+    RewriteValue<
+      ImageValue<
+        TOptionsHelper extends boolean ? TOptionsHelper : false,
+        TFieldDefinition
+      >,
+      ImageRule
+    >
   > & {
     fields?: TFieldDefinition[];
+    options?: MergeOld<
+      ImageOptions,
+      {
+        hotspot?: TOptionsHelper;
+      }
+    >;
   }
 >;
 
@@ -476,7 +507,7 @@ type IntrinsicDefinitions<
   email: EmailDefinition<TRequired>;
   file: FileDefinition<TFieldDefinition, TRequired>;
   geopoint: GeopointDefinition<TRequired>;
-  image: ImageDefinition<TFieldDefinition, TRequired>;
+  image: ImageDefinition<TOptionsHelper, TFieldDefinition, TRequired>;
   number: NumberDefinition<TOptionsHelper, TRequired>;
   object: ObjectDefinition<TFieldDefinition, TRequired>;
   reference: ReferenceDefinition<TReferenced, TRequired>;

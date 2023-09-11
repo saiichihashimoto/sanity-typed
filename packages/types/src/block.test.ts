@@ -1,17 +1,10 @@
 import { describe, it } from "@jest/globals";
 import type { GeopointValue } from "sanity";
-import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type {
-  InferSchemaValues,
-  PortableTextBlock,
-  PortableTextMarkDefinition,
-  PortableTextSpan,
-  SlugValue,
-} from ".";
+import type { InferSchemaValues, SlugValue } from ".";
 
 describe("block", () => {
   describe("defineArrayMember", () => {
@@ -34,15 +27,23 @@ describe("block", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          PortableTextBlock & {
-            _key: string;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "block";
+        children: {
+          _key: string;
+          _type: "span";
+          marks?: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
     });
 
     it("overwrites `_type` with `name`", () => {
@@ -90,18 +91,26 @@ describe("block", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          PortableTextBlock<
-            PortableTextMarkDefinition,
-            PortableTextSpan | (SlugValue & { _key: string })
-          > & {
-            _key: string;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "block";
+        children: (
+          | {
+              _key: string;
+              _type: "span";
+              marks?: string[];
+              text: string;
+            }
+          | (SlugValue & { _key: string })
+        )[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
     });
 
     it("infers unions if there are multiple members", () => {
@@ -127,20 +136,27 @@ describe("block", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          PortableTextBlock<
-            PortableTextMarkDefinition,
-            | PortableTextSpan
-            | (GeopointValue & { _key: string })
-            | (SlugValue & { _key: string })
-          > & {
-            _key: string;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "block";
+        children: (
+          | {
+              _key: string;
+              _type: "span";
+              marks?: string[];
+              text: string;
+            }
+          | (GeopointValue & { _key: string })
+          | (SlugValue & { _key: string })
+        )[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
     });
   });
 
@@ -190,16 +206,22 @@ describe("block", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          PortableTextBlock,
-          {
-            _type: "foo";
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        children: {
+          _key: string;
+          _type: "span";
+          marks?: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
     });
 
     it("overwrites `_type` with defineArrayMember `name`", () => {
@@ -246,19 +268,25 @@ describe("block", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          PortableTextBlock<
-            PortableTextMarkDefinition,
-            PortableTextSpan | (SlugValue & { _key: string })
-          >,
-          {
-            _type: "foo";
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        children: (
+          | {
+              _key: string;
+              _type: "span";
+              marks?: string[];
+              text: string;
+            }
+          | (SlugValue & { _key: string })
+        )[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
     });
 
     it("infers unions if there are multiple members", () => {
@@ -279,21 +307,26 @@ describe("block", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          PortableTextBlock<
-            PortableTextMarkDefinition,
-            | PortableTextSpan
-            | (GeopointValue & { _key: string })
-            | (SlugValue & { _key: string })
-          >,
-          {
-            _type: "foo";
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        children: (
+          | {
+              _key: string;
+              _type: "span";
+              marks?: string[];
+              text: string;
+            }
+          | (GeopointValue & { _key: string })
+          | (SlugValue & { _key: string })
+        )[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
     });
   });
 });

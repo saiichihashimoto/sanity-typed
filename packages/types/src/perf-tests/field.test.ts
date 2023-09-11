@@ -1,5 +1,4 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -1334,9 +1333,7 @@ describe("field depth test", () => {
       },
     });
 
-    expectType<
-      Simplify<InferSchemaValues<typeof config>["foo"]>
-    >().toStrictEqual<{
+    expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
       _type: "foo";
       foo: {
         foo: {

@@ -66,7 +66,7 @@ describe("specific issues", () => {
             foo?: ({
               _key: string;
             } & {
-              foo?: ImageValue;
+              foo?: ImageValue<false>;
             })[];
           };
         })[];

@@ -1,5 +1,4 @@
 import { describe, it } from "@jest/globals";
-import type { Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
@@ -37,9 +36,7 @@ describe("object", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         bar?: boolean;
         tar?: number;
@@ -112,9 +109,7 @@ describe("object", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         bar?: {
           tar?: number;
@@ -148,9 +143,7 @@ describe("object", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         bar: boolean;
       }>();

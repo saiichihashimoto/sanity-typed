@@ -1,10 +1,9 @@
 import { describe, it } from "@jest/globals";
-import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { InferSchemaValues, SlugValue } from ".";
+import type { InferSchemaValues } from ".";
 
 describe("slug", () => {
   describe("defineArrayMember", () => {
@@ -27,15 +26,11 @@ describe("slug", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          SlugValue & {
-            _key: string;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "slug";
+        current: string;
+      }>();
     });
 
     it("overwrites `_type` with `name`", () => {
@@ -87,7 +82,10 @@ describe("slug", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<SlugValue>();
+      >().toStrictEqual<{
+        _type: "slug";
+        current: string;
+      }>();
     });
   });
 
@@ -106,16 +104,10 @@ describe("slug", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          SlugValue,
-          {
-            _type: "foo";
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        current: string;
+      }>();
     });
 
     it("overwrites `_type` with defineArrayMember `name`", () => {

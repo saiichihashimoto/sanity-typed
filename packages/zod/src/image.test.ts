@@ -16,6 +16,9 @@ const fields: Omit<ImageValue, "_type"> = {
     _ref: "ref",
     _type: "reference",
   },
+};
+
+const hotspotFields: Pick<ImageValue<true>, "crop" | "hotspot"> = {
   crop: {
     _type: "sanity.imageCrop",
     bottom: 0,
@@ -54,59 +57,17 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         {
           ...fields,
           _type: "image",
           _key: "key",
         },
-      ]);
+      ];
 
-      expectType<(typeof parsed)[number]>().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"][number]
-      >();
-    });
+      const parsed = zods.foo.parse(unparsed);
 
-    it("builds parser for ImageValue with fields", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "array",
-              of: [
-                defineArrayMember({
-                  type: "image",
-                  fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        },
-      });
-      const zods = _sanityConfigToZods(config);
-
-      const parsed = zods.foo.parse([
-        {
-          ...fields,
-          _type: "image",
-          _key: "key",
-          bar: true,
-          tar: 1,
-        },
-      ]);
-
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -143,7 +104,7 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         {
           ...fields,
           _key: "key",
@@ -151,8 +112,99 @@ describe("image", () => {
           bar: true,
           tar: 1,
         },
-      ]);
+      ];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
+    });
+
+    it("adds hotspot fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "image",
+                  options: {
+                    hotspot: true,
+                  },
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      const unparsed = [
+        {
+          ...fields,
+          ...hotspotFields,
+          _type: "image",
+          _key: "key",
+        },
+      ];
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
+    });
+
+    it("builds parser for ImageValue with fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "image",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                    }),
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      const unparsed = [
+        {
+          ...fields,
+          _type: "image",
+          _key: "key",
+          bar: true,
+          tar: 1,
+        },
+      ];
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -190,15 +242,18 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         {
           ...fields,
           _type: "image",
           _key: "key",
           bar: { tar: 1 },
         },
-      ]);
+      ];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -231,15 +286,18 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse([
+      const unparsed = [
         {
           ...fields,
           _type: "image",
           _key: "key",
           bar: true,
         },
-      ]);
+      ];
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -268,14 +326,58 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: {
           ...fields,
           _type: "image",
         },
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
+        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      >();
+    });
+
+    it("adds hotspot fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "image",
+                  options: {
+                    hotspot: true,
+                  },
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      const unparsed = {
+        _type: "foo",
+        bar: {
+          ...fields,
+          ...hotspotFields,
+          _type: "image",
+        },
+      };
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -312,7 +414,7 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: {
           ...fields,
@@ -320,8 +422,11 @@ describe("image", () => {
           bar: true,
           tar: 1,
         },
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -360,15 +465,18 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: {
           ...fields,
           _type: "image",
           bar: { tar: 1 },
         },
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -402,15 +510,18 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         _type: "foo",
         bar: {
           ...fields,
           _type: "image",
           bar: true,
         },
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
@@ -433,48 +544,14 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         ...fields,
         _type: "foo",
-      });
+      };
 
-      expectType<typeof parsed>().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"]
-      >();
-    });
+      const parsed = zods.foo.parse(unparsed);
 
-    it("builds parser for ImageValue with fields", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "image",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "boolean",
-                }),
-                defineField({
-                  name: "tar",
-                  type: "number",
-                }),
-              ],
-            }),
-          ],
-        },
-      });
-      const zods = _sanityConfigToZods(config);
-
-      const parsed = zods.foo.parse({
-        ...fields,
-        _type: "foo",
-        bar: true,
-        tar: 1,
-      });
-
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
@@ -515,7 +592,7 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.bar.parse([
+      const unparsed = [
         {
           ...fields,
           _key: "key",
@@ -523,10 +600,85 @@ describe("image", () => {
           bar: true,
           tar: 1,
         },
-      ]);
+      ];
 
+      const parsed = zods.bar.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
         InferSchemaValues<typeof config>["bar"][number]["_type"]
+      >();
+    });
+
+    it("adds hotspot fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "image",
+              options: {
+                hotspot: true,
+              },
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      const unparsed = {
+        ...fields,
+        ...hotspotFields,
+        _type: "foo",
+      };
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+    });
+
+    it("builds parser for ImageValue with fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "image",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "boolean",
+                }),
+                defineField({
+                  name: "tar",
+                  type: "number",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      const unparsed = {
+        ...fields,
+        _type: "foo",
+        bar: true,
+        tar: 1,
+      };
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
     });
 
@@ -557,12 +709,15 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         ...fields,
         _type: "foo",
         bar: { tar: 1 },
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
@@ -590,12 +745,15 @@ describe("image", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const parsed = zods.foo.parse({
+      const unparsed = {
         ...fields,
         _type: "foo",
         bar: true,
-      });
+      };
 
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
       expectType<typeof parsed>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();

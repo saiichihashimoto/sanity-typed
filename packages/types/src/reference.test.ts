@@ -1,10 +1,9 @@
 import { describe, it } from "@jest/globals";
-import type { Merge, Simplify } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { InferSchemaValues, ReferenceValue } from ".";
+import type { InferSchemaValues, _referenced } from ".";
 
 describe("reference", () => {
   describe("defineArrayMember", () => {
@@ -28,15 +27,21 @@ describe("reference", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"][number]>
-      >().toStrictEqual<
-        Simplify<
-          ReferenceValue<"other"> & {
-            _key: string;
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _ref: string;
+        [_referenced]: "other";
+        _strengthenOnPublish?: {
+          template?: {
+            id: string;
+            params: { [key: string]: boolean | number | string };
+          };
+          type: string;
+          weak?: boolean;
+        };
+        _type: "reference";
+        _weak?: boolean;
+      }>();
     });
 
     it("overwrites `_type` with `name`", () => {
@@ -90,7 +95,20 @@ describe("reference", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<ReferenceValue<"other">>();
+      >().toStrictEqual<{
+        _ref: string;
+        [_referenced]: "other";
+        _strengthenOnPublish?: {
+          template?: {
+            id: string;
+            params: { [key: string]: boolean | number | string };
+          };
+          type: string;
+          weak?: boolean;
+        };
+        _type: "reference";
+        _weak?: boolean;
+      }>();
     });
   });
 
@@ -110,16 +128,20 @@ describe("reference", () => {
         },
       });
 
-      expectType<
-        Simplify<InferSchemaValues<typeof config>["foo"]>
-      >().toStrictEqual<
-        Merge<
-          ReferenceValue<"other">,
-          {
-            _type: "foo";
-          }
-        >
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _ref: string;
+        [_referenced]: "other";
+        _strengthenOnPublish?: {
+          template?: {
+            id: string;
+            params: { [key: string]: boolean | number | string };
+          };
+          type: string;
+          weak?: boolean;
+        };
+        _type: "foo";
+        _weak?: boolean;
+      }>();
     });
 
     it("overwrites `_type` with defineArrayMember `name`", () => {
