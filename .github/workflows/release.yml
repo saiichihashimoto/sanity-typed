@@ -30,6 +30,45 @@ jobs:
           cache: "npm"
       - run: npm ci
 
+      - run: |
+          DRY_RUN=$(npx turbo run build --dry=json)
+          HASH_CLIENT=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/client#build\")) | .hash")
+          HASH_GROQ_JS=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/groq-js#build\")) | .hash")
+          HASH_GROQ=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/groq#build\")) | .hash")
+          HASH_TEST_UTILS=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/test-utils#build\")) | .hash")
+          HASH_TYPES=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/types#build\")) | .hash")
+          HASH_ZOD=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/zod#build\")) | .hash")
+          echo "HASH_CLIENT=$HASH_CLIENT" >> $GITHUB_ENV
+          echo "HASH_GROQ_JS=$HASH_GROQ_JS" >> $GITHUB_ENV
+          echo "HASH_GROQ=$HASH_GROQ" >> $GITHUB_ENV
+          echo "HASH_TEST_UTILS=$HASH_TEST_UTILS" >> $GITHUB_ENV
+          echo "HASH_TYPES=$HASH_TYPES" >> $GITHUB_ENV
+          echo "HASH_ZOD=$HASH_ZOD" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        with:
+          path: node_modules/.cache/turbo/${{ env.HASH_CLIENT }}*
+          key: turbo-cache-${{ env.HASH_CLIENT }}
+      - uses: actions/cache@v3
+        with:
+          path: node_modules/.cache/turbo/${{ env.HASH_GROQ_JS }}*
+          key: turbo-cache-${{ env.HASH_GROQ_JS }}
+      - uses: actions/cache@v3
+        with:
+          path: node_modules/.cache/turbo/${{ env.HASH_GROQ }}*
+          key: turbo-cache-${{ env.HASH_GROQ }}
+      - uses: actions/cache@v3
+        with:
+          path: node_modules/.cache/turbo/${{ env.HASH_TEST_UTILS }}*
+          key: turbo-cache-${{ env.HASH_TEST_UTILS }}
+      - uses: actions/cache@v3
+        with:
+          path: node_modules/.cache/turbo/${{ env.HASH_TYPES }}*
+          key: turbo-cache-${{ env.HASH_TYPES }}
+      - uses: actions/cache@v3
+        with:
+          path: node_modules/.cache/turbo/${{ env.HASH_ZOD }}*
+          key: turbo-cache-${{ env.HASH_ZOD }}
+
       - env:
           NODE_OPTIONS: "--max_old_space_size=4096"
         run: npm run build
