@@ -14,7 +14,15 @@ jobs:
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - run: npm ci
+      - id: node-modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
 
       - run: |
           DRY_RUN=$(npx turbo run build --dry=json)
@@ -69,7 +77,15 @@ jobs:
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - run: npm ci
+      - id: node-modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -91,6 +107,14 @@ jobs:
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - run: npm ci
+      - id: node-modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
 
       - run: npm test
