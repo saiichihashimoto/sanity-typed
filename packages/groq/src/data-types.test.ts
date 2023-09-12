@@ -10,7 +10,9 @@ describe("base case", () => {
   it('""', async () => {
     const query = "";
 
-    expect(() => parse(query)).toThrow();
+    expect(() => parse(query)).toThrow(
+      "Syntax error in GROQ query at position 0"
+    );
     expectType<Parse<typeof query>>().toStrictEqual<never>();
 
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -171,7 +173,9 @@ describe("data types", () => {
   it('"double" "quoted" "string"', async () => {
     const query = '"double" "quoted" "string"';
 
-    expect(() => parse(query)).toThrow();
+    expect(() => parse(query)).toThrow(
+      "Syntax error in GROQ query at position 8"
+    );
     expectType<Parse<typeof query>>().toStrictEqual<never>();
 
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -230,7 +234,9 @@ describe("data types", () => {
   it("'single' 'quoted' 'string'", async () => {
     const query = "'single' 'quoted' 'string'";
 
-    expect(() => parse(query)).toThrow();
+    expect(() => parse(query)).toThrow(
+      "Syntax error in GROQ query at position 8"
+    );
     expectType<Parse<typeof query>>().toStrictEqual<never>();
 
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -362,7 +368,9 @@ describe("data types", () => {
   it("[1,[]", async () => {
     const query = "[1,[]";
 
-    expect(() => parse(query)).toThrow();
+    expect(() => parse(query)).toThrow(
+      "Syntax error in GROQ query at position 5"
+    );
     expectType<Parse<typeof query>>().toStrictEqual<never>();
 
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
