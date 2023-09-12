@@ -1,4 +1,4 @@
-import { describe, it } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import type { GeopointValue } from "sanity";
 
 import { expectType } from "@sanity-typed/test-utils";
