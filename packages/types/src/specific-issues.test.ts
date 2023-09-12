@@ -94,7 +94,7 @@ describe("specific issues", () => {
                 title: "Projects",
                 name: "projects",
                 type: "array",
-                validation: (rule) => rule.min(3),
+                validation: (Rule) => Rule.min(3),
                 of: [
                   defineArrayMember({
                     type: "reference",

@@ -203,4 +203,8 @@ describe("geopoint", () => {
       >();
     });
   });
+
+  describe("validation", () => {
+    it.todo("custom(fn)");
+  });
 });

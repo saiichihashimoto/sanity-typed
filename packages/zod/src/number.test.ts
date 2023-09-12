@@ -204,4 +204,172 @@ describe("number", () => {
       >();
     });
   });
+
+  describe("validation", () => {
+    it("min(minNumber)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "number",
+              validation: (Rule) => Rule.min(1),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(0)).toThrow(
+        "Number must be greater than or equal to 1"
+      );
+    });
+
+    it("max(maxNumber)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "number",
+              validation: (Rule) => Rule.max(1),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(2)).toThrow(
+        "Number must be less than or equal to 1"
+      );
+    });
+
+    it("lessThan(limit)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "number",
+              validation: (Rule) => Rule.lessThan(1),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(1)).toThrow("Number must be less than 1");
+    });
+
+    it("greaterThan(limit)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "number",
+              validation: (Rule) => Rule.greaterThan(1),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(1)).toThrow("Number must be greater than 1");
+    });
+
+    it("integer()", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "number",
+              validation: (Rule) => Rule.integer(),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(1.5)).toThrow(
+        "Expected integer, received float"
+      );
+    });
+
+    it("precision(limit)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "number",
+              validation: (Rule) => Rule.precision(1),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(1.56)).toThrow(
+        "Number must be a multiple of 0.1"
+      );
+    });
+
+    it("positive()", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "number",
+              validation: (Rule) => Rule.positive(),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(-1)).toThrow(
+        "Number must be greater than or equal to 0"
+      );
+      expect(() => zods.foo.parse(0)).not.toThrow();
+    });
+
+    it("negative()", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "number",
+              validation: (Rule) => Rule.negative(),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(1)).toThrow("Number must be less than 0");
+      expect(() => zods.foo.parse(0)).toThrow("Number must be less than 0");
+    });
+
+    it.todo("custom(fn)");
+  });
 });

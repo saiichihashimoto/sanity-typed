@@ -106,4 +106,8 @@ describe("boolean", () => {
       >();
     });
   });
+
+  describe("validation", () => {
+    it.todo("custom(fn)");
+  });
 });

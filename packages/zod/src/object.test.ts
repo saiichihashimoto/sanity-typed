@@ -505,4 +505,8 @@ describe("object", () => {
       >();
     });
   });
+
+  describe("validation", () => {
+    it.todo("custom(fn)");
+  });
 });

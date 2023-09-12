@@ -33,7 +33,7 @@ describe("datetime", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const unparsed = ["foo"];
+      const unparsed = ["2023-09-12T20:01:36.945Z"];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -68,7 +68,7 @@ describe("datetime", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: "foo",
+        bar: "2023-09-12T20:01:36.945Z",
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -96,7 +96,7 @@ describe("datetime", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const unparsed = "foo";
+      const unparsed = "2023-09-12T20:01:36.945Z";
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -105,5 +105,69 @@ describe("datetime", () => {
         InferSchemaValues<typeof config>["foo"]
       >();
     });
+  });
+
+  describe("validation", () => {
+    it("requires datetime", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "datetime",
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("foo")).toThrow("Invalid datetime");
+    });
+
+    it("min(minDate)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "datetime",
+              validation: (Rule) => Rule.min("2023-09-12T20:01:36.945Z"),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("2023-09-12T20:01:36.944Z")).toThrow(
+        "Datetime must be greater than or equal to 2023-09-12T20:01:36.945Z"
+      );
+    });
+
+    it("max(maxDate)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "datetime",
+              validation: (Rule) => Rule.max("2023-09-12T20:01:36.945Z"),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("2023-09-12T20:01:36.946Z")).toThrow(
+        "Datetime must be less than or equal to 2023-09-12T20:01:36.945Z"
+      );
+    });
+
+    it.todo("custom(fn)");
   });
 });

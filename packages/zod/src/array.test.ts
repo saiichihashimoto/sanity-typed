@@ -252,4 +252,79 @@ describe("array", () => {
       >();
     });
   });
+
+  describe("validation", () => {
+    it.todo("unique()");
+
+    it("min(minLength)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              validation: (Rule) => Rule.min(1),
+              of: [defineArrayMember({ type: "boolean" })],
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse([])).toThrow(
+        "Array must contain at least 1 element(s)"
+      );
+    });
+
+    it("max(maxLength)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              validation: (Rule) => Rule.max(1),
+              of: [defineArrayMember({ type: "boolean" })],
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse([true, false])).toThrow(
+        "Array must contain at most 1 element(s)"
+      );
+    });
+
+    it("length(exactLength)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              validation: (Rule) => Rule.length(1),
+              of: [defineArrayMember({ type: "boolean" })],
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse([])).toThrow(
+        "Array must contain exactly 1 element(s)"
+      );
+      expect(() => zods.foo.parse([true, false])).toThrow(
+        "Array must contain exactly 1 element(s)"
+      );
+    });
+
+    it.todo("custom(fn)");
+  });
 });

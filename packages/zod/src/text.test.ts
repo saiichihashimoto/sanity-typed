@@ -106,4 +106,162 @@ describe("text", () => {
       >();
     });
   });
+
+  describe("validation", () => {
+    it("min(minLength)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+              validation: (Rule) => Rule.min(1),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("")).toThrow(
+        "String must contain at least 1 character(s)"
+      );
+    });
+
+    it("max(maxLength)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+              validation: (Rule) => Rule.max(1),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("fo")).toThrow(
+        "String must contain at most 1 character(s)"
+      );
+    });
+
+    it("length(exactLength)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+              validation: (Rule) => Rule.length(1),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("")).toThrow(
+        "String must contain exactly 1 character(s)"
+      );
+      expect(() => zods.foo.parse("fo")).toThrow(
+        "String must contain exactly 1 character(s)"
+      );
+    });
+
+    it("uppercase()", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+              validation: (Rule) => Rule.uppercase(),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("foo")).toThrow(
+        "Must be all uppercase letters"
+      );
+    });
+
+    it("lowercase()", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+              validation: (Rule) => Rule.lowercase(),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("FOO")).toThrow(
+        "Must be all lowercase letters"
+      );
+    });
+
+    it("email()", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+              validation: (Rule) => Rule.email(),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("foo")).toThrow("Invalid email");
+    });
+
+    it("regex(pattern)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+              validation: (Rule) => Rule.regex(/^bar$/),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("foo")).toThrow("Must match regex /^bar$/");
+    });
+
+    it.todo("regex(pattern, { name })");
+
+    it.todo("regex(pattern, name)");
+
+    it.todo("regex(pattern, { invert })");
+
+    it.todo("regex(pattern, name, { invert })");
+
+    it.todo("custom(fn)");
+  });
 });

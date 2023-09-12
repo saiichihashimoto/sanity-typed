@@ -1,12 +1,19 @@
-import type { IsNumericLiteral, IsStringLiteral } from "type-fest";
+import type {
+  IsNumericLiteral,
+  IsStringLiteral,
+  OmitIndexSignature,
+  UnionToIntersection,
+} from "type-fest";
 import { z } from "zod";
 
 import { _referenced } from "@sanity-typed/types";
 import type {
   InferSchemaValues,
+  IntrinsicTypeName,
   _ArrayMemberDefinition,
   _ConfigBase,
   _FieldDefinition,
+  _GetOriginalRule,
   _TypeDefinition,
 } from "@sanity-typed/types";
 
@@ -38,6 +45,123 @@ const zodUnion = <Zods extends z.ZodTypeAny[]>(types: Zods) =>
     ? z.ZodUnion<Zods>
     : Zods[number];
 
+type RuleOf<TSchemaType extends _SchemaTypeDefinition<any, any>> =
+  _GetOriginalRule<TSchemaType>;
+
+type RuleMap<TType extends IntrinsicTypeName, TReturnType> = {
+  [TName in keyof OmitIndexSignature<
+    UnionToIntersection<RuleOf<_SchemaTypeDefinition<IntrinsicTypeName, any>>>
+  >]?: (
+    current: TReturnType,
+    args: RuleOf<_SchemaTypeDefinition<TType, any>> extends {
+      [name in TName]: (...args: infer TArgs) => any;
+    }
+      ? TArgs
+      : never
+  ) => TReturnType;
+};
+
+// TODO The returned types are ridiculous
+const traverseValidation = <
+  TSchemaType extends _SchemaTypeDefinition<any, any>,
+  TReturnType
+>(
+  { validation }: TSchemaType,
+  initialValue: TReturnType,
+  ruleMap: RuleMap<TSchemaType["type"], TReturnType> = {}
+) => {
+  /* eslint-disable fp/no-let,fp/no-mutation,fp/no-unused-expression -- mutation */
+  let value = initialValue;
+
+  const rule = {
+    custom: (...args: any[]) => {
+      value = ruleMap?.custom?.(value, args as any) ?? value;
+      return rule;
+    },
+    email: (...args: any[]) => {
+      value = ruleMap?.email?.(value, args as any) ?? value;
+      return rule;
+    },
+    error: (...args: any[]) => {
+      value = ruleMap?.error?.(value, args as any) ?? value;
+      return rule;
+    },
+    greaterThan: (...args: any[]) => {
+      value = ruleMap?.greaterThan?.(value, args as any) ?? value;
+      return rule;
+    },
+    integer: (...args: any[]) => {
+      value = ruleMap?.integer?.(value, args as any) ?? value;
+      return rule;
+    },
+    length: (...args: any[]) => {
+      value = ruleMap?.length?.(value, args as any) ?? value;
+      return rule;
+    },
+    lessThan: (...args: any[]) => {
+      value = ruleMap?.lessThan?.(value, args as any) ?? value;
+      return rule;
+    },
+    lowercase: (...args: any[]) => {
+      value = ruleMap?.lowercase?.(value, args as any) ?? value;
+      return rule;
+    },
+    max: (...args: any[]) => {
+      value = ruleMap?.max?.(value, args as any) ?? value;
+      return rule;
+    },
+    min: (...args: any[]) => {
+      value = ruleMap?.min?.(value, args as any) ?? value;
+      return rule;
+    },
+    negative: (...args: any[]) => {
+      value = ruleMap?.negative?.(value, args as any) ?? value;
+      return rule;
+    },
+    positive: (...args: any[]) => {
+      value = ruleMap?.positive?.(value, args as any) ?? value;
+      return rule;
+    },
+    precision: (...args: any[]) => {
+      value = ruleMap?.precision?.(value, args as any) ?? value;
+      return rule;
+    },
+    regex: (...args: any[]) => {
+      value = ruleMap?.regex?.(value, args as any) ?? value;
+      return rule;
+    },
+    required: (...args: any[]) => {
+      value = ruleMap?.required?.(value, args as any) ?? value;
+      return rule;
+    },
+    uppercase: (...args: any[]) => {
+      value = ruleMap?.uppercase?.(value, args as any) ?? value;
+      return rule;
+    },
+    valueOfField: () => ({
+      path: "",
+      type: Symbol("TODO"),
+    }),
+    warning: (...args: any[]) => {
+      value = ruleMap?.warning?.(value, args as any) ?? value;
+      return rule;
+    },
+  } as unknown as RuleOf<_SchemaTypeDefinition<IntrinsicTypeName, any>>;
+
+  validation?.(
+    // @ts-expect-error -- TODO Honestly, idk
+    rule
+  );
+
+  /* eslint-enable fp/no-let,fp/no-mutation,fp/no-unused-expression */
+
+  return value;
+};
+
+// TODO https://github.com/sanity-io/sanity/issues/4922
+const emailRegex =
+  /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/;
+
 const constantZods = {
   boolean: z.boolean(),
   crossDatasetReference: z.object({
@@ -47,9 +171,7 @@ const constantZods = {
     _type: z.literal("crossDatasetReference"),
     _weak: z.optional(z.boolean()),
   }),
-  date: z.string(),
-  datetime: z.string(),
-  email: z.string(),
+  email: z.string().regex(emailRegex, { message: "Invalid email" }),
   geopoint: z.object({
     _type: z.literal("geopoint"),
     alt: z.optional(z.number()),
@@ -60,19 +182,62 @@ const constantZods = {
     _type: z.literal("slug"),
     current: z.string(),
   }),
-  text: z.string(),
   url: z.string(),
 };
 
-const numberZod = <
-  TSchemaType extends _SchemaTypeDefinition<"number", number>
->({
-  options: { list } = {},
-}: TSchemaType) =>
-  (!list
-    ? z.number()
+const dateZod = <TSchemaType extends _SchemaTypeDefinition<"date", string>>(
+  schemaType: TSchemaType
+) =>
+  traverseValidation(
+    schemaType,
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Invalid date" }),
+    {
+      max: (zod, [maxDate]) =>
+        zod.refine((value) => new Date(value) <= new Date(maxDate as string), {
+          message: `Date must be less than or equal to ${maxDate as string}`,
+        }),
+      min: (zod, [minDate]) =>
+        zod.refine((value) => new Date(value) >= new Date(minDate as string), {
+          message: `Date must be greater than or equal to ${minDate as string}`,
+        }),
+    } as RuleMap<"date", z.ZodType<string>>
+  );
+
+const datetimeZod = <
+  TSchemaType extends _SchemaTypeDefinition<"datetime", string>
+>(
+  schemaType: TSchemaType
+) =>
+  traverseValidation(schemaType, z.string().datetime(), {
+    max: (zod, [maxDate]) =>
+      zod.refine((value) => new Date(value) <= new Date(maxDate as string), {
+        message: `Datetime must be less than or equal to ${maxDate as string}`,
+      }),
+    min: (zod, [minDate]) =>
+      zod.refine((value) => new Date(value) >= new Date(minDate as string), {
+        message: `Datetime must be greater than or equal to ${
+          minDate as string
+        }`,
+      }),
+  } as RuleMap<"datetime", z.ZodType<string>>);
+
+const numberZod = <TSchemaType extends _SchemaTypeDefinition<"number", number>>(
+  schemaType: TSchemaType
+) =>
+  (!schemaType.options?.list
+    ? traverseValidation(schemaType, z.number(), {
+        greaterThan: (zod, [limit]) => zod.gt(limit as number),
+        integer: (zod) => zod.int(),
+        lessThan: (zod, [limit]) => zod.lt(limit as number),
+        max: (zod, [maxNumber]) => zod.max(maxNumber as number),
+        min: (zod, [minNumber]) => zod.min(minNumber as number),
+        negative: (zod) => zod.negative(),
+        positive: (zod) => zod.nonnegative(),
+        precision: (zod, [limit]) =>
+          zod.multipleOf(1 / 10 ** (limit as number)),
+      } as RuleMap<"number", z.ZodNumber>)
     : zodUnion(
-        list.map((maybeTitledListValue) =>
+        schemaType.options.list.map((maybeTitledListValue) =>
           z.literal(
             typeof maybeTitledListValue === "number"
               ? maybeTitledListValue
@@ -94,27 +259,49 @@ const numberZod = <
         >
     : never;
 
-const stringZod = <
-  TSchemaType extends _SchemaTypeDefinition<"string", string>
->({
-  options: { list } = {},
-}: TSchemaType) =>
-  (!list
-    ? z.string()
-    : zodUnion(
-        list.map((maybeTitledListValue) =>
+const zodStringRuleMap: RuleMap<"string" | "text", z.ZodString> = {
+  email: (zod) => zod.regex(emailRegex, { message: "Invalid email" }),
+  length: (zod, [exactLength]) => zod.length(exactLength as number),
+  max: (zod, [maxLength]) => zod.max(maxLength as number),
+  min: (zod, [minLength]) => zod.min(minLength as number),
+  regex: (zod, [pattern]) =>
+    zod.regex(pattern, { message: `Must match regex ${pattern}` }),
+};
+
+const zodTypeStringRuleMap: RuleMap<"string" | "text", z.ZodType<string>> = {
+  lowercase: (zod) =>
+    zod.refine((value) => value === value.toLocaleLowerCase(), {
+      message: "Must be all lowercase letters",
+    }),
+  uppercase: (zod) =>
+    zod.refine((value) => value === value.toLocaleUpperCase(), {
+      message: "Must be all uppercase letters",
+    }),
+};
+
+const stringZod = <TSchemaType extends _SchemaTypeDefinition<"string", string>>(
+  schemaType: TSchemaType
+) =>
+  (schemaType.options?.list
+    ? zodUnion(
+        schemaType.options.list.map((maybeTitledListValue) =>
           z.literal(
             typeof maybeTitledListValue === "string"
               ? maybeTitledListValue
               : maybeTitledListValue.value!
           )
         )
+      )
+    : traverseValidation(
+        schemaType,
+        traverseValidation(schemaType, z.string(), zodStringRuleMap),
+        zodTypeStringRuleMap
       )) as TSchemaType extends _SchemaTypeDefinition<
     "string",
     infer TOptionsHelper
   >
     ? IsStringLiteral<TOptionsHelper> extends false
-      ? z.ZodString
+      ? z.ZodType<string>
       : ReturnType<
           typeof zodUnion<
             (TOptionsHelper extends never
@@ -123,6 +310,15 @@ const stringZod = <
           >
         >
     : never;
+
+const textZod = <TSchemaType extends _SchemaTypeDefinition<"text", string>>(
+  schemaType: TSchemaType
+) =>
+  traverseValidation(
+    schemaType,
+    traverseValidation(schemaType, z.string(), zodStringRuleMap),
+    zodTypeStringRuleMap
+  );
 
 const referenceZod = <
   TSchemaType extends _SchemaTypeDefinition<"reference", any>
@@ -332,8 +528,7 @@ type MembersZods<
 >)[]
   ? TMemberDefinition extends never
     ? never
-    : // @ts-expect-error -- Type instantiation is excessively deep and possibly infinite.
-      AddKey<
+    : AddKey<
         AddType<
           TMemberDefinition["name"],
           // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
@@ -400,27 +595,35 @@ const arrayZod = <
     _TypeDefinition<any, any, any, any, any, any, any, any>
   >
 >(
-  { of }: TSchemaType,
+  schemaType: TSchemaType,
   getZods: () => TSanityConfigZods
 ): ArrayZod<TSchemaType, TSanityConfigZods> =>
-  z.array(
-    zodUnion(
-      memberZods(
-        of as _ArrayMemberDefinition<
-          any,
-          any,
-          any,
-          any,
-          any,
-          any,
-          any,
-          any,
-          any
-        >[],
-        getZods
+  traverseValidation(
+    schemaType,
+    z.array(
+      zodUnion(
+        memberZods(
+          schemaType.of as _ArrayMemberDefinition<
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any
+          >[],
+          getZods
+        )
       )
-    )
-  ) as ArrayZod<TSchemaType, TSanityConfigZods>;
+    ) as ArrayZod<TSchemaType, TSanityConfigZods>,
+    {
+      length: (zod, [exactLength]) => zod.length(exactLength as number),
+      max: (zod, [maxLength]) => zod.max(maxLength as number),
+      min: (zod, [minLength]) => zod.min(minLength as number),
+    } as RuleMap<"array", ArrayZod<TSchemaType, TSanityConfigZods>>
+  );
 
 const spanZod = z.object({
   _key: z.string(),
@@ -509,41 +712,10 @@ const blockZod = <
 
 const isFieldRequired = (
   field: _FieldDefinition<any, any, any, any, any, any, any, any, any>
-): field is _FieldDefinition<any, any, any, any, any, any, any, any, true> => {
-  // eslint-disable-next-line fp/no-let -- mutation
-  let isRequired = false;
-
-  const rule = {
-    custom: () => rule,
-    email: () => rule,
-    error: () => rule,
-    greaterThan: () => rule,
-    integer: () => rule,
-    length: () => rule,
-    lessThan: () => rule,
-    lowercase: () => rule,
-    max: () => rule,
-    min: () => rule,
-    precision: () => rule,
-    regex: () => rule,
-    uppercase: () => rule,
-    valueOfField: () => rule,
-    warning: () => rule,
-    required: (): any => {
-      // eslint-disable-next-line fp/no-mutation -- mutation
-      isRequired = true;
-      return rule;
-    },
-  } as unknown as Parameters<NonNullable<(typeof field)["validation"]>>[0];
-
-  // eslint-disable-next-line fp/no-unused-expression -- mutation
-  field.validation?.(
-    // @ts-expect-error -- TODO Honestly, idk
-    rule
-  );
-
-  return isRequired;
-};
+): field is _FieldDefinition<any, any, any, any, any, any, any, any, true> =>
+  traverseValidation(field, false as boolean, {
+    required: () => true,
+  });
 
 type FieldsZods<
   TSchemaType extends _SchemaTypeDefinition<
@@ -792,6 +964,16 @@ type SanityTypeToZod<
   >
 > = TSchemaType["type"] extends keyof typeof constantZods
   ? (typeof constantZods)[TSchemaType["type"]]
+  : TSchemaType["type"] extends "date"
+  ? ReturnType<
+      typeof dateZod<Extract<TSchemaType, _SchemaTypeDefinition<"date", any>>>
+    >
+  : TSchemaType["type"] extends "datetime"
+  ? ReturnType<
+      typeof datetimeZod<
+        Extract<TSchemaType, _SchemaTypeDefinition<"datetime", any>>
+      >
+    >
   : TSchemaType["type"] extends "number"
   ? ReturnType<
       typeof numberZod<
@@ -803,6 +985,10 @@ type SanityTypeToZod<
       typeof stringZod<
         Extract<TSchemaType, _SchemaTypeDefinition<"string", any>>
       >
+    >
+  : TSchemaType["type"] extends "text"
+  ? ReturnType<
+      typeof textZod<Extract<TSchemaType, _SchemaTypeDefinition<"text", any>>>
     >
   : TSchemaType["type"] extends "reference"
   ? ReturnType<
@@ -867,6 +1053,14 @@ const schemaTypeToZod = <
     ? constantZods[
         schema.type as TSchemaType["type"] & keyof typeof constantZods
       ]
+    : schema.type === "date"
+    ? dateZod(
+        schema as Extract<TSchemaType, _SchemaTypeDefinition<"date", any>>
+      )
+    : schema.type === "datetime"
+    ? datetimeZod(
+        schema as Extract<TSchemaType, _SchemaTypeDefinition<"datetime", any>>
+      )
     : schema.type === "number"
     ? numberZod(
         schema as Extract<TSchemaType, _SchemaTypeDefinition<"number", number>>
@@ -874,6 +1068,10 @@ const schemaTypeToZod = <
     : schema.type === "string"
     ? stringZod(
         schema as Extract<TSchemaType, _SchemaTypeDefinition<"string", string>>
+      )
+    : schema.type === "text"
+    ? textZod(
+        schema as Extract<TSchemaType, _SchemaTypeDefinition<"text", any>>
       )
     : schema.type === "reference"
     ? referenceZod<

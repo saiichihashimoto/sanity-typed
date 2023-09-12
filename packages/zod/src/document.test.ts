@@ -536,4 +536,8 @@ describe("document", () => {
       >();
     });
   });
+
+  describe("validation", () => {
+    it.todo("custom(fn)");
+  });
 });

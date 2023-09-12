@@ -33,7 +33,7 @@ describe("date", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const unparsed = ["foo"];
+      const unparsed = ["2023-09-12"];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -68,7 +68,7 @@ describe("date", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: "foo",
+        bar: "2023-09-12",
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -96,7 +96,7 @@ describe("date", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const unparsed = "foo";
+      const unparsed = "2023-09-12";
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -105,5 +105,69 @@ describe("date", () => {
         InferSchemaValues<typeof config>["foo"]
       >();
     });
+  });
+
+  describe("validation", () => {
+    it("requires date", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "date",
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("foo")).toThrow("Invalid date");
+    });
+
+    it("min(minDate)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "date",
+              validation: (Rule) => Rule.min("2023-09-12"),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("2023-09-11")).toThrow(
+        "Date must be greater than or equal to 2023-09-12"
+      );
+    });
+
+    it("max(maxDate)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "date",
+              validation: (Rule) => Rule.max("2023-09-12"),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("2023-09-13")).toThrow(
+        "Date must be less than or equal to 2023-09-12"
+      );
+    });
+
+    it.todo("custom(fn)");
   });
 });
