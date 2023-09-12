@@ -21,7 +21,7 @@ jobs:
             node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
-      - if: steps.cache.node-modules.cache-hit != 'true'
+      - if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
 
       - run: |
@@ -84,7 +84,7 @@ jobs:
             node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
-      - if: steps.cache.node-modules.cache-hit != 'true'
+      - if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
       - uses: ruby/setup-ruby@v1
         with:
@@ -114,7 +114,7 @@ jobs:
             node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
-      - if: steps.cache.node-modules.cache-hit != 'true'
+      - if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
 
       - run: npm test
