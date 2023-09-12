@@ -19,7 +19,6 @@ jobs:
       - run: |
           RESULT=$(npx turbo run build --dry=json | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/test-utils#build\")) | .hash")
           echo "HASH_TEST_UTILS=$RESULT" >> $GITHUB_ENV
-      - run: echo HASH_TEST_UTILS $HASH_TEST_UTILS
       - uses: actions/cache@v3
         with:
           path: node_modules/.cache/turbo/${{ env.HASH_TEST_UTILS }}*
@@ -28,7 +27,6 @@ jobs:
       - run: |
           RESULT=$(npx turbo run build --dry=json | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/types#build\")) | .hash")
           echo "HASH_TYPES=$RESULT" >> $GITHUB_ENV
-      - run: echo HASH_TYPES $HASH_TYPES
       - uses: actions/cache@v3
         with:
           path: node_modules/.cache/turbo/${{ env.HASH_TYPES }}*
@@ -37,7 +35,6 @@ jobs:
       - run: |
           RESULT=$(npx turbo run build --dry=json | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/groq#build\")) | .hash")
           echo "HASH_GROQ=$RESULT" >> $GITHUB_ENV
-      - run: echo HASH_GROQ $HASH_GROQ
       - uses: actions/cache@v3
         with:
           path: node_modules/.cache/turbo/${{ env.HASH_GROQ }}*
@@ -46,7 +43,6 @@ jobs:
       - run: |
           RESULT=$(npx turbo run build --dry=json | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/groq-js#build\")) | .hash")
           echo "HASH_GROQ_JS=$RESULT" >> $GITHUB_ENV
-      - run: echo HASH_GROQ_JS $HASH_GROQ_JS
       - uses: actions/cache@v3
         with:
           path: node_modules/.cache/turbo/${{ env.HASH_GROQ_JS }}*
@@ -55,7 +51,6 @@ jobs:
       - run: |
           RESULT=$(npx turbo run build --dry=json | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/client#build\")) | .hash")
           echo "HASH_CLIENT=$RESULT" >> $GITHUB_ENV
-      - run: echo HASH_CLIENT $HASH_CLIENT
       - uses: actions/cache@v3
         with:
           path: node_modules/.cache/turbo/${{ env.HASH_CLIENT }}*
@@ -64,7 +59,6 @@ jobs:
       - run: |
           RESULT=$(npx turbo run build --dry=json | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/zod#build\")) | .hash")
           echo "HASH_ZOD=$RESULT" >> $GITHUB_ENV
-      - run: echo HASH_ZOD $HASH_ZOD
       - uses: actions/cache@v3
         with:
           path: node_modules/.cache/turbo/${{ env.HASH_ZOD }}*
