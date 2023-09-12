@@ -110,7 +110,6 @@ describe("<alias>", () => {
                 defineField({
                   name: "foo",
                   type: "foo",
-                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -121,7 +120,9 @@ describe("<alias>", () => {
       type Values = InferSchemaValues<typeof config>;
 
       // It really is cyclical!
-      expectType<Values["foo"]["foo"]>().toStrictEqual<Values["foo"]>();
+      expectType<NonNullable<Values["foo"]["foo"]>>().toStrictEqual<
+        Values["foo"]
+      >();
     });
 
     it("infers multiple step cyclical type value", () => {
@@ -137,7 +138,6 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
-                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -148,7 +148,6 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "baz",
-                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -159,7 +158,6 @@ describe("<alias>", () => {
                 defineField({
                   name: "foo",
                   type: "foo",
-                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -170,9 +168,11 @@ describe("<alias>", () => {
       type Values = InferSchemaValues<typeof config>;
 
       // It really is cyclical!
-      expectType<Values["foo"]["bar"]["baz"]["foo"]>().toStrictEqual<
-        Values["foo"]
-      >();
+      expectType<
+        NonNullable<
+          NonNullable<NonNullable<Values["foo"]["bar"]>["baz"]>["foo"]
+        >
+      >().toStrictEqual<Values["foo"]>();
     });
 
     it("infers plugin type value", () => {
@@ -337,7 +337,6 @@ describe("<alias>", () => {
                 defineField({
                   name: "foo",
                   type: "foo",
-                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -348,7 +347,9 @@ describe("<alias>", () => {
       type Values = InferSchemaValues<typeof plugin>;
 
       // It really is cyclical!
-      expectType<Values["foo"]["foo"]>().toStrictEqual<Values["foo"]>();
+      expectType<NonNullable<Values["foo"]["foo"]>>().toStrictEqual<
+        Values["foo"]
+      >();
     });
 
     it("infers multiple step cyclical type value", () => {
@@ -363,7 +364,6 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
-                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -374,7 +374,6 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "baz",
-                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -385,7 +384,6 @@ describe("<alias>", () => {
                 defineField({
                   name: "foo",
                   type: "foo",
-                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -396,9 +394,11 @@ describe("<alias>", () => {
       type Values = InferSchemaValues<typeof plugin>;
 
       // It really is cyclical!
-      expectType<Values["foo"]["bar"]["baz"]["foo"]>().toStrictEqual<
-        Values["foo"]
-      >();
+      expectType<
+        NonNullable<
+          NonNullable<NonNullable<Values["foo"]["bar"]>["baz"]>["foo"]
+        >
+      >().toStrictEqual<Values["foo"]>();
     });
 
     it("infers plugin type value", () => {
