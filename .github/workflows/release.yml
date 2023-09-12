@@ -86,3 +86,37 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx multi-semantic-release --ignore-private-packages
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v3.8.1
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+      - id: node-modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
+
+      - id: cpu-cores
+        uses: SimenB/github-actions-cpu-cores@v2
+      - run: |
+          JEST_CACHE_DIRECTORY=$(npx jest --color --showConfig | jq --raw-output ".configs[0].cacheDirectory")
+          echo "JEST_CACHE_DIRECTORY=$JEST_CACHE_DIRECTORY" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        with:
+          path: ${{ env.JEST_CACHE_DIRECTORY }}
+          key: jest-${{ github.run_id }}
+          restore-keys: |
+            jest-
+
+      - run: npm test -- --cache --max-workers ${{ steps.cpu-cores.outputs.count }}
