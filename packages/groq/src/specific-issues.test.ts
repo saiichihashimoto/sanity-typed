@@ -1,4 +1,4 @@
-import { describe, it } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import { evaluate, parse } from "groq-js";
 import type { WritableDeep } from "type-fest";
 
