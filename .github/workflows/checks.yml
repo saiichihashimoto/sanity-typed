@@ -15,10 +15,13 @@ jobs:
           node-version-file: "package.json"
           cache: "npm"
       - run: npm ci
+
+      - run: echo "HASH_VALUE_TEST=\"this is a test\"" >> $GITHUB_ENV
+      - run: echo HASH_VALUE_TEST $HASH_VALUE_TEST
       - uses: actions/cache@v3
         with:
           path: node_modules/.cache/turbo
-          key: build-path-test
+          key: ${{ env.HASH_VALUE_TEST }}
 
       - env:
           NODE_OPTIONS: "--max_old_space_size=4096"
