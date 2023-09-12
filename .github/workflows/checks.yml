@@ -127,4 +127,4 @@ jobs:
           path: ${{ env.JEST_CACHE_DIRECTORY }}
           key: jest-cache-test
 
-      - run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }}
+      - run: npm test -- --cache --max-workers ${{ steps.cpu-cores.outputs.count }}
