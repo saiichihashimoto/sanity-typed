@@ -450,6 +450,7 @@ describe("document", () => {
         },
       ];
 
+      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
       const parsed = zods.bar.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);

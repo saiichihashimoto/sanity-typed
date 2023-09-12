@@ -266,14 +266,40 @@ type SanityConfigZods<
     any,
     any,
     any
-  >
+  >,
+  TPluginTypeDefinition extends _TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  > = _TypeDefinition<any, any, any, any, any, any, any, any>
 > = {
+  // @ts-expect-error -- Type instantiation is excessively deep and possibly infinite.
   [Name in TTypeDefinition["name"]]: AddType<
     Name,
+    // @ts-expect-error -- TODO IDK
     // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
     SanityTypeToZod<
       Extract<TTypeDefinition, { name: Name }>,
-      SanityConfigZods<TTypeDefinition>
+      SanityConfigZods<
+        | TTypeDefinition
+        | (_TypeDefinition<
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any
+          > extends TPluginTypeDefinition
+            ? never
+            : TPluginTypeDefinition)
+      >
     >
   >;
 };
@@ -893,6 +919,7 @@ export const _sanityConfigToZods = <
   const TConfig extends _ConfigBase<any, any>
 >({
   schema: { types: typesUntyped = [] } = {},
+  plugins: pluginsUntyped = [],
 }: TConfig) => {
   type TTypeDefinition = TConfig extends _ConfigBase<infer TTypeDefinition, any>
     ? TTypeDefinition
@@ -902,18 +929,41 @@ export const _sanityConfigToZods = <
     NonNullable<_ConfigBase<TTypeDefinition, any>["schema"]>["types"]
   >;
 
-  const zods: SanityConfigZods<TTypeDefinition> = Array.isArray(types)
-    ? Object.fromEntries(
-        types.map((type) => [
-          type.name,
-          addType(
+  type TPluginTypeDefinition = TConfig extends _ConfigBase<
+    any,
+    infer TPluginTypeDefinition
+  >
+    ? TPluginTypeDefinition
+    : never;
+
+  const plugins = pluginsUntyped as _ConfigBase<TPluginTypeDefinition, any>[];
+
+  const pluginsZods = plugins
+    .map(
+      (plugin) =>
+        _sanityConfigToZods(plugin) as SanityConfigZods<
+          TPluginTypeDefinition,
+          any
+        >
+    )
+    .reduce(
+      (acc, zods) => ({ ...acc, ...zods }),
+      {} as SanityConfigZods<TPluginTypeDefinition, any>
+    );
+
+  const zods: SanityConfigZods<TTypeDefinition, TPluginTypeDefinition> =
+    Array.isArray(types)
+      ? Object.fromEntries(
+          types.map((type) => [
             type.name,
-            schemaTypeToZod(type, () => zods)
-          ),
-        ])
-      )
-    : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
-      (undefined as never);
+            addType(
+              type.name,
+              schemaTypeToZod(type, () => ({ ...pluginsZods, ...zods }))
+            ),
+          ])
+        )
+      : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
+        (undefined as never);
 
   return zods;
 };
