@@ -1,14 +1,29 @@
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
 name: "Checks"
-on: pull_request
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency: checks-${{ github.base_ref }}
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: recursive
       - uses: actions/setup-node@v3.8.1
         with:
@@ -66,6 +81,12 @@ jobs:
       - env:
           NODE_OPTIONS: "--max_old_space_size=4096"
         run: npm run build
+
+      - run: npm config set workspaces-update false
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx multi-semantic-release --ignore-private-packages
   lint:
     name: Lint
     runs-on: ubuntu-latest
