@@ -9,7 +9,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-Typed Sanity Client Results, all inferred, no client changes!
+[@sanity/client](https://github.com/sanity-io/client) with typed GROQ Results
 
 @[:page_toc](## Page Contents)
 
