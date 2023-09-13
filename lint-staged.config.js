@@ -13,22 +13,22 @@ const config = {
   "*.{gif,jpeg,jpg,png,svg}": ["imagemin-lint-staged"],
   "*.{js,jsx,ts,tsx}": [eslintCmd],
   "*": [prettierCmd],
-  "{.eslint*,package.json}": () => [`${eslintCmd} .`],
-  "{.prettier*,package.json}": () => [`${prettierCmd} .`],
-  "{package-lock.json,package.json}": () => ["npm install"],
-  "package.json": () => ["manypkg fix", "manypkg check"],
-  "{README,_README}.md": (filenames) =>
+  "{.eslint*,package.json}": () => [`${eslintCmd} .`, "git add ."],
+  "{.prettier*,package.json}": () => [`${prettierCmd} .`, "git add ."],
+  "package.json": () => [
+    "manypkg fix",
+    "manypkg check",
+    "git add **/package.json",
+  ],
+  "_README.md": (filenames) =>
     filenames.flatMap((filename) => [
-      `bundle exec markdown_helper include ${path.resolve(
+      `bundle exec markdown_helper include ${filename} ${path.resolve(
         path.dirname(filename),
-        path.basename(filename).startsWith("_")
-          ? path.basename(filename)
-          : `_${path.basename(filename)}`
-      )} ${path.resolve(
+        path.basename(filename).slice(1)
+      )}`,
+      `git add ${path.resolve(
         path.dirname(filename),
-        path.basename(filename).startsWith("_")
-          ? path.basename(filename).slice(1)
-          : path.basename(filename)
+        path.basename(filename).slice(1)
       )}`,
     ]),
   "{.env*,.gitattributes}": (files) =>
