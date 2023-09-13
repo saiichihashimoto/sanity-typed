@@ -254,14 +254,19 @@ describe("text", () => {
       expect(() => zods.foo.parse("foo")).toThrow("Must match regex /^bar$/");
     });
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("regex(pattern, { name })");
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("regex(pattern, name)");
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("regex(pattern, { invert })");
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("regex(pattern, name, { invert })");
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("custom(fn)");
   });
 });

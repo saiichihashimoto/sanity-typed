@@ -53,7 +53,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       expectType<(typeof parsed)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
@@ -91,12 +91,12 @@ describe("block", () => {
         },
       ];
 
-      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
-        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         InferSchemaValues<typeof config>["foo"][number]["_type"]
       >();
     });
@@ -134,12 +134,12 @@ describe("block", () => {
         },
       ];
 
-      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["children"]>().toStrictEqual<
-        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         InferSchemaValues<typeof config>["foo"][number]["children"]
       >();
     });
@@ -181,12 +181,12 @@ describe("block", () => {
         },
       ];
 
-      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["children"]>().toStrictEqual<
-        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         InferSchemaValues<typeof config>["foo"][number]["children"]
       >();
     });
@@ -340,6 +340,7 @@ describe("block", () => {
   });
 
   describe("validation", () => {
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("custom(fn)");
   });
 });

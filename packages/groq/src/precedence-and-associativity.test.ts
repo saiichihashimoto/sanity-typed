@@ -359,26 +359,27 @@ describe("precendence and associativity", () => {
   });
 
   describe("level 5", () => {
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
     it.todo("1..3..5");
 
     describe("& level 1", () => {
       // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
       it.todo("todo");
     });
 
     describe("& level 2", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
       it.todo("todo");
     });
 
     describe("& level 3", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
       it.todo("todo");
     });
 
     describe("& level 4", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
       it.todo("todo");
     });
   });
@@ -697,7 +698,7 @@ describe("precendence and associativity", () => {
 
         expect(result).toStrictEqual(expectedResult);
         expectType<ExecuteQuery<typeof query>>()
-          // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/333
           .toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
@@ -714,7 +715,7 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
       it.todo("todo");
     });
   });
@@ -1065,7 +1066,7 @@ describe("precendence and associativity", () => {
 
         expect(result).toStrictEqual(expectedResult);
         expectType<ExecuteQuery<typeof query>>()
-          // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/333
           .toStrictEqual<WritableDeep<typeof expectedTree>>();
       });
 
@@ -1082,7 +1083,7 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
       it.todo("todo");
     });
 
@@ -1280,7 +1281,7 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
       it.todo("todo");
     });
 
@@ -1561,7 +1562,7 @@ describe("precendence and associativity", () => {
 
         expect(result).toStrictEqual(expectedResult);
         expectType<ExecuteQuery<typeof query>>()
-          // @ts-expect-error -- TODO == between non-literal numbers always returns true, that's bad
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/333
           .toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
@@ -1578,7 +1579,7 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
       it.todo("todo");
     });
 
@@ -1959,7 +1960,7 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
       it.todo("todo");
     });
 
@@ -2505,7 +2506,7 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
       it.todo("todo");
     });
 

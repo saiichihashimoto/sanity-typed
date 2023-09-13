@@ -43,6 +43,7 @@ import type {
   PipeFuncCallNode,
   PosNode,
   ProjectionNode,
+  SelectAlternativeNode,
   SliceNode,
   ThisNode,
   ValueNode,
@@ -205,7 +206,7 @@ type SingleEscapeSequence =
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EscapeSequence
  */
-type EscapeSequence = // TODO UnicodeEscapeSequence
+type EscapeSequence = // TODO https://github.com/saiichihashimoto/sanity-typed/issues/331
   SingleEscapeSequence;
 
 type ReplaceInString<
@@ -235,7 +236,7 @@ type StringType<TExpression extends string> =
             type: "Value";
             value: ReplaceInString<
               TString,
-              `\\'`, // TODO Replace all EscapeSequences
+              `\\'`, // TODO https://github.com/saiichihashimoto/sanity-typed/issues/331
               "'"
             >;
           }
@@ -250,7 +251,7 @@ type StringType<TExpression extends string> =
             type: "Value";
             value: ReplaceInString<
               TString,
-              `\\"`, // TODO Replace all EscapeSequences
+              `\\"`, // TODO https://github.com/saiichihashimoto/sanity-typed/issues/331
               '"'
             >;
           }
@@ -609,8 +610,8 @@ type SimpleExpression<TExpression extends string> =
   | ThisAttribute<TExpression>;
 
 type Level1 =
-  // TODO Pair
-  { _TODO: "Pair" };
+  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
+  SelectAlternativeNode;
 
 type Level2 = Level1 | OrNode;
 
@@ -622,7 +623,7 @@ type Level4 =
   | Level3
   | (OpCallNode & { op: "!=" | "<" | "<=" | "==" | ">" | ">=" });
 
-type Level5 = // TODO https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Precedence-and-associativity
+type Level5 = // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
   Level4;
 
 type Level6 = Level5 | (OpCallNode & { op: "-" | "+" });

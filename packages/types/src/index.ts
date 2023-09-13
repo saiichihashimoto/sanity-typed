@@ -83,7 +83,7 @@ import type {
 
 import type { MaybeArray, TupleOfLength } from "./utils";
 
-// TODO Couldn't use type-fest's Merge >=3.0.0
+// HACK Couldn't use type-fest's Merge >=3.0.0
 type Merge_<FirstType, SecondType> = Except<
   FirstType,
   Extract<keyof FirstType, keyof SecondType>

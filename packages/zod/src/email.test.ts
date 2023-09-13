@@ -126,6 +126,7 @@ describe("email", () => {
       expect(() => zods.foo.parse("foo")).toThrow("Invalid email");
     });
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("custom(fn)");
   });
 });
