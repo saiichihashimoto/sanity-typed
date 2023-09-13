@@ -11,6 +11,49 @@ permissions:
 concurrency: release
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v3.8.1
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+      - id: node-modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - uses: actions/cache@v3
+        with:
+          path: .eslintcache
+          key: eslint-${{ github.run_id }}
+          restore-keys: |
+            eslint-
+      - uses: actions/cache@v3
+        with:
+          path: node_modules/.cache/prettier/.prettier-cache
+          key: prettier-${{ github.run_id }}
+          restore-keys: |
+            prettier-
+
+      - run: npm run lint
+      - run: |
+          if [[ $(git status --porcelain) != "" ]]; then
+            git --no-pager diff --text HEAD
+            exit 1
+          fi
   release:
     name: Release
     runs-on: ubuntu-latest
@@ -119,4 +162,4 @@ jobs:
           restore-keys: |
             jest-
 
-      - run: npm test -- --cache --max-workers ${{ steps.cpu-cores.outputs.count }}
+      - run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }}
