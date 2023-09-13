@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/zod",
   "version": "0.0.0-development",
-  "description": "Generate Zod Parsers from Sanity Schemas",
+  "description": "Generate Zod Schemas from Sanity Schemas",
   "keywords": [
     "sanity",
     "sanity-io",
