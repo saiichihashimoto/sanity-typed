@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
 
-concurrency: checks-${{ github.base_ref }}
+concurrency: checks-${{ github.ref == 'refs/heads/main' && 'main' || github.event.pull_request.head.sha }}
 
 jobs:
   build:
