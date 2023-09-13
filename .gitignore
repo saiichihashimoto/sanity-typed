@@ -1,5 +1,6 @@
 .DS_Store
 .bundle
+.eslintcache
 .turbo
 Brewfile.lock.json
 Gemfile.lock

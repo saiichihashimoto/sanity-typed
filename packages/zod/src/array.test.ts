@@ -137,6 +137,7 @@ describe("array", () => {
         ],
       };
 
+      // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
