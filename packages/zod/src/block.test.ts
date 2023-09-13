@@ -335,4 +335,8 @@ describe("block", () => {
       >();
     });
   });
+
+  describe("validation", () => {
+    it.todo("custom(fn)");
+  });
 });

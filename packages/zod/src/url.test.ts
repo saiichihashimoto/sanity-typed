@@ -106,4 +106,20 @@ describe("url", () => {
       >();
     });
   });
+
+  describe("validation", () => {
+    it.todo("uri({})");
+
+    it.todo("uri({ allowRelative })");
+
+    it.todo("uri({ relativeOnly })");
+
+    it.todo("uri({ allowCredentials })");
+
+    it.todo("uri({ scheme: string })");
+
+    it.todo("uri({ scheme: RegExp })");
+
+    it.todo("custom(fn)");
+  });
 });

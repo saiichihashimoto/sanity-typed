@@ -215,4 +215,8 @@ describe("crossDatasetReference", () => {
       >();
     });
   });
+
+  describe("validation", () => {
+    it.todo("custom(fn)");
+  });
 });

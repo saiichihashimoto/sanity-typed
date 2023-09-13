@@ -33,7 +33,7 @@ describe("email", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const unparsed = ["foo"];
+      const unparsed = ["foo@bar.com"];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -68,7 +68,7 @@ describe("email", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: "foo",
+        bar: "foo@bar.com",
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -96,7 +96,7 @@ describe("email", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      const unparsed = "foo";
+      const unparsed = "foo@bar.com";
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -105,5 +105,27 @@ describe("email", () => {
         InferSchemaValues<typeof config>["foo"]
       >();
     });
+  });
+
+  describe("validation", () => {
+    it("requires email", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "email",
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("foo")).toThrow("Invalid email");
+    });
+
+    it.todo("custom(fn)");
   });
 });

@@ -198,4 +198,8 @@ describe("slug", () => {
       >();
     });
   });
+
+  describe("validation", () => {
+    it.todo("custom(fn)");
+  });
 });

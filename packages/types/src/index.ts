@@ -126,6 +126,17 @@ type DefinitionBase<
   validation?: ValidationBuilder<TRequired, Value, Rule>;
 };
 
+/** @private */
+export type _GetOriginalRule<
+  TDefinitionBase extends {
+    validation?: ValidationBuilder<any, any, any>;
+  }
+> = TDefinitionBase extends {
+  validation?: ValidationBuilder<any, any, infer Rule>;
+}
+  ? Rule
+  : never;
+
 type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = MergeOld<
   {
     [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule
