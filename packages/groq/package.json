@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@sanity-typed/groq",
   "version": "0.0.0-development",
-  "description": "Typed GROQ Results, all inferred, no query changes!",
+  "description": "Infer GROQ Result Types from GROQ strings",
   "keywords": [
     "sanity",
     "sanity-io",

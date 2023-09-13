@@ -10,7 +10,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-Typed [Zod](https://zod.dev) Parsers for Sanity Types, all inferred, no config changes!
+Generate [Zod](https://zod.dev) Parsers from Sanity Schemas
 
 ## Page Contents
 - [Install](#install)

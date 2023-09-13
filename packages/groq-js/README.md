@@ -10,7 +10,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-Typed [GROQ-JS](https://github.com/sanity-io/groq-js) Results, all inferred, no query changes!
+[groq-js](https://github.com/sanity-io/groq-js) with typed GROQ Results
 
 ## Page Contents
 - [Install](#install)

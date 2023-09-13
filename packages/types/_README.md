@@ -9,7 +9,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-Typed Sanity Documents, all inferred, no config changes!
+Infer Sanity Document Types from Sanity Schemas
 
 @[:page_toc](## Page Contents)
 
