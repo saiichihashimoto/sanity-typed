@@ -108,18 +108,25 @@ describe("url", () => {
   });
 
   describe("validation", () => {
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("uri({})");
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("uri({ allowRelative })");
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("uri({ relativeOnly })");
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("uri({ allowCredentials })");
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("uri({ scheme: string })");
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("uri({ scheme: RegExp })");
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("custom(fn)");
   });
 });

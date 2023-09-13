@@ -162,6 +162,7 @@ const traverseValidation = <
       return rule;
     },
     valueOfField: () => ({
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/336
       path: "",
       type: Symbol("TODO"),
     }),
@@ -552,7 +553,7 @@ const memberZods = <
     // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
     const zod = schemaTypeToZod(member, getZods);
 
-    // TODO use lodash-fp flow
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/337
     return addKey("name" in member ? addType(member.name, zod) : zod);
   }) as MembersZods<TMemberDefinitions, TSanityConfigZods>;
 

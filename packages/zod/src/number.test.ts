@@ -370,6 +370,7 @@ describe("number", () => {
       expect(() => zods.foo.parse(0)).toThrow("Number must be less than 0");
     });
 
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("custom(fn)");
   });
 });

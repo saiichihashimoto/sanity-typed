@@ -1,7 +1,5 @@
 import type { IsNumericLiteral } from "type-fest";
 
-// TODO TupleOfLength somewhere more reusable
-
 export type TupleOfLength<
   T,
   Min extends number = number,
