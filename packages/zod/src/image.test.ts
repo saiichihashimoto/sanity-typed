@@ -607,6 +607,7 @@ describe("image", () => {
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
+        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
         InferSchemaValues<typeof config>["bar"][number]["_type"]
       >();
     });
