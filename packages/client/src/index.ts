@@ -41,7 +41,9 @@ type MaybeRawQueryResponse<
   : Result;
 
 type GetDocuments<Ids extends string[], TDocument extends AnySanityDocument> = {
-  [index in keyof Ids]: (TDocument & { _id: Ids[index] }) | null;
+  [index in keyof Ids]:
+    | (TDocument extends never ? never : TDocument & { _id: Ids[index] })
+    | null;
 };
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- recursive type
@@ -77,10 +79,11 @@ export interface SanityClient<
         Query,
         RootScope<{
           client: WritableDeep<TClientConfig>;
-          dataset: (TDocument &
-            (TClientConfig extends { perspective: "previewDrafts" }
-              ? { _originalId: string }
-              : unknown))[];
+          dataset: (TDocument extends never
+            ? never
+            : TClientConfig extends { perspective: "previewDrafts" }
+            ? TDocument & { _originalId: string }
+            : TDocument)[];
           delta: { after: null; before: null };
           identity: string;
           parameters: NonNullable<Q>;
@@ -93,7 +96,9 @@ export interface SanityClient<
   getDocument: <const Id extends string>(
     id: Id,
     options?: Parameters<SanityClientNative["getDocument"]>[1]
-  ) => Promise<(TDocument & { _id: Id }) | undefined>;
+  ) => Promise<
+    (TDocument extends never ? never : TDocument & { _id: Id }) | undefined
+  >;
   getDocuments: <const Ids extends readonly string[]>(
     ids: Ids,
     options?: Parameters<SanityClientNative["getDocuments"]>[1]

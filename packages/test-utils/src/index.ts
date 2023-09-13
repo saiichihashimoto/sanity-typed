@@ -1,13 +1,23 @@
 import type { IsEqual, Simplify } from "type-fest";
 
-declare const EXPECTED: unique symbol;
 declare const RECEIVED: unique symbol;
 
 type Negate<Value extends boolean> = Value extends true ? false : true;
 
-type AssignableTo<Received, Expected> = [Received] extends [Expected]
+type IsAssignable<Received, Expected> = [Received] extends [Expected]
   ? true
   : false;
+
+type SimplifyDeep<Type> = Type extends Promise<infer T>
+  ? Promise<SimplifyDeep<T>>
+  : Type extends any[]
+  ? { [index in keyof Type]: SimplifyDeep<Type[index]> }
+  : Simplify<Type>;
+
+type IsSimplyEqual<Received, Expected> = IsEqual<
+  SimplifyDeep<Received>,
+  SimplifyDeep<Expected>
+>;
 
 // https://twitter.com/mattpocockuk/status/1625173887590842369
 declare const inverted: unique symbol;
@@ -28,18 +38,16 @@ type TypeMatchers<Received, Inverted extends boolean = false> = {
    * ```
    */
   toBeAssignableTo: <
-    Expected extends AssignableTo<Received, Expected> extends Negate<Inverted>
+    Expected extends IsAssignable<Received, Expected> extends Negate<Inverted>
       ? any
       : {
-          [EXPECTED]: Expected;
           [RECEIVED]: Received;
         }
   >(
-    ...args: AssignableTo<Received, Expected> extends Negate<Inverted>
+    ...args: IsAssignable<Received, Expected> extends Negate<Inverted>
       ? []
       : [
           error: {
-            [EXPECTED]: Expected;
             [RECEIVED]: Received;
           }
         ]
@@ -51,25 +59,17 @@ type TypeMatchers<Received, Inverted extends boolean = false> = {
    * Super duper experimental.
    */
   toEqual: <
-    Expected extends IsEqual<
-      Simplify<Received>,
-      Simplify<Expected>
-    > extends Negate<Inverted>
+    Expected extends IsSimplyEqual<Received, Expected> extends Negate<Inverted>
       ? any
       : {
-          [EXPECTED]: Simplify<Expected>;
-          [RECEIVED]: Simplify<Received>;
+          [RECEIVED]: SimplifyDeep<Received>;
         }
   >(
-    ...args: IsEqual<
-      Simplify<Received>,
-      Simplify<Expected>
-    > extends Negate<Inverted>
+    ...args: IsSimplyEqual<Received, Expected> extends Negate<Inverted>
       ? []
       : [
           error: {
-            [EXPECTED]: Simplify<Expected>;
-            [RECEIVED]: Simplify<Received>;
+            [RECEIVED]: SimplifyDeep<Received>;
           }
         ]
   ) => void;
@@ -80,7 +80,6 @@ type TypeMatchers<Received, Inverted extends boolean = false> = {
     Expected extends IsEqual<Received, Expected> extends Negate<Inverted>
       ? any
       : {
-          [EXPECTED]: Expected;
           [RECEIVED]: Received;
         }
   >(
@@ -88,7 +87,6 @@ type TypeMatchers<Received, Inverted extends boolean = false> = {
       ? []
       : [
           error: {
-            [EXPECTED]: Expected;
             [RECEIVED]: Received;
           }
         ]

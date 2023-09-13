@@ -954,7 +954,7 @@ describe("functions", () => {
         func: expect.any(Function),
       });
       expectType<Parse<typeof query>>()
-        // TODO toStrictEqual
+        // TODO https://github.com/saiichihashimoto/sanity-typed/issues/339
         .toBeAssignableTo<WritableDeep<typeof expectedTree>>();
 
       const result = await (await evaluate(tree)).get();
@@ -2592,7 +2592,7 @@ describe("functions", () => {
         func: expect.any(Function),
       });
       expectType<Parse<typeof query>>()
-        // TODO toStrictEqual
+        // TODO https://github.com/saiichihashimoto/sanity-typed/issues/339
         .toBeAssignableTo<WritableDeep<typeof expectedTree>>();
 
       const result = await (await evaluate(tree)).get();

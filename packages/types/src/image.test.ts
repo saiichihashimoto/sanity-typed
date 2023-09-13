@@ -258,7 +258,7 @@ describe("image", () => {
 
       expectType<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toEqual<{
+      >().toStrictEqual<{
         _type: "image";
         asset: Reference;
         crop: ImageCrop;

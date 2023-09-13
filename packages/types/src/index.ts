@@ -566,6 +566,8 @@ type TypeAliasDefinition<
 
 type IsObject<T> = T extends any[] ? false : T extends object ? true : false;
 
+declare const type: unique symbol;
+
 /** @private */
 export type _ArrayMemberDefinition<
   TType extends string,
@@ -663,6 +665,7 @@ export type _ArrayMemberDefinition<
         name: TName;
       }) & {
     name?: TName;
+    [type]?: "arrayMember";
     type: TType;
   };
 
@@ -755,6 +758,7 @@ export type _FieldDefinition<
       >) & {
     name: TName;
     [required]?: TRequired;
+    [type]?: "field";
     type: TType;
   };
 
@@ -829,6 +833,7 @@ export type _TypeDefinition<
         any
       >) & {
     name: TName;
+    [type]?: "type";
     type: TType;
   };
 
@@ -1227,7 +1232,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
       };
 
 export const castFromTyped = <Typed>(typed: Typed) =>
-  typed as Typed extends _FieldDefinition<
+  typed as Typed extends _TypeDefinition<
     infer TType extends string,
     infer TName extends string,
     infer TAlias extends IntrinsicTypeName,
@@ -1235,24 +1240,17 @@ export const castFromTyped = <Typed>(typed: Typed) =>
     any,
     any,
     any,
-    any,
     any
   >
     ? ReturnType<
-        typeof defineFieldNative<TType, TName, any, any, TAlias, TStrict>
-      >
-    : Typed extends _TypeDefinition<
-        infer TType extends string,
-        infer TName extends string,
-        infer TAlias extends IntrinsicTypeName,
-        infer TStrict extends StrictDefinition,
-        any,
-        any,
-        any,
-        any
-      >
-    ? ReturnType<
-        typeof defineTypeNative<TType, TName, any, any, TAlias, TStrict>
+        typeof defineTypeNative<
+          TType,
+          TName,
+          { [key: string]: string },
+          { [key: string]: any },
+          TAlias,
+          TStrict
+        >
       >
     : Typed extends _ArrayMemberDefinition<
         infer TType extends string,
@@ -1266,7 +1264,35 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         any
       >
     ? ReturnType<
-        typeof defineArrayMemberNative<TType, TName, any, any, TAlias, TStrict>
+        typeof defineArrayMemberNative<
+          TType,
+          TName,
+          { [key: string]: string },
+          { [key in never]: any },
+          TAlias,
+          TStrict
+        >
+      >
+    : Typed extends _FieldDefinition<
+        infer TType extends string,
+        infer TName extends string,
+        infer TAlias extends IntrinsicTypeName,
+        infer TStrict extends StrictDefinition,
+        any,
+        any,
+        any,
+        any,
+        any
+      >
+    ? ReturnType<
+        typeof defineFieldNative<
+          TType,
+          TName,
+          { [key: string]: string },
+          { [key in never]: any },
+          TAlias,
+          TStrict
+        >
       >
     : Typed extends PluginOptions<any, any>
     ? PluginOptionsNative
