@@ -36,7 +36,7 @@
     "@sanity-typed/types": "0.0.0-development"
   },
   "devDependencies": {
-    "@jest/globals": "29.6.4",
+    "@jest/globals": "29.7.0",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "sanity": "3.16.4",
