@@ -9,7 +9,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-Generate [Zod](https://zod.dev) Parsers from Sanity Schemas
+Generate [Zod](https://zod.dev) Schemas from Sanity Schemas
 
 @[:page_toc](## Page Contents)
 

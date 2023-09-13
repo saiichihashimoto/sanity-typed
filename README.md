@@ -149,7 +149,7 @@ const data = await client.fetch('*[_type=="product"]');
 ## Packages
 
 - [`@sanity-typed/types`](packages/types): Infer Sanity Document Types from Sanity Schemas
-- [`@sanity-typed/zod`](packages/zod): Generate [Zod](https://zod.dev) Parsers from Sanity Schemas
+- [`@sanity-typed/zod`](packages/zod): Generate [Zod](https://zod.dev) Schemas from Sanity Schemas
 - [`@sanity-typed/groq`](packages/groq): Infer [GROQ](https://github.com/sanity-io/groq) Result Types from GROQ strings
 - [`@sanity-typed/groq-js`](packages/groq-js): [groq-js](https://github.com/sanity-io/groq-js) with typed GROQ Results
 - [`@sanity-typed/client`](packages/client): [@sanity/client](https://github.com/sanity-io/client) with typed GROQ Results
