@@ -96,6 +96,7 @@ describe("block", () => {
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
+        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
         InferSchemaValues<typeof config>["foo"][number]["_type"]
       >();
     });
@@ -138,6 +139,7 @@ describe("block", () => {
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["children"]>().toStrictEqual<
+        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
         InferSchemaValues<typeof config>["foo"][number]["children"]
       >();
     });
@@ -184,6 +186,7 @@ describe("block", () => {
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["children"]>().toStrictEqual<
+        // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
         InferSchemaValues<typeof config>["foo"][number]["children"]
       >();
     });

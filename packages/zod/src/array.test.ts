@@ -255,7 +255,49 @@ describe("array", () => {
   });
 
   describe("validation", () => {
-    it.todo("unique()");
+    it("unique()", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              validation: (Rule) => Rule.unique(),
+              of: [
+                defineArrayMember({
+                  type: "object",
+                  name: "bar",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() =>
+        zods.foo.parse([
+          {
+            _key: "key1",
+            _type: "bar",
+            bar: true,
+          },
+          {
+            _key: "key2",
+            _type: "bar",
+            bar: true,
+          },
+        ])
+      ).toThrow("Can't contain duplicates");
+    });
 
     it("min(minLength)", () => {
       const config = defineConfig({

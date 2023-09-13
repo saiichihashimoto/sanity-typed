@@ -153,6 +153,10 @@ const traverseValidation = <
       value = ruleMap?.required?.(value, args as any) ?? value;
       return rule;
     },
+    unique: (...args: any[]) => {
+      value = ruleMap?.unique?.(value, args as any) ?? value;
+      return rule;
+    },
     uppercase: (...args: any[]) => {
       value = ruleMap?.uppercase?.(value, args as any) ?? value;
       return rule;
@@ -552,6 +556,42 @@ const memberZods = <
     return addKey("name" in member ? addType(member.name, zod) : zod);
   }) as MembersZods<TMemberDefinitions, TSanityConfigZods>;
 
+// HACK Copy and eslint-ed from https://github.com/sanity-io/sanity/blob/bf50a77131bc7dd9d3084acf39afcfb29512b566/packages/sanity/src/core/validation/util/sanityDeepEquals.ts#L11
+const sanityDeepEquals = (a: unknown, b: unknown): boolean =>
+  a === b ||
+  (Array.isArray(a) && Array.isArray(b)
+    ? a.length === b.length &&
+      a.every((element, i) => sanityDeepEquals(element, b[i]))
+    : !Array.isArray(a) &&
+      !Array.isArray(b) &&
+      !!a &&
+      !!b &&
+      typeof a === "object" &&
+      typeof b === "object" &&
+      Object.keys(a).length === Object.keys(b).length &&
+      (a instanceof Date && b instanceof Date
+        ? a.getTime() === b.getTime()
+        : !(a instanceof Date) &&
+          !(b instanceof Date) &&
+          (a instanceof RegExp && b instanceof RegExp
+            ? a.toString() === b.toString()
+            : !(a instanceof RegExp) &&
+              !(b instanceof RegExp) &&
+              Object.keys(a).every(
+                (key) =>
+                  key === "_key" || Object.prototype.hasOwnProperty.call(b, key)
+              ) &&
+              Object.keys(a).every(
+                (key) =>
+                  key === "_key" ||
+                  sanityDeepEquals(
+                    a[key as keyof typeof a],
+                    b[key as keyof typeof b]
+                  )
+              ))));
+
+type MaybeZodEffects<T extends z.ZodTypeAny> = T | z.ZodEffects<T>;
+
 type ArrayZod<
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TSanityConfigZods extends SanityConfigZods<
@@ -570,9 +610,11 @@ type ArrayZod<
     any
   >[];
 }
-  ? z.ZodArray<
-      ReturnType<
-        typeof zodUnion<MembersZods<TMemberDefinitions, TSanityConfigZods>>
+  ? MaybeZodEffects<
+      z.ZodArray<
+        ReturnType<
+          typeof zodUnion<MembersZods<TMemberDefinitions, TSanityConfigZods>>
+        >
       >
     >
   : never;
@@ -585,33 +627,40 @@ const arrayZod = <
 >(
   schemaType: TSchemaType,
   getZods: () => TSanityConfigZods
-): ArrayZod<TSchemaType, TSanityConfigZods> =>
-  traverseValidation(
+): ArrayZod<TSchemaType, TSanityConfigZods> => {
+  type TMemberDefinitions = TSchemaType extends {
+    of: infer TMemberDefinitionsInner;
+  }
+    ? TMemberDefinitionsInner
+    : never;
+
+  const arrayZodInner = z.array(
+    zodUnion(memberZods(schemaType.of as TMemberDefinitions, getZods))
+  );
+
+  return traverseValidation(
     schemaType,
-    z.array(
-      zodUnion(
-        memberZods(
-          schemaType.of as _ArrayMemberDefinition<
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any
-          >[],
-          getZods
-        )
-      )
-    ) as ArrayZod<TSchemaType, TSanityConfigZods>,
-    {
+    traverseValidation(schemaType, arrayZodInner, {
       length: (zod, [exactLength]) => zod.length(exactLength as number),
       max: (zod, [maxLength]) => zod.max(maxLength as number),
       min: (zod, [minLength]) => zod.min(minLength as number),
-    } as RuleMap<"array", ArrayZod<TSchemaType, TSanityConfigZods>>
-  );
+    } as RuleMap<"array", typeof arrayZodInner>) as MaybeZodEffects<
+      typeof arrayZodInner
+    >,
+    {
+      unique: (zod) =>
+        zod.refine(
+          (array) =>
+            array.every((value1, index) =>
+              array
+                .slice(index + 1)
+                .every((value2) => !sanityDeepEquals(value1, value2))
+            ),
+          { message: "Can't contain duplicates" }
+        ),
+    } as RuleMap<"array", MaybeZodEffects<typeof arrayZodInner>>
+  ) as ArrayZod<TSchemaType, TSanityConfigZods>;
+};
 
 const spanZod = z.object({
   _key: z.string(),
