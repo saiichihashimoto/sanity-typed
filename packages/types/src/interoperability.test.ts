@@ -342,9 +342,45 @@ describe("interoperability", () => {
         ],
       });
 
-      expectType<typeof config>().toBeAssignableTo<
-        ReturnType<typeof defineConfigNative>
-      >();
+      const configNative = defineConfigNative({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineTypeNative({
+              name: "foo",
+              type: "document" as const,
+              fields: [
+                defineFieldNative({
+                  name: "pluginValue",
+                  type: "pluginValue",
+                }),
+              ],
+            }),
+          ],
+        },
+        plugins: [
+          definePluginNative({
+            name: "plugin",
+            schema: {
+              types: [
+                defineTypeNative({
+                  name: "pluginValue",
+                  type: "object" as const,
+                  fields: [
+                    defineFieldNative({
+                      name: "baz",
+                      type: "boolean",
+                    }),
+                  ],
+                }),
+              ],
+            },
+          })(),
+        ],
+      });
+
+      expectType<typeof config>().toStrictEqual<typeof configNative>();
     });
 
     it("castFromTyped(defineType(...))", () => {
@@ -379,9 +415,36 @@ describe("interoperability", () => {
         },
       });
 
-      expectType<typeof config>().toBeAssignableTo<
-        ReturnType<typeof defineConfigNative>
-      >();
+      const configNative = defineConfigNative({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineTypeNative({
+              name: "foo",
+              type: "document" as const,
+              fields: [
+                defineFieldNative({
+                  name: "bar",
+                  type: "bar",
+                }),
+              ],
+            }),
+            defineTypeNative({
+              name: "bar" as const,
+              type: "object" as const,
+              fields: [
+                defineFieldNative({
+                  name: "baz",
+                  type: "boolean",
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<typeof config>().toStrictEqual<typeof configNative>();
     });
 
     it("castFromTyped(defineField(...))", () => {
@@ -391,11 +454,13 @@ describe("interoperability", () => {
           type: "boolean",
         })
       );
+      const booleanFieldNative = defineFieldNative({
+        name: "bar",
+        type: "boolean",
+      });
 
-      expectType<typeof booleanField>().toBeAssignableTo<
-        ReturnType<
-          typeof defineFieldNative<"boolean", "bar", any, any, any, any>
-        >
+      expectType<typeof booleanField>().toStrictEqual<
+        typeof booleanFieldNative
       >();
 
       const objectField = castFromTyped(
@@ -411,10 +476,19 @@ describe("interoperability", () => {
         })
       );
 
-      expectType<typeof objectField>().toBeAssignableTo<
-        ReturnType<
-          typeof defineFieldNative<"object", "foo", any, any, any, any>
-        >
+      const objectFieldNative = defineFieldNative({
+        name: "foo",
+        type: "object",
+        fields: [
+          defineFieldNative({
+            name: "bar",
+            type: "boolean",
+          }),
+        ],
+      });
+
+      expectType<typeof objectField>().toStrictEqual<
+        typeof objectFieldNative
       >();
     });
 
@@ -426,10 +500,13 @@ describe("interoperability", () => {
         })
       );
 
-      expectType<typeof booleanField>().toBeAssignableTo<
-        ReturnType<
-          typeof defineArrayMemberNative<"boolean", "bar", any, any, any, any>
-        >
+      const booleanFieldNative = defineArrayMemberNative({
+        name: "bar",
+        type: "boolean",
+      });
+
+      expectType<typeof booleanField>().toStrictEqual<
+        typeof booleanFieldNative
       >();
 
       const objectField = castFromTyped(
@@ -445,10 +522,19 @@ describe("interoperability", () => {
         })
       );
 
-      expectType<typeof objectField>().toBeAssignableTo<
-        ReturnType<
-          typeof defineArrayMemberNative<"object", "foo", any, any, any, any>
-        >
+      const objectFieldNative = defineArrayMemberNative({
+        name: "foo",
+        type: "object",
+        fields: [
+          defineFieldNative({
+            name: "bar",
+            type: "boolean",
+          }),
+        ],
+      });
+
+      expectType<typeof objectField>().toStrictEqual<
+        typeof objectFieldNative
       >();
     });
   });
