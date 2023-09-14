@@ -1,4 +1,4 @@
-import type { IsEqual, Simplify } from "type-fest";
+import type { IsEqual } from "type-fest";
 
 declare const RECEIVED: unique symbol;
 
@@ -12,7 +12,7 @@ type SimplifyDeep<Type> = Type extends Promise<infer T>
   ? Promise<SimplifyDeep<T>>
   : Type extends any[]
   ? { [index in keyof Type]: SimplifyDeep<Type[index]> }
-  : Simplify<Type>;
+  : { [key in keyof Type]: SimplifyDeep<Type[key]> };
 
 type IsSimplyEqual<Received, Expected> = IsEqual<
   SimplifyDeep<Received>,
