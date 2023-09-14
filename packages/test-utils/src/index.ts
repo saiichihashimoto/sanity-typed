@@ -19,7 +19,6 @@ type IsSimplyEqual<Received, Expected> = IsEqual<
   SimplifyDeep<Expected>
 >;
 
-// https://twitter.com/mattpocockuk/status/1625173887590842369
 declare const inverted: unique symbol;
 
 type TypeMatchers<Received, Inverted extends boolean = false> = {
