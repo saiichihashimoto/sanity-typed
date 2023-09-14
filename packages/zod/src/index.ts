@@ -382,9 +382,9 @@ type ExtendViaIntersection<
       Omit<T, keyof Shape> & Shape,
       UnknownKeys,
       CatchAll,
-      z.objectOutputType<Omit<T, keyof Shape>, CatchAll, UnknownKeys> &
+      Omit<z.output<Zod>, keyof Shape> &
         z.objectOutputType<Shape, CatchAll, UnknownKeys>,
-      z.objectInputType<Omit<T, keyof Shape>, CatchAll, UnknownKeys> &
+      Omit<z.input<Zod>, keyof Shape> &
         z.objectInputType<Shape, CatchAll, UnknownKeys>
     >
   : Zod extends z.ZodLazy<infer TZod extends z.ZodTypeAny>
