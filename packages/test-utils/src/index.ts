@@ -52,7 +52,6 @@ type TypeMatchers<Received, Inverted extends boolean = false> = {
           }
         ]
   ) => void;
-  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/334
   /**
    * Checks if Received and Expected are exactly the same type after Simplify.
    *
