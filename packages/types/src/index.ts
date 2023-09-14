@@ -128,14 +128,8 @@ type DefinitionBase<
 
 /** @private */
 export type _GetOriginalRule<
-  TDefinitionBase extends {
-    validation?: ValidationBuilder<any, any, any>;
-  }
-> = TDefinitionBase extends {
-  validation?: ValidationBuilder<any, any, infer Rule>;
-}
-  ? Rule
-  : never;
+  TDefinitionBase extends DefinitionBase<any, any, any>
+> = TDefinitionBase extends DefinitionBase<any, any, infer Rule> ? Rule : never;
 
 type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = MergeOld<
   {
@@ -930,7 +924,7 @@ export type PluginOptions<
     any,
     any,
     any
-  > = _TypeDefinition<string, any, any, any, any, any, any, any>
+  >
 > = _ConfigBase<TTypeDefinition, TPluginTypeDefinition> &
   Omit<PluginOptionsNative, "plugins" | "schema">;
 
@@ -954,7 +948,7 @@ export const definePlugin = <
     any,
     any,
     any
-  > = _TypeDefinition<string, any, any, any, any, any, any, any>,
+  >,
   TOptionsHelper = void
 >(
   arg:
@@ -1013,7 +1007,7 @@ export type Config<
     any,
     any,
     any
-  > = _TypeDefinition<string, any, any, any, any, any, any, any>
+  >
 > =
   | WorkspaceOptions<TTypeDefinition, TPluginTypeDefinition>[]
   | (Omit<
@@ -1044,7 +1038,7 @@ export const defineConfig = <
     any,
     any,
     any
-  > = _TypeDefinition<string, any, any, any, any, any, any, any>
+  >
 >(
   config: Config<TTypeDefinition, TPluginTypeDefinition>
 ) =>
@@ -1054,36 +1048,15 @@ export const defineConfig = <
 
 type ExpandAliasValues<
   Value,
-  TAliasedDefinition extends _TypeDefinition<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
-  >
+  AliasedValues extends { [name: string]: any }
 > = Value extends AliasValue<infer TType>
-  ? Extract<TAliasedDefinition, { name: TType }> extends never
+  ? AliasedValues[TType] extends never
     ? unknown
     : IsObject<
-        ExpandAliasValues<
-          InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
-          TAliasedDefinition
-        >
+        ExpandAliasValues<AliasedValues[TType], AliasedValues>
       > extends false
-    ? ExpandAliasValues<
-        InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
-        TAliasedDefinition
-      >
-    : Omit<
-        ExpandAliasValues<
-          InferRawValue<Extract<TAliasedDefinition, { name: TType }>>,
-          TAliasedDefinition
-        >,
-        "_type"
-      > & {
+    ? ExpandAliasValues<AliasedValues[TType], AliasedValues>
+    : Omit<ExpandAliasValues<AliasedValues[TType], AliasedValues>, "_type"> & {
         _type: Value extends { _type: infer TOverwriteType }
           ? TOverwriteType
           : TType;
@@ -1094,15 +1067,39 @@ type ExpandAliasValues<
   ? (Item extends never
       ? never
       : IsObject<Item> extends false
-      ? ExpandAliasValues<Item, TAliasedDefinition>
-      : ExpandAliasValues<Item, TAliasedDefinition> & {
+      ? ExpandAliasValues<Item, AliasedValues>
+      : ExpandAliasValues<Item, AliasedValues> & {
           _key: string;
         })[]
   : Value extends object
   ? {
-      [key in keyof Value]: ExpandAliasValues<Value[key], TAliasedDefinition>;
+      [key in keyof Value]: ExpandAliasValues<Value[key], AliasedValues>;
     }
   : Value;
+
+type NotDefaultType<
+  TTypeDefinition extends _TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >
+> = _TypeDefinition<
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any
+> extends TTypeDefinition
+  ? never
+  : TTypeDefinition;
 
 export type InferSchemaValues<
   TConfig extends MaybeArray<_ConfigBase<any, any>>
@@ -1112,31 +1109,11 @@ export type InferSchemaValues<
   ? {
       [TName in TTypeDefinition["name"]]: ExpandAliasValues<
         AliasValue<TName>,
-        // TPluginTypeDefinition | TTypeDefinition
-        | (_TypeDefinition<
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any
-          > extends TPluginTypeDefinition
-            ? never
-            : TPluginTypeDefinition)
-        | (_TypeDefinition<
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any
-          > extends TTypeDefinition
-            ? never
-            : TTypeDefinition)
+        {
+          [TDefinition in
+            | NotDefaultType<TPluginTypeDefinition>
+            | NotDefaultType<TTypeDefinition> as TDefinition["name"]]: InferRawValue<TDefinition>;
+        }
       >;
     }
   : never;
