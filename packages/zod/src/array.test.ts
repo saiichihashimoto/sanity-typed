@@ -140,7 +140,7 @@ describe("array", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
+      expectType<Required<typeof parsed>["bar"]>().toEqual<
         Required<InferSchemaValues<typeof config>["foo"]>["bar"]
       >();
     });
@@ -247,7 +247,7 @@ describe("array", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
+      expectType<typeof parsed>().toEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });

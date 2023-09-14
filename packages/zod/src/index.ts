@@ -379,13 +379,17 @@ type ExtendViaIntersection<
 > = Zod extends z.ZodObject<infer T, infer UnknownKeys, infer CatchAll>
   ? z.ZodObject<
       // TODO Should be able to get this from ZodObject<...>['extend']<...> somehow
-      Omit<T, keyof Shape> & Shape,
+      Shape & (keyof T extends Exclude<keyof T, keyof Shape>
+        ? T
+        : Omit<T, keyof Shape>),
       UnknownKeys,
       CatchAll,
-      Omit<z.output<Zod>, keyof Shape> &
-        z.objectOutputType<Shape, CatchAll, UnknownKeys>,
-      Omit<z.input<Zod>, keyof Shape> &
-        z.objectInputType<Shape, CatchAll, UnknownKeys>
+      z.objectOutputType<Shape, CatchAll, UnknownKeys> & (keyof z.output<Zod> extends Exclude<keyof z.output<Zod>, keyof Shape>
+        ? z.output<Zod>
+        : Omit<z.output<Zod>, keyof Shape>),
+      z.objectInputType<Shape, CatchAll, UnknownKeys> & (keyof z.input<Zod> extends Exclude<keyof z.input<Zod>, keyof Shape>
+        ? z.input<Zod>
+        : Omit<z.input<Zod>, keyof Shape>)
     >
   : Zod extends z.ZodLazy<infer TZod extends z.ZodTypeAny>
   ? z.ZodLazy<ExtendViaIntersection<TZod, Shape>>

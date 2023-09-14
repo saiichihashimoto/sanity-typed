@@ -148,7 +148,7 @@ describe("file", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]>().toStrictEqual<
+      expectType<(typeof parsed)[number]>().toEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
