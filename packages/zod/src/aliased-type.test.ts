@@ -313,6 +313,80 @@ describe("<alias>", () => {
         InferSchemaValues<typeof config>
       >();
     });
+
+    it("builds parser for plugin's plugin type value", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "document",
+              fields: [
+                defineField({
+                  name: "pluginValue",
+                  type: "pluginValue",
+                }),
+              ],
+            }),
+          ],
+        },
+        plugins: [
+          definePlugin({
+            name: "plugin",
+            schema: {
+              types: [
+                defineType({
+                  name: "pluginValue",
+                  type: "object",
+                  fields: [
+                    defineField({
+                      name: "baz",
+                      type: "plugin2Value",
+                    }),
+                  ],
+                }),
+              ],
+            },
+            plugins: [
+              definePlugin({
+                name: "plugin",
+                schema: {
+                  types: [
+                    defineType({
+                      name: "plugin2Value",
+                      type: "boolean",
+                    }),
+                  ],
+                },
+              })(),
+            ],
+          })(),
+        ],
+      });
+      const zods = _sanityConfigToZods(config);
+
+      const unparsed = {
+        foo: {
+          ...documentFields,
+          _type: "foo",
+          pluginValue: {
+            _type: "pluginValue",
+            baz: true,
+          },
+        },
+      };
+
+      const parsed = {
+        foo: zods.foo.parse(unparsed.foo),
+      };
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>
+      >();
+    });
   });
 
   describe("definePlugin", () => {
@@ -449,6 +523,7 @@ describe("<alias>", () => {
       };
 
       const parsed = {
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         foo: zods.foo.parse(unparsed.foo),
       };
 
@@ -526,6 +601,7 @@ describe("<alias>", () => {
       };
 
       const parsed = {
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         foo: zods.foo.parse(unparsed.foo),
       };
 
@@ -577,6 +653,79 @@ describe("<alias>", () => {
                 }),
               ],
             },
+          })(),
+        ],
+      })();
+      const zods = _sanityConfigToZods(plugin);
+
+      const unparsed = {
+        foo: {
+          ...documentFields,
+          _type: "foo",
+          pluginValue: {
+            _type: "pluginValue",
+            baz: true,
+          },
+        },
+      };
+
+      const parsed = {
+        foo: zods.foo.parse(unparsed.foo),
+      };
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof plugin>
+      >();
+    });
+
+    it("builds parser for plugin's plugin type value", () => {
+      const plugin = definePlugin({
+        name: "plugin",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "document",
+              fields: [
+                defineField({
+                  name: "pluginValue",
+                  type: "pluginValue",
+                }),
+              ],
+            }),
+          ],
+        },
+        plugins: [
+          definePlugin({
+            name: "plugin",
+            schema: {
+              types: [
+                defineType({
+                  name: "pluginValue",
+                  type: "object",
+                  fields: [
+                    defineField({
+                      name: "baz",
+                      type: "plugin2Value",
+                    }),
+                  ],
+                }),
+              ],
+            },
+            plugins: [
+              definePlugin({
+                name: "plugin",
+                schema: {
+                  types: [
+                    defineType({
+                      name: "plugin2Value",
+                      type: "boolean",
+                    }),
+                  ],
+                },
+              })(),
+            ],
           })(),
         ],
       })();

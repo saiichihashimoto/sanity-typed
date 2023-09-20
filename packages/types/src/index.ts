@@ -875,19 +875,10 @@ export type _ConfigBase<
     any,
     any
   >,
-  TPluginTypeDefinition extends _TypeDefinition<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
-  >
-> = {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive type
-  plugins?: (PluginOptions<TPluginTypeDefinition, any> | PluginOptionsNative)[];
+  TPluginOptions extends PluginOptions<any, any>
+> = {
+  plugins?: (PluginOptionsNative | TPluginOptions)[];
   schema?: MergeOld<
     SchemaPluginOptionsNative,
     {
@@ -915,17 +906,8 @@ export type PluginOptions<
     any,
     any
   >,
-  TPluginTypeDefinition extends _TypeDefinition<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
-  >
-> = _ConfigBase<TTypeDefinition, TPluginTypeDefinition> &
+  TPluginOptions extends PluginOptions<any, any>
+> = _ConfigBase<TTypeDefinition, TPluginOptions> &
   Omit<PluginOptionsNative, "plugins" | "schema">;
 
 export const definePlugin = <
@@ -939,27 +921,18 @@ export const definePlugin = <
     any,
     any
   >,
-  TPluginTypeDefinition extends _TypeDefinition<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
-  >,
+  TPluginOptions extends PluginOptions<any, any>,
   TOptionsHelper = void
 >(
   arg:
-    | PluginOptions<TTypeDefinition, TPluginTypeDefinition>
+    | PluginOptions<TTypeDefinition, TPluginOptions>
     | ((
         options: TOptionsHelper
-      ) => PluginOptions<TTypeDefinition, TPluginTypeDefinition>)
+      ) => PluginOptions<TTypeDefinition, TPluginOptions>)
 ) =>
   definePluginNative(arg as any) as (
     options: TOptionsHelper
-  ) => PluginOptions<TTypeDefinition, TPluginTypeDefinition>;
+  ) => PluginOptions<TTypeDefinition, TPluginOptions>;
 
 type WorkspaceOptions<
   TTypeDefinition extends _TypeDefinition<
@@ -972,19 +945,10 @@ type WorkspaceOptions<
     any,
     any
   >,
-  TPluginTypeDefinition extends _TypeDefinition<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
-  >
+  TPluginOptions extends PluginOptions<any, any>
 > = MergeOld<
   WorkspaceOptionsNative,
-  _ConfigBase<TTypeDefinition, TPluginTypeDefinition>
+  _ConfigBase<TTypeDefinition, TPluginOptions>
 >;
 
 export type Config<
@@ -998,20 +962,11 @@ export type Config<
     any,
     any
   >,
-  TPluginTypeDefinition extends _TypeDefinition<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
-  >
+  TPluginOptions extends PluginOptions<any, any>
 > =
-  | WorkspaceOptions<TTypeDefinition, TPluginTypeDefinition>[]
+  | WorkspaceOptions<TTypeDefinition, TPluginOptions>[]
   | (Omit<
-      WorkspaceOptions<TTypeDefinition, TPluginTypeDefinition>,
+      WorkspaceOptions<TTypeDefinition, TPluginOptions>,
       "basePath" | "name"
     > & {
       basePath?: string;
@@ -1029,18 +984,9 @@ export const defineConfig = <
     any,
     any
   >,
-  TPluginTypeDefinition extends _TypeDefinition<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
-  >
+  TPluginOptions extends PluginOptions<any, any>
 >(
-  config: Config<TTypeDefinition, TPluginTypeDefinition>
+  config: Config<TTypeDefinition, TPluginOptions>
 ) =>
   defineConfigNative(config as any) as typeof config extends any[]
     ? Extract<typeof config, any[]>
@@ -1077,42 +1023,29 @@ type ExpandAliasValues<
     }
   : Value;
 
-type NotDefaultType<
-  TTypeDefinition extends _TypeDefinition<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
-  >
-> = _TypeDefinition<
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any
-> extends TTypeDefinition
-  ? never
-  : TTypeDefinition;
-
 export type InferSchemaValues<
   TConfig extends MaybeArray<_ConfigBase<any, any>>
-> = TConfig extends MaybeArray<
-  _ConfigBase<infer TTypeDefinition, infer TPluginTypeDefinition>
->
+> = PluginOptionsNative extends TConfig
+  ? object
+  : TConfig extends MaybeArray<
+      _ConfigBase<infer TTypeDefinition, infer TPluginOptions>
+    >
   ? {
       [TName in TTypeDefinition["name"]]: ExpandAliasValues<
         AliasValue<TName>,
-        {
-          [TDefinition in
-            | NotDefaultType<TPluginTypeDefinition>
-            | NotDefaultType<TTypeDefinition> as TDefinition["name"]]: InferRawValue<TDefinition>;
+        InferSchemaValues<TPluginOptions> & {
+          [TDefinition in _TypeDefinition<
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any
+          > extends TTypeDefinition
+            ? never
+            : TTypeDefinition as TDefinition["name"]]: InferRawValue<TDefinition>;
         }
       >;
     }
@@ -1202,8 +1135,10 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any
               >
             : never)
+    : Untyped extends (options: infer TOptions) => PluginOptionsNative
+    ? ReturnType<typeof definePlugin<any, any, TOptions>>
     : Untyped extends PluginOptionsNative
-    ? ReturnType<typeof definePlugin<any, any>>
+    ? PluginOptions<any, any>
     : {
         [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
       };
