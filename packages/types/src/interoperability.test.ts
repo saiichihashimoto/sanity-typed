@@ -22,7 +22,61 @@ import type { InferSchemaValues } from ".";
 
 describe("interoperability", () => {
   describe("castToTyped", () => {
-    it("castToTyped(definePluginNative(...))", () => {
+    it("castToTyped(definePluginNative(...))()", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "document",
+              fields: [
+                defineField({
+                  name: "pluginValue",
+                  type: "pluginValue",
+                }),
+              ],
+            }),
+          ],
+        },
+        plugins: [
+          castToTyped(
+            definePluginNative({
+              name: "plugin",
+              schema: {
+                types: [
+                  defineTypeNative({
+                    name: "pluginValue",
+                    type: "object" as const,
+                    fields: [
+                      defineFieldNative({
+                        name: "baz",
+                        type: "boolean",
+                      }),
+                    ],
+                  }),
+                ],
+              },
+            })
+          )(),
+        ],
+      });
+
+      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
+        foo: {
+          _createdAt: string;
+          _id: string;
+          _rev: string;
+          _updatedAt: string;
+          pluginValue?: unknown;
+        } & {
+          _type: "foo";
+        };
+      }>();
+    });
+
+    it("castToTyped(definePluginNative(...)())", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",

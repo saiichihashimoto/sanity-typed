@@ -230,6 +230,75 @@ describe("<alias>", () => {
         };
       }>();
     });
+
+    it("infers plugin's plugin type value", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "document",
+              fields: [
+                defineField({
+                  name: "pluginValue",
+                  type: "pluginValue",
+                }),
+              ],
+            }),
+          ],
+        },
+        plugins: [
+          definePlugin({
+            name: "plugin",
+            schema: {
+              types: [
+                defineType({
+                  name: "pluginValue",
+                  type: "object",
+                  fields: [
+                    defineField({
+                      name: "baz",
+                      type: "plugin2Value",
+                    }),
+                  ],
+                }),
+              ],
+            },
+            plugins: [
+              definePlugin({
+                name: "plugin",
+                schema: {
+                  types: [
+                    defineType({
+                      name: "plugin2Value",
+                      type: "boolean",
+                    }),
+                  ],
+                },
+              })(),
+            ],
+          })(),
+        ],
+      });
+
+      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
+        foo: {
+          _createdAt: string;
+          _id: string;
+          _rev: string;
+          _updatedAt: string;
+          pluginValue?: {
+            _type: "pluginValue";
+          } & {
+            baz?: boolean;
+          };
+        } & {
+          _type: "foo";
+        };
+      }>();
+    });
   });
 
   describe("definePlugin", () => {
@@ -442,6 +511,74 @@ describe("<alias>", () => {
       type Values = InferSchemaValues<typeof plugin>;
 
       expectType<Values>().toStrictEqual<{
+        foo: {
+          _createdAt: string;
+          _id: string;
+          _rev: string;
+          _updatedAt: string;
+          pluginValue?: {
+            _type: "pluginValue";
+          } & {
+            baz?: boolean;
+          };
+        } & {
+          _type: "foo";
+        };
+      }>();
+    });
+
+    it("infers plugin's plugin type value", () => {
+      const plugin = definePlugin({
+        name: "plugin",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "document",
+              fields: [
+                defineField({
+                  name: "pluginValue",
+                  type: "pluginValue",
+                }),
+              ],
+            }),
+          ],
+        },
+        plugins: [
+          definePlugin({
+            name: "plugin",
+            schema: {
+              types: [
+                defineType({
+                  name: "pluginValue",
+                  type: "object",
+                  fields: [
+                    defineField({
+                      name: "baz",
+                      type: "plugin2Value",
+                    }),
+                  ],
+                }),
+              ],
+            },
+            plugins: [
+              definePlugin({
+                name: "plugin",
+                schema: {
+                  types: [
+                    defineType({
+                      name: "plugin2Value",
+                      type: "boolean",
+                    }),
+                  ],
+                },
+              })(),
+            ],
+          })(),
+        ],
+      })();
+
+      expectType<InferSchemaValues<typeof plugin>>().toStrictEqual<{
         foo: {
           _createdAt: string;
           _id: string;

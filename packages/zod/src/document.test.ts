@@ -60,11 +60,12 @@ describe("document", () => {
         },
       ];
 
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       expectType<(typeof parsed)[number]>().toStrictEqual<
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
@@ -207,11 +208,12 @@ describe("document", () => {
         },
       ];
 
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       expectType<(typeof parsed)[number]>().toStrictEqual<
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
