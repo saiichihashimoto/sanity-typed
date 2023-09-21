@@ -89,7 +89,8 @@ const traverseValidation = <
 >(
   { validation }: TSchemaType,
   initialValue: TReturnType,
-  ruleMap: RuleMap<TSchemaType["type"], TReturnType> = {}
+  ruleMap: RuleMap<TSchemaType["type"], TReturnType>,
+  defaultFn: (current: TReturnType) => TReturnType = (current) => current
 ) => {
   /* eslint-disable fp/no-let,fp/no-mutation,fp/no-unused-expression -- mutation */
   let value = initialValue;
@@ -163,6 +164,10 @@ const traverseValidation = <
       value = ruleMap?.uppercase?.(value, args as any) ?? value;
       return rule;
     },
+    uri: (...args: any[]) => {
+      value = ruleMap?.uri?.(value, args as any) ?? value;
+      return rule;
+    },
     valueOfField: () => ({
       // TODO https://github.com/saiichihashimoto/sanity-typed/issues/336
       path: "",
@@ -178,6 +183,10 @@ const traverseValidation = <
     // @ts-expect-error -- TODO Honestly, idk
     rule
   );
+
+  if (value === initialValue) {
+    value = defaultFn?.(value) ?? value;
+  }
 
   /* eslint-enable fp/no-let,fp/no-mutation,fp/no-unused-expression */
 
@@ -208,7 +217,6 @@ const constantZods = {
     _type: z.literal("slug"),
     current: z.string(),
   }),
-  url: z.string(),
 };
 
 const dateZod = <
@@ -283,6 +291,37 @@ const numberZod = <
       ? z.ZodNumber
       : z.ZodType<TOptionsHelper>
     : never;
+
+const referenceZod = <
+  TSchemaType extends _SchemaTypeDefinition<"reference", any, any>
+>() =>
+  z.object({
+    [_referenced]:
+      z.custom<
+        TSchemaType extends _SchemaTypeDefinition<
+          "reference",
+          any,
+          infer TReferenced
+        >
+          ? TReferenced
+          : never
+      >(),
+    _ref: z.string(),
+    _type: z.literal("reference"),
+    _weak: z.optional(z.boolean()),
+    _strengthenOnPublish: z.optional(
+      z.object({
+        type: z.string(),
+        weak: z.optional(z.boolean()),
+        template: z.optional(
+          z.object({
+            id: z.string(),
+            params: z.record(z.union([z.string(), z.number(), z.boolean()])),
+          })
+        ),
+      })
+    ),
+  });
 
 const zodStringRuleMap: RuleMap<"string" | "text", z.ZodString> = {
   email: (zod) => zod.regex(emailRegex, { message: "Invalid email" }),
@@ -372,36 +411,83 @@ const textZod = <
     zodTypeStringRuleMap
   );
 
-const referenceZod = <
-  TSchemaType extends _SchemaTypeDefinition<"reference", any, any>
->() =>
-  z.object({
-    [_referenced]:
-      z.custom<
-        TSchemaType extends _SchemaTypeDefinition<
-          "reference",
-          any,
-          infer TReferenced
-        >
-          ? TReferenced
-          : never
-      >(),
-    _ref: z.string(),
-    _type: z.literal("reference"),
-    _weak: z.optional(z.boolean()),
-    _strengthenOnPublish: z.optional(
-      z.object({
-        type: z.string(),
-        weak: z.optional(z.boolean()),
-        template: z.optional(
-          z.object({
-            id: z.string(),
-            params: z.record(z.union([z.string(), z.number(), z.boolean()])),
-          })
-        ),
-      })
-    ),
-  });
+const DUMMY_ORIGIN = "http://sanity";
+
+// https://github.com/sanity-io/sanity/blob/6020a46588ffd324e233b45eaf526a58652c62f2/packages/sanity/src/core/validation/validators/stringValidator.ts#L37
+const urlRuleMap: RuleMap<"url", z.ZodType<string>> = {
+  uri: (
+    zod,
+    [
+      {
+        allowRelative: allowRelativeRaw = false,
+        allowCredentials = false,
+        relativeOnly = false,
+        scheme = ["http", "https"],
+      },
+    ]
+  ) =>
+    zod.superRefine((value, ctx) => {
+      /* eslint-disable fp/no-unused-expression -- zod.superRefine */
+      const allowRelative = allowRelativeRaw || relativeOnly;
+
+      // eslint-disable-next-line fp/no-let -- using new URL
+      let url: URL;
+      try {
+        // eslint-disable-next-line fp/no-mutation -- using new URL
+        url = allowRelative ? new URL(value, DUMMY_ORIGIN) : new URL(value);
+      } catch {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Not a valid URL",
+        });
+
+        return z.NEVER;
+      }
+
+      if (relativeOnly && url.origin !== DUMMY_ORIGIN) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Only relative URLs are allowed",
+        });
+      }
+
+      if (!allowCredentials && (url.username || url.password)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Username/password not allowed",
+        });
+      }
+
+      const urlScheme = url.protocol.replace(/:$/, "");
+      if (
+        !(Array.isArray(scheme) ? scheme : [scheme]).some((scheme) =>
+          typeof scheme === "string"
+            ? urlScheme.startsWith(scheme)
+            : scheme.test(urlScheme)
+        )
+      ) {
+        // console.log(value, urlScheme, url);
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Does not match allowed protocols/schemes",
+        });
+      }
+
+      return z.NEVER;
+
+      /* eslint-enable fp/no-unused-expression */
+    }),
+};
+
+const urlZod = <TSchemaType extends _SchemaTypeDefinition<"url", any, any>>(
+  schemaType: TSchemaType
+) =>
+  traverseValidation(
+    schemaType,
+    z.string() as z.ZodType<string>,
+    urlRuleMap,
+    (zod) => urlRuleMap.uri!(zod, [{}])
+  );
 
 type ExtendViaIntersection<
   Zod extends z.ZodTypeAny,
@@ -972,6 +1058,12 @@ type SanityTypeToZod<
         Extract<TSchemaType, _SchemaTypeDefinition<"number", any, any>>
       >
     >
+  : TSchemaType["type"] extends "reference"
+  ? ReturnType<
+      typeof referenceZod<
+        Extract<TSchemaType, _SchemaTypeDefinition<"reference", any, any>>
+      >
+    >
   : TSchemaType["type"] extends "string"
   ? ReturnType<
       typeof stringZod<
@@ -984,10 +1076,10 @@ type SanityTypeToZod<
         Extract<TSchemaType, _SchemaTypeDefinition<"text", any, any>>
       >
     >
-  : TSchemaType["type"] extends "reference"
+  : TSchemaType["type"] extends "url"
   ? ReturnType<
-      typeof referenceZod<
-        Extract<TSchemaType, _SchemaTypeDefinition<"reference", any, any>>
+      typeof urlZod<
+        Extract<TSchemaType, _SchemaTypeDefinition<"url", any, any>>
       >
     >
   : TSchemaType["type"] extends "array"
@@ -1063,6 +1155,10 @@ const schemaTypeToZod = <
           _SchemaTypeDefinition<"number", number, any>
         >
       )
+    : schema.type === "reference"
+    ? referenceZod<
+        Extract<TSchemaType, _SchemaTypeDefinition<"reference", any, any>>
+      >()
     : schema.type === "string"
     ? stringZod(
         schema as Extract<
@@ -1074,10 +1170,10 @@ const schemaTypeToZod = <
     ? textZod(
         schema as Extract<TSchemaType, _SchemaTypeDefinition<"text", any, any>>
       )
-    : schema.type === "reference"
-    ? referenceZod<
-        Extract<TSchemaType, _SchemaTypeDefinition<"reference", any, any>>
-      >()
+    : schema.type === "url"
+    ? urlZod(
+        schema as Extract<TSchemaType, _SchemaTypeDefinition<"url", any, any>>
+      )
     : schema.type === "array"
     ? arrayZod(
         schema as Extract<
