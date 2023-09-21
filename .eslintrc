@@ -228,6 +228,7 @@
       "extends": [
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/strict",
+        "plugin:deprecation/recommended",
         "plugin:import/typescript",
         "plugin:typescript-sort-keys/recommended"
       ],
