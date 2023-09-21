@@ -289,8 +289,20 @@ const zodStringRuleMap: RuleMap<"string" | "text", z.ZodString> = {
   length: (zod, [exactLength]) => zod.length(exactLength as number),
   max: (zod, [maxLength]) => zod.max(maxLength as number),
   min: (zod, [minLength]) => zod.min(minLength as number),
-  regex: (zod, [pattern]) =>
-    zod.regex(pattern, { message: `Must match regex ${pattern}` }),
+  regex: (zod, [pattern, nameOrOptions, optionsMaybe]) => {
+    const [name = pattern.toString(), invert = false] = optionsMaybe
+      ? [nameOrOptions as string, optionsMaybe.invert]
+      : !nameOrOptions
+      ? []
+      : typeof nameOrOptions === "string"
+      ? [nameOrOptions]
+      : [nameOrOptions.name, nameOrOptions.invert];
+
+    return invert
+      ? // Hack zod.regex can't invert the pattern, so we do a refine
+        zod
+      : zod.regex(pattern, { message: `Does not match ${name}-pattern` });
+  },
 };
 
 const zodTypeStringRuleMap: RuleMap<"string" | "text", z.ZodType<string>> = {
@@ -302,6 +314,22 @@ const zodTypeStringRuleMap: RuleMap<"string" | "text", z.ZodType<string>> = {
     zod.refine((value) => value === value.toLocaleUpperCase(), {
       message: "Must be all uppercase letters",
     }),
+  regex: (zod, [pattern, nameOrOptions, optionsMaybe]) => {
+    const [name = pattern.toString(), invert = false] = optionsMaybe
+      ? [nameOrOptions as string, optionsMaybe.invert]
+      : !nameOrOptions
+      ? []
+      : typeof nameOrOptions === "string"
+      ? [nameOrOptions]
+      : [nameOrOptions.name, nameOrOptions.invert];
+
+    return !invert
+      ? // Hack zod.regex can't invert the pattern, so we do a refine
+        zod
+      : zod.refine((value) => !pattern.test(value), {
+          message: `Should not match ${name}-pattern`,
+        });
+  },
 };
 
 const stringZod = <

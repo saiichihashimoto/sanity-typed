@@ -251,20 +251,93 @@ describe("text", () => {
       });
       const zods = _sanityConfigToZods(config);
 
-      expect(() => zods.foo.parse("foo")).toThrow("Must match regex /^bar$/");
+      expect(() => zods.foo.parse("foo")).toThrow(
+        "Does not match /^bar$/-pattern"
+      );
     });
 
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("regex(pattern, { name })");
+    it("regex(pattern, { name })", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+              validation: (Rule) => Rule.regex(/^bar$/, { name: "bar" }),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
 
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("regex(pattern, name)");
+      expect(() => zods.foo.parse("foo")).toThrow("Does not match bar-pattern");
+    });
 
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("regex(pattern, { invert })");
+    it("regex(pattern, name)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+              validation: (Rule) => Rule.regex(/^bar$/, "bar"),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
 
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("regex(pattern, name, { invert })");
+      expect(() => zods.foo.parse("foo")).toThrow("Does not match bar-pattern");
+    });
+
+    it("regex(pattern, { invert })", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+              validation: (Rule) => Rule.regex(/^bar$/, { invert: true }),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("foo")).not.toThrow();
+      expect(() => zods.foo.parse("bar")).toThrow(
+        "Should not match /^bar$/-pattern"
+      );
+    });
+
+    it("regex(pattern, name, { invert })", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "text",
+              validation: (Rule) =>
+                Rule.regex(/^bar$/, "bar", { invert: true }),
+            }),
+          ],
+        },
+      });
+      const zods = _sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse("foo")).not.toThrow();
+      expect(() => zods.foo.parse("bar")).toThrow(
+        "Should not match bar-pattern"
+      );
+    });
 
     // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("custom(fn)");

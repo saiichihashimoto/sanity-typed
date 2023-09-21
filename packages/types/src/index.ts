@@ -251,6 +251,37 @@ export type SlugDefinition<TRequired extends boolean> = MergeOld<
   DefinitionBase<TRequired, SlugValue, RewriteValue<SlugValue, SlugRule>>
 >;
 
+export type RegexRule<Rule extends RuleDef<Rule, any>> = MergeOld<
+  {
+    [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule
+      ? (...args: Args) => RegexRule<Rule>
+      : Rule[key];
+  },
+  {
+    regex: (
+      ...args:
+        | [
+            pattern: RegExp,
+            name: string,
+            options: {
+              invert?: boolean;
+              // TODO why have name here when it's in the second arg?
+              // name?: string;
+            }
+          ]
+        | [
+            pattern: RegExp,
+            options: {
+              invert?: boolean;
+              name?: string;
+            }
+          ]
+        | [pattern: RegExp, name: string]
+        | [pattern: RegExp]
+    ) => RegexRule<Rule>;
+  }
+>;
+
 export type StringDefinition<
   TOptionsHelper,
   TRequired extends boolean
@@ -259,7 +290,11 @@ export type StringDefinition<
   DefinitionBase<
     TRequired,
     TOptionsHelper & string,
-    RewriteValue<TOptionsHelper & string, StringRule>
+    RewriteValue<
+      TOptionsHelper & string,
+      // @ts-expect-error -- IDK
+      RegexRule<StringRule>
+    >
   > & {
     options?: MergeOld<
       StringOptions,
@@ -272,7 +307,12 @@ export type StringDefinition<
 
 export type TextDefinition<TRequired extends boolean> = MergeOld<
   TextDefinitionNative,
-  DefinitionBase<TRequired, string, TextRule>
+  DefinitionBase<
+    TRequired,
+    string,
+    // @ts-expect-error -- IDK
+    RegexRule<TextRule>
+  >
 >;
 
 export type UrlDefinition<TRequired extends boolean> = MergeOld<
