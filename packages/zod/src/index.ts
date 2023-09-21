@@ -466,7 +466,6 @@ const urlRuleMap: RuleMap<"url", z.ZodType<string>> = {
             : scheme.test(urlScheme)
         )
       ) {
-        // console.log(value, urlScheme, url);
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Does not match allowed protocols/schemes",
