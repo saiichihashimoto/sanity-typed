@@ -597,7 +597,7 @@ type MembersZods<
         AddType<
           TMemberDefinition["name"],
           // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-          SanityTypeToZod<TMemberDefinition, TAliasedZods>
+          SchemaTypeToZod<TMemberDefinition, TAliasedZods>
         >
       >[]
   : never;
@@ -843,14 +843,14 @@ type FieldsZods<
         _FieldDefinition<any, any, any, any, any, any, any, any, false>
       >["name"]]: z.ZodOptional<
         // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-        SanityTypeToZod<Extract<TFieldDefinition, { name: Name }>, TAliasedZods>
+        SchemaTypeToZod<Extract<TFieldDefinition, { name: Name }>, TAliasedZods>
       >;
     } & {
       [Name in Extract<
         TFieldDefinition,
         _FieldDefinition<any, any, any, any, any, any, any, any, true>
         // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-      >["name"]]: SanityTypeToZod<
+      >["name"]]: SchemaTypeToZod<
         Extract<TFieldDefinition, { name: Name }>,
         TAliasedZods
       >;
@@ -1034,7 +1034,7 @@ const aliasZod = <
     TAliasedZods
   >;
 
-type SanityTypeToZod<
+type SchemaTypeToZod<
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = TSchemaType["type"] extends keyof typeof constantZods
@@ -1131,7 +1131,7 @@ const schemaTypeToZod = <
 >(
   schema: TSchemaType,
   getZods: () => TAliasedZods
-): SanityTypeToZod<TSchemaType, TAliasedZods> =>
+): SchemaTypeToZod<TSchemaType, TAliasedZods> =>
   (schema.type in constantZods
     ? constantZods[
         schema.type as TSchemaType["type"] & keyof typeof constantZods
@@ -1218,7 +1218,7 @@ const schemaTypeToZod = <
         >,
         getZods
       )
-    : aliasZod(schema, getZods)) as SanityTypeToZod<TSchemaType, TAliasedZods>;
+    : aliasZod(schema, getZods)) as SchemaTypeToZod<TSchemaType, TAliasedZods>;
 
 type SanityConfigZods<TConfig extends MaybeArray<_ConfigBase<any, any>>> =
   TConfig extends MaybeArray<
@@ -1227,7 +1227,7 @@ type SanityConfigZods<TConfig extends MaybeArray<_ConfigBase<any, any>>> =
     ? {
         [Name in TTypeDefinition["name"]]: AddType<
           Name,
-          SanityTypeToZod<
+          SchemaTypeToZod<
             Extract<TTypeDefinition, { name: Name }>,
             SanityConfigZods<TConfig> & SanityConfigZods<TPluginOptions>
           >

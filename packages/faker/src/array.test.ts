@@ -1,4 +1,5 @@
-import { describe, expect, it } from "@jest/globals";
+import { faker } from "@faker-js/faker";
+import { beforeEach, describe, expect, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -8,12 +9,17 @@ import {
   defineType,
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
+import { sanityConfigToZods } from "@sanity-typed/zod";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToFaker } from ".";
 
 describe("array", () => {
+  beforeEach(() => {
+    faker.seed(0);
+  });
+
   describe("defineField", () => {
-    it("builds parser for array of members", () => {
+    it.failing("mocks array of members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -33,22 +39,20 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = {
-        _type: "foo",
-        bar: [true],
-      };
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<(typeof fake)["bar"]>().toStrictEqual<
+        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
 
-    it("infers unions if there are multiple members", () => {
+    it.failing("mocks unions if there are multiple members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -71,22 +75,20 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = {
-        _type: "foo",
-        bar: [true, "foo"],
-      };
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<(typeof fake)["bar"]>().toStrictEqual<
+        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
 
-    it("infers unions with objects", () => {
+    it.failing("mocks unions with objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -127,27 +129,22 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = {
-        _type: "foo",
-        bar: [
-          { _key: "key", _type: "bar", bar: true },
-          { _key: "key", _type: "qux", qux: true },
-        ],
-      };
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)["bar"]>().toEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<(typeof fake)["bar"]>().toEqual<
+        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
   });
 
   describe("defineType", () => {
-    it("builds parser for array of members", () => {
+    it("mocks array of members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -161,19 +158,19 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = [true];
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
 
-    it("infers unions if there are multiple members", () => {
+    it.failing("mocks unions if there are multiple members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -190,19 +187,20 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = [true, "foo"];
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
+        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]
       >();
     });
 
-    it("infers unions with objects", () => {
+    it.failing("mocks unions with objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -237,24 +235,22 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = [
-        { _key: "key", _type: "bar", bar: true },
-        { _key: "key", _type: "qux", qux: true },
-      ];
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]
       >();
     });
   });
 
   describe("validation", () => {
-    it("unique()", () => {
+    it.failing("unique()", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -280,25 +276,16 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() =>
-        zods.foo.parse([
-          {
-            _key: "key1",
-            _type: "bar",
-            bar: true,
-          },
-          {
-            _key: "key2",
-            _type: "bar",
-            bar: true,
-          },
-        ])
-      ).toThrow("Can't contain duplicates");
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
     });
 
-    it("min(minLength)", () => {
+    it.failing("min(minLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -313,14 +300,20 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse([])).toThrow(
-        "Array must contain at least 4 element(s)"
-      );
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+      expect(fake.length).toBeGreaterThanOrEqual(4);
     });
 
-    it("max(maxLength)", () => {
+    it.failing("max(maxLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -335,14 +328,20 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse([true, false])).toThrow(
-        "Array must contain at most 1 element(s)"
-      );
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+      expect(fake.length).toBeLessThanOrEqual(1);
     });
 
-    it("length(exactLength)", () => {
+    it.failing("length(exactLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -357,14 +356,17 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse([])).toThrow(
-        "Array must contain exactly 1 element(s)"
-      );
-      expect(() => zods.foo.parse([true, false])).toThrow(
-        "Array must contain exactly 1 element(s)"
-      );
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+      expect(fake).toHaveLength(1);
     });
 
     // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285

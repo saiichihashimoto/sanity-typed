@@ -252,7 +252,7 @@ describe("interoperability", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config1>["foo"]>["bar"]
+        InferSchemaValues<typeof config1>["foo"]["bar"]
       >().toStrictEqual<boolean>();
 
       const config2 = defineConfig({
@@ -283,7 +283,7 @@ describe("interoperability", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config2>["foo"]>["bar"]
+        InferSchemaValues<typeof config2>["foo"]["bar"]
       >().toStrictEqual<
         | {
             [x: string]: unknown;

@@ -90,7 +90,7 @@ describe("crossDatasetReference", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _dataset: string;
         _projectId: string;

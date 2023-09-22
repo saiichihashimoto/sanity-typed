@@ -1,4 +1,5 @@
-import { describe, expect, it } from "@jest/globals";
+import { faker } from "@faker-js/faker";
+import { beforeEach, describe, expect, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -8,12 +9,17 @@ import {
   defineType,
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
+import { sanityConfigToZods } from "@sanity-typed/zod";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToFaker } from ".";
 
-describe("email", () => {
+describe("boolean", () => {
+  beforeEach(() => {
+    faker.seed(0);
+  });
+
   describe("defineArrayMember", () => {
-    it("builds parser for string", () => {
+    it("mocks boolean", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -24,28 +30,28 @@ describe("email", () => {
               type: "array",
               of: [
                 defineArrayMember({
-                  type: "email",
+                  type: "boolean",
                 }),
               ],
             }),
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = ["foo@bar.com"];
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<(typeof fake)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
   });
 
   describe("defineField", () => {
-    it("builds parser for string", () => {
+    it.failing("mocks boolean", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -57,31 +63,29 @@ describe("email", () => {
               fields: [
                 defineField({
                   name: "bar",
-                  type: "email",
+                  type: "boolean",
                 }),
               ],
             }),
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = {
-        _type: "foo",
-        bar: "foo@bar.com",
-      };
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<(typeof fake)["bar"]>().toStrictEqual<
+        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
   });
 
   describe("defineType", () => {
-    it("builds parser for string", () => {
+    it("mocks boolean", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -89,43 +93,25 @@ describe("email", () => {
           types: [
             defineType({
               name: "foo",
-              type: "email",
+              type: "boolean",
             }),
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = "foo@bar.com";
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
   });
 
   describe("validation", () => {
-    it("requires email", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "email",
-            }),
-          ],
-        },
-      });
-      const zods = _sanityConfigToZods(config);
-
-      expect(() => zods.foo.parse("foo")).toThrow("Invalid email");
-    });
-
     // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
     it.todo("custom(fn)");
   });
