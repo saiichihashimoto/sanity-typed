@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@sanity-typed/zod",
+  "name": "@sanity-typed/faker",
   "version": "0.0.0-development",
-  "description": "Generate Zod Schemas from Sanity Schemas",
+  "description": "FIXME",
   "keywords": [
     "sanity",
     "sanity-io",
@@ -12,13 +12,9 @@
     "headless",
     "realtime",
     "content",
-    "zod",
-    "schema",
-    "validation",
-    "type",
-    "inference"
+    "FIXME"
   ],
-  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/zod",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/faker",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {
@@ -32,19 +28,11 @@
     "build": "tsup",
     "dev": "npm run build -- --no-dts"
   },
-  "dependencies": {
-    "@sanity-typed/types": "0.0.0-development"
-  },
   "devDependencies": {
     "@jest/globals": "29.7.0",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "sanity": "3.16.7",
-    "zod": "3.22.2"
-  },
-  "peerDependencies": {
-    "sanity": "^3.12.0",
-    "zod": "^3.21.4"
+    "@sanity-typed/types": "0.0.0-development"
   },
   "engines": {
     "node": "^18.15.0"
