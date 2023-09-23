@@ -49,7 +49,7 @@ describe("string", () => {
       >();
     });
 
-    it.failing("mocks literal string from list", () => {
+    it("mocks literal string from list", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -78,7 +78,6 @@ describe("string", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)[number]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
@@ -179,7 +178,7 @@ describe("string", () => {
       >();
     });
 
-    it.failing("mocks literal string from list", () => {
+    it("mocks literal string from list", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -203,14 +202,13 @@ describe("string", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<typeof fake>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]
       >();
     });
   });
 
   describe("validation", () => {
-    it("min(minLength)", () => {
+    it.failing("min(minLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -219,7 +217,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
-              validation: (Rule) => Rule.min(4),
+              validation: (Rule) => Rule.min(400),
             }),
           ],
         },

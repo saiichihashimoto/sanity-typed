@@ -262,7 +262,7 @@ const numberZod = <
 >(
   schemaType: TSchemaType
 ) =>
-  (!schemaType.options?.list
+  (!schemaType.options?.list?.length
     ? traverseValidation(schemaType, z.number(), {
         greaterThan: (zod, [limit]) => zod.gt(limit as number),
         integer: (zod) => zod.int(),
@@ -376,7 +376,7 @@ const stringZod = <
 >(
   schemaType: TSchemaType
 ) =>
-  (!schemaType.options?.list
+  (!schemaType.options?.list?.length
     ? traverseValidation(
         schemaType,
         traverseValidation(schemaType, z.string(), zodStringRuleMap),

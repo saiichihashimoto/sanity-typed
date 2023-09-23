@@ -33,7 +33,8 @@
     "dev": "npm run build -- --no-dts"
   },
   "dependencies": {
-    "@sanity-typed/types": "0.0.0-development"
+    "@sanity-typed/types": "0.0.0-development",
+    "type-fest": "4.3.1"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",

@@ -1,4 +1,5 @@
 import { Faker } from "@faker-js/faker";
+import type { IsStringLiteral } from "type-fest";
 
 import type {
   _ArrayMemberDefinition,
@@ -58,7 +59,26 @@ const stringFaker =
     schemaType: TSchemaType
   ) =>
   (faker: Faker) =>
-    faker.lorem.words({ min: 3, max: 10 });
+    (!schemaType.options?.list?.length
+      ? faker.lorem.words({
+          min: 3,
+          max: 10,
+        })
+      : faker.helpers.arrayElement(
+          schemaType.options.list.map((maybeTitledListValue) =>
+            typeof maybeTitledListValue === "string"
+              ? maybeTitledListValue
+              : maybeTitledListValue.value!
+          )
+        )) as TSchemaType extends _SchemaTypeDefinition<
+      "string",
+      infer TOptionsHelper,
+      any
+    >
+      ? IsStringLiteral<TOptionsHelper> extends false
+        ? string
+        : TOptionsHelper
+      : never;
 
 type MembersFaker<
   TMemberDefinitions extends _ArrayMemberDefinition<
