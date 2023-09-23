@@ -1,4 +1,5 @@
-import { describe, expect, it } from "@jest/globals";
+import { faker } from "@faker-js/faker";
+import { beforeEach, describe, expect, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -8,12 +9,17 @@ import {
   defineType,
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
+import { sanityConfigToZods } from "@sanity-typed/zod";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToFaker } from ".";
 
 describe("string", () => {
+  beforeEach(() => {
+    faker.seed(0);
+  });
+
   describe("defineArrayMember", () => {
-    it("builds parser for string", () => {
+    it("mocks string", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -31,19 +37,19 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = ["foo"];
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<(typeof fake)[number]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
 
-    it("builds parser for literal string from list", () => {
+    it.failing("mocks literal string from list", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -64,21 +70,22 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = ["foo"];
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<(typeof fake)[number]>().toStrictEqual<
+        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
   });
 
   describe("defineField", () => {
-    it("builds parser for string", () => {
+    it.failing("mocks string", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -97,22 +104,20 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = {
-        _type: "foo",
-        bar: "foo",
-      };
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<(typeof fake)["bar"]>().toStrictEqual<
+        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
 
-    it("builds parser for literal string from list", () => {
+    it.failing("mocks literal string from list", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -134,24 +139,22 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = {
-        _type: "foo",
-        bar: "foo",
-      };
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<(typeof fake)["bar"]>().toStrictEqual<
+        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
   });
 
   describe("defineType", () => {
-    it("builds parser for string", () => {
+    it("mocks string", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -164,19 +167,19 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = "foo";
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
 
-    it("builds parser for literal string from list", () => {
+    it.failing("mocks literal string from list", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -192,14 +195,15 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      const unparsed = "foo";
+      const fake = sanityFaker.foo();
 
-      const parsed = zods.foo.parse(unparsed);
+      const zods = sanityConfigToZods(config);
 
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
+        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]
       >();
     });
@@ -220,14 +224,19 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse("")).toThrow(
-        "String must contain at least 4 character(s)"
-      );
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
-    it("max(maxLength)", () => {
+    it.failing("max(maxLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -241,14 +250,19 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse("fo")).toThrow(
-        "String must contain at most 1 character(s)"
-      );
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
-    it("length(exactLength)", () => {
+    it.failing("length(exactLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -262,17 +276,19 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse("")).toThrow(
-        "String must contain exactly 1 character(s)"
-      );
-      expect(() => zods.foo.parse("fo")).toThrow(
-        "String must contain exactly 1 character(s)"
-      );
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
-    it("uppercase()", () => {
+    it.failing("uppercase()", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -286,11 +302,16 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse("foo")).toThrow(
-        "Must be all uppercase letters"
-      );
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
     it("lowercase()", () => {
@@ -307,14 +328,19 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse("FOO")).toThrow(
-        "Must be all lowercase letters"
-      );
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
-    it("email()", () => {
+    it.failing("email()", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -328,12 +354,19 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse("foo")).toThrow("Invalid email");
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
-    it("regex(pattern)", () => {
+    it.failing("regex(pattern)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -347,14 +380,19 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse("foo")).toThrow(
-        "Does not match /^bar$/-pattern"
-      );
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
-    it("regex(pattern, { name })", () => {
+    it.failing("regex(pattern, { name })", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -368,12 +406,19 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse("foo")).toThrow("Does not match bar-pattern");
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
-    it("regex(pattern, name)", () => {
+    it.failing("regex(pattern, name)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -387,9 +432,16 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse("foo")).toThrow("Does not match bar-pattern");
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
     it("regex(pattern, { invert })", () => {
@@ -406,12 +458,16 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse("foo")).not.toThrow();
-      expect(() => zods.foo.parse("bar")).toThrow(
-        "Should not match /^bar$/-pattern"
-      );
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
     it("regex(pattern, name, { invert })", () => {
@@ -429,12 +485,16 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const sanityFaker = sanityConfigToFaker(config, { faker });
 
-      expect(() => zods.foo.parse("foo")).not.toThrow();
-      expect(() => zods.foo.parse("bar")).toThrow(
-        "Should not match bar-pattern"
-      );
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
     });
 
     // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285

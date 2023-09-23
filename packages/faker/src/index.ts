@@ -53,6 +53,13 @@ const constantFakers = {
   boolean: (faker: Faker) => faker.datatype.boolean(),
 };
 
+const stringFaker =
+  <TSchemaType extends _SchemaTypeDefinition<"string", string, any>>(
+    schemaType: TSchemaType
+  ) =>
+  (faker: Faker) =>
+    faker.lorem.words({ min: 3, max: 10 });
+
 type MembersFaker<
   TMemberDefinitions extends _ArrayMemberDefinition<
     any,
@@ -159,6 +166,12 @@ type SchemaTypeToFaker<
   }
 > = TSchemaType["type"] extends keyof typeof constantFakers
   ? (typeof constantFakers)[TSchemaType["type"]]
+  : TSchemaType["type"] extends "string"
+  ? ReturnType<
+      typeof stringFaker<
+        Extract<TSchemaType, _SchemaTypeDefinition<"string", any, any>>
+      >
+    >
   : TSchemaType["type"] extends "array"
   ? ReturnType<
       typeof arrayFaker<
@@ -181,6 +194,13 @@ const schemaTypeToFaker = <
     ? constantFakers[
         schema.type as TSchemaType["type"] & keyof typeof constantFakers
       ]
+    : schema.type === "string"
+    ? stringFaker(
+        schema as Extract<
+          TSchemaType,
+          _SchemaTypeDefinition<"string", string, any>
+        >
+      )
     : schema.type === "array"
     ? arrayFaker(
         schema as Extract<

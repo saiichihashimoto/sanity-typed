@@ -602,7 +602,7 @@ type MembersZods<
       >[]
   : never;
 
-const memberZods = <
+const membersZods = <
   TMemberDefinitions extends _ArrayMemberDefinition<
     any,
     any,
@@ -702,7 +702,7 @@ const arrayZod = <
     : never;
 
   const arrayZodInner = z.array(
-    zodUnion(memberZods(schemaType.of as TMemberDefinitions, getZods))
+    zodUnion(membersZods(schemaType.of as TMemberDefinitions, getZods))
   );
 
   return traverseValidation(
@@ -792,7 +792,7 @@ const blockZod = <
         ? spanZod
         : zodUnion([
             spanZod,
-            ...memberZods(
+            ...membersZods(
               of as _ArrayMemberDefinition<
                 any,
                 any,
