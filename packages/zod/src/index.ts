@@ -591,15 +591,15 @@ type MembersZods<
   any,
   any
 >)[]
-  ? TMemberDefinition extends never
-    ? never
-    : AddKey<
-        AddType<
-          TMemberDefinition["name"],
-          // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-          SchemaTypeToZod<TMemberDefinition, TAliasedZods>
-        >
-      >[]
+  ? (TMemberDefinition extends never
+      ? never
+      : AddKey<
+          AddType<
+            TMemberDefinition["name"],
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+            SchemaTypeToZod<TMemberDefinition, TAliasedZods>
+          >
+        >)[]
   : never;
 
 const membersZods = <
@@ -624,7 +624,7 @@ const membersZods = <
     const zod = schemaTypeToZod(member, getZods);
 
     // TODO https://github.com/saiichihashimoto/sanity-typed/issues/337
-    return addKey("name" in member ? addType(member.name, zod) : zod);
+    return addKey(addType(member.name, zod));
   }) as MembersZods<TMemberDefinitions, TAliasedZods>;
 
 // HACK Copy and eslint-ed from https://github.com/sanity-io/sanity/blob/bf50a77131bc7dd9d3084acf39afcfb29512b566/packages/sanity/src/core/validation/util/sanityDeepEquals.ts#L11

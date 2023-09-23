@@ -84,12 +84,11 @@ describe("array", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)["bar"]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
 
-    it.failing("mocks unions with objects", () => {
+    it("mocks unions with objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -141,7 +140,6 @@ describe("array", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)["bar"]>().toEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
@@ -199,12 +197,11 @@ describe("array", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<typeof fake>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]
       >();
     });
 
-    it.failing("mocks unions with objects", () => {
+    it("mocks unions with objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -249,7 +246,6 @@ describe("array", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<typeof fake>().toEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]
       >();
     });
@@ -291,7 +287,6 @@ describe("array", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<typeof fake>().toEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]
       >();
     });

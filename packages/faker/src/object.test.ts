@@ -59,7 +59,7 @@ describe("object", () => {
       >();
     });
 
-    it.failing("overwrites `_type` with `name`", () => {
+    it("overwrites `_type` with `name`", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -96,7 +96,6 @@ describe("object", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)[number]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });

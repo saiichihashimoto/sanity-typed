@@ -303,15 +303,33 @@ type MembersFaker<
   }
 > = (
   faker: Faker
-) => TMemberDefinitions[number] extends never
-  ? never
-  : ReturnType<
-      ReturnType<
-        typeof addKey<
-          SchemaTypeToFaker<TMemberDefinitions[number], TAliasedFakers>
-        >
-      >
-    >[];
+) => TMemberDefinitions extends (infer TMemberDefinition extends _ArrayMemberDefinition<
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any
+>)[]
+  ? (TMemberDefinition extends never
+      ? never
+      : ReturnType<
+          ReturnType<
+            typeof addKey<
+              ReturnType<
+                typeof addType<
+                  TMemberDefinition["name"],
+                  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+                  SchemaTypeToFaker<TMemberDefinition, TAliasedFakers>
+                >
+              >
+            >
+          >
+        >)[]
+  : never;
 
 const membersFaker = <
   TMemberDefinitions extends _ArrayMemberDefinition<
@@ -335,7 +353,7 @@ const membersFaker = <
   const memberFakers = members.map(
     (
       member: TMemberDefinitions[number] // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-    ) => addKey(schemaTypeToFaker(member, getFakers))
+    ) => addKey(addType(member.name, schemaTypeToFaker(member, getFakers)))
   );
 
   return (faker) =>
