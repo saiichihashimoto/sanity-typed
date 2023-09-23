@@ -187,7 +187,7 @@ describe("object", () => {
   });
 
   describe("defineField", () => {
-    it.failing("mocks object with fields", () => {
+    it("mocks object with fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -225,7 +225,6 @@ describe("object", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)["bar"]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
@@ -269,7 +268,7 @@ describe("object", () => {
       >();
     });
 
-    it.failing("mocks nested objects", () => {
+    it("mocks nested objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -311,14 +310,13 @@ describe("object", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)["bar"]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
   });
 
   describe("defineType", () => {
-    it.failing("mocks object with fields", () => {
+    it("mocks object with fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -349,12 +347,11 @@ describe("object", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<typeof fake>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]
       >();
     });
 
-    it.failing("overwrites `_type` with defineArrayMember `name`", () => {
+    it("overwrites `_type` with defineArrayMember `name`", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -395,7 +392,6 @@ describe("object", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<typeof fake>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]
       >();
     });
@@ -432,7 +428,7 @@ describe("object", () => {
       >();
     });
 
-    it.failing("mocks nested objects", () => {
+    it("mocks nested objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -467,7 +463,6 @@ describe("object", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<typeof fake>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]
       >();
     });

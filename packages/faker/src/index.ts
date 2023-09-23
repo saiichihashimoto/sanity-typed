@@ -1,5 +1,6 @@
 import { Faker } from "@faker-js/faker";
 import type {
+  IsNumericLiteral,
   IsStringLiteral,
   OmitIndexSignature,
   Simplify,
@@ -191,6 +192,32 @@ type FakerOrFakerFn = Faker | (() => Faker);
 const constantFakers = {
   boolean: (faker: Faker) => faker.datatype.boolean(),
 };
+
+const numberFaker =
+  <TSchemaType extends _SchemaTypeDefinition<"number", number, any>>(
+    schemaType: TSchemaType
+  ) =>
+  (faker: Faker) =>
+    (!schemaType.options?.list?.length
+      ? faker.number.float({
+          min: -50,
+          max: 50,
+        })
+      : faker.helpers.arrayElement(
+          schemaType.options.list.map((maybeTitledListValue) =>
+            typeof maybeTitledListValue === "number"
+              ? maybeTitledListValue
+              : maybeTitledListValue.value!
+          )
+        )) as TSchemaType extends _SchemaTypeDefinition<
+      "number",
+      infer TOptionsHelper,
+      any
+    >
+      ? IsNumericLiteral<TOptionsHelper> extends false
+        ? number
+        : TOptionsHelper
+      : never;
 
 const stringFaker =
   <TSchemaType extends _SchemaTypeDefinition<"string", string, any>>(
@@ -460,6 +487,12 @@ type SchemaTypeToFaker<
   }
 > = TSchemaType["type"] extends keyof typeof constantFakers
   ? (typeof constantFakers)[TSchemaType["type"]]
+  : TSchemaType["type"] extends "number"
+  ? ReturnType<
+      typeof numberFaker<
+        Extract<TSchemaType, _SchemaTypeDefinition<"number", any, any>>
+      >
+    >
   : TSchemaType["type"] extends "string"
   ? ReturnType<
       typeof stringFaker<
@@ -495,6 +528,13 @@ const schemaTypeToFaker = <
     ? constantFakers[
         schema.type as TSchemaType["type"] & keyof typeof constantFakers
       ]
+    : schema.type === "number"
+    ? numberFaker(
+        schema as Extract<
+          TSchemaType,
+          _SchemaTypeDefinition<"number", number, any>
+        >
+      )
     : schema.type === "string"
     ? stringFaker(
         schema as Extract<
