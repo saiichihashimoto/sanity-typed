@@ -85,6 +85,7 @@ describe("reference", () => {
                 defineField({
                   name: "bar",
                   type: "reference",
+                  validation: (Rule) => Rule.required(),
                   to: [{ type: "other" as const }],
                 }),
               ],

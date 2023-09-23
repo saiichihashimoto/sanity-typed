@@ -73,6 +73,7 @@ describe("slug", () => {
                 defineField({
                   name: "bar",
                   type: "slug",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),

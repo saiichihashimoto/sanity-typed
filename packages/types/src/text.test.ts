@@ -46,6 +46,7 @@ describe("text", () => {
                 defineField({
                   name: "bar",
                   type: "text",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),

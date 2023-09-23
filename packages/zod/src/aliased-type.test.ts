@@ -33,6 +33,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -78,6 +79,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -88,6 +90,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "boolean",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -192,6 +195,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "baz",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -202,6 +206,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "foo",
                   type: "foo",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -242,10 +247,7 @@ describe("<alias>", () => {
       // It really is cyclical!
       expect(parsed).toStrictEqual(unparsed);
       expect(
-        zods.foo.shape.bar
-          .unwrap()
-          .schema.shape.baz.unwrap()
-          .schema.shape.foo.unwrap().schema
+        zods.foo.shape.bar.unwrap().schema.shape.baz.schema.shape.foo.schema
       ).toStrictEqual(zods.foo);
       expectType<typeof parsed>().toStrictEqual<
         // @ts-expect-error -- Cyclical typing with zod doesn't seem to work
@@ -266,6 +268,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -283,6 +286,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -327,6 +331,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -344,6 +349,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "plugin2Value",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -402,6 +408,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -446,6 +453,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -456,6 +464,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "boolean",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -558,6 +567,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "baz",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -568,6 +578,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "foo",
                   type: "foo",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -608,10 +619,7 @@ describe("<alias>", () => {
       // It really is cyclical!
       expect(parsed).toStrictEqual(unparsed);
       expect(
-        zods.foo.shape.bar
-          .unwrap()
-          .schema.shape.baz.unwrap()
-          .schema.shape.foo.unwrap().schema
+        zods.foo.shape.bar.unwrap().schema.shape.baz.schema.shape.foo.schema
       ).toStrictEqual(zods.foo);
       expectType<typeof parsed>().toStrictEqual<
         // @ts-expect-error -- Cyclical typing with zod doesn't seem to work
@@ -631,6 +639,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -648,6 +657,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -691,6 +701,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -708,6 +719,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "plugin2Value",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),

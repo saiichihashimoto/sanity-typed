@@ -58,6 +58,7 @@ describe("date", () => {
                 defineField({
                   name: "bar",
                   type: "date",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),

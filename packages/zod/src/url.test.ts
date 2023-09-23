@@ -58,6 +58,7 @@ describe("url", () => {
                 defineField({
                   name: "bar",
                   type: "url",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),

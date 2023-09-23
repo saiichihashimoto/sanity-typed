@@ -114,6 +114,7 @@ describe("crossDatasetReference", () => {
                 defineField({
                   name: "bar",
                   type: "crossDatasetReference",
+                  validation: (Rule) => Rule.required(),
                   to: [],
                   dataset: "dataset",
                 }),

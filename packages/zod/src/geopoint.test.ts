@@ -108,6 +108,7 @@ describe("geopoint", () => {
                 defineField({
                   name: "bar",
                   type: "geopoint",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),

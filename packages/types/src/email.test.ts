@@ -46,6 +46,7 @@ describe("email", () => {
                 defineField({
                   name: "bar",
                   type: "email",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),

@@ -46,6 +46,7 @@ describe("datetime", () => {
                 defineField({
                   name: "bar",
                   type: "datetime",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
