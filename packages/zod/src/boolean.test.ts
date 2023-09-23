@@ -58,6 +58,7 @@ describe("boolean", () => {
                 defineField({
                   name: "bar",
                   type: "boolean",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),

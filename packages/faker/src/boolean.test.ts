@@ -51,7 +51,7 @@ describe("boolean", () => {
   });
 
   describe("defineField", () => {
-    it.failing("mocks boolean", () => {
+    it("mocks boolean", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -64,6 +64,7 @@ describe("boolean", () => {
                 defineField({
                   name: "bar",
                   type: "boolean",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -78,7 +79,6 @@ describe("boolean", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)["bar"]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });

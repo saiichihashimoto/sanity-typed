@@ -91,6 +91,7 @@ describe("string", () => {
                 defineField({
                   name: "bar",
                   type: "string",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -125,6 +126,7 @@ describe("string", () => {
                 defineField({
                   name: "bar",
                   type: "string",
+                  validation: (Rule) => Rule.required(),
                   options: {
                     list: ["foo", { title: "Bar", value: "bar" }],
                   },

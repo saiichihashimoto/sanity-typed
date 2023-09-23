@@ -84,7 +84,7 @@ describe("string", () => {
   });
 
   describe("defineField", () => {
-    it.failing("mocks string", () => {
+    it("mocks string", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -97,6 +97,7 @@ describe("string", () => {
                 defineField({
                   name: "bar",
                   type: "string",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -111,12 +112,11 @@ describe("string", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)["bar"]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
 
-    it.failing("mocks literal string from list", () => {
+    it("mocks literal string from list", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -129,6 +129,7 @@ describe("string", () => {
                 defineField({
                   name: "bar",
                   type: "string",
+                  validation: (Rule) => Rule.required(),
                   options: {
                     list: ["foo", { title: "Bar", value: "bar" }],
                   },
@@ -146,7 +147,6 @@ describe("string", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)["bar"]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });

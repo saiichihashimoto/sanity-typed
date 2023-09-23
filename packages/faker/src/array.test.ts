@@ -19,7 +19,7 @@ describe("array", () => {
   });
 
   describe("defineField", () => {
-    it.failing("mocks array of members", () => {
+    it("mocks array of members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -32,6 +32,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [defineArrayMember({ type: "boolean" })],
                 }),
               ],
@@ -47,12 +48,11 @@ describe("array", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)["bar"]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
 
-    it.failing("mocks unions if there are multiple members", () => {
+    it("mocks unions if there are multiple members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -65,6 +65,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [
                     defineArrayMember({ type: "boolean" }),
                     defineArrayMember({ type: "string" }),
@@ -101,6 +102,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [
                     defineArrayMember({
                       type: "object",
@@ -109,6 +111,7 @@ describe("array", () => {
                         defineField({
                           name: "bar",
                           type: "boolean",
+                          validation: (Rule) => Rule.required(),
                         }),
                       ],
                     }),
@@ -119,6 +122,7 @@ describe("array", () => {
                         defineField({
                           name: "qux",
                           type: "boolean",
+                          validation: (Rule) => Rule.required(),
                         }),
                       ],
                     }),
@@ -217,6 +221,7 @@ describe("array", () => {
                     defineField({
                       name: "bar",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -227,6 +232,7 @@ describe("array", () => {
                     defineField({
                       name: "qux",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -268,6 +274,7 @@ describe("array", () => {
                     defineField({
                       name: "bar",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),

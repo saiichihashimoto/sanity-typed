@@ -82,7 +82,7 @@ type RuleMap<TType extends IntrinsicTypeName, TReturnType> = {
   ) => TReturnType;
 };
 
-// TODO The returned types are ridiculous
+// FIXME traverseValidation should be replace with something that traverses validation and returns an object of the called values
 const traverseValidation = <
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TReturnType
@@ -871,16 +871,19 @@ const fieldsZods = <
   Object.fromEntries(
     (
       fields as _FieldDefinition<any, any, any, any, any, any, any, any, any>[]
-    ).map((field) => [
-      field.name,
-      isFieldRequired(field)
-        ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-          schemaTypeToZod(field, getZods)
-        : z.optional(
-            // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-            schemaTypeToZod(field, getZods)
-          ),
-    ])
+    ).map(
+      (field) =>
+        [
+          field.name,
+          isFieldRequired(field)
+            ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+              schemaTypeToZod(field, getZods)
+            : z.optional(
+                // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+                schemaTypeToZod(field, getZods)
+              ),
+        ] as const
+    )
   ) as FieldsZods<TSchemaType, TAliasedZods>;
 
 type ObjectZod<

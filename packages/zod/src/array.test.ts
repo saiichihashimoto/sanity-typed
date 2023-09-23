@@ -26,6 +26,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [defineArrayMember({ type: "boolean" })],
                 }),
               ],
@@ -61,6 +62,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [
                     defineArrayMember({ type: "boolean" }),
                     defineArrayMember({ type: "string" }),
@@ -99,6 +101,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [
                     defineArrayMember({
                       type: "object",
@@ -107,6 +110,7 @@ describe("array", () => {
                         defineField({
                           name: "bar",
                           type: "boolean",
+                          validation: (Rule) => Rule.required(),
                         }),
                       ],
                     }),
@@ -117,6 +121,7 @@ describe("array", () => {
                         defineField({
                           name: "qux",
                           type: "boolean",
+                          validation: (Rule) => Rule.required(),
                         }),
                       ],
                     }),
@@ -219,6 +224,7 @@ describe("array", () => {
                     defineField({
                       name: "bar",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -229,6 +235,7 @@ describe("array", () => {
                     defineField({
                       name: "qux",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -272,6 +279,7 @@ describe("array", () => {
                     defineField({
                       name: "bar",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
