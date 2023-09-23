@@ -397,18 +397,15 @@ const arrayFaker = <
 >(
   schemaType: TSchemaType,
   getFakers: () => TAliasedFakers
-): ArrayFaker<TSchemaType, TAliasedFakers> => {
-  type TMemberDefinitions = TSchemaType extends {
-    of: infer TMemberDefinitionsInner;
-  }
-    ? TMemberDefinitionsInner
-    : never;
-
-  return membersFaker(
-    schemaType.of as TMemberDefinitions,
+): ArrayFaker<TSchemaType, TAliasedFakers> =>
+  membersFaker(
+    schemaType.of as TSchemaType extends {
+      of: infer TMemberDefinitionsInner;
+    }
+      ? TMemberDefinitionsInner
+      : never,
     getFakers
   ) as ArrayFaker<TSchemaType, TAliasedFakers>;
-};
 
 const isFieldRequired = (
   field: _FieldDefinition<any, any, any, any, any, any, any, any, any>
