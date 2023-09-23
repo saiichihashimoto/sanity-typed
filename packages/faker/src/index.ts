@@ -269,6 +269,23 @@ const addType =
       : Omit<ReturnType<Fn>, "_type"> & { _type: Type };
   };
 
+const addKey =
+  <Fn extends (faker: Faker) => any>(fn: Fn) =>
+  (faker: Faker) => {
+    const value = fn(faker);
+
+    return (
+      Array.isArray(value)
+        ? value
+        : // HACK
+        typeof value !== "object"
+        ? value
+        : { ...value, _key: faker.database.mongodbObjectId() }
+    ) as IsObject<ReturnType<Fn>> extends false
+      ? ReturnType<Fn>
+      : Omit<ReturnType<Fn>, "_key"> & { _key: string };
+  };
+
 type MembersFaker<
   TMemberDefinitions extends _ArrayMemberDefinition<
     any,
@@ -286,9 +303,15 @@ type MembersFaker<
   }
 > = (
   faker: Faker
-) => ReturnType<
-  SchemaTypeToFaker<TMemberDefinitions[number], TAliasedFakers>
->[];
+) => TMemberDefinitions[number] extends never
+  ? never
+  : ReturnType<
+      ReturnType<
+        typeof addKey<
+          SchemaTypeToFaker<TMemberDefinitions[number], TAliasedFakers>
+        >
+      >
+    >[];
 
 const membersFaker = <
   TMemberDefinitions extends _ArrayMemberDefinition<
@@ -312,10 +335,11 @@ const membersFaker = <
   const memberFakers = members.map(
     (
       member: TMemberDefinitions[number] // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-    ) => schemaTypeToFaker(member, getFakers)
+    ) => addKey(schemaTypeToFaker(member, getFakers))
   );
 
   return (faker) =>
+    // @ts-expect-error -- FIXME
     Array.from({ length: faker.number.int({ min: 1, max: 5 }) })
       .map(
         () =>

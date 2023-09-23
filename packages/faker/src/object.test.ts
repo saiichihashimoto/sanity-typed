@@ -19,7 +19,7 @@ describe("object", () => {
   });
 
   describe("defineArrayMember", () => {
-    it.failing("mocks object with fields", () => {
+    it("mocks object with fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -55,7 +55,6 @@ describe("object", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)[number]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
@@ -102,7 +101,7 @@ describe("object", () => {
       >();
     });
 
-    it.failing("mocks required fields", () => {
+    it("mocks required fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -135,12 +134,11 @@ describe("object", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)[number]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
 
-    it.failing("mocks nested objects", () => {
+    it("mocks nested objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -180,7 +178,6 @@ describe("object", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)[number]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
