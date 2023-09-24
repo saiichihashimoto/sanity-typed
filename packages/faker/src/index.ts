@@ -58,6 +58,20 @@ type FakerOrFakerFn = Faker | (() => Faker);
 
 const constantFakers = {
   boolean: (faker: Faker) => faker.datatype.boolean(),
+  // TODO crossDatasetReference
+  email: (faker: Faker) => faker.internet.email(),
+  geopoint: (faker: Faker) => ({
+    _type: "geopoint" as const,
+    lat: faker.location.latitude(),
+    lng: faker.location.longitude(),
+    ...(faker.datatype.boolean()
+      ? {}
+      : { alt: faker.number.float({ min: 0, max: 10000, precision: 0.001 }) }),
+  }),
+  slug: (faker: Faker) => ({
+    _type: "slug" as const,
+    current: faker.lorem.slug({ min: 1, max: 3 }),
+  }),
 };
 
 const noInfinity = (value: number) =>
