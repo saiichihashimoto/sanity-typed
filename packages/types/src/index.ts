@@ -189,7 +189,7 @@ export type GeopointDefinition<TRequired extends boolean> = MergeOld<
   DefinitionBase<TRequired, GeopointValue, GeopointRule>
 >;
 
-type MaybeTitledListValue<T> = T | TitledListValue<T>;
+export type MaybeTitledListValue<T> = T | TitledListValue<T>;
 
 export type NumberDefinition<
   TOptionsHelper,

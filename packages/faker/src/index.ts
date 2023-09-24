@@ -6,6 +6,7 @@ import type { IsNumericLiteral, IsStringLiteral, Simplify } from "type-fest";
 
 import { traverseValidation } from "@sanity-typed/traverse-validation";
 import type {
+  MaybeTitledListValue,
   _ArrayMemberDefinition,
   _ConfigBase,
   _FieldDefinition,
@@ -127,6 +128,16 @@ const datetimeFaker = <
   schemaType: TSchemaType
 ) => dateAndDatetimeFaker(schemaType);
 
+// TODO utils
+const typedTernary = <Condition extends boolean, TrueValue, FalseValue>(
+  condition: Condition,
+  ifTrue: () => TrueValue,
+  ifFalse: () => FalseValue
+) =>
+  (condition ? ifTrue() : ifFalse()) as Condition extends true
+    ? TrueValue
+    : FalseValue;
+
 const numberFaker = <
   TSchemaType extends _SchemaTypeDefinition<"number", number, any>
 >(
@@ -158,36 +169,45 @@ const numberFaker = <
   const min = minChosen ?? (maxChosen !== undefined ? maxChosen - 100 : -50);
   const max = maxChosen ?? (minChosen !== undefined ? minChosen + 100 : 50);
 
-  return (faker: Faker) =>
-    (schemaType.options?.list?.length
-      ? faker.helpers.arrayElement(
-          schemaType.options.list.map((maybeTitledListValue) =>
-            typeof maybeTitledListValue === "number"
-              ? maybeTitledListValue
-              : maybeTitledListValue.value!
-          )
+  type TOptionsHelper = TSchemaType extends _SchemaTypeDefinition<
+    "number",
+    infer TOptionsHelper,
+    any
+  >
+    ? TOptionsHelper
+    : never;
+
+  return typedTernary(
+    Boolean(
+      schemaType.options?.list?.length
+    ) as IsNumericLiteral<TOptionsHelper>,
+    () => (faker: Faker) =>
+      faker.helpers.arrayElement(
+        (
+          schemaType.options!.list! as MaybeTitledListValue<TOptionsHelper>[]
+        ).map((maybeTitledListValue) =>
+          typeof maybeTitledListValue === "number"
+            ? maybeTitledListValue
+            : maybeTitledListValue.value!
         )
-      : traversal.integer?.length
-      ? faker.number.int({
-          min,
-          max,
-        })
-      : faker.number.float({
-          min,
-          max,
-          precision: !traversal.precision?.length
-            ? undefined
-            : // TODO Handle multiple precisions, somehow
-              10 ** -(traversal.precision[0]![0]! as number),
-        })) as TSchemaType extends _SchemaTypeDefinition<
-      "number",
-      infer TOptionsHelper,
-      any
-    >
-      ? IsNumericLiteral<TOptionsHelper> extends true
-        ? TOptionsHelper
-        : number
-      : never;
+      ),
+    () =>
+      traversal.integer?.length
+        ? (faker: Faker) =>
+            faker.number.int({
+              min,
+              max,
+            })
+        : (faker: Faker) =>
+            faker.number.float({
+              min,
+              max,
+              precision: !traversal.precision?.length
+                ? undefined
+                : // TODO Handle multiple precisions, somehow
+                  10 ** -(traversal.precision[0]![0]! as number),
+            })
+  );
 };
 
 // TODO referenceFaker
@@ -232,16 +252,17 @@ const stringAndTextFaker = <
     minChosen ?? (maxChosen !== undefined ? Math.max(0, maxChosen - 15) : 5);
   const max = maxChosen ?? (minChosen !== undefined ? minChosen + 15 : 20);
 
-  return (faker: Faker) =>
-    traversal.regex?.length
-      ? randexpWithFaker(
+  return traversal.regex?.length
+    ? (faker: Faker) =>
+        randexpWithFaker(
           faker,
           // TODO Combine multiple regex, somehow
-          traversal.regex[0]![0]
+          traversal.regex![0]![0]
         ).gen()
-      : traversal.email?.length
-      ? faker.internet.email()
-      : flow(
+    : traversal.email?.length
+    ? (faker: Faker) => faker.internet.email()
+    : (faker: Faker) =>
+        flow(
           (value: string) => value,
           (value) =>
             !traversal.uppercase?.length ? value : value.toUpperCase(),
@@ -254,27 +275,32 @@ const stringFaker = <
   TSchemaType extends _SchemaTypeDefinition<"string", string, any>
 >(
   schemaType: TSchemaType
-) =>
-  (schemaType.options?.list?.length
-    ? (faker: Faker) =>
-        faker.helpers.arrayElement(
-          schemaType.options!.list!.map((maybeTitledListValue) =>
-            typeof maybeTitledListValue === "string"
-              ? maybeTitledListValue
-              : maybeTitledListValue.value!
-          )
-        )
-    : stringAndTextFaker(schemaType, (faker) =>
-        faker.lorem.sentence()
-      )) as TSchemaType extends _SchemaTypeDefinition<
+) => {
+  type TOptionsHelper = TSchemaType extends _SchemaTypeDefinition<
     "string",
     infer TOptionsHelper,
     any
   >
-    ? IsStringLiteral<TOptionsHelper> extends true
-      ? (faker: Faker) => TOptionsHelper
-      : ReturnType<typeof stringAndTextFaker<TSchemaType>>
+    ? TOptionsHelper
     : never;
+
+  return typedTernary(
+    Boolean(
+      schemaType.options?.list?.length
+    ) as IsStringLiteral<TOptionsHelper>,
+    () => (faker: Faker) =>
+      faker.helpers.arrayElement(
+        (
+          schemaType.options!.list! as MaybeTitledListValue<TOptionsHelper>[]
+        ).map((maybeTitledListValue) =>
+          typeof maybeTitledListValue === "string"
+            ? maybeTitledListValue
+            : maybeTitledListValue.value!
+        )
+      ),
+    () => stringAndTextFaker(schemaType, (faker) => faker.lorem.sentence())
+  );
+};
 
 const textFaker = <
   TSchemaType extends _SchemaTypeDefinition<"text", string, any>
@@ -429,17 +455,18 @@ const membersFaker = <
     minChosen ?? (maxChosen !== undefined ? Math.max(0, maxChosen - 4) : 1);
   const max = maxChosen ?? (minChosen !== undefined ? minChosen + 4 : 5);
 
-  return (faker) =>
-    // @ts-expect-error -- FIXME
-    traversal.unique?.length
-      ? faker.helpers
+  // @ts-expect-error -- FIXME
+  return traversal.unique?.length
+    ? (faker: Faker) =>
+        faker.helpers
           .uniqueArray(
             () => stringify(memberFaker(faker)),
             faker.number.int({ min, max })
           )
           .map((value) => JSON.parse(value))
           .map((value) => addKey(() => value)(faker))
-      : Array.from({ length: faker.number.int({ min, max }) }).map(() =>
+    : (faker: Faker) =>
+        Array.from({ length: faker.number.int({ min, max }) }).map(() =>
           addKey(memberFaker)(faker)
         );
 };

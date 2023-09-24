@@ -6,6 +6,7 @@ import { traverseValidation } from "@sanity-typed/traverse-validation";
 import { _referenced } from "@sanity-typed/types";
 import type {
   InferSchemaValues,
+  MaybeTitledListValue,
   _ArrayMemberDefinition,
   _ConfigBase,
   _FieldDefinition,
@@ -146,6 +147,15 @@ const datetimeZod = <
   )(z.string());
 };
 
+const typedTernary = <Condition extends boolean, TrueValue, FalseValue>(
+  condition: Condition,
+  ifTrue: () => TrueValue,
+  ifFalse: () => FalseValue
+) =>
+  (condition ? ifTrue() : ifFalse()) as Condition extends true
+    ? TrueValue
+    : FalseValue;
+
 const numberZod = <
   TSchemaType extends _SchemaTypeDefinition<"number", number, any>
 >(
@@ -153,49 +163,55 @@ const numberZod = <
 ) => {
   const traversal = traverseValidation(schemaType);
 
-  return (
-    schemaType.options?.list?.length
-      ? zodUnion(
-          schemaType.options.list.map((maybeTitledListValue) =>
-            z.literal(
-              typeof maybeTitledListValue === "number"
-                ? maybeTitledListValue
-                : maybeTitledListValue.value!
-            )
-          )
-        )
-      : flow(
-          flow(
-            (zod: z.ZodNumber) => zod,
-            reduceAcc(traversal.min, (zod, [minNumber]) =>
-              zod.min(minNumber as number)
-            ),
-            reduceAcc(traversal.max, (zod, [maxNumber]) =>
-              zod.max(maxNumber as number)
-            ),
-            reduceAcc(traversal.lessThan, (zod, [limit]) =>
-              zod.lt(limit as number)
-            ),
-            reduceAcc(traversal.greaterThan, (zod, [limit]) =>
-              zod.gt(limit as number)
-            ),
-            (zod) => (!traversal.integer?.length ? zod : zod.int()),
-            reduceAcc(traversal.precision, (zod, [limit]) =>
-              zod.multipleOf(1 / 10 ** (limit as number))
-            )
-          ),
-          (zod) => (!traversal.positive?.length ? zod : zod.nonnegative()),
-          (zod) => (!traversal.negative?.length ? zod : zod.negative())
-        )(z.number())
-  ) as TSchemaType extends _SchemaTypeDefinition<
+  type TOptionsHelper = TSchemaType extends _SchemaTypeDefinition<
     "number",
     infer TOptionsHelper,
     any
   >
-    ? IsNumericLiteral<TOptionsHelper> extends true
-      ? z.ZodType<TOptionsHelper>
-      : z.ZodNumber
+    ? TOptionsHelper
     : never;
+
+  return typedTernary(
+    Boolean(
+      schemaType.options?.list?.length
+    ) as IsNumericLiteral<TOptionsHelper>,
+    () =>
+      zodUnion(
+        (
+          schemaType.options!.list! as MaybeTitledListValue<TOptionsHelper>[]
+        ).map((maybeTitledListValue) =>
+          z.literal(
+            typeof maybeTitledListValue === "number"
+              ? maybeTitledListValue
+              : maybeTitledListValue.value!
+          )
+        )
+      ),
+    () =>
+      flow(
+        flow(
+          (zod: z.ZodNumber) => zod,
+          reduceAcc(traversal.min, (zod, [minNumber]) =>
+            zod.min(minNumber as number)
+          ),
+          reduceAcc(traversal.max, (zod, [maxNumber]) =>
+            zod.max(maxNumber as number)
+          ),
+          reduceAcc(traversal.lessThan, (zod, [limit]) =>
+            zod.lt(limit as number)
+          ),
+          reduceAcc(traversal.greaterThan, (zod, [limit]) =>
+            zod.gt(limit as number)
+          ),
+          (zod) => (!traversal.integer?.length ? zod : zod.int()),
+          reduceAcc(traversal.precision, (zod, [limit]) =>
+            zod.multipleOf(1 / 10 ** (limit as number))
+          )
+        ),
+        (zod) => (!traversal.positive?.length ? zod : zod.nonnegative()),
+        (zod) => (!traversal.negative?.length ? zod : zod.negative())
+      )(z.number())
+  );
 };
 
 const referenceZod = <
@@ -309,28 +325,34 @@ const stringZod = <
   TSchemaType extends _SchemaTypeDefinition<"string", string, any>
 >(
   schemaType: TSchemaType
-) =>
-  (schemaType.options?.list?.length
-    ? zodUnion(
-        schemaType.options.list.map((maybeTitledListValue) =>
+) => {
+  type TOptionsHelper = TSchemaType extends _SchemaTypeDefinition<
+    "string",
+    infer TOptionsHelper,
+    any
+  >
+    ? TOptionsHelper
+    : never;
+
+  return typedTernary(
+    Boolean(
+      schemaType.options?.list?.length
+    ) as IsStringLiteral<TOptionsHelper>,
+    () =>
+      zodUnion(
+        (
+          schemaType.options!.list! as MaybeTitledListValue<TOptionsHelper>[]
+        ).map((maybeTitledListValue) =>
           z.literal(
             typeof maybeTitledListValue === "string"
               ? maybeTitledListValue
               : maybeTitledListValue.value!
           )
         )
-      )
-    : stringAndTextZod(
-        schemaType
-      )) as unknown as TSchemaType extends _SchemaTypeDefinition<
-    "string",
-    infer TOptionsHelper,
-    any
-  >
-    ? z.ZodType<
-        IsStringLiteral<TOptionsHelper> extends true ? TOptionsHelper : string
-      >
-    : never;
+      ),
+    () => stringAndTextZod(schemaType)
+  );
+};
 
 const textZod = <
   TSchemaType extends _SchemaTypeDefinition<"text", string, any>
