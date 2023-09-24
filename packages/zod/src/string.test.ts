@@ -344,7 +344,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
-              validation: (Rule) => Rule.regex(/^bar$/),
+              validation: (Rule) => Rule.regex(/^(bar)+$/),
             }),
           ],
         },
@@ -352,7 +352,7 @@ describe("string", () => {
       const zods = _sanityConfigToZods(config);
 
       expect(() => zods.foo.parse("foo")).toThrow(
-        "Does not match /^bar$/-pattern"
+        "Does not match /^(bar)+$/-pattern"
       );
     });
 
@@ -365,7 +365,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
-              validation: (Rule) => Rule.regex(/^bar$/, { name: "bar" }),
+              validation: (Rule) => Rule.regex(/^(bar)+$/, { name: "bar" }),
             }),
           ],
         },
@@ -384,7 +384,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
-              validation: (Rule) => Rule.regex(/^bar$/, "bar"),
+              validation: (Rule) => Rule.regex(/^(bar)+$/, "bar"),
             }),
           ],
         },
@@ -403,7 +403,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
-              validation: (Rule) => Rule.regex(/^bar$/, { invert: true }),
+              validation: (Rule) => Rule.regex(/^(bar)+$/, { invert: true }),
             }),
           ],
         },
@@ -412,7 +412,7 @@ describe("string", () => {
 
       expect(() => zods.foo.parse("foo")).not.toThrow();
       expect(() => zods.foo.parse("bar")).toThrow(
-        "Should not match /^bar$/-pattern"
+        "Should not match /^(bar)+$/-pattern"
       );
     });
 
@@ -426,7 +426,7 @@ describe("string", () => {
               name: "foo",
               type: "string",
               validation: (Rule) =>
-                Rule.regex(/^bar$/, "bar", { invert: true }),
+                Rule.regex(/^(bar)+$/, "bar", { invert: true }),
             }),
           ],
         },

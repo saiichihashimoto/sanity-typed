@@ -23,13 +23,18 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "npm run build -- --no-dts"
   },
   "dependencies": {
+    "@sanity-typed/traverse-validation": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
+    "lodash": "4.17.21",
+    "randexp": "0.5.3",
     "type-fest": "4.3.1"
   },
   "devDependencies": {
@@ -38,6 +43,7 @@
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/zod": "0.0.0-development",
+    "@types/lodash": "4.14.199",
     "typescript": "5.2.2"
   },
   "peerDependencies": {

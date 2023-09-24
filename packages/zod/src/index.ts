@@ -154,8 +154,17 @@ const numberZod = <
   const traversal = traverseValidation(schemaType);
 
   return (
-    !schemaType.options?.list?.length
-      ? flow(
+    schemaType.options?.list?.length
+      ? zodUnion(
+          schemaType.options.list.map((maybeTitledListValue) =>
+            z.literal(
+              typeof maybeTitledListValue === "number"
+                ? maybeTitledListValue
+                : maybeTitledListValue.value!
+            )
+          )
+        )
+      : flow(
           flow(
             (zod: z.ZodNumber) => zod,
             reduceAcc(traversal.min, (zod, [minNumber]) =>
@@ -178,23 +187,14 @@ const numberZod = <
           (zod) => (!traversal.positive?.length ? zod : zod.nonnegative()),
           (zod) => (!traversal.negative?.length ? zod : zod.negative())
         )(z.number())
-      : zodUnion(
-          schemaType.options.list.map((maybeTitledListValue) =>
-            z.literal(
-              typeof maybeTitledListValue === "number"
-                ? maybeTitledListValue
-                : maybeTitledListValue.value!
-            )
-          )
-        )
   ) as TSchemaType extends _SchemaTypeDefinition<
     "number",
     infer TOptionsHelper,
     any
   >
-    ? IsNumericLiteral<TOptionsHelper> extends false
-      ? z.ZodNumber
-      : z.ZodType<TOptionsHelper>
+    ? IsNumericLiteral<TOptionsHelper> extends true
+      ? z.ZodType<TOptionsHelper>
+      : z.ZodNumber
     : never;
 };
 
@@ -310,9 +310,8 @@ const stringZod = <
 >(
   schemaType: TSchemaType
 ) =>
-  (!schemaType.options?.list?.length
-    ? stringAndTextZod(schemaType)
-    : zodUnion(
+  (schemaType.options?.list?.length
+    ? zodUnion(
         schemaType.options.list.map((maybeTitledListValue) =>
           z.literal(
             typeof maybeTitledListValue === "string"
@@ -320,13 +319,16 @@ const stringZod = <
               : maybeTitledListValue.value!
           )
         )
+      )
+    : stringAndTextZod(
+        schemaType
       )) as unknown as TSchemaType extends _SchemaTypeDefinition<
     "string",
     infer TOptionsHelper,
     any
   >
     ? z.ZodType<
-        IsStringLiteral<TOptionsHelper> extends false ? string : TOptionsHelper
+        IsStringLiteral<TOptionsHelper> extends true ? TOptionsHelper : string
       >
     : never;
 

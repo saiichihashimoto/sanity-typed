@@ -245,7 +245,7 @@ describe("text", () => {
             defineType({
               name: "foo",
               type: "text",
-              validation: (Rule) => Rule.regex(/^bar$/),
+              validation: (Rule) => Rule.regex(/^(bar)+$/),
             }),
           ],
         },
@@ -253,7 +253,7 @@ describe("text", () => {
       const zods = _sanityConfigToZods(config);
 
       expect(() => zods.foo.parse("foo")).toThrow(
-        "Does not match /^bar$/-pattern"
+        "Does not match /^(bar)+$/-pattern"
       );
     });
 
@@ -266,7 +266,7 @@ describe("text", () => {
             defineType({
               name: "foo",
               type: "text",
-              validation: (Rule) => Rule.regex(/^bar$/, { name: "bar" }),
+              validation: (Rule) => Rule.regex(/^(bar)+$/, { name: "bar" }),
             }),
           ],
         },
@@ -285,7 +285,7 @@ describe("text", () => {
             defineType({
               name: "foo",
               type: "text",
-              validation: (Rule) => Rule.regex(/^bar$/, "bar"),
+              validation: (Rule) => Rule.regex(/^(bar)+$/, "bar"),
             }),
           ],
         },
@@ -304,7 +304,7 @@ describe("text", () => {
             defineType({
               name: "foo",
               type: "text",
-              validation: (Rule) => Rule.regex(/^bar$/, { invert: true }),
+              validation: (Rule) => Rule.regex(/^(bar)+$/, { invert: true }),
             }),
           ],
         },
@@ -313,7 +313,7 @@ describe("text", () => {
 
       expect(() => zods.foo.parse("foo")).not.toThrow();
       expect(() => zods.foo.parse("bar")).toThrow(
-        "Should not match /^bar$/-pattern"
+        "Should not match /^(bar)+$/-pattern"
       );
     });
 
@@ -327,7 +327,7 @@ describe("text", () => {
               name: "foo",
               type: "text",
               validation: (Rule) =>
-                Rule.regex(/^bar$/, "bar", { invert: true }),
+                Rule.regex(/^(bar)+$/, "bar", { invert: true }),
             }),
           ],
         },

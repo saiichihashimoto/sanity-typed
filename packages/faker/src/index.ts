@@ -1,18 +1,13 @@
 import { Faker } from "@faker-js/faker";
-import type {
-  IsNumericLiteral,
-  IsStringLiteral,
-  OmitIndexSignature,
-  Simplify,
-  UnionToIntersection,
-} from "type-fest";
+import { flow } from "lodash/fp";
+import RandExp from "randexp";
+import type { IsNumericLiteral, IsStringLiteral, Simplify } from "type-fest";
 
+import { traverseValidation } from "@sanity-typed/traverse-validation";
 import type {
-  IntrinsicTypeName,
   _ArrayMemberDefinition,
   _ConfigBase,
   _FieldDefinition,
-  _GetOriginalRule,
   _TypeDefinition,
 } from "@sanity-typed/types";
 
@@ -58,135 +53,6 @@ type _SchemaTypeDefinition<
       any
     >;
 
-type RuleOf<TSchemaType extends _SchemaTypeDefinition<any, any, any>> =
-  _GetOriginalRule<TSchemaType>;
-
-type RuleMap<TType extends IntrinsicTypeName, TReturnType> = {
-  [TName in keyof OmitIndexSignature<
-    UnionToIntersection<
-      RuleOf<_SchemaTypeDefinition<IntrinsicTypeName, any, any>>
-    >
-  >]?: (
-    current: TReturnType,
-    args: RuleOf<_SchemaTypeDefinition<TType, any, any>> extends {
-      [name in TName]: (...args: infer TArgs) => any;
-    }
-      ? TArgs
-      : never
-  ) => TReturnType;
-};
-
-// FIXME traverseValidation should be replace with something that traverses validation and returns an object of the called values
-const traverseValidation = <
-  TSchemaType extends _SchemaTypeDefinition<any, any, any>,
-  TReturnType
->(
-  { validation }: TSchemaType,
-  initialValue: TReturnType,
-  ruleMap: RuleMap<TSchemaType["type"], TReturnType>,
-  defaultFn: (current: TReturnType) => TReturnType = (current) => current
-) => {
-  /* eslint-disable fp/no-let,fp/no-mutation,fp/no-unused-expression -- mutation */
-  let value = initialValue;
-
-  const rule = {
-    custom: (...args: any[]) => {
-      value = ruleMap?.custom?.(value, args as any) ?? value;
-      return rule;
-    },
-    email: (...args: any[]) => {
-      value = ruleMap?.email?.(value, args as any) ?? value;
-      return rule;
-    },
-    error: (...args: any[]) => {
-      value = ruleMap?.error?.(value, args as any) ?? value;
-      return rule;
-    },
-    greaterThan: (...args: any[]) => {
-      value = ruleMap?.greaterThan?.(value, args as any) ?? value;
-      return rule;
-    },
-    integer: (...args: any[]) => {
-      value = ruleMap?.integer?.(value, args as any) ?? value;
-      return rule;
-    },
-    length: (...args: any[]) => {
-      value = ruleMap?.length?.(value, args as any) ?? value;
-      return rule;
-    },
-    lessThan: (...args: any[]) => {
-      value = ruleMap?.lessThan?.(value, args as any) ?? value;
-      return rule;
-    },
-    lowercase: (...args: any[]) => {
-      value = ruleMap?.lowercase?.(value, args as any) ?? value;
-      return rule;
-    },
-    max: (...args: any[]) => {
-      value = ruleMap?.max?.(value, args as any) ?? value;
-      return rule;
-    },
-    min: (...args: any[]) => {
-      value = ruleMap?.min?.(value, args as any) ?? value;
-      return rule;
-    },
-    negative: (...args: any[]) => {
-      value = ruleMap?.negative?.(value, args as any) ?? value;
-      return rule;
-    },
-    positive: (...args: any[]) => {
-      value = ruleMap?.positive?.(value, args as any) ?? value;
-      return rule;
-    },
-    precision: (...args: any[]) => {
-      value = ruleMap?.precision?.(value, args as any) ?? value;
-      return rule;
-    },
-    regex: (...args: any[]) => {
-      value = ruleMap?.regex?.(value, args as any) ?? value;
-      return rule;
-    },
-    required: (...args: any[]) => {
-      value = ruleMap?.required?.(value, args as any) ?? value;
-      return rule;
-    },
-    unique: (...args: any[]) => {
-      value = ruleMap?.unique?.(value, args as any) ?? value;
-      return rule;
-    },
-    uppercase: (...args: any[]) => {
-      value = ruleMap?.uppercase?.(value, args as any) ?? value;
-      return rule;
-    },
-    uri: (...args: any[]) => {
-      value = ruleMap?.uri?.(value, args as any) ?? value;
-      return rule;
-    },
-    valueOfField: () => ({
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/336
-      path: "",
-      type: Symbol("TODO"),
-    }),
-    warning: (...args: any[]) => {
-      value = ruleMap?.warning?.(value, args as any) ?? value;
-      return rule;
-    },
-  } as unknown as RuleOf<_SchemaTypeDefinition<IntrinsicTypeName, any, any>>;
-
-  validation?.(
-    // @ts-expect-error -- TODO Honestly, idk
-    rule
-  );
-
-  if (value === initialValue) {
-    value = defaultFn?.(value) ?? value;
-  }
-
-  /* eslint-enable fp/no-let,fp/no-mutation,fp/no-unused-expression */
-
-  return value;
-};
-
 type FakerOrFakerFn = Faker | (() => Faker);
 
 const constantFakers = {
@@ -198,52 +64,110 @@ const numberFaker =
     schemaType: TSchemaType
   ) =>
   (faker: Faker) =>
-    (!schemaType.options?.list?.length
-      ? faker.number.float({
-          min: -50,
-          max: 50,
-        })
-      : faker.helpers.arrayElement(
+    (schemaType.options?.list?.length
+      ? faker.helpers.arrayElement(
           schemaType.options.list.map((maybeTitledListValue) =>
             typeof maybeTitledListValue === "number"
               ? maybeTitledListValue
               : maybeTitledListValue.value!
           )
-        )) as TSchemaType extends _SchemaTypeDefinition<
+        )
+      : faker.number.float({
+          min: -50,
+          max: 50,
+        })) as TSchemaType extends _SchemaTypeDefinition<
       "number",
       infer TOptionsHelper,
       any
     >
-      ? IsNumericLiteral<TOptionsHelper> extends false
-        ? number
-        : TOptionsHelper
+      ? IsNumericLiteral<TOptionsHelper> extends true
+        ? TOptionsHelper
+        : number
       : never;
 
-const stringFaker =
-  <TSchemaType extends _SchemaTypeDefinition<"string", string, any>>(
-    schemaType: TSchemaType
-  ) =>
-  (faker: Faker) =>
-    (!schemaType.options?.list?.length
-      ? faker.lorem.words({
-          min: 3,
-          max: 10,
-        })
-      : faker.helpers.arrayElement(
+const noInfinity = (value: number) =>
+  value === Number.POSITIVE_INFINITY || value === Number.NEGATIVE_INFINITY
+    ? undefined
+    : value;
+
+const randexpWithFaker = (faker: Faker, regex: RegExp) => {
+  const randexp = new RandExp(regex);
+
+  // eslint-disable-next-line fp/no-mutation -- https://www.npmjs.com/package/randexp#custom-prng
+  randexp.randInt = (min: number, max: number) =>
+    faker.number.int({ min, max });
+
+  return randexp;
+};
+
+const stringFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"string", string, any>
+>(
+  schemaType: TSchemaType
+) => {
+  const traversal = traverseValidation(schemaType);
+
+  const length = traversal.length?.[0]?.[0] as number | undefined;
+
+  const minChosen =
+    length ??
+    noInfinity(
+      Math.max(
+        ...(traversal.min ?? []).map(([minNumber]) => minNumber as number)
+      )
+    );
+  const maxChosen =
+    length ??
+    noInfinity(
+      Math.min(
+        ...(traversal.max ?? []).map(([maxNumber]) => maxNumber as number)
+      )
+    );
+
+  const min =
+    minChosen ?? (maxChosen !== undefined ? Math.max(0, maxChosen - 15) : 5);
+  const max = maxChosen ?? (minChosen !== undefined ? minChosen + 15 : 20);
+
+  return (faker: Faker) =>
+    (schemaType.options?.list?.length
+      ? faker.helpers.arrayElement(
           schemaType.options.list.map((maybeTitledListValue) =>
             typeof maybeTitledListValue === "string"
               ? maybeTitledListValue
               : maybeTitledListValue.value!
           )
+        )
+      : traversal.regex?.length
+      ? randexpWithFaker(
+          faker,
+          // TODO Combine multiple regex, somehow
+          traversal.regex[0]![0]
+        ).gen()
+      : traversal.email?.length
+      ? faker.internet.email()
+      : flow(
+          (value: string) => value,
+          (value) =>
+            !traversal.uppercase?.length ? value : value.toUpperCase(),
+          (value) =>
+            !traversal.lowercase?.length ? value : value.toLowerCase()
+        )(
+          faker.string.alpha({
+            length: {
+              min,
+              max,
+            },
+          })
         )) as TSchemaType extends _SchemaTypeDefinition<
       "string",
       infer TOptionsHelper,
       any
     >
-      ? IsStringLiteral<TOptionsHelper> extends false
-        ? string
-        : TOptionsHelper
+      ? IsStringLiteral<TOptionsHelper> extends true
+        ? TOptionsHelper
+        : string
       : never;
+};
 
 const addType =
   <const Type extends string | undefined, Fn extends (faker: Faker) => any>(
@@ -407,13 +331,6 @@ const arrayFaker = <
     getFakers
   ) as ArrayFaker<TSchemaType, TAliasedFakers>;
 
-const isFieldRequired = (
-  field: _FieldDefinition<any, any, any, any, any, any, any, any, any>
-): field is _FieldDefinition<any, any, any, any, any, any, any, any, true> =>
-  traverseValidation(field, false as boolean, {
-    required: () => true,
-  });
-
 type FieldsFaker<
   TSchemaType extends _SchemaTypeDefinition<
     "document" | "file" | "image" | "object",
@@ -482,7 +399,7 @@ const fieldsFaker = <
     (field) =>
       [
         field.name as string,
-        isFieldRequired(field)
+        traverseValidation(field).required?.length
           ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
             schemaTypeToFaker(field, getFakers)
           : (faker: Faker) =>

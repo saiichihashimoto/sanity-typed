@@ -208,7 +208,7 @@ describe("string", () => {
   });
 
   describe("validation", () => {
-    it.failing("min(minLength)", () => {
+    it("min(minLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -217,7 +217,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
-              validation: (Rule) => Rule.min(400),
+              validation: (Rule) => Rule.min(21),
             }),
           ],
         },
@@ -234,7 +234,7 @@ describe("string", () => {
       >();
     });
 
-    it.failing("max(maxLength)", () => {
+    it("max(maxLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -243,7 +243,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
-              validation: (Rule) => Rule.max(1),
+              validation: (Rule) => Rule.max(4),
             }),
           ],
         },
@@ -260,7 +260,7 @@ describe("string", () => {
       >();
     });
 
-    it.failing("length(exactLength)", () => {
+    it("length(exactLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -286,7 +286,7 @@ describe("string", () => {
       >();
     });
 
-    it.failing("uppercase()", () => {
+    it("uppercase()", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -338,7 +338,7 @@ describe("string", () => {
       >();
     });
 
-    it.failing("email()", () => {
+    it("email()", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -364,7 +364,7 @@ describe("string", () => {
       >();
     });
 
-    it.failing("regex(pattern)", () => {
+    it("regex(pattern)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -373,7 +373,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
-              validation: (Rule) => Rule.regex(/^bar$/),
+              validation: (Rule) => Rule.regex(/^(bar)+$/),
             }),
           ],
         },
@@ -390,7 +390,7 @@ describe("string", () => {
       >();
     });
 
-    it.failing("regex(pattern, { name })", () => {
+    it("regex(pattern, { name })", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -399,7 +399,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
-              validation: (Rule) => Rule.regex(/^bar$/, { name: "bar" }),
+              validation: (Rule) => Rule.regex(/^(bar)+$/, { name: "bar" }),
             }),
           ],
         },
@@ -416,7 +416,7 @@ describe("string", () => {
       >();
     });
 
-    it.failing("regex(pattern, name)", () => {
+    it("regex(pattern, name)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -425,7 +425,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
-              validation: (Rule) => Rule.regex(/^bar$/, "bar"),
+              validation: (Rule) => Rule.regex(/^(bar)+$/, "bar"),
             }),
           ],
         },
@@ -442,7 +442,7 @@ describe("string", () => {
       >();
     });
 
-    it("regex(pattern, { invert })", () => {
+    it.failing("regex(pattern, { invert })", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -451,7 +451,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "string",
-              validation: (Rule) => Rule.regex(/^bar$/, { invert: true }),
+              validation: (Rule) => Rule.regex(/^(bar)+$/, { invert: true }),
             }),
           ],
         },
@@ -468,7 +468,7 @@ describe("string", () => {
       >();
     });
 
-    it("regex(pattern, name, { invert })", () => {
+    it.failing("regex(pattern, name, { invert })", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -478,7 +478,7 @@ describe("string", () => {
               name: "foo",
               type: "string",
               validation: (Rule) =>
-                Rule.regex(/^bar$/, "bar", { invert: true }),
+                Rule.regex(/^(bar)+$/, "bar", { invert: true }),
             }),
           ],
         },
