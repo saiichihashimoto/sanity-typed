@@ -234,7 +234,7 @@ describe("number", () => {
       >();
     });
 
-    it.failing("max(maxNumber)", () => {
+    it("max(maxNumber)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -260,7 +260,7 @@ describe("number", () => {
       >();
     });
 
-    it.failing("lessThan(limit)", () => {
+    it("lessThan(limit)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -312,7 +312,7 @@ describe("number", () => {
       >();
     });
 
-    it.failing("integer()", () => {
+    it("integer()", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -338,7 +338,7 @@ describe("number", () => {
       >();
     });
 
-    it.failing("precision(limit)", () => {
+    it("precision(limit)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -347,7 +347,7 @@ describe("number", () => {
             defineType({
               name: "foo",
               type: "number",
-              validation: (Rule) => Rule.precision(1),
+              validation: (Rule) => Rule.precision(3),
             }),
           ],
         },
@@ -390,7 +390,7 @@ describe("number", () => {
       >();
     });
 
-    it.failing("negative()", () => {
+    it("negative()", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",

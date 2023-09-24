@@ -252,7 +252,7 @@ describe("array", () => {
   });
 
   describe("validation", () => {
-    it.failing("unique()", () => {
+    it("unique()", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -261,7 +261,7 @@ describe("array", () => {
             defineType({
               name: "foo",
               type: "array",
-              validation: (Rule) => Rule.unique(),
+              validation: (Rule) => Rule.unique().length(4),
               of: [
                 defineArrayMember({
                   type: "object",
@@ -269,6 +269,11 @@ describe("array", () => {
                   fields: [
                     defineField({
                       name: "bar",
+                      type: "boolean",
+                      validation: (Rule) => Rule.required(),
+                    }),
+                    defineField({
+                      name: "baz",
                       type: "boolean",
                       validation: (Rule) => Rule.required(),
                     }),
@@ -291,7 +296,7 @@ describe("array", () => {
       >();
     });
 
-    it.failing("min(minLength)", () => {
+    it("min(minLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -318,7 +323,7 @@ describe("array", () => {
       >();
     });
 
-    it.failing("max(maxLength)", () => {
+    it("max(maxLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -345,7 +350,7 @@ describe("array", () => {
       >();
     });
 
-    it.failing("length(exactLength)", () => {
+    it("length(exactLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
