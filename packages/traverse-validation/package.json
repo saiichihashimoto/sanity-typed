@@ -1,0 +1,27 @@
+{
+  "name": "@sanity-typed/traverse-validation",
+  "version": "0.0.0-development",
+  "private": true,
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/saiichihashimoto"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "npm run build -- --no-dts"
+  },
+  "dependencies": {
+    "@sanity-typed/types": "0.0.0-development",
+    "type-fest": "4.3.1"
+  },
+  "devDependencies": {
+    "@jest/globals": "29.7.0",
+    "@sanity-typed/tsconfig": "0.0.0-development",
+    "typescript": "5.2.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.4"
+  }
+}

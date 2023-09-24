@@ -1,15 +1,11 @@
-import type {
-  IsNumericLiteral,
-  IsStringLiteral,
-  OmitIndexSignature,
-  UnionToIntersection,
-} from "type-fest";
+import { flow, reduce } from "lodash/fp";
+import type { IsNumericLiteral, IsStringLiteral } from "type-fest";
 import { z } from "zod";
 
+import { traverseValidation } from "@sanity-typed/traverse-validation";
 import { _referenced } from "@sanity-typed/types";
 import type {
   InferSchemaValues,
-  IntrinsicTypeName,
   _ArrayMemberDefinition,
   _ConfigBase,
   _FieldDefinition,
@@ -64,135 +60,6 @@ const zodUnion = <Zods extends z.ZodTypeAny[]>(types: Zods) =>
         types as unknown as [Zods[number], Zods[number], ...Zods[number][]]
       );
 
-type RuleOf<TSchemaType extends _SchemaTypeDefinition<any, any, any>> =
-  _GetOriginalRule<TSchemaType>;
-
-type RuleMap<TType extends IntrinsicTypeName, TReturnType> = {
-  [TName in keyof OmitIndexSignature<
-    UnionToIntersection<
-      RuleOf<_SchemaTypeDefinition<IntrinsicTypeName, any, any>>
-    >
-  >]?: (
-    current: TReturnType,
-    args: RuleOf<_SchemaTypeDefinition<TType, any, any>> extends {
-      [name in TName]: (...args: infer TArgs) => any;
-    }
-      ? TArgs
-      : never
-  ) => TReturnType;
-};
-
-// FIXME traverseValidation should be replace with something that traverses validation and returns an object of the called values
-const traverseValidation = <
-  TSchemaType extends _SchemaTypeDefinition<any, any, any>,
-  TReturnType
->(
-  { validation }: TSchemaType,
-  initialValue: TReturnType,
-  ruleMap: RuleMap<TSchemaType["type"], TReturnType>,
-  defaultFn: (current: TReturnType) => TReturnType = (current) => current
-) => {
-  /* eslint-disable fp/no-let,fp/no-mutation,fp/no-unused-expression -- mutation */
-  let value = initialValue;
-
-  const rule = {
-    custom: (...args: any[]) => {
-      value = ruleMap?.custom?.(value, args as any) ?? value;
-      return rule;
-    },
-    email: (...args: any[]) => {
-      value = ruleMap?.email?.(value, args as any) ?? value;
-      return rule;
-    },
-    error: (...args: any[]) => {
-      value = ruleMap?.error?.(value, args as any) ?? value;
-      return rule;
-    },
-    greaterThan: (...args: any[]) => {
-      value = ruleMap?.greaterThan?.(value, args as any) ?? value;
-      return rule;
-    },
-    integer: (...args: any[]) => {
-      value = ruleMap?.integer?.(value, args as any) ?? value;
-      return rule;
-    },
-    length: (...args: any[]) => {
-      value = ruleMap?.length?.(value, args as any) ?? value;
-      return rule;
-    },
-    lessThan: (...args: any[]) => {
-      value = ruleMap?.lessThan?.(value, args as any) ?? value;
-      return rule;
-    },
-    lowercase: (...args: any[]) => {
-      value = ruleMap?.lowercase?.(value, args as any) ?? value;
-      return rule;
-    },
-    max: (...args: any[]) => {
-      value = ruleMap?.max?.(value, args as any) ?? value;
-      return rule;
-    },
-    min: (...args: any[]) => {
-      value = ruleMap?.min?.(value, args as any) ?? value;
-      return rule;
-    },
-    negative: (...args: any[]) => {
-      value = ruleMap?.negative?.(value, args as any) ?? value;
-      return rule;
-    },
-    positive: (...args: any[]) => {
-      value = ruleMap?.positive?.(value, args as any) ?? value;
-      return rule;
-    },
-    precision: (...args: any[]) => {
-      value = ruleMap?.precision?.(value, args as any) ?? value;
-      return rule;
-    },
-    regex: (...args: any[]) => {
-      value = ruleMap?.regex?.(value, args as any) ?? value;
-      return rule;
-    },
-    required: (...args: any[]) => {
-      value = ruleMap?.required?.(value, args as any) ?? value;
-      return rule;
-    },
-    unique: (...args: any[]) => {
-      value = ruleMap?.unique?.(value, args as any) ?? value;
-      return rule;
-    },
-    uppercase: (...args: any[]) => {
-      value = ruleMap?.uppercase?.(value, args as any) ?? value;
-      return rule;
-    },
-    uri: (...args: any[]) => {
-      value = ruleMap?.uri?.(value, args as any) ?? value;
-      return rule;
-    },
-    valueOfField: () => ({
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/336
-      path: "",
-      type: Symbol("TODO"),
-    }),
-    warning: (...args: any[]) => {
-      value = ruleMap?.warning?.(value, args as any) ?? value;
-      return rule;
-    },
-  } as unknown as RuleOf<_SchemaTypeDefinition<IntrinsicTypeName, any, any>>;
-
-  validation?.(
-    // @ts-expect-error -- TODO Honestly, idk
-    rule
-  );
-
-  if (value === initialValue) {
-    value = defaultFn?.(value) ?? value;
-  }
-
-  /* eslint-enable fp/no-let,fp/no-mutation,fp/no-unused-expression */
-
-  return value;
-};
-
 // TODO https://github.com/sanity-io/sanity/issues/4922
 const emailRegex =
   /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/;
@@ -219,70 +86,108 @@ const constantZods = {
   }),
 };
 
+const reduceAcc =
+  <T, TResult>(
+    collection: T[] | null | undefined,
+    // eslint-disable-next-line promise/prefer-await-to-callbacks -- lodash/fp reorder
+    callback: (prev: TResult, current: T) => TResult
+  ) =>
+  (accumulator: TResult) =>
+    reduce(callback, accumulator, collection);
+
+const toZodType = <T>(zod: z.ZodType<T>) => zod as z.ZodType<T>;
+
 const dateZod = <
   TSchemaType extends _SchemaTypeDefinition<"date", string, any>
 >(
   schemaType: TSchemaType
-) =>
-  traverseValidation(
-    schemaType,
-    z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Invalid date" }),
-    {
-      max: (zod, [maxDate]) =>
-        zod.refine((value) => new Date(value) <= new Date(maxDate as string), {
-          message: `Date must be less than or equal to ${maxDate as string}`,
-        }),
-      min: (zod, [minDate]) =>
-        zod.refine((value) => new Date(value) >= new Date(minDate as string), {
-          message: `Date must be greater than or equal to ${minDate as string}`,
-        }),
-    } as RuleMap<"date", z.ZodType<string>>
-  );
+) => {
+  const traversal = traverseValidation(schemaType);
+
+  return flow(
+    (zod: z.ZodString) =>
+      zod.regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Invalid date" }),
+    toZodType,
+    reduceAcc(traversal.min, (zod, [minDate]) =>
+      zod.refine((value) => new Date(value) >= new Date(minDate as string), {
+        message: `Date must be greater than or equal to ${minDate as string}`,
+      })
+    ),
+    reduceAcc(traversal.max, (zod, [maxDate]) =>
+      zod.refine((value) => new Date(value) <= new Date(maxDate as string), {
+        message: `Date must be less than or equal to ${maxDate as string}`,
+      })
+    )
+  )(z.string());
+};
 
 const datetimeZod = <
   TSchemaType extends _SchemaTypeDefinition<"datetime", string, any>
 >(
   schemaType: TSchemaType
-) =>
-  traverseValidation(schemaType, z.string().datetime(), {
-    max: (zod, [maxDate]) =>
-      zod.refine((value) => new Date(value) <= new Date(maxDate as string), {
-        message: `Datetime must be less than or equal to ${maxDate as string}`,
-      }),
-    min: (zod, [minDate]) =>
+) => {
+  const traversal = traverseValidation(schemaType);
+
+  return flow(
+    (zod: z.ZodString) => zod.datetime(),
+    toZodType,
+    reduceAcc(traversal.min, (zod, [minDate]) =>
       zod.refine((value) => new Date(value) >= new Date(minDate as string), {
-        message: `Datetime must be greater than or equal to ${
+        message: `dDatetime must be greater than or equal to ${
           minDate as string
         }`,
-      }),
-  } as RuleMap<"datetime", z.ZodType<string>>);
+      })
+    ),
+    reduceAcc(traversal.max, (zod, [maxDate]) =>
+      zod.refine((value) => new Date(value) <= new Date(maxDate as string), {
+        message: `dDatetime must be less than or equal to ${maxDate as string}`,
+      })
+    )
+  )(z.string());
+};
 
 const numberZod = <
   TSchemaType extends _SchemaTypeDefinition<"number", number, any>
 >(
   schemaType: TSchemaType
-) =>
-  (!schemaType.options?.list?.length
-    ? traverseValidation(schemaType, z.number(), {
-        greaterThan: (zod, [limit]) => zod.gt(limit as number),
-        integer: (zod) => zod.int(),
-        lessThan: (zod, [limit]) => zod.lt(limit as number),
-        max: (zod, [maxNumber]) => zod.max(maxNumber as number),
-        min: (zod, [minNumber]) => zod.min(minNumber as number),
-        negative: (zod) => zod.negative(),
-        positive: (zod) => zod.nonnegative(),
-        precision: (zod, [limit]) =>
-          zod.multipleOf(1 / 10 ** (limit as number)),
-      } as RuleMap<"number", z.ZodNumber>)
-    : zodUnion(
-        schemaType.options.list.map((maybeTitledListValue) =>
-          z.literal(
-            typeof maybeTitledListValue === "number"
-              ? maybeTitledListValue
-              : maybeTitledListValue.value!
+) => {
+  const traversal = traverseValidation(schemaType);
+
+  return (
+    !schemaType.options?.list?.length
+      ? flow(
+          flow(
+            (zod: z.ZodNumber) => zod,
+            reduceAcc(traversal.min, (zod, [minNumber]) =>
+              zod.min(minNumber as number)
+            ),
+            reduceAcc(traversal.max, (zod, [maxNumber]) =>
+              zod.max(maxNumber as number)
+            ),
+            reduceAcc(traversal.lessThan, (zod, [limit]) =>
+              zod.lt(limit as number)
+            ),
+            reduceAcc(traversal.greaterThan, (zod, [limit]) =>
+              zod.gt(limit as number)
+            ),
+            (zod) => (!traversal.integer?.length ? zod : zod.int()),
+            reduceAcc(traversal.precision, (zod, [limit]) =>
+              zod.multipleOf(1 / 10 ** (limit as number))
+            )
+          ),
+          (zod) => (!traversal.positive?.length ? zod : zod.nonnegative()),
+          (zod) => (!traversal.negative?.length ? zod : zod.negative())
+        )(z.number())
+      : zodUnion(
+          schemaType.options.list.map((maybeTitledListValue) =>
+            z.literal(
+              typeof maybeTitledListValue === "number"
+                ? maybeTitledListValue
+                : maybeTitledListValue.value!
+            )
           )
         )
-      )) as TSchemaType extends _SchemaTypeDefinition<
+  ) as TSchemaType extends _SchemaTypeDefinition<
     "number",
     infer TOptionsHelper,
     any
@@ -291,6 +196,7 @@ const numberZod = <
       ? z.ZodNumber
       : z.ZodType<TOptionsHelper>
     : never;
+};
 
 const referenceZod = <
   TSchemaType extends _SchemaTypeDefinition<"reference", any, any>
@@ -323,52 +229,80 @@ const referenceZod = <
     ),
   });
 
-const zodStringRuleMap: RuleMap<"string" | "text", z.ZodString> = {
-  email: (zod) => zod.regex(emailRegex, { message: "Invalid email" }),
-  length: (zod, [exactLength]) => zod.length(exactLength as number),
-  max: (zod, [maxLength]) => zod.max(maxLength as number),
-  min: (zod, [minLength]) => zod.min(minLength as number),
-  regex: (zod, [pattern, nameOrOptions, optionsMaybe]) => {
-    const [name = pattern.toString(), invert = false] = optionsMaybe
-      ? [nameOrOptions as string, optionsMaybe.invert]
-      : !nameOrOptions
-      ? []
-      : typeof nameOrOptions === "string"
-      ? [nameOrOptions]
-      : [nameOrOptions.name, nameOrOptions.invert];
+const stringAndTextZod = <
+  TSchemaType extends _SchemaTypeDefinition<"string" | "text", string, any>
+>(
+  schemaType: TSchemaType
+) => {
+  const traversal = traverseValidation(schemaType);
 
-    return invert
-      ? // Hack zod.regex can't invert the pattern, so we do a refine
-        zod
-      : zod.regex(pattern, { message: `Does not match ${name}-pattern` });
-  },
-};
+  return flow(
+    flow(
+      (zod: z.ZodString) => zod,
+      reduceAcc(traversal.min, (zod, [minLength]) =>
+        zod.min(minLength as number)
+      ),
+      reduceAcc(traversal.max, (zod, [maxLength]) =>
+        zod.max(maxLength as number)
+      ),
+      reduceAcc(traversal.length, (zod, [exactLength]) =>
+        zod.length(exactLength as number)
+      ),
+      (zod) =>
+        !traversal.email?.length
+          ? zod
+          : zod.regex(emailRegex, { message: "Invalid email" }),
+      reduceAcc(
+        traversal.regex,
+        (zod, [pattern, nameOrOptions, optionsMaybe]) => {
+          const [name = pattern.toString(), invert = false] = optionsMaybe
+            ? [nameOrOptions as string, optionsMaybe.invert]
+            : !nameOrOptions
+            ? []
+            : typeof nameOrOptions === "string"
+            ? [nameOrOptions]
+            : [nameOrOptions.name, nameOrOptions.invert];
 
-const zodTypeStringRuleMap: RuleMap<"string" | "text", z.ZodType<string>> = {
-  lowercase: (zod) =>
-    zod.refine((value) => value === value.toLocaleLowerCase(), {
-      message: "Must be all lowercase letters",
-    }),
-  uppercase: (zod) =>
-    zod.refine((value) => value === value.toLocaleUpperCase(), {
-      message: "Must be all uppercase letters",
-    }),
-  regex: (zod, [pattern, nameOrOptions, optionsMaybe]) => {
-    const [name = pattern.toString(), invert = false] = optionsMaybe
-      ? [nameOrOptions as string, optionsMaybe.invert]
-      : !nameOrOptions
-      ? []
-      : typeof nameOrOptions === "string"
-      ? [nameOrOptions]
-      : [nameOrOptions.name, nameOrOptions.invert];
+          return invert
+            ? // Hack zod.regex can't invert the pattern, so we do a refine
+              zod
+            : zod.regex(pattern, { message: `Does not match ${name}-pattern` });
+        }
+      ),
+      toZodType
+    ),
+    (zod) =>
+      !traversal.uppercase?.length
+        ? zod
+        : zod.refine((value) => value === value.toLocaleUpperCase(), {
+            message: "Must be all uppercase letters",
+          }),
+    (zod) =>
+      !traversal.lowercase?.length
+        ? zod
+        : zod.refine((value) => value === value.toLocaleLowerCase(), {
+            message: "Must be all lowercase letters",
+          }),
+    reduceAcc(
+      traversal.regex,
+      (zod, [pattern, nameOrOptions, optionsMaybe]) => {
+        const [name = pattern.toString(), invert = false] = optionsMaybe
+          ? [nameOrOptions as string, optionsMaybe.invert]
+          : !nameOrOptions
+          ? []
+          : typeof nameOrOptions === "string"
+          ? [nameOrOptions]
+          : [nameOrOptions.name, nameOrOptions.invert];
 
-    return !invert
-      ? // Hack zod.regex can't invert the pattern, so we do a refine
-        zod
-      : zod.refine((value) => !pattern.test(value), {
-          message: `Should not match ${name}-pattern`,
-        });
-  },
+        return !invert
+          ? // Hack zod.regex can't invert the pattern, so we do a refine
+            zod
+          : zod.refine((value) => !pattern.test(value), {
+              message: `Should not match ${name}-pattern`,
+            });
+      }
+    )
+  )(z.string());
 };
 
 const stringZod = <
@@ -377,11 +311,7 @@ const stringZod = <
   schemaType: TSchemaType
 ) =>
   (!schemaType.options?.list?.length
-    ? traverseValidation(
-        schemaType,
-        traverseValidation(schemaType, z.string(), zodStringRuleMap),
-        zodTypeStringRuleMap
-      )
+    ? stringAndTextZod(schemaType)
     : zodUnion(
         schemaType.options.list.map((maybeTitledListValue) =>
           z.literal(
@@ -390,7 +320,7 @@ const stringZod = <
               : maybeTitledListValue.value!
           )
         )
-      )) as TSchemaType extends _SchemaTypeDefinition<
+      )) as unknown as TSchemaType extends _SchemaTypeDefinition<
     "string",
     infer TOptionsHelper,
     any
@@ -404,89 +334,79 @@ const textZod = <
   TSchemaType extends _SchemaTypeDefinition<"text", string, any>
 >(
   schemaType: TSchemaType
-) =>
-  traverseValidation(
-    schemaType,
-    traverseValidation(schemaType, z.string(), zodStringRuleMap),
-    zodTypeStringRuleMap
-  );
+) => stringAndTextZod(schemaType);
 
 const DUMMY_ORIGIN = "http://sanity";
-
-// https://github.com/sanity-io/sanity/blob/6020a46588ffd324e233b45eaf526a58652c62f2/packages/sanity/src/core/validation/validators/stringValidator.ts#L37
-const urlRuleMap: RuleMap<"url", z.ZodType<string>> = {
-  uri: (
-    zod,
-    [
-      {
-        allowRelative: allowRelativeRaw = false,
-        allowCredentials = false,
-        relativeOnly = false,
-        scheme = ["http", "https"],
-      },
-    ]
-  ) =>
-    zod.superRefine((value, ctx) => {
-      /* eslint-disable fp/no-unused-expression -- zod.superRefine */
-      const allowRelative = allowRelativeRaw || relativeOnly;
-
-      // eslint-disable-next-line fp/no-let -- using new URL
-      let url: URL;
-      try {
-        // eslint-disable-next-line fp/no-mutation -- using new URL
-        url = allowRelative ? new URL(value, DUMMY_ORIGIN) : new URL(value);
-      } catch {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Not a valid URL",
-        });
-
-        return z.NEVER;
-      }
-
-      if (relativeOnly && url.origin !== DUMMY_ORIGIN) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Only relative URLs are allowed",
-        });
-      }
-
-      if (!allowCredentials && (url.username || url.password)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Username/password not allowed",
-        });
-      }
-
-      const urlScheme = url.protocol.replace(/:$/, "");
-      if (
-        !(Array.isArray(scheme) ? scheme : [scheme]).some((scheme) =>
-          typeof scheme === "string"
-            ? urlScheme.startsWith(scheme)
-            : scheme.test(urlScheme)
-        )
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Does not match allowed protocols/schemes",
-        });
-      }
-
-      return z.NEVER;
-
-      /* eslint-enable fp/no-unused-expression */
-    }),
-};
 
 const urlZod = <TSchemaType extends _SchemaTypeDefinition<"url", any, any>>(
   schemaType: TSchemaType
 ) =>
-  traverseValidation(
-    schemaType,
-    z.string() as z.ZodType<string>,
-    urlRuleMap,
-    (zod) => urlRuleMap.uri!(zod, [{}])
-  );
+  reduceAcc(
+    traverseValidation(schemaType).uri ??
+      ([[{}]] as Parameters<_GetOriginalRule<TSchemaType>["uri"]>[]),
+    (
+      zod: z.ZodType<string>,
+      [
+        {
+          allowRelative: allowRelativeRaw = false,
+          allowCredentials = false,
+          relativeOnly = false,
+          scheme = ["http", "https"],
+        },
+      ]
+    ) =>
+      // https://github.com/sanity-io/sanity/blob/6020a46588ffd324e233b45eaf526a58652c62f2/packages/sanity/src/core/validation/validators/stringValidator.ts#L37
+      zod.superRefine((value, ctx) => {
+        /* eslint-disable fp/no-unused-expression -- zod.superRefine */
+        const allowRelative = allowRelativeRaw || relativeOnly;
+
+        // eslint-disable-next-line fp/no-let -- using new URL
+        let url: URL;
+        try {
+          // eslint-disable-next-line fp/no-mutation -- using new URL
+          url = allowRelative ? new URL(value, DUMMY_ORIGIN) : new URL(value);
+        } catch {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Not a valid URL",
+          });
+
+          return z.NEVER;
+        }
+
+        if (relativeOnly && url.origin !== DUMMY_ORIGIN) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Only relative URLs are allowed",
+          });
+        }
+
+        if (!allowCredentials && (url.username || url.password)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Username/password not allowed",
+          });
+        }
+
+        const urlScheme = url.protocol.replace(/:$/, "");
+        if (
+          !(Array.isArray(scheme) ? scheme : [scheme]).some((scheme) =>
+            typeof scheme === "string"
+              ? urlScheme.startsWith(scheme)
+              : scheme.test(urlScheme)
+          )
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Does not match allowed protocols/schemes",
+          });
+        }
+
+        return z.NEVER;
+
+        /* eslint-enable fp/no-unused-expression */
+      })
+  )(z.string());
 
 type ExtendViaIntersection<
   Zod extends z.ZodTypeAny,
@@ -556,6 +476,16 @@ const addType = <
     Zod
   >;
 
+const addTypeFp =
+  <const Type extends string | undefined>(type: Type) =>
+  <Zod extends z.ZodTypeAny>(zod: Zod) =>
+    (typeof type !== "string"
+      ? zod
+      : extendViaIntersection(addTypeFieldsZods(type))(zod)) as AddType<
+      Type,
+      Zod
+    >;
+
 const addKeyFieldsZods = {
   _key: z.string(),
 };
@@ -618,13 +548,16 @@ const membersZods = <
 >(
   members: TMemberDefinitions,
   getZods: () => TAliasedZods
-) =>
+): MembersZods<TMemberDefinitions, TAliasedZods> =>
   members.map((member) => {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
     const zod = schemaTypeToZod(member, getZods);
 
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/337
-    return addKey(addType(member.name, zod));
+    return flow(
+      (zod2: typeof zod) => zod2,
+      addTypeFp(member.name),
+      addKey
+    )(zod);
   }) as MembersZods<TMemberDefinitions, TAliasedZods>;
 
 // HACK Copy and eslint-ed from https://github.com/sanity-io/sanity/blob/bf50a77131bc7dd9d3084acf39afcfb29512b566/packages/sanity/src/core/validation/util/sanityDeepEquals.ts#L11
@@ -705,28 +638,33 @@ const arrayZod = <
     zodUnion(membersZods(schemaType.of as TMemberDefinitions, getZods))
   );
 
-  return traverseValidation(
-    schemaType,
-    traverseValidation(schemaType, arrayZodInner, {
-      length: (zod, [exactLength]) => zod.length(exactLength as number),
-      max: (zod, [maxLength]) => zod.max(maxLength as number),
-      min: (zod, [minLength]) => zod.min(minLength as number),
-    } as RuleMap<"array", typeof arrayZodInner>) as MaybeZodEffects<
-      typeof arrayZodInner
-    >,
-    {
-      unique: (zod) =>
-        zod.refine(
-          (array) =>
-            array.every((value1, index) =>
-              array
-                .slice(index + 1)
-                .every((value2) => !sanityDeepEquals(value1, value2))
-            ),
-          { message: "Can't contain duplicates" }
-        ),
-    } as RuleMap<"array", MaybeZodEffects<typeof arrayZodInner>>
-  ) as ArrayZod<TSchemaType, TAliasedZods>;
+  const traversal = traverseValidation(schemaType);
+
+  return flow(
+    (zod: typeof arrayZodInner) => zod,
+    reduceAcc(traversal.min, (zod, [minLength]) =>
+      zod.min(minLength as number)
+    ),
+    reduceAcc(traversal.max, (zod, [maxLength]) =>
+      zod.max(maxLength as number)
+    ),
+    reduceAcc(traversal.length, (zod, [exactLength]) =>
+      zod.length(exactLength as number)
+    ),
+    toZodType,
+    (zod) =>
+      !traversal.unique?.length
+        ? zod
+        : zod.refine(
+            (array) =>
+              array.every((value1, index) =>
+                array
+                  .slice(index + 1)
+                  .every((value2) => !sanityDeepEquals(value1, value2))
+              ),
+            { message: "Can't contain duplicates" }
+          )
+  )(arrayZodInner) as ArrayZod<TSchemaType, TAliasedZods>;
 };
 
 const spanZod = z.object({
@@ -810,13 +748,6 @@ const blockZod = <
     ),
   }) as BlockZod<TSchemaType, TAliasedZods>;
 
-const isFieldRequired = (
-  field: _FieldDefinition<any, any, any, any, any, any, any, any, any>
-): field is _FieldDefinition<any, any, any, any, any, any, any, any, true> =>
-  traverseValidation(field, false as boolean, {
-    required: () => true,
-  });
-
 type FieldsZods<
   TSchemaType extends _SchemaTypeDefinition<
     "document" | "file" | "image" | "object",
@@ -875,7 +806,7 @@ const fieldsZods = <
       (field) =>
         [
           field.name,
-          isFieldRequired(field)
+          traverseValidation(field).required?.length
             ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
               schemaTypeToZod(field, getZods)
             : z.optional(
