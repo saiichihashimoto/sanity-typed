@@ -570,6 +570,52 @@ const objectFaker = <
 ): ObjectFaker<TSchemaType, TAliasedFakers> =>
   fieldsFaker(schema, getFakers) as ObjectFaker<TSchemaType, TAliasedFakers>;
 
+const documentFieldsFaker = (faker: Faker) => {
+  const createdAt = faker.date.between({
+    from: "1990-01-01T00:00:00.000Z",
+    to: "2030-01-01T00:00:00.000Z",
+  });
+
+  return {
+    _createdAt: createdAt.toISOString(),
+    _id: faker.string.uuid(),
+    _rev: faker.string.alphanumeric(22),
+    _type: "document" as const,
+    _updatedAt: faker.date
+      .between({
+        from: createdAt,
+        to: "2030-01-01T00:00:00.000Z",
+      })
+      .toISOString(),
+  };
+};
+
+type DocumentFaker<
+  TSchemaType extends _SchemaTypeDefinition<"document", any, any>,
+  TAliasedFakers extends {
+    [name: string]: (faker: FakerOrFakerFn) => any;
+  }
+> = (
+  faker: Faker
+) => Simplify<
+  ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>> &
+    ReturnType<typeof documentFieldsFaker>
+>;
+
+const documentFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"document", any, any>,
+  TAliasedFakers extends {
+    [name: string]: (faker: FakerOrFakerFn) => any;
+  }
+>(
+  schema: TSchemaType,
+  getFakers: () => TAliasedFakers
+): DocumentFaker<TSchemaType, TAliasedFakers> =>
+  ((faker: Faker) => ({
+    ...documentFieldsFaker(faker),
+    ...fieldsFaker(schema, getFakers)(faker),
+  })) as DocumentFaker<TSchemaType, TAliasedFakers>;
+
 type SchemaTypeToFaker<
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
@@ -624,6 +670,13 @@ type SchemaTypeToFaker<
   ? ReturnType<
       typeof objectFaker<
         Extract<TSchemaType, _SchemaTypeDefinition<"object", any, any>>,
+        TAliasedFakers
+      >
+    >
+  : TSchemaType["type"] extends "document"
+  ? ReturnType<
+      typeof documentFaker<
+        Extract<TSchemaType, _SchemaTypeDefinition<"document", any, any>>,
         TAliasedFakers
       >
     >
@@ -694,6 +747,14 @@ const schemaTypeToFaker = <
         schema as Extract<
           TSchemaType,
           _SchemaTypeDefinition<"object", any, any>
+        >,
+        getFakers
+      )
+    : schema.type === "document"
+    ? documentFaker(
+        schema as Extract<
+          TSchemaType,
+          _SchemaTypeDefinition<"document", any, any>
         >,
         getFakers
       )
