@@ -226,7 +226,6 @@ describe("document", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)["bar"]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
@@ -267,7 +266,6 @@ describe("document", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)["bar"]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
@@ -315,7 +313,6 @@ describe("document", () => {
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<(typeof fake)["bar"]>().toStrictEqual<
-        // @ts-expect-error -- FIXME
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
