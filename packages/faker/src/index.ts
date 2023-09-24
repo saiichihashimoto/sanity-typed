@@ -79,6 +79,54 @@ const noInfinity = (value: number) =>
     ? undefined
     : value;
 
+const dateAndDatetimeFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"date" | "datetime", string, any>
+>(
+  schemaType: TSchemaType
+) => {
+  const traversal = traverseValidation(schemaType);
+
+  return (faker: Faker) =>
+    faker.date
+      .between({
+        from: new Date(
+          noInfinity(
+            Math.max(
+              ...(traversal.min ?? []).map(([minDate]) =>
+                new Date(minDate as string).valueOf()
+              )
+            )
+          ) ?? "1990-01-01T00:00:00.000Z"
+        ),
+        to: new Date(
+          noInfinity(
+            Math.min(
+              ...(traversal.max ?? []).map(([maxDate]) =>
+                new Date(maxDate as string).valueOf()
+              )
+            )
+          ) ?? "2030-01-01T00:00:00.000Z"
+        ),
+      })
+      .toISOString();
+};
+
+const dateFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"date", string, any>
+>(
+  schemaType: TSchemaType
+) => {
+  const baseFaker = dateAndDatetimeFaker(schemaType);
+
+  return (faker: Faker) => baseFaker(faker).slice(0, 10);
+};
+
+const datetimeFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"datetime", string, any>
+>(
+  schemaType: TSchemaType
+) => dateAndDatetimeFaker(schemaType);
+
 const numberFaker = <
   TSchemaType extends _SchemaTypeDefinition<"number", number, any>
 >(
@@ -142,6 +190,8 @@ const numberFaker = <
       : never;
 };
 
+// TODO referenceFaker
+
 const randexpWithFaker = (faker: Faker, regex: RegExp) => {
   const randexp = new RandExp(regex);
 
@@ -152,10 +202,11 @@ const randexpWithFaker = (faker: Faker, regex: RegExp) => {
   return randexp;
 };
 
-const stringFaker = <
-  TSchemaType extends _SchemaTypeDefinition<"string", string, any>
+const stringAndTextFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"string" | "text", string, any>
 >(
-  schemaType: TSchemaType
+  schemaType: TSchemaType,
+  stringFaker: (faker: Faker) => string
 ) => {
   const traversal = traverseValidation(schemaType);
 
@@ -182,15 +233,7 @@ const stringFaker = <
   const max = maxChosen ?? (minChosen !== undefined ? minChosen + 15 : 20);
 
   return (faker: Faker) =>
-    (schemaType.options?.list?.length
-      ? faker.helpers.arrayElement(
-          schemaType.options.list.map((maybeTitledListValue) =>
-            typeof maybeTitledListValue === "string"
-              ? maybeTitledListValue
-              : maybeTitledListValue.value!
-          )
-        )
-      : traversal.regex?.length
+    traversal.regex?.length
       ? randexpWithFaker(
           faker,
           // TODO Combine multiple regex, somehow
@@ -204,22 +247,66 @@ const stringFaker = <
             !traversal.uppercase?.length ? value : value.toUpperCase(),
           (value) =>
             !traversal.lowercase?.length ? value : value.toLowerCase()
-        )(
-          faker.string.alpha({
-            length: {
-              min,
-              max,
-            },
-          })
-        )) as TSchemaType extends _SchemaTypeDefinition<
-      "string",
-      infer TOptionsHelper,
-      any
-    >
-      ? IsStringLiteral<TOptionsHelper> extends true
-        ? TOptionsHelper
-        : string
-      : never;
+        )(stringFaker(faker).slice(0, faker.number.int({ min, max })));
+};
+
+const stringFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"string", string, any>
+>(
+  schemaType: TSchemaType
+) =>
+  (schemaType.options?.list?.length
+    ? (faker: Faker) =>
+        faker.helpers.arrayElement(
+          schemaType.options!.list!.map((maybeTitledListValue) =>
+            typeof maybeTitledListValue === "string"
+              ? maybeTitledListValue
+              : maybeTitledListValue.value!
+          )
+        )
+    : stringAndTextFaker(schemaType, (faker) =>
+        faker.lorem.sentence()
+      )) as TSchemaType extends _SchemaTypeDefinition<
+    "string",
+    infer TOptionsHelper,
+    any
+  >
+    ? IsStringLiteral<TOptionsHelper> extends true
+      ? (faker: Faker) => TOptionsHelper
+      : ReturnType<typeof stringAndTextFaker<TSchemaType>>
+    : never;
+
+const textFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"text", string, any>
+>(
+  schemaType: TSchemaType
+) => stringAndTextFaker(schemaType, (faker) => faker.lorem.lines());
+
+const urlFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"url", string, any>
+>(
+  schemaType: TSchemaType
+) => {
+  const traversal = traverseValidation(schemaType);
+
+  const {
+    allowRelative = false,
+    // TODO allowCredentials = false,
+    relativeOnly = false,
+    // TODO scheme: schemaRaw = ["http", "https"],
+  } = traversal.uri?.[0]?.[0] ?? {};
+
+  // const schemes = Array.isArray(schemaRaw) ? schemaRaw : [schemaRaw];
+
+  return (faker: Faker) => {
+    const relative =
+      relativeOnly || (allowRelative && faker.datatype.boolean());
+
+    return (
+      (relative ? "" : faker.internet.url({ appendSlash: false })) +
+      faker.system.filePath()
+    );
+  };
 };
 
 const addType =
@@ -490,6 +577,18 @@ type SchemaTypeToFaker<
   }
 > = TSchemaType["type"] extends keyof typeof constantFakers
   ? (typeof constantFakers)[TSchemaType["type"]]
+  : TSchemaType["type"] extends "date"
+  ? ReturnType<
+      typeof dateFaker<
+        Extract<TSchemaType, _SchemaTypeDefinition<"date", any, any>>
+      >
+    >
+  : TSchemaType["type"] extends "datetime"
+  ? ReturnType<
+      typeof datetimeFaker<
+        Extract<TSchemaType, _SchemaTypeDefinition<"datetime", any, any>>
+      >
+    >
   : TSchemaType["type"] extends "number"
   ? ReturnType<
       typeof numberFaker<
@@ -500,6 +599,18 @@ type SchemaTypeToFaker<
   ? ReturnType<
       typeof stringFaker<
         Extract<TSchemaType, _SchemaTypeDefinition<"string", any, any>>
+      >
+    >
+  : TSchemaType["type"] extends "text"
+  ? ReturnType<
+      typeof textFaker<
+        Extract<TSchemaType, _SchemaTypeDefinition<"text", any, any>>
+      >
+    >
+  : TSchemaType["type"] extends "url"
+  ? ReturnType<
+      typeof urlFaker<
+        Extract<TSchemaType, _SchemaTypeDefinition<"url", any, any>>
       >
     >
   : TSchemaType["type"] extends "array"
@@ -531,6 +642,17 @@ const schemaTypeToFaker = <
     ? constantFakers[
         schema.type as TSchemaType["type"] & keyof typeof constantFakers
       ]
+    : schema.type === "date"
+    ? dateFaker(
+        schema as Extract<TSchemaType, _SchemaTypeDefinition<"date", any, any>>
+      )
+    : schema.type === "datetime"
+    ? datetimeFaker(
+        schema as Extract<
+          TSchemaType,
+          _SchemaTypeDefinition<"datetime", any, any>
+        >
+      )
     : schema.type === "number"
     ? numberFaker(
         schema as Extract<
@@ -543,6 +665,20 @@ const schemaTypeToFaker = <
         schema as Extract<
           TSchemaType,
           _SchemaTypeDefinition<"string", string, any>
+        >
+      )
+    : schema.type === "text"
+    ? textFaker(
+        schema as Extract<
+          TSchemaType,
+          _SchemaTypeDefinition<"text", string, any>
+        >
+      )
+    : schema.type === "url"
+    ? urlFaker(
+        schema as Extract<
+          TSchemaType,
+          _SchemaTypeDefinition<"url", string, any>
         >
       )
     : schema.type === "array"

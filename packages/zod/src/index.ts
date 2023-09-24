@@ -133,14 +133,14 @@ const datetimeZod = <
     toZodType,
     reduceAcc(traversal.min, (zod, [minDate]) =>
       zod.refine((value) => new Date(value) >= new Date(minDate as string), {
-        message: `dDatetime must be greater than or equal to ${
+        message: `Datetime must be greater than or equal to ${
           minDate as string
         }`,
       })
     ),
     reduceAcc(traversal.max, (zod, [maxDate]) =>
       zod.refine((value) => new Date(value) <= new Date(maxDate as string), {
-        message: `dDatetime must be less than or equal to ${maxDate as string}`,
+        message: `Datetime must be less than or equal to ${maxDate as string}`,
       })
     )
   )(z.string());
@@ -353,14 +353,16 @@ const urlZod = <TSchemaType extends _SchemaTypeDefinition<"url", any, any>>(
           allowRelative: allowRelativeRaw = false,
           allowCredentials = false,
           relativeOnly = false,
-          scheme = ["http", "https"],
+          scheme: schemaRaw = ["http", "https"],
         },
       ]
-    ) =>
+    ) => {
+      const allowRelative = allowRelativeRaw || relativeOnly;
+      const schemes = Array.isArray(schemaRaw) ? schemaRaw : [schemaRaw];
+
       // https://github.com/sanity-io/sanity/blob/6020a46588ffd324e233b45eaf526a58652c62f2/packages/sanity/src/core/validation/validators/stringValidator.ts#L37
-      zod.superRefine((value, ctx) => {
+      return zod.superRefine((value, ctx) => {
         /* eslint-disable fp/no-unused-expression -- zod.superRefine */
-        const allowRelative = allowRelativeRaw || relativeOnly;
 
         // eslint-disable-next-line fp/no-let -- using new URL
         let url: URL;
@@ -392,7 +394,7 @@ const urlZod = <TSchemaType extends _SchemaTypeDefinition<"url", any, any>>(
 
         const urlScheme = url.protocol.replace(/:$/, "");
         if (
-          !(Array.isArray(scheme) ? scheme : [scheme]).some((scheme) =>
+          !schemes.some((scheme) =>
             typeof scheme === "string"
               ? urlScheme.startsWith(scheme)
               : scheme.test(urlScheme)
@@ -407,7 +409,8 @@ const urlZod = <TSchemaType extends _SchemaTypeDefinition<"url", any, any>>(
         return z.NEVER;
 
         /* eslint-enable fp/no-unused-expression */
-      })
+      });
+    }
   )(z.string());
 
 type ExtendViaIntersection<
