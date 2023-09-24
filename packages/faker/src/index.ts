@@ -12,8 +12,8 @@ import type {
   _FieldDefinition,
   _TypeDefinition,
 } from "@sanity-typed/types";
-
-import type { MaybeArray } from "./utils";
+import { typedTernary } from "@sanity-typed/utils";
+import type { MaybeArray } from "@sanity-typed/utils";
 
 type IsObject<T> = T extends any[] ? false : T extends object ? true : false;
 
@@ -127,16 +127,6 @@ const datetimeFaker = <
 >(
   schemaType: TSchemaType
 ) => dateAndDatetimeFaker(schemaType);
-
-// TODO utils
-const typedTernary = <Condition extends boolean, TrueValue, FalseValue>(
-  condition: Condition,
-  ifTrue: () => TrueValue,
-  ifFalse: () => FalseValue
-) =>
-  (condition ? ifTrue() : ifFalse()) as Condition extends true
-    ? TrueValue
-    : FalseValue;
 
 const numberFaker = <
   TSchemaType extends _SchemaTypeDefinition<"number", number, any>

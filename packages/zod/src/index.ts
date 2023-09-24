@@ -13,8 +13,8 @@ import type {
   _GetOriginalRule,
   _TypeDefinition,
 } from "@sanity-typed/types";
-
-import type { MaybeArray } from "./utils";
+import { typedTernary } from "@sanity-typed/utils";
+import type { MaybeArray } from "@sanity-typed/utils";
 
 type _SchemaTypeDefinition<
   TType extends string,
@@ -146,15 +146,6 @@ const datetimeZod = <
     )
   )(z.string());
 };
-
-const typedTernary = <Condition extends boolean, TrueValue, FalseValue>(
-  condition: Condition,
-  ifTrue: () => TrueValue,
-  ifFalse: () => FalseValue
-) =>
-  (condition ? ifTrue() : ifFalse()) as Condition extends true
-    ? TrueValue
-    : FalseValue;
 
 const numberZod = <
   TSchemaType extends _SchemaTypeDefinition<"number", number, any>

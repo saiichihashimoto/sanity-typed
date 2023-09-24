@@ -59,8 +59,7 @@ import type {
 } from "type-fest";
 
 import type { ReferenceValue, _referenced } from "@sanity-typed/types";
-
-import type { TupleOfLength } from "./utils";
+import type { TupleOfLength } from "@sanity-typed/utils";
 
 type Simplify<AnyType> = SimplifyNative<AnyType> extends AnyType
   ? SimplifyNative<AnyType>

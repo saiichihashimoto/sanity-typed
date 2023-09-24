@@ -1,5 +1,7 @@
 import type { IsNumericLiteral } from "type-fest";
 
+export type MaybeArray<T> = T | T[];
+
 export type TupleOfLength<
   T,
   Min extends number = number,
@@ -20,4 +22,11 @@ export type TupleOfLength<
           >
   : TupleOfLength<T, Min, Max, [T, ...Result]>;
 
-export type MaybeArray<T> = T | T[];
+export const typedTernary = <Condition extends boolean, TrueValue, FalseValue>(
+  condition: Condition,
+  ifTrue: () => TrueValue,
+  ifFalse: () => FalseValue
+) =>
+  (condition ? ifTrue() : ifFalse()) as Condition extends true
+    ? TrueValue
+    : FalseValue;

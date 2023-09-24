@@ -35,6 +35,7 @@
   "dependencies": {
     "@sanity-typed/traverse-validation": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
+    "@sanity-typed/utils": "0.0.0-development",
     "lodash": "4.17.21",
     "type-fest": "4.3.1"
   },

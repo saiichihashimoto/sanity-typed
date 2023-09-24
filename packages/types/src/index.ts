@@ -81,7 +81,7 @@ import type {
   Simplify,
 } from "type-fest";
 
-import type { MaybeArray, TupleOfLength } from "./utils";
+import type { MaybeArray, TupleOfLength } from "@sanity-typed/utils";
 
 // HACK Couldn't use type-fest's Merge >=3.0.0
 type Merge_<FirstType, SecondType> = Except<

@@ -1,5 +1,5 @@
 {
-  "name": "@sanity-typed/test-utils",
+  "name": "@sanity-typed/utils",
   "version": "0.0.0-development",
   "private": true,
   "funding": {
@@ -12,7 +12,10 @@
     "type-fest": "4.3.1"
   },
   "devDependencies": {
-    "@jest/globals": "29.7.0",
-    "@sanity-typed/tsconfig": "0.0.0-development"
+    "@sanity-typed/tsconfig": "0.0.0-development",
+    "typescript": "5.2.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.4"
   }
 }

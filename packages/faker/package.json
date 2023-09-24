@@ -23,9 +23,7 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "dev": "npm run build -- --no-dts"
@@ -33,6 +31,7 @@
   "dependencies": {
     "@sanity-typed/traverse-validation": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
+    "@sanity-typed/utils": "0.0.0-development",
     "fast-json-stable-stringify": "2.1.0",
     "lodash": "4.17.21",
     "randexp": "0.5.3",
