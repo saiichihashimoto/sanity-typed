@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from "@jest/globals";
 
 import { defineConfig, defineField, defineType } from "@sanity-typed/types";
 
-import { sanityConfigToFaker } from ".";
+import { _sanityConfigToFaker } from ".";
 
 describe("document-id-memo", () => {
   beforeEach(() => {
@@ -34,7 +34,7 @@ describe("document-id-memo", () => {
         ],
       },
     });
-    const sanityFaker = sanityConfigToFaker(config, { faker });
+    const sanityFaker = _sanityConfigToFaker(config, { faker });
 
     // Mixing up the order to ensure it works regardless
 
@@ -96,7 +96,7 @@ describe("document-id-memo", () => {
         ],
       },
     });
-    const sanityFaker = sanityConfigToFaker(config, {
+    const sanityFaker = _sanityConfigToFaker(config, {
       faker,
       referencedChunkSize: 2,
     });

@@ -11,7 +11,7 @@ import {
 import type { InferSchemaValues } from "@sanity-typed/types";
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
-import { sanityConfigToFaker } from ".";
+import { _sanityConfigToFaker } from ".";
 
 describe("text", () => {
   beforeEach(() => {
@@ -37,7 +37,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -71,7 +71,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -98,7 +98,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -126,7 +126,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -152,7 +152,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -178,7 +178,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -204,7 +204,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -230,7 +230,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -256,7 +256,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -282,7 +282,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -308,7 +308,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -334,7 +334,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -360,7 +360,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -387,7 +387,7 @@ describe("text", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 

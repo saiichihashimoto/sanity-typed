@@ -505,7 +505,7 @@ const membersFaker = <
   const memberFaker = (faker: Faker, count: number) =>
     faker.helpers.arrayElement(memberFakers)(faker, count);
 
-  // @ts-expect-error -- FIXME
+  // @ts-expect-error -- TODO Why is this typed incorrectly
   return unique
     ? (faker: Faker, count: number) =>
         faker.helpers
@@ -1389,7 +1389,8 @@ const counter = <Fn extends (faker: Faker, count: number) => any>(fn: Fn) => {
     ) as ReturnType<Fn>;
 };
 
-export const sanityConfigToFaker = <
+/** @private */
+export const _sanityConfigToFaker = <
   const TConfig extends _ConfigBase<any, any>,
   const MaybeFaker extends Faker | undefined
 >(
@@ -1444,3 +1445,14 @@ export const sanityConfigToFaker = <
     >;
   };
 };
+
+export const sanityConfigToFaker = <
+  const TConfig extends _ConfigBase<any, any>,
+  const MaybeFaker extends Faker | undefined
+>(
+  config: TConfig,
+  options: { faker?: MaybeFaker; referencedChunkSize?: number } = {}
+) =>
+  _sanityConfigToFaker(config, options) as {
+    [TType in keyof InferSchemaValues<TConfig>]: () => InferSchemaValues<TConfig>[TType];
+  };

@@ -11,7 +11,7 @@ import {
 import type { InferSchemaValues } from "@sanity-typed/types";
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
-import { sanityConfigToFaker } from ".";
+import { _sanityConfigToFaker } from ".";
 
 describe("<alias>", () => {
   beforeEach(() => {
@@ -43,7 +43,7 @@ describe("<alias>", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -90,7 +90,7 @@ describe("<alias>", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -125,7 +125,7 @@ describe("<alias>", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fakes = {
         foo: sanityFaker.foo(),
@@ -181,7 +181,7 @@ describe("<alias>", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -240,7 +240,7 @@ describe("<alias>", () => {
           })(),
         ],
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fakes = {
         foo: sanityFaker.foo(),
@@ -307,7 +307,7 @@ describe("<alias>", () => {
           })(),
         ],
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fakes = {
         foo: sanityFaker.foo(),
@@ -346,7 +346,7 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const sanityFaker = sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -392,7 +392,7 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const sanityFaker = sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -426,7 +426,7 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const sanityFaker = sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
 
       const fakes = {
         foo: sanityFaker.foo(),
@@ -481,7 +481,7 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const sanityFaker = sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -539,7 +539,7 @@ describe("<alias>", () => {
           })(),
         ],
       })();
-      const sanityFaker = sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
 
       const fakes = {
         foo: sanityFaker.foo(),
@@ -605,7 +605,7 @@ describe("<alias>", () => {
           })(),
         ],
       })();
-      const sanityFaker = sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
 
       const fakes = {
         foo: sanityFaker.foo(),

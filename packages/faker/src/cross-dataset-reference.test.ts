@@ -11,7 +11,7 @@ import {
 import type { InferSchemaValues } from "@sanity-typed/types";
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
-import { sanityConfigToFaker } from ".";
+import { _sanityConfigToFaker } from ".";
 
 describe("crossDatasetReference", () => {
   beforeEach(() => {
@@ -39,9 +39,9 @@ describe("crossDatasetReference", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
-      // @ts-expect-error -- FIXME
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const fake = sanityFaker.foo();
 
       const zods = sanityConfigToZods(config);
@@ -73,9 +73,9 @@ describe("crossDatasetReference", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
-      // @ts-expect-error -- FIXME
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const fake = sanityFaker.foo();
 
       const zods = sanityConfigToZods(config);
@@ -110,9 +110,9 @@ describe("crossDatasetReference", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
-      // @ts-expect-error -- FIXME
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const fake = sanityFaker.foo();
 
       const zods = sanityConfigToZods(config);
@@ -140,7 +140,7 @@ describe("crossDatasetReference", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -177,7 +177,7 @@ describe("crossDatasetReference", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 

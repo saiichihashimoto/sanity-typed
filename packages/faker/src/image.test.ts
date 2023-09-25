@@ -11,7 +11,7 @@ import {
 import type { InferSchemaValues } from "@sanity-typed/types";
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
-import { sanityConfigToFaker } from ".";
+import { _sanityConfigToFaker } from ".";
 
 describe("image", () => {
   beforeEach(() => {
@@ -37,7 +37,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -78,7 +78,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -111,7 +111,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -151,7 +151,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -188,7 +188,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -232,7 +232,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -266,7 +266,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -301,7 +301,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -343,7 +343,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -382,7 +382,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -428,7 +428,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -455,7 +455,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -500,7 +500,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -528,7 +528,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -563,7 +563,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -595,7 +595,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
@@ -634,7 +634,7 @@ describe("image", () => {
           ],
         },
       });
-      const sanityFaker = sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, { faker });
 
       const fake = sanityFaker.foo();
 
