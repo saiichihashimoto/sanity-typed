@@ -1,5 +1,11 @@
 import type { IsNumericLiteral } from "type-fest";
 
+export type IsPlainObject<T> = T extends any[]
+  ? false
+  : T extends object
+  ? true
+  : false;
+
 export type MaybeArray<T> = T | T[];
 
 export type TupleOfLength<

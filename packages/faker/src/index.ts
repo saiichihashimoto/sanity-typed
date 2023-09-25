@@ -14,9 +14,7 @@ import type {
   _referenced,
 } from "@sanity-typed/types";
 import { typedTernary } from "@sanity-typed/utils";
-import type { MaybeArray } from "@sanity-typed/utils";
-
-type IsObject<T> = T extends any[] ? false : T extends object ? true : false;
+import type { IsPlainObject, MaybeArray } from "@sanity-typed/utils";
 
 type _SchemaTypeDefinition<
   TType extends string,
@@ -170,16 +168,17 @@ const numberFaker = <
     Boolean(
       schemaType.options?.list?.length
     ) as IsNumericLiteral<TOptionsHelper>,
-    () => (faker: Faker) =>
-      faker.helpers.arrayElement(
-        (
-          schemaType.options!.list! as MaybeTitledListValue<TOptionsHelper>[]
-        ).map((maybeTitledListValue) =>
-          typeof maybeTitledListValue === "number"
-            ? maybeTitledListValue
-            : maybeTitledListValue.value!
-        )
-      ),
+    () => {
+      const literals = (
+        schemaType.options!.list! as MaybeTitledListValue<TOptionsHelper>[]
+      ).map((maybeTitledListValue) =>
+        typeof maybeTitledListValue === "number"
+          ? maybeTitledListValue
+          : maybeTitledListValue.value!
+      );
+
+      return (faker: Faker) => faker.helpers.arrayElement(literals);
+    },
     () =>
       traversal.integer?.length
         ? (faker: Faker) =>
@@ -234,14 +233,16 @@ const referenceFaker =
         }),
   });
 
-const randexpWithFaker = (faker: Faker, regex: RegExp) => {
+const regexFaker = (regex: RegExp) => {
   const randexp = new RandExp(regex);
 
-  // eslint-disable-next-line fp/no-mutation -- https://www.npmjs.com/package/randexp#custom-prng
-  randexp.randInt = (min: number, max: number) =>
-    faker.number.int({ min, max });
+  return (faker: Faker) => {
+    // eslint-disable-next-line fp/no-mutation -- https://www.npmjs.com/package/randexp#custom-prng
+    randexp.randInt = (min: number, max: number) =>
+      faker.number.int({ min, max });
 
-  return randexp;
+    return randexp.gen();
+  };
 };
 
 const stringAndTextFaker = <
@@ -275,12 +276,8 @@ const stringAndTextFaker = <
   const max = maxChosen ?? (minChosen !== undefined ? minChosen + 15 : 20);
 
   return traversal.regex?.length
-    ? (faker: Faker) =>
-        randexpWithFaker(
-          faker,
-          // TODO Combine multiple regex, somehow
-          traversal.regex![0]![0]
-        ).gen()
+    ? // TODO Combine multiple regex, somehow
+      regexFaker(traversal.regex![0]![0])
     : traversal.email?.length
     ? (faker: Faker) => faker.internet.email()
     : (faker: Faker) =>
@@ -310,16 +307,17 @@ const stringFaker = <
     Boolean(
       schemaType.options?.list?.length
     ) as IsStringLiteral<TOptionsHelper>,
-    () => (faker: Faker) =>
-      faker.helpers.arrayElement(
-        (
-          schemaType.options!.list! as MaybeTitledListValue<TOptionsHelper>[]
-        ).map((maybeTitledListValue) =>
-          typeof maybeTitledListValue === "string"
-            ? maybeTitledListValue
-            : maybeTitledListValue.value!
-        )
-      ),
+    () => {
+      const literals = (
+        schemaType.options!.list! as MaybeTitledListValue<TOptionsHelper>[]
+      ).map((maybeTitledListValue) =>
+        typeof maybeTitledListValue === "string"
+          ? maybeTitledListValue
+          : maybeTitledListValue.value!
+      );
+
+      return (faker: Faker) => faker.helpers.arrayElement(literals);
+    },
     () => stringAndTextFaker(schemaType, (faker) => faker.lorem.sentence())
   );
 };
@@ -358,13 +356,12 @@ const urlFaker = <
 };
 
 const addType =
-  <const Type extends string | undefined, Fn extends (faker: Faker) => any>(
-    type: Type,
-    fn: Fn
-  ) =>
+  <const Type extends string | undefined>(type: Type) =>
+  <Fn extends (faker: Faker) => any>(fn: Fn) =>
   (faker: Faker) => {
-    const value = fn(faker);
+    const value: ReturnType<Fn> = fn(faker);
 
+    // TODO typedTernary
     return (
       typeof type !== "string"
         ? value
@@ -375,17 +372,26 @@ const addType =
         ? value
         : { ...value, _type: type }
     ) as IsStringLiteral<Type> extends false
-      ? ReturnType<Fn>
-      : IsObject<ReturnType<Fn>> extends false
-      ? ReturnType<Fn>
-      : Omit<ReturnType<Fn>, "_type"> & { _type: Type };
+      ? typeof value
+      : IsPlainObject<typeof value> extends false
+      ? typeof value
+      : Omit<typeof value, "_type"> & { _type: Type };
   };
+
+const _addType = <
+  const Type extends string | undefined,
+  Fn extends (faker: Faker) => any
+>(
+  type: Type,
+  fn: Fn
+) => addType(type)(fn);
 
 const addKey =
   <Fn extends (faker: Faker) => any>(fn: Fn) =>
   (faker: Faker) => {
     const value = fn(faker);
 
+    // TODO typedTernary
     return (
       Array.isArray(value)
         ? value
@@ -393,7 +399,7 @@ const addKey =
         typeof value !== "object"
         ? value
         : { ...value, _key: faker.database.mongodbObjectId() }
-    ) as IsObject<ReturnType<Fn>> extends false
+    ) as IsPlainObject<ReturnType<Fn>> extends false
       ? ReturnType<Fn>
       : Omit<ReturnType<Fn>, "_key"> & { _key: string };
   };
@@ -422,7 +428,7 @@ type MembersFaker<
           ReturnType<
             typeof addKey<
               ReturnType<
-                typeof addType<
+                typeof _addType<
                   TMemberDefinition["name"],
                   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
                   SchemaTypeToFaker<TMemberDefinition, TAliasedFakers>
@@ -442,18 +448,20 @@ const membersFaker = <
   schemaType: TSchemaType,
   getFakers: () => TAliasedFakers
 ): MembersFaker<TSchemaType, TAliasedFakers> => {
-  const memberFakers = schemaType.of.map((member) =>
-    addType(
-      member.name,
+  type TMemberDefinition = TSchemaType extends {
+    of: (infer TMemberDefinition)[];
+  }
+    ? TMemberDefinition
+    : never;
+  const memberFakers = schemaType.of.map((member: TMemberDefinition) =>
+    addType(member.name)(
       // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
       schemaTypeToFaker(member, getFakers)
     )
   );
 
   const memberFaker = (faker: Faker) =>
-    faker.helpers.arrayElement(memberFakers)(faker) as ReturnType<
-      (typeof memberFakers)[number]
-    >;
+    faker.helpers.arrayElement(memberFakers)(faker);
 
   const traversal = traverseValidation(schemaType);
 
@@ -487,8 +495,11 @@ const membersFaker = <
             () => stringify(memberFaker(faker)),
             faker.number.int({ min, max })
           )
-          .map((value) => JSON.parse(value))
-          .map((value) => addKey(() => value)(faker))
+          .map((value) =>
+            addKey(() => JSON.parse(value) as ReturnType<typeof memberFaker>)(
+              faker
+            )
+          )
     : (faker: Faker) =>
         Array.from({ length: faker.number.int({ min, max }) }).map(() =>
           addKey(memberFaker)(faker)
@@ -584,6 +595,7 @@ const fieldsFaker = <
     (field) =>
       [
         field.name as string,
+        // TODO typedTernary
         traverseValidation(field).required?.length
           ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
             schemaTypeToFaker(field, getFakers)
@@ -824,27 +836,22 @@ const schemaTypeToFaker = <
       )
     : (undefined as never)) as SchemaTypeToFaker<TSchemaType, TAliasedFakers>;
 
-const lazyFaker = <
+const lazyFaker =
+  <MaybeFaker extends Faker | undefined>(maybeFaker: MaybeFaker) =>
+  <Fn extends (faker: Faker) => any>(fn: Fn) =>
+    typedTernary(
+      !maybeFaker as undefined extends MaybeFaker ? true : false,
+      () => fn,
+      () => (faker?: Faker) => fn(faker ?? maybeFaker!) as ReturnType<Fn>
+    );
+
+const _lazyFaker = <
   MaybeFaker extends Faker | undefined,
   Fn extends (faker: Faker) => any
 >(
   maybeFaker: MaybeFaker,
   fn: Fn
-) => {
-  // eslint-disable-next-line fp/no-let -- Lazily instantiate faker
-  let fakerInstantiated: Faker | undefined;
-
-  // eslint-disable-next-line no-return-assign -- Lazily instantiate faker
-  return (
-    ...args: undefined extends MaybeFaker ? [faker: Faker] : [faker?: Faker]
-  ) =>
-    fn(
-      args[0] ??
-        fakerInstantiated ??
-        // eslint-disable-next-line fp/no-mutation -- Lazily instantiate faker
-        (fakerInstantiated = maybeFaker!)
-    ) as ReturnType<Fn>;
-};
+) => lazyFaker(maybeFaker)(fn);
 
 type SanityConfigFakers<
   TConfig extends MaybeArray<_ConfigBase<any, any>>,
@@ -854,10 +861,10 @@ type SanityConfigFakers<
 >
   ? {
       [Name in TTypeDefinition["name"]]: ReturnType<
-        typeof lazyFaker<
+        typeof _lazyFaker<
           MaybeFaker,
           ReturnType<
-            typeof addType<
+            typeof _addType<
               Name,
               SchemaTypeToFaker<
                 Extract<TTypeDefinition, { name: Name }>,
@@ -912,19 +919,20 @@ export const sanityConfigToFaker = <
 
   const fakers: SanityConfigFakers<TConfig, MaybeFaker> = Array.isArray(types)
     ? Object.fromEntries(
-        types.map((type) => [
-          type.name,
-          lazyFaker(
-            options.faker,
-            addType(
-              type.name,
-              schemaTypeToFaker(type, () => ({
-                ...pluginsFakers,
-                ...fakers,
-              }))
-            )
-          ),
-        ])
+        types.map((type) => {
+          const schemaTypeFaker = schemaTypeToFaker(type, () => ({
+            ...pluginsFakers,
+            ...fakers,
+          }));
+
+          return [
+            type.name,
+            flow(
+              addType(type.name as TTypeDefinition["name"]),
+              lazyFaker(options.faker)
+            )(schemaTypeFaker),
+          ];
+        })
       )
     : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
       (undefined as never);

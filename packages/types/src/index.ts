@@ -81,7 +81,11 @@ import type {
   Simplify,
 } from "type-fest";
 
-import type { MaybeArray, TupleOfLength } from "@sanity-typed/utils";
+import type {
+  IsPlainObject,
+  MaybeArray,
+  TupleOfLength,
+} from "@sanity-typed/utils";
 
 // HACK Couldn't use type-fest's Merge >=3.0.0
 type Merge_<FirstType, SecondType> = Except<
@@ -598,8 +602,6 @@ type TypeAliasDefinition<
   }
 >;
 
-type IsObject<T> = T extends any[] ? false : T extends object ? true : false;
-
 declare const type: unique symbol;
 
 /** @private */
@@ -643,14 +645,14 @@ export type _ArrayMemberDefinition<
                   >[type],
                   DefinitionBase<
                     any,
-                    IsObject<Value> extends false
+                    IsPlainObject<Value> extends false
                       ? Value
                       : IsStringLiteral<TName> extends false
                       ? Value
                       : Omit<Value, "_type"> & { _type: TName },
                     // @ts-expect-error -- TODO Doesn't match the rule for some reason
                     RewriteValue<
-                      IsObject<Value> extends false
+                      IsPlainObject<Value> extends false
                         ? Value
                         : IsStringLiteral<TName> extends false
                         ? Value
@@ -1038,7 +1040,7 @@ type ExpandAliasValues<
 > = Value extends AliasValue<infer TType>
   ? AliasedValues[TType] extends never
     ? unknown
-    : IsObject<
+    : IsPlainObject<
         ExpandAliasValues<AliasedValues[TType], AliasedValues>
       > extends false
     ? ExpandAliasValues<AliasedValues[TType], AliasedValues>
@@ -1052,7 +1054,7 @@ type ExpandAliasValues<
   : Value extends (infer Item)[]
   ? (Item extends never
       ? never
-      : IsObject<Item> extends false
+      : IsPlainObject<Item> extends false
       ? ExpandAliasValues<Item, AliasedValues>
       : ExpandAliasValues<Item, AliasedValues> & {
           _key: string;
