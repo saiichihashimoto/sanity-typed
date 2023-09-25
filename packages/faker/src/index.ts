@@ -717,7 +717,8 @@ type DocumentFaker<
     [name: string]: (faker: Faker, count: number) => any;
   }
 > = (
-  faker: Faker
+  faker: Faker,
+  count: number
 ) => Simplify<
   ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>> &
     ReturnType<typeof documentFieldsFaker>
@@ -747,6 +748,73 @@ const documentFaker = <
       referencedIdFaker
     )(faker, count),
   })) as DocumentFaker<TSchemaType, TAliasedFakers>;
+
+const assetFaker = (faker: Faker) => ({
+  _ref: faker.string.uuid(),
+  _type: "reference",
+  // TODO weak references and strengthenOnPublish
+  ...(true ? {} : { _key: "key" }),
+  ...(true ? {} : { _weak: false }),
+  ...(true
+    ? {}
+    : {
+        _strengthenOnPublish: {
+          type: "string",
+          ...(true ? {} : { weak: false }),
+          ...(true
+            ? {}
+            : {
+                template: {
+                  id: "string",
+                  params: {} as { [key: string]: boolean | number | string },
+                },
+              }),
+        },
+      }),
+});
+
+const fileFieldsFaker = (faker: Faker) => ({
+  _type: "file" as const,
+  asset: assetFaker(faker),
+});
+
+type FileFaker<
+  TSchemaType extends _SchemaTypeDefinition<"file", any, any>,
+  TAliasedFakers extends {
+    [name: string]: (faker: Faker, count: number) => any;
+  }
+> = (
+  faker: Faker,
+  count: number
+) => Simplify<
+  ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>> &
+    ReturnType<typeof fileFieldsFaker>
+>;
+
+const fileFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"file", any, any>,
+  TAliasedFakers extends {
+    [name: string]: (faker: Faker, count: number) => any;
+  }
+>(
+  schema: TSchemaType,
+  getFakers: () => TAliasedFakers,
+  documentIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string,
+  referencedIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string
+): FileFaker<TSchemaType, TAliasedFakers> =>
+  ((faker: Faker, count: number) => ({
+    ...fileFieldsFaker(faker),
+    ...fieldsFaker(
+      schema,
+      getFakers,
+      documentIdFaker,
+      referencedIdFaker
+    )(faker, count),
+  })) as FileFaker<TSchemaType, TAliasedFakers>;
 
 type SchemaTypeToFaker<
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
@@ -815,6 +883,13 @@ type SchemaTypeToFaker<
   ? ReturnType<
       typeof documentFaker<
         Extract<TSchemaType, _SchemaTypeDefinition<"document", any, any>>,
+        TAliasedFakers
+      >
+    >
+  : TSchemaType["type"] extends "file"
+  ? ReturnType<
+      typeof fileFaker<
+        Extract<TSchemaType, _SchemaTypeDefinition<"file", any, any>>,
         TAliasedFakers
       >
     >
@@ -916,6 +991,13 @@ const schemaTypeToFaker = <
         documentIdFaker,
         referencedIdFaker
       )
+    : schema.type === "file"
+    ? fileFaker(
+        schema as Extract<TSchemaType, _SchemaTypeDefinition<"file", any, any>>,
+        getFakers,
+        documentIdFaker,
+        referencedIdFaker
+      )
     : (undefined as never)) as SchemaTypeToFaker<TSchemaType, TAliasedFakers>;
 
 const sanityConfigToFakerInner = <const TConfig extends _ConfigBase<any, any>>(
@@ -966,7 +1048,7 @@ const sanityConfigToFakerInner = <const TConfig extends _ConfigBase<any, any>>(
       sanityConfigToFakerInner(plugin, documentIdFaker, referencedIdFaker)
     )
     .reduce(
-      (acc, zods) => ({ ...acc, ...zods }),
+      (acc, fakers) => ({ ...acc, ...fakers }),
       {} as SanityConfigFakers<TPluginOptions>
     );
 
