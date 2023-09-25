@@ -19,7 +19,7 @@ describe("geopoint", () => {
   });
 
   describe("defineArrayMember", () => {
-    it("builds parser for ReferenceValue", () => {
+    it("mocks ReferenceValue", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -82,7 +82,7 @@ describe("geopoint", () => {
   });
 
   describe("defineField", () => {
-    it("builds parser for ReferenceValue", () => {
+    it("mocks ReferenceValue", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -116,7 +116,7 @@ describe("geopoint", () => {
   });
 
   describe("defineType", () => {
-    it("builds parser for ReferenceValue", () => {
+    it("mocks ReferenceValue", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",

@@ -19,7 +19,7 @@ describe("number", () => {
   });
 
   describe("defineArrayMember", () => {
-    it("builds parser for number", () => {
+    it("mocks number", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -49,7 +49,7 @@ describe("number", () => {
       >();
     });
 
-    it("builds parser for literal number from list", () => {
+    it("mocks literal number from list", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -84,7 +84,7 @@ describe("number", () => {
   });
 
   describe("defineField", () => {
-    it("builds parser for number", () => {
+    it("mocks number", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -116,7 +116,7 @@ describe("number", () => {
       >();
     });
 
-    it("builds parser for literal number from list", () => {
+    it("mocks literal number from list", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -153,7 +153,7 @@ describe("number", () => {
   });
 
   describe("defineType", () => {
-    it("builds parser for number", () => {
+    it("mocks number", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -178,7 +178,7 @@ describe("number", () => {
       >();
     });
 
-    it("builds parser for literal number from list", () => {
+    it("mocks literal number from list", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",

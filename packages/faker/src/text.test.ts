@@ -19,7 +19,7 @@ describe("text", () => {
   });
 
   describe("defineArrayMember", () => {
-    it("builds parser for string", () => {
+    it("mocks string", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -51,7 +51,7 @@ describe("text", () => {
   });
 
   describe("defineField", () => {
-    it("builds parser for string", () => {
+    it("mocks string", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -85,7 +85,7 @@ describe("text", () => {
   });
 
   describe("defineType", () => {
-    it("builds parser for string", () => {
+    it("mocks string", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",

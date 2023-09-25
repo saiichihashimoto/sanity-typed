@@ -19,7 +19,7 @@ describe("reference", () => {
   });
 
   describe("defineArrayMember", () => {
-    it("builds parser for ReferenceValue", () => {
+    it("mocks ReferenceValue", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -84,7 +84,7 @@ describe("reference", () => {
   });
 
   describe("defineField", () => {
-    it("builds parser for ReferenceValue", () => {
+    it("mocks ReferenceValue", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -119,7 +119,7 @@ describe("reference", () => {
   });
 
   describe("defineType", () => {
-    it("builds parser for ReferenceValue", () => {
+    it("mocks ReferenceValue", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",

@@ -19,7 +19,7 @@ describe("document", () => {
   });
 
   describe("defineArrayMember", () => {
-    it("builds parser for SanityDocument with fields", () => {
+    it("mocks SanityDocument with fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -102,7 +102,7 @@ describe("document", () => {
       >();
     });
 
-    it("infers required fields", () => {
+    it("mocks required fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -140,7 +140,7 @@ describe("document", () => {
       >();
     });
 
-    it("infers nested objects", () => {
+    it("mocks nested objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -187,7 +187,7 @@ describe("document", () => {
   });
 
   describe("defineField", () => {
-    it("builds parser for SanityDocument with fields", () => {
+    it("mocks SanityDocument with fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -230,7 +230,7 @@ describe("document", () => {
       >();
     });
 
-    it("infers required fields", () => {
+    it("mocks required fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -270,7 +270,7 @@ describe("document", () => {
       >();
     });
 
-    it("infers nested objects", () => {
+    it("mocks nested objects", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -319,7 +319,7 @@ describe("document", () => {
   });
 
   describe("defineType", () => {
-    it("builds parser for SanityDocument with fields", () => {
+    it("mocks SanityDocument with fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -399,7 +399,7 @@ describe("document", () => {
       >();
     });
 
-    it("infers required fields", () => {
+    it("mocks required fields", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -432,7 +432,7 @@ describe("document", () => {
     });
   });
 
-  it("infers nested objects", () => {
+  it("mocks nested objects", () => {
     const config = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
