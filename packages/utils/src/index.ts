@@ -1,5 +1,7 @@
 import type { IsNumericLiteral } from "type-fest";
 
+export type Negate<T> = T extends true ? false : true;
+
 export type IsPlainObject<T> = T extends any[]
   ? false
   : T extends object

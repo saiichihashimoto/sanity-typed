@@ -14,7 +14,7 @@ import type {
   _referenced,
 } from "@sanity-typed/types";
 import { typedTernary } from "@sanity-typed/utils";
-import type { IsPlainObject, MaybeArray } from "@sanity-typed/utils";
+import type { IsPlainObject, MaybeArray, Negate } from "@sanity-typed/utils";
 
 type _SchemaTypeDefinition<
   TType extends string,
@@ -816,6 +816,80 @@ const fileFaker = <
     )(faker, count),
   })) as FileFaker<TSchemaType, TAliasedFakers>;
 
+const imageFieldsFaker = (faker: Faker) => ({
+  _type: "image" as const,
+  asset: assetFaker(faker),
+});
+
+const imageHotspotFaker = (faker: Faker) => ({
+  crop: {
+    ...(true ? {} : { _type: "sanity.imageCrop" as const }),
+    bottom: faker.number.float({ min: 0, max: 0.5 }),
+    left: faker.number.float({ min: 0, max: 0.5 }),
+    right: faker.number.float({ min: 0, max: 0.5 }),
+    top: faker.number.float({ min: 0, max: 0.5 }),
+  },
+  hotspot: {
+    ...(true ? {} : { _type: "sanity.imageHotspot" as const }),
+    height: faker.number.float({ min: 0, max: 0.5 }),
+    width: faker.number.float({ min: 0, max: 0.5 }),
+    x: faker.number.float({ min: 0, max: 0.5 }),
+    y: faker.number.float({ min: 0, max: 0.5 }),
+  },
+});
+
+type ImageFaker<
+  TSchemaType extends _SchemaTypeDefinition<"image", any, any>,
+  TAliasedFakers extends {
+    [name: string]: (faker: Faker, count: number) => any;
+  }
+> = (
+  faker: Faker,
+  count: number
+) => Simplify<
+  ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>> &
+    ReturnType<typeof imageFieldsFaker> &
+    (TSchemaType extends _SchemaTypeDefinition<"image", infer THotspot, any>
+      ? THotspot extends true
+        ? ReturnType<typeof imageHotspotFaker>
+        : unknown
+      : unknown)
+>;
+
+const imageFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"image", any, any>,
+  TAliasedFakers extends {
+    [name: string]: (faker: Faker, count: number) => any;
+  }
+>(
+  schema: TSchemaType,
+  getFakers: () => TAliasedFakers,
+  documentIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string,
+  referencedIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string
+): ImageFaker<TSchemaType, TAliasedFakers> =>
+  ((faker: Faker, count: number) => ({
+    ...imageFieldsFaker(faker),
+    ...typedTernary(
+      !schema.options?.hotspot as Negate<
+        TSchemaType extends _SchemaTypeDefinition<"image", infer THotspot, any>
+          ? THotspot
+          : never
+      >,
+      () => ({}),
+      () => imageHotspotFaker(faker)
+    ),
+    ...fieldsFaker(
+      schema,
+      getFakers,
+      documentIdFaker,
+      referencedIdFaker
+    )(faker, count),
+  })) as unknown as ImageFaker<TSchemaType, TAliasedFakers>;
+
 type SchemaTypeToFaker<
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
@@ -890,6 +964,13 @@ type SchemaTypeToFaker<
   ? ReturnType<
       typeof fileFaker<
         Extract<TSchemaType, _SchemaTypeDefinition<"file", any, any>>,
+        TAliasedFakers
+      >
+    >
+  : TSchemaType["type"] extends "image"
+  ? ReturnType<
+      typeof imageFaker<
+        Extract<TSchemaType, _SchemaTypeDefinition<"image", any, any>>,
         TAliasedFakers
       >
     >
@@ -994,6 +1075,16 @@ const schemaTypeToFaker = <
     : schema.type === "file"
     ? fileFaker(
         schema as Extract<TSchemaType, _SchemaTypeDefinition<"file", any, any>>,
+        getFakers,
+        documentIdFaker,
+        referencedIdFaker
+      )
+    : schema.type === "image"
+    ? imageFaker(
+        schema as Extract<
+          TSchemaType,
+          _SchemaTypeDefinition<"image", any, any>
+        >,
         getFakers,
         documentIdFaker,
         referencedIdFaker
