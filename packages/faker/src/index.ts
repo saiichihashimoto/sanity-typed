@@ -332,7 +332,10 @@ const textFaker = <
   TSchemaType extends _SchemaTypeDefinition<"text", string, any>
 >(
   schemaType: TSchemaType
-) => stringAndTextFaker(schemaType, (faker) => faker.lorem.lines());
+) =>
+  stringAndTextFaker(schemaType, (faker) =>
+    faker.lorem.paragraphs({ min: 1, max: 5 })
+  );
 
 const urlFaker = <
   TSchemaType extends _SchemaTypeDefinition<"url", string, any>
@@ -411,15 +414,7 @@ const addKey =
   };
 
 type MembersFaker<
-  TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
-  TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
-  }
-> = (
-  faker: Faker,
-  count: number
-) => TSchemaType extends {
-  of: (infer TMemberDefinition extends _ArrayMemberDefinition<
+  TMemberDefinitions extends _ArrayMemberDefinition<
     any,
     any,
     any,
@@ -429,8 +424,24 @@ type MembersFaker<
     any,
     any,
     any
-  >)[];
-}
+  >[],
+  TAliasedFakers extends {
+    [name: string]: (faker: Faker, count: number) => any;
+  }
+> = (
+  faker: Faker,
+  count: number
+) => TMemberDefinitions extends (infer TMemberDefinition extends _ArrayMemberDefinition<
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any
+>)[]
   ? (TMemberDefinition extends never
       ? never
       : ReturnType<
@@ -449,6 +460,87 @@ type MembersFaker<
   : never;
 
 const membersFaker = <
+  TMemberDefinitions extends _ArrayMemberDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >[],
+  TAliasedFakers extends {
+    [name: string]: (faker: Faker, count: number) => any;
+  }
+>(
+  members: TMemberDefinitions,
+  getFakers: () => TAliasedFakers,
+  documentIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string,
+  referencedIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string,
+  {
+    min = 1,
+    max = 5,
+    unique = false,
+  }: { max?: number; min?: number; unique?: boolean }
+): MembersFaker<TMemberDefinitions, TAliasedFakers> => {
+  const memberFakers = members.map((member) =>
+    addType(member.name)(
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+      schemaTypeToFaker(member, getFakers, documentIdFaker, referencedIdFaker)
+    )
+  );
+
+  const memberFaker = (faker: Faker, count: number) =>
+    faker.helpers.arrayElement(memberFakers)(faker, count);
+
+  // @ts-expect-error -- FIXME
+  return unique
+    ? (faker: Faker, count: number) =>
+        faker.helpers
+          .uniqueArray(
+            () => stringify(memberFaker(faker, count)),
+            faker.number.int({ min, max })
+          )
+          .map((value) =>
+            addKey(() => JSON.parse(value) as ReturnType<typeof memberFaker>)(
+              faker,
+              count
+            )
+          )
+    : (faker: Faker, count: number) =>
+        Array.from({ length: faker.number.int({ min, max }) }).map(() =>
+          addKey(memberFaker)(faker, count)
+        );
+};
+
+type ArrayFaker<
+  TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
+  TAliasedFakers extends {
+    [name: string]: (faker: Faker, count: number) => any;
+  }
+> = TSchemaType extends {
+  of: infer TMemberDefinitions extends _ArrayMemberDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >[];
+}
+  ? ReturnType<typeof membersFaker<TMemberDefinitions, TAliasedFakers>>
+  : never;
+
+const arrayFaker = <
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: Faker, count: number) => any;
@@ -462,22 +554,7 @@ const membersFaker = <
   referencedIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string
-): MembersFaker<TSchemaType, TAliasedFakers> => {
-  type TMemberDefinition = TSchemaType extends {
-    of: (infer TMemberDefinition)[];
-  }
-    ? TMemberDefinition
-    : never;
-  const memberFakers = schemaType.of.map((member: TMemberDefinition) =>
-    addType(member.name)(
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-      schemaTypeToFaker(member, getFakers, documentIdFaker, referencedIdFaker)
-    )
-  );
-
-  const memberFaker = (faker: Faker, count: number) =>
-    faker.helpers.arrayElement(memberFakers)(faker, count);
-
+): ArrayFaker<TSchemaType, TAliasedFakers> => {
   const traversal = traverseValidation(schemaType);
 
   // TODO Handle multiple length, somehow
@@ -502,40 +579,71 @@ const membersFaker = <
     minChosen ?? (maxChosen !== undefined ? Math.max(0, maxChosen - 4) : 1);
   const max = maxChosen ?? (minChosen !== undefined ? minChosen + 4 : 5);
 
-  // @ts-expect-error -- FIXME
-  return traversal.unique?.length
-    ? (faker: Faker, count: number) =>
-        faker.helpers
-          .uniqueArray(
-            () => stringify(memberFaker(faker, count)),
-            faker.number.int({ min, max })
-          )
-          .map((value) =>
-            addKey(() => JSON.parse(value) as ReturnType<typeof memberFaker>)(
-              faker,
-              count
-            )
-          )
-    : (faker: Faker, count: number) =>
-        Array.from({ length: faker.number.int({ min, max }) }).map(() =>
-          addKey(memberFaker)(faker, count)
-        );
+  return membersFaker(
+    schemaType.of as TSchemaType extends {
+      of: infer TMemberDefinitionsInner;
+    }
+      ? TMemberDefinitionsInner
+      : never,
+    getFakers,
+    documentIdFaker,
+    referencedIdFaker,
+    { min, max, unique: Boolean(traversal.unique?.length) }
+  ) as ArrayFaker<TSchemaType, TAliasedFakers>;
 };
 
-type ArrayFaker<
-  TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
+const spanFaker = (faker: Faker) => ({
+  _key: faker.database.mongodbObjectId(),
+  _type: "span" as const,
+  text: faker.lorem.paragraph({ min: 1, max: 5 }),
+  ...(true ? {} : { marks: ["string"] }),
+});
+
+const blockFieldsFaker = {
+  _type: "block" as const,
+  ...(true ? {} : { level: 0 }),
+  ...(true ? {} : { listItem: "string" }),
+  ...(true ? {} : { style: "normal" }),
+  ...(true ? {} : { markDefs: [{ _key: "key", _type: "type" }] }),
+};
+
+type BlockFaker<
+  TSchemaType extends _SchemaTypeDefinition<"block", any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: Faker, count: number) => any;
   }
-> = ReturnType<typeof membersFaker<TSchemaType, TAliasedFakers>>;
+> = (
+  faker: Faker,
+  index: number
+) => Simplify<
+  typeof blockFieldsFaker & {
+    children: (TSchemaType extends {
+      of?: infer TMemberDefinitions extends _ArrayMemberDefinition<
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any
+      >[];
+    }
+      ?
+          | ReturnType<MembersFaker<TMemberDefinitions, TAliasedFakers>>[number]
+          | ReturnType<typeof spanFaker>
+      : ReturnType<typeof spanFaker>)[];
+  }
+>;
 
-const arrayFaker = <
-  TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
+const blockFaker = <
+  TSchemaType extends _SchemaTypeDefinition<"block", any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: Faker, count: number) => any;
   }
 >(
-  schemaType: TSchemaType,
+  { of }: TSchemaType,
   getFakers: () => TAliasedFakers,
   documentIdFaker: (
     type: string | undefined
@@ -543,13 +651,45 @@ const arrayFaker = <
   referencedIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string
-): ArrayFaker<TSchemaType, TAliasedFakers> =>
-  membersFaker(
-    schemaType,
-    getFakers,
-    documentIdFaker,
-    referencedIdFaker
-  ) as ArrayFaker<TSchemaType, TAliasedFakers>;
+): BlockFaker<TSchemaType, TAliasedFakers> =>
+  ((faker: Faker, index: number) => {
+    type TMemberDefinitions = TSchemaType extends {
+      of?: infer TMemberDefinitionsInner extends _ArrayMemberDefinition<
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any,
+        any
+      >[];
+    }
+      ? TMemberDefinitionsInner
+      : never;
+    const members = (of as TMemberDefinitions) ?? [];
+
+    const length = faker.number.int({ min: 1, max: 5 });
+    const numSpans =
+      members.length === 0 ? length : faker.number.int({ min: 0, max: length });
+
+    return {
+      ...blockFieldsFaker,
+      children: faker.helpers.shuffle([
+        ...Array.from({ length: numSpans }).map(() => spanFaker(faker)),
+        ...(numSpans === length
+          ? []
+          : membersFaker(
+              members,
+              getFakers,
+              documentIdFaker,
+              referencedIdFaker,
+              { min: length - numSpans, max: length - numSpans }
+            )(faker, index)),
+      ]),
+    };
+  }) as BlockFaker<TSchemaType, TAliasedFakers>;
 
 type FieldsFaker<
   TSchemaType extends _SchemaTypeDefinition<
@@ -946,6 +1086,13 @@ type SchemaTypeToFaker<
         TAliasedFakers
       >
     >
+  : TSchemaType["type"] extends "block"
+  ? ReturnType<
+      typeof blockFaker<
+        Extract<TSchemaType, _SchemaTypeDefinition<"block", any, any>>,
+        TAliasedFakers
+      >
+    >
   : TSchemaType["type"] extends "object"
   ? ReturnType<
       typeof objectFaker<
@@ -1047,6 +1194,16 @@ const schemaTypeToFaker = <
         schema as Extract<
           TSchemaType,
           _SchemaTypeDefinition<"array", any, any>
+        >,
+        getFakers,
+        documentIdFaker,
+        referencedIdFaker
+      )
+    : schema.type === "block"
+    ? blockFaker(
+        schema as Extract<
+          TSchemaType,
+          _SchemaTypeDefinition<"block", any, any>
         >,
         getFakers,
         documentIdFaker,

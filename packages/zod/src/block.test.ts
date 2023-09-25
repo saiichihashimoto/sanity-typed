@@ -19,7 +19,7 @@ const fields: Omit<PortableTextBlock, "_type" | "children"> = {
 
 describe("block", () => {
   describe("defineArrayMember", () => {
-    it("infers PortableTextBlock", () => {
+    it("builds parser for PortableTextBlock", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -102,7 +102,7 @@ describe("block", () => {
       >();
     });
 
-    it("infers array of members", () => {
+    it("builds parser for array of members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -145,7 +145,7 @@ describe("block", () => {
       >();
     });
 
-    it("infers unions if there are multiple members", () => {
+    it("builds parser for unions if there are multiple members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -194,7 +194,7 @@ describe("block", () => {
   });
 
   describe("defineType", () => {
-    it("infers PortableTextBlock", () => {
+    it("builds parser for PortableTextBlock", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -269,7 +269,7 @@ describe("block", () => {
       >();
     });
 
-    it("infers array of members", () => {
+    it("builds parser for array of members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -302,7 +302,7 @@ describe("block", () => {
       >();
     });
 
-    it("infers unions if there are multiple members", () => {
+    it("builds parser for unions if there are multiple members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
