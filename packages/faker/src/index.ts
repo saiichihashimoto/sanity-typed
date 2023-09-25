@@ -1,4 +1,4 @@
-import { Faker } from "@faker-js/faker";
+import type { Faker } from "@faker-js/faker";
 import stringify from "fast-json-stable-stringify";
 import { flow } from "lodash/fp";
 import RandExp from "randexp";
@@ -55,8 +55,6 @@ type _SchemaTypeDefinition<
       any,
       any
     >;
-
-type FakerOrFakerFn = Faker | (() => Faker);
 
 const constantFakers = {
   boolean: (faker: Faker) => faker.datatype.boolean(),
@@ -403,7 +401,7 @@ const addKey =
 type MembersFaker<
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 > = (faker: Faker) => TSchemaType extends {
   of: (infer TMemberDefinition extends _ArrayMemberDefinition<
@@ -438,7 +436,7 @@ type MembersFaker<
 const membersFaker = <
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 >(
   schemaType: TSchemaType,
@@ -500,14 +498,14 @@ const membersFaker = <
 type ArrayFaker<
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 > = ReturnType<typeof membersFaker<TSchemaType, TAliasedFakers>>;
 
 const arrayFaker = <
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 >(
   schemaType: TSchemaType,
@@ -525,7 +523,7 @@ type FieldsFaker<
     any
   >,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 > = TSchemaType extends {
   fields?: (infer TFieldDefinition extends _FieldDefinition<
@@ -574,7 +572,7 @@ const fieldsFaker = <
     any
   >,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 >(
   { fields = [] }: TSchemaType,
@@ -608,14 +606,14 @@ const fieldsFaker = <
 type ObjectFaker<
   TSchemaType extends _SchemaTypeDefinition<"object", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 > = ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>;
 
 const objectFaker = <
   TSchemaType extends _SchemaTypeDefinition<"object", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 >(
   schema: TSchemaType,
@@ -646,7 +644,7 @@ const documentFieldsFaker = (faker: Faker) => {
 type DocumentFaker<
   TSchemaType extends _SchemaTypeDefinition<"document", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 > = (
   faker: Faker
@@ -658,7 +656,7 @@ type DocumentFaker<
 const documentFaker = <
   TSchemaType extends _SchemaTypeDefinition<"document", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 >(
   schema: TSchemaType,
@@ -672,7 +670,7 @@ const documentFaker = <
 type SchemaTypeToFaker<
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 > = TSchemaType["type"] extends keyof typeof constantFakers
   ? (typeof constantFakers)[TSchemaType["type"]]
@@ -744,7 +742,7 @@ type SchemaTypeToFaker<
 const schemaTypeToFaker = <
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: FakerOrFakerFn) => any;
+    [name: string]: (faker: Faker) => any;
   }
 >(
   schema: TSchemaType,
@@ -826,11 +824,8 @@ const schemaTypeToFaker = <
       )
     : (undefined as never)) as SchemaTypeToFaker<TSchemaType, TAliasedFakers>;
 
-const getFaker = (faker: FakerOrFakerFn) =>
-  faker instanceof Faker ? faker : faker();
-
 const lazyFaker = <
-  MaybeFaker extends FakerOrFakerFn | undefined,
+  MaybeFaker extends Faker | undefined,
   Fn extends (faker: Faker) => any
 >(
   maybeFaker: MaybeFaker,
@@ -841,21 +836,19 @@ const lazyFaker = <
 
   // eslint-disable-next-line no-return-assign -- Lazily instantiate faker
   return (
-    ...args: undefined extends MaybeFaker
-      ? [faker: FakerOrFakerFn]
-      : [faker?: FakerOrFakerFn]
+    ...args: undefined extends MaybeFaker ? [faker: Faker] : [faker?: Faker]
   ) =>
     fn(
-      (args[0] && getFaker(args[0])) ??
+      args[0] ??
         fakerInstantiated ??
         // eslint-disable-next-line fp/no-mutation -- Lazily instantiate faker
-        (fakerInstantiated = getFaker(maybeFaker!))
+        (fakerInstantiated = maybeFaker!)
     ) as ReturnType<Fn>;
 };
 
 type SanityConfigFakers<
   TConfig extends MaybeArray<_ConfigBase<any, any>>,
-  MaybeFaker extends FakerOrFakerFn | undefined
+  MaybeFaker extends Faker | undefined
 > = TConfig extends MaybeArray<
   _ConfigBase<infer TTypeDefinition, infer TPluginOptions>
 >
@@ -880,7 +873,7 @@ type SanityConfigFakers<
 
 export const sanityConfigToFaker = <
   const TConfig extends _ConfigBase<any, any>,
-  const MaybeFaker extends FakerOrFakerFn | undefined
+  const MaybeFaker extends Faker | undefined
 >(
   {
     schema: { types: typesUntyped = [] } = {},
