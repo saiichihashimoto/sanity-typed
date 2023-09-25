@@ -200,10 +200,15 @@ const numberFaker = <
 
 const referenceFaker =
   <TSchemaType extends _SchemaTypeDefinition<"reference", any, any>>(
-    schemaType: TSchemaType
+    schemaType: TSchemaType,
+    referencedIdFaker: (
+      type: string | undefined
+    ) => (faker: Faker, index: number) => string
   ) =>
-  (faker: Faker) => ({
-    _ref: faker.string.uuid(),
+  (faker: Faker, count: number) => ({
+    _ref: referencedIdFaker(
+      faker.helpers.arrayElement(schemaType.to.map(({ type }) => type))
+    )(faker, count),
     _type: "reference" as const,
     ...({} as {
       [_referenced]: TSchemaType extends _SchemaTypeDefinition<
@@ -214,6 +219,7 @@ const referenceFaker =
         ? TReferenced
         : never;
     }),
+    // TODO weak references and strengthenOnPublish
     ...(true ? {} : { _weak: false }),
     ...(true
       ? {}
@@ -357,9 +363,9 @@ const urlFaker = <
 
 const addType =
   <const Type extends string | undefined>(type: Type) =>
-  <Fn extends (faker: Faker) => any>(fn: Fn) =>
-  (faker: Faker) => {
-    const value: ReturnType<Fn> = fn(faker);
+  <Fn extends (faker: Faker, count: number) => any>(fn: Fn) =>
+  (faker: Faker, count: number) => {
+    const value: ReturnType<Fn> = fn(faker, count);
 
     // TODO typedTernary
     return (
@@ -380,16 +386,16 @@ const addType =
 
 const _addType = <
   const Type extends string | undefined,
-  Fn extends (faker: Faker) => any
+  Fn extends (faker: Faker, count: number) => any
 >(
   type: Type,
   fn: Fn
 ) => addType(type)(fn);
 
 const addKey =
-  <Fn extends (faker: Faker) => any>(fn: Fn) =>
-  (faker: Faker) => {
-    const value = fn(faker);
+  <Fn extends (faker: Faker, count: number) => any>(fn: Fn) =>
+  (faker: Faker, count: number) => {
+    const value = fn(faker, count);
 
     // TODO typedTernary
     return (
@@ -407,9 +413,12 @@ const addKey =
 type MembersFaker<
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
-> = (faker: Faker) => TSchemaType extends {
+> = (
+  faker: Faker,
+  count: number
+) => TSchemaType extends {
   of: (infer TMemberDefinition extends _ArrayMemberDefinition<
     any,
     any,
@@ -442,11 +451,17 @@ type MembersFaker<
 const membersFaker = <
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
 >(
   schemaType: TSchemaType,
-  getFakers: () => TAliasedFakers
+  getFakers: () => TAliasedFakers,
+  documentIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string,
+  referencedIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string
 ): MembersFaker<TSchemaType, TAliasedFakers> => {
   type TMemberDefinition = TSchemaType extends {
     of: (infer TMemberDefinition)[];
@@ -456,12 +471,12 @@ const membersFaker = <
   const memberFakers = schemaType.of.map((member: TMemberDefinition) =>
     addType(member.name)(
       // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-      schemaTypeToFaker(member, getFakers)
+      schemaTypeToFaker(member, getFakers, documentIdFaker, referencedIdFaker)
     )
   );
 
-  const memberFaker = (faker: Faker) =>
-    faker.helpers.arrayElement(memberFakers)(faker);
+  const memberFaker = (faker: Faker, count: number) =>
+    faker.helpers.arrayElement(memberFakers)(faker, count);
 
   const traversal = traverseValidation(schemaType);
 
@@ -489,43 +504,52 @@ const membersFaker = <
 
   // @ts-expect-error -- FIXME
   return traversal.unique?.length
-    ? (faker: Faker) =>
+    ? (faker: Faker, count: number) =>
         faker.helpers
           .uniqueArray(
-            () => stringify(memberFaker(faker)),
+            () => stringify(memberFaker(faker, count)),
             faker.number.int({ min, max })
           )
           .map((value) =>
             addKey(() => JSON.parse(value) as ReturnType<typeof memberFaker>)(
-              faker
+              faker,
+              count
             )
           )
-    : (faker: Faker) =>
+    : (faker: Faker, count: number) =>
         Array.from({ length: faker.number.int({ min, max }) }).map(() =>
-          addKey(memberFaker)(faker)
+          addKey(memberFaker)(faker, count)
         );
 };
 
 type ArrayFaker<
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
 > = ReturnType<typeof membersFaker<TSchemaType, TAliasedFakers>>;
 
 const arrayFaker = <
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
 >(
   schemaType: TSchemaType,
-  getFakers: () => TAliasedFakers
+  getFakers: () => TAliasedFakers,
+  documentIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string,
+  referencedIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string
 ): ArrayFaker<TSchemaType, TAliasedFakers> =>
-  membersFaker(schemaType, getFakers) as ArrayFaker<
-    TSchemaType,
-    TAliasedFakers
-  >;
+  membersFaker(
+    schemaType,
+    getFakers,
+    documentIdFaker,
+    referencedIdFaker
+  ) as ArrayFaker<TSchemaType, TAliasedFakers>;
 
 type FieldsFaker<
   TSchemaType extends _SchemaTypeDefinition<
@@ -534,7 +558,7 @@ type FieldsFaker<
     any
   >,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
 > = TSchemaType extends {
   fields?: (infer TFieldDefinition extends _FieldDefinition<
@@ -549,7 +573,10 @@ type FieldsFaker<
     any
   >)[];
 }
-  ? (faker: Faker) => Simplify<
+  ? (
+      faker: Faker,
+      count: number
+    ) => Simplify<
       {
         [Name in Extract<
           TFieldDefinition,
@@ -583,11 +610,17 @@ const fieldsFaker = <
     any
   >,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
 >(
   { fields = [] }: TSchemaType,
-  getFakers: () => TAliasedFakers
+  getFakers: () => TAliasedFakers,
+  documentIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string,
+  referencedIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string
 ): FieldsFaker<TSchemaType, TAliasedFakers> => {
   const fieldsFakers = (
     fields as _FieldDefinition<any, any, any, any, any, any, any, any, any>[]
@@ -598,19 +631,29 @@ const fieldsFaker = <
         // TODO typedTernary
         traverseValidation(field).required?.length
           ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-            schemaTypeToFaker(field, getFakers)
-          : (faker: Faker) =>
+            schemaTypeToFaker(
+              field,
+              getFakers,
+              documentIdFaker,
+              referencedIdFaker
+            )
+          : (faker: Faker, count: number) =>
               faker.datatype.boolean()
                 ? undefined
                 : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-                  schemaTypeToFaker(field, getFakers)(faker),
+                  schemaTypeToFaker(
+                    field,
+                    getFakers,
+                    documentIdFaker,
+                    referencedIdFaker
+                  )(faker, count),
       ] as const
   );
 
-  return ((faker: Faker) =>
+  return ((faker: Faker, count: number) =>
     Object.fromEntries(
       fieldsFakers
-        .map(([name, fieldFaker]) => [name, fieldFaker(faker)] as const)
+        .map(([name, fieldFaker]) => [name, fieldFaker(faker, count)] as const)
         .filter(([, value]) => value !== undefined)
     )) as FieldsFaker<TSchemaType, TAliasedFakers>;
 };
@@ -618,22 +661,37 @@ const fieldsFaker = <
 type ObjectFaker<
   TSchemaType extends _SchemaTypeDefinition<"object", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
 > = ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>;
 
 const objectFaker = <
   TSchemaType extends _SchemaTypeDefinition<"object", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
 >(
   schema: TSchemaType,
-  getFakers: () => TAliasedFakers
+  getFakers: () => TAliasedFakers,
+  documentIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string,
+  referencedIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string
 ): ObjectFaker<TSchemaType, TAliasedFakers> =>
-  fieldsFaker(schema, getFakers) as ObjectFaker<TSchemaType, TAliasedFakers>;
+  fieldsFaker(
+    schema,
+    getFakers,
+    documentIdFaker,
+    referencedIdFaker
+  ) as ObjectFaker<TSchemaType, TAliasedFakers>;
 
-const documentFieldsFaker = (faker: Faker) => {
+const documentFieldsFaker = (
+  faker: Faker,
+  count: number,
+  documentIdFaker: (faker: Faker, index: number) => string
+) => {
   const createdAt = faker.date.between({
     from: "1990-01-01T00:00:00.000Z",
     to: "2030-01-01T00:00:00.000Z",
@@ -641,7 +699,7 @@ const documentFieldsFaker = (faker: Faker) => {
 
   return {
     _createdAt: createdAt.toISOString(),
-    _id: faker.string.uuid(),
+    _id: documentIdFaker(faker, count),
     _rev: faker.string.alphanumeric(22),
     _type: "document" as const,
     _updatedAt: faker.date
@@ -656,7 +714,7 @@ const documentFieldsFaker = (faker: Faker) => {
 type DocumentFaker<
   TSchemaType extends _SchemaTypeDefinition<"document", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
 > = (
   faker: Faker
@@ -668,21 +726,32 @@ type DocumentFaker<
 const documentFaker = <
   TSchemaType extends _SchemaTypeDefinition<"document", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
 >(
   schema: TSchemaType,
-  getFakers: () => TAliasedFakers
+  getFakers: () => TAliasedFakers,
+  documentIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string,
+  referencedIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string
 ): DocumentFaker<TSchemaType, TAliasedFakers> =>
-  ((faker: Faker) => ({
-    ...documentFieldsFaker(faker),
-    ...fieldsFaker(schema, getFakers)(faker),
+  ((faker: Faker, count: number) => ({
+    ...documentFieldsFaker(faker, count, documentIdFaker(schema.name)),
+    ...fieldsFaker(
+      schema,
+      getFakers,
+      documentIdFaker,
+      referencedIdFaker
+    )(faker, count),
   })) as DocumentFaker<TSchemaType, TAliasedFakers>;
 
 type SchemaTypeToFaker<
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
 > = TSchemaType["type"] extends keyof typeof constantFakers
   ? (typeof constantFakers)[TSchemaType["type"]]
@@ -754,11 +823,17 @@ type SchemaTypeToFaker<
 const schemaTypeToFaker = <
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker) => any;
+    [name: string]: (faker: Faker, count: number) => any;
   }
 >(
   schema: TSchemaType,
-  getFakers: () => TAliasedFakers
+  getFakers: () => TAliasedFakers,
+  documentIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string,
+  referencedIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string
 ): SchemaTypeToFaker<TSchemaType, TAliasedFakers> =>
   (schema.type in constantFakers
     ? constantFakers[
@@ -787,7 +862,8 @@ const schemaTypeToFaker = <
         schema as Extract<
           TSchemaType,
           _SchemaTypeDefinition<"reference", any, any>
-        >
+        >,
+        referencedIdFaker
       )
     : schema.type === "string"
     ? stringFaker(
@@ -816,7 +892,9 @@ const schemaTypeToFaker = <
           TSchemaType,
           _SchemaTypeDefinition<"array", any, any>
         >,
-        getFakers
+        getFakers,
+        documentIdFaker,
+        referencedIdFaker
       )
     : schema.type === "object"
     ? objectFaker(
@@ -824,7 +902,9 @@ const schemaTypeToFaker = <
           TSchemaType,
           _SchemaTypeDefinition<"object", any, any>
         >,
-        getFakers
+        getFakers,
+        documentIdFaker,
+        referencedIdFaker
       )
     : schema.type === "document"
     ? documentFaker(
@@ -832,9 +912,88 @@ const schemaTypeToFaker = <
           TSchemaType,
           _SchemaTypeDefinition<"document", any, any>
         >,
-        getFakers
+        getFakers,
+        documentIdFaker,
+        referencedIdFaker
       )
     : (undefined as never)) as SchemaTypeToFaker<TSchemaType, TAliasedFakers>;
+
+const sanityConfigToFakerInner = <const TConfig extends _ConfigBase<any, any>>(
+  {
+    schema: { types: typesUntyped = [] } = {},
+    plugins: pluginsUntyped = [],
+  }: TConfig,
+  documentIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string,
+  referencedIdFaker: (
+    type: string | undefined
+  ) => (faker: Faker, index: number) => string
+) => {
+  type TTypeDefinition = TConfig extends _ConfigBase<infer TTypeDefinition, any>
+    ? TTypeDefinition
+    : never;
+
+  const types = typesUntyped as NonNullable<
+    NonNullable<_ConfigBase<TTypeDefinition, any>["schema"]>["types"]
+  >;
+
+  type TPluginOptions = TConfig extends _ConfigBase<any, infer TPluginOptions>
+    ? TPluginOptions
+    : never;
+
+  const plugins = pluginsUntyped as TPluginOptions[];
+
+  type SanityConfigFakers<TConfig extends MaybeArray<_ConfigBase<any, any>>> =
+    TConfig extends MaybeArray<
+      _ConfigBase<infer TTypeDefinition, infer TPluginOptions>
+    >
+      ? {
+          [Name in TTypeDefinition["name"]]: ReturnType<
+            typeof _addType<
+              Name,
+              SchemaTypeToFaker<
+                Extract<TTypeDefinition, { name: Name }>,
+                SanityConfigFakers<TConfig> & SanityConfigFakers<TPluginOptions>
+              >
+            >
+          >;
+        }
+      : never;
+
+  const pluginsFakers = plugins
+    .map((plugin) =>
+      sanityConfigToFakerInner(plugin, documentIdFaker, referencedIdFaker)
+    )
+    .reduce(
+      (acc, zods) => ({ ...acc, ...zods }),
+      {} as SanityConfigFakers<TPluginOptions>
+    );
+
+  const fakers: SanityConfigFakers<TConfig> = Array.isArray(types)
+    ? Object.fromEntries(
+        types.map((type) => {
+          const schemaTypeFaker = schemaTypeToFaker(
+            type,
+            () => ({
+              ...pluginsFakers,
+              ...fakers,
+            }),
+            documentIdFaker,
+            referencedIdFaker
+          );
+
+          return [
+            type.name,
+            addType(type.name as TTypeDefinition["name"])(schemaTypeFaker),
+          ];
+        })
+      )
+    : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
+      (undefined as never);
+
+  return fakers;
+};
 
 const lazyFaker =
   <MaybeFaker extends Faker | undefined>(maybeFaker: MaybeFaker) =>
@@ -853,89 +1012,71 @@ const _lazyFaker = <
   fn: Fn
 ) => lazyFaker(maybeFaker)(fn);
 
-type SanityConfigFakers<
-  TConfig extends MaybeArray<_ConfigBase<any, any>>,
-  MaybeFaker extends Faker | undefined
-> = TConfig extends MaybeArray<
-  _ConfigBase<infer TTypeDefinition, infer TPluginOptions>
->
-  ? {
-      [Name in TTypeDefinition["name"]]: ReturnType<
-        typeof _lazyFaker<
-          MaybeFaker,
-          ReturnType<
-            typeof _addType<
-              Name,
-              SchemaTypeToFaker<
-                Extract<TTypeDefinition, { name: Name }>,
-                SanityConfigFakers<TConfig, MaybeFaker> &
-                  SanityConfigFakers<TPluginOptions, MaybeFaker>
-              >
-            >
-          >
-        >
-      >;
-    }
-  : never;
+const counter = <Fn extends (faker: Faker, count: number) => any>(fn: Fn) => {
+  // eslint-disable-next-line fp/no-let -- Mutable
+  let count = -1;
+
+  // eslint-disable-next-line no-return-assign -- Mutable
+  return (faker: Faker) =>
+    fn(
+      faker,
+      // eslint-disable-next-line fp/no-mutation -- Mutable
+      (count += 1)
+    ) as ReturnType<Fn>;
+};
 
 export const sanityConfigToFaker = <
   const TConfig extends _ConfigBase<any, any>,
   const MaybeFaker extends Faker | undefined
 >(
+  config: TConfig,
   {
-    schema: { types: typesUntyped = [] } = {},
-    plugins: pluginsUntyped = [],
-  }: TConfig,
-  options: {
-    faker?: MaybeFaker;
-  } = {}
+    faker,
+    referencedChunkSize = 5,
+  }: { faker?: MaybeFaker; referencedChunkSize?: number } = {}
 ) => {
-  type TTypeDefinition = TConfig extends _ConfigBase<infer TTypeDefinition, any>
-    ? TTypeDefinition
-    : never;
+  const documentIdMemos: { [type: string]: { [index: number]: string } } = {};
+  const documentIdFaker = (type: string | undefined) =>
+    !type
+      ? (faker: Faker) => faker.string.uuid()
+      : (faker: Faker, index: number) => {
+          if (!documentIdMemos[type]?.[index]) {
+            // eslint-disable-next-line fp/no-mutation -- Mutable
+            documentIdMemos[type] = {
+              ...documentIdMemos[type],
+              [index]: faker.string.uuid(),
+            };
+          }
 
-  const types = typesUntyped as NonNullable<
-    NonNullable<_ConfigBase<TTypeDefinition, any>["schema"]>["types"]
-  >;
-
-  type TPluginOptions = TConfig extends _ConfigBase<any, infer TPluginOptions>
-    ? TPluginOptions
-    : never;
-
-  const plugins = pluginsUntyped as TPluginOptions[];
-
-  const pluginsFakers = plugins
-    .map(
-      (plugin) =>
-        sanityConfigToFaker(plugin, options) as SanityConfigFakers<
-          TPluginOptions,
-          MaybeFaker
-        >
-    )
-    .reduce(
-      (acc, zods) => ({ ...acc, ...zods }),
-      {} as SanityConfigFakers<TPluginOptions, MaybeFaker>
-    );
-
-  const fakers: SanityConfigFakers<TConfig, MaybeFaker> = Array.isArray(types)
-    ? Object.fromEntries(
-        types.map((type) => {
-          const schemaTypeFaker = schemaTypeToFaker(type, () => ({
-            ...pluginsFakers,
-            ...fakers,
-          }));
-
-          return [
-            type.name,
-            flow(
-              addType(type.name as TTypeDefinition["name"]),
-              lazyFaker(options.faker)
-            )(schemaTypeFaker),
-          ];
+          return documentIdMemos[type]![index]!;
+        };
+  const referencedIdFaker =
+    (type: string | undefined) => (faker: Faker, index: number) =>
+      documentIdFaker(type)(
+        faker,
+        faker.number.int({
+          min: index - (index % referencedChunkSize),
+          max: index - (index % referencedChunkSize) + referencedChunkSize - 1,
         })
-      )
-    : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
-      (undefined as never);
+      );
 
-  return fakers;
+  const fakersInner = sanityConfigToFakerInner(
+    config,
+    documentIdFaker,
+    referencedIdFaker
+  );
+
+  return Object.fromEntries(
+    Object.entries(fakersInner).map(
+      ([name, typeFaker]) =>
+        [name, flow(counter, lazyFaker(faker))(typeFaker)] as const
+    )
+  ) as {
+    [type in keyof typeof fakersInner]: ReturnType<
+      typeof _lazyFaker<
+        MaybeFaker,
+        ReturnType<typeof counter<(typeof fakersInner)[type]>>
+      >
+    >;
+  };
 };
