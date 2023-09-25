@@ -11,6 +11,7 @@ import type {
   _ConfigBase,
   _FieldDefinition,
   _TypeDefinition,
+  _referenced,
 } from "@sanity-typed/types";
 import { typedTernary } from "@sanity-typed/utils";
 import type { MaybeArray } from "@sanity-typed/utils";
@@ -200,7 +201,40 @@ const numberFaker = <
   );
 };
 
-// TODO referenceFaker
+const referenceFaker =
+  <TSchemaType extends _SchemaTypeDefinition<"reference", any, any>>(
+    schemaType: TSchemaType
+  ) =>
+  (faker: Faker) => ({
+    _ref: faker.string.uuid(),
+    _type: "reference" as const,
+    ...({} as {
+      [_referenced]: TSchemaType extends _SchemaTypeDefinition<
+        "reference",
+        any,
+        infer TReferenced
+      >
+        ? TReferenced
+        : never;
+    }),
+    ...(true ? {} : { _weak: false }),
+    ...(true
+      ? {}
+      : {
+          _strengthenOnPublish: {
+            type: "string",
+            ...(true ? {} : { weak: false }),
+            ...(true
+              ? {}
+              : {
+                  template: {
+                    id: "string",
+                    params: {} as { [key: string]: boolean | number | string },
+                  },
+                }),
+          },
+        }),
+  });
 
 const randexpWithFaker = (faker: Faker, regex: RegExp) => {
   const randexp = new RandExp(regex);
@@ -366,36 +400,10 @@ const addKey =
       : Omit<ReturnType<Fn>, "_key"> & { _key: string };
   };
 
-const synchronizedFakers = <Fn extends (faker: Faker) => any>(fn: Fn) => {
-  const results: ReturnType<Fn>[] = [];
-
-  return () => {
-    // eslint-disable-next-line fp/no-let -- Lazy instantiation
-    let counter = -1;
-
-    return (faker: Faker) => {
-      // eslint-disable-next-line fp/no-mutation -- Lazy instantiation
-      counter += 1;
-
-      if (results.length <= counter) {
-        // eslint-disable-next-line fp/no-unused-expression, fp/no-mutating-methods -- Lazy instantiation
-        results.push(fn(faker));
-      }
-
-      return results[counter]!;
-    };
-  };
-};
-
 type MembersFaker<
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
 > = (faker: Faker) => TSchemaType extends {
   of: (infer TMemberDefinition extends _ArrayMemberDefinition<
@@ -419,11 +427,7 @@ type MembersFaker<
                 typeof addType<
                   TMemberDefinition["name"],
                   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-                  SchemaTypeToFaker<
-                    TMemberDefinition,
-                    TAliasedFakers,
-                    TDocumentIdFakerMakers
-                  >
+                  SchemaTypeToFaker<TMemberDefinition, TAliasedFakers>
                 >
               >
             >
@@ -435,22 +439,16 @@ const membersFaker = <
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
 >(
   schemaType: TSchemaType,
-  getFakers: () => TAliasedFakers,
-  documentIdFakerMakers: TDocumentIdFakerMakers
-): MembersFaker<TSchemaType, TAliasedFakers, TDocumentIdFakerMakers> => {
+  getFakers: () => TAliasedFakers
+): MembersFaker<TSchemaType, TAliasedFakers> => {
   const memberFakers = schemaType.of.map((member) =>
     addType(
       member.name,
       // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-      schemaTypeToFaker(member, getFakers, documentIdFakerMakers)
+      schemaTypeToFaker(member, getFakers)
     )
   );
 
@@ -503,35 +501,21 @@ type ArrayFaker<
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
-> = ReturnType<
-  typeof membersFaker<TSchemaType, TAliasedFakers, TDocumentIdFakerMakers>
->;
+> = ReturnType<typeof membersFaker<TSchemaType, TAliasedFakers>>;
 
 const arrayFaker = <
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
 >(
   schemaType: TSchemaType,
-  getFakers: () => TAliasedFakers,
-  documentIdFakerMakers: TDocumentIdFakerMakers
-): ArrayFaker<TSchemaType, TAliasedFakers, TDocumentIdFakerMakers> =>
-  membersFaker(schemaType, getFakers, documentIdFakerMakers) as ArrayFaker<
+  getFakers: () => TAliasedFakers
+): ArrayFaker<TSchemaType, TAliasedFakers> =>
+  membersFaker(schemaType, getFakers) as ArrayFaker<
     TSchemaType,
-    TAliasedFakers,
-    TDocumentIdFakerMakers
+    TAliasedFakers
   >;
 
 type FieldsFaker<
@@ -542,11 +526,6 @@ type FieldsFaker<
   >,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
 > = TSchemaType extends {
   fields?: (infer TFieldDefinition extends _FieldDefinition<
@@ -570,8 +549,7 @@ type FieldsFaker<
           // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
           SchemaTypeToFaker<
             Extract<TFieldDefinition, { name: Name }>,
-            TAliasedFakers,
-            TDocumentIdFakerMakers
+            TAliasedFakers
           >
         >;
       } & {
@@ -582,8 +560,7 @@ type FieldsFaker<
           // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
           SchemaTypeToFaker<
             Extract<TFieldDefinition, { name: Name }>,
-            TAliasedFakers,
-            TDocumentIdFakerMakers
+            TAliasedFakers
           >
         >;
       }
@@ -598,17 +575,11 @@ const fieldsFaker = <
   >,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
 >(
   { fields = [] }: TSchemaType,
-  getFakers: () => TAliasedFakers,
-  documentIdFakerMakers: TDocumentIdFakerMakers
-): FieldsFaker<TSchemaType, TAliasedFakers, TDocumentIdFakerMakers> => {
+  getFakers: () => TAliasedFakers
+): FieldsFaker<TSchemaType, TAliasedFakers> => {
   const fieldsFakers = (
     fields as _FieldDefinition<any, any, any, any, any, any, any, any, any>[]
   ).map(
@@ -617,16 +588,12 @@ const fieldsFaker = <
         field.name as string,
         traverseValidation(field).required?.length
           ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-            schemaTypeToFaker(field, getFakers, documentIdFakerMakers)
+            schemaTypeToFaker(field, getFakers)
           : (faker: Faker) =>
               faker.datatype.boolean()
                 ? undefined
                 : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-                  schemaTypeToFaker(
-                    field,
-                    getFakers,
-                    documentIdFakerMakers
-                  )(faker),
+                  schemaTypeToFaker(field, getFakers)(faker),
       ] as const
   );
 
@@ -635,77 +602,44 @@ const fieldsFaker = <
       fieldsFakers
         .map(([name, fieldFaker]) => [name, fieldFaker(faker)] as const)
         .filter(([, value]) => value !== undefined)
-    )) as FieldsFaker<TSchemaType, TAliasedFakers, TDocumentIdFakerMakers>;
+    )) as FieldsFaker<TSchemaType, TAliasedFakers>;
 };
 
 type ObjectFaker<
   TSchemaType extends _SchemaTypeDefinition<"object", any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
-> = ReturnType<
-  typeof fieldsFaker<TSchemaType, TAliasedFakers, TDocumentIdFakerMakers>
->;
+> = ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>;
 
 const objectFaker = <
   TSchemaType extends _SchemaTypeDefinition<"object", any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
 >(
   schema: TSchemaType,
-  getFakers: () => TAliasedFakers,
-  documentIdFakerMakers: TDocumentIdFakerMakers
-): ObjectFaker<TSchemaType, TAliasedFakers, TDocumentIdFakerMakers> =>
-  fieldsFaker(schema, getFakers, documentIdFakerMakers) as ObjectFaker<
-    TSchemaType,
-    TAliasedFakers,
-    TDocumentIdFakerMakers
-  >;
+  getFakers: () => TAliasedFakers
+): ObjectFaker<TSchemaType, TAliasedFakers> =>
+  fieldsFaker(schema, getFakers) as ObjectFaker<TSchemaType, TAliasedFakers>;
 
-const documentIdFaker = (faker: Faker) => faker.string.uuid();
+const documentFieldsFaker = (faker: Faker) => {
+  const createdAt = faker.date.between({
+    from: "1990-01-01T00:00:00.000Z",
+    to: "2030-01-01T00:00:00.000Z",
+  });
 
-const documentFieldsFaker = <
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
-  }
->(
-  name: string | undefined,
-  documentIdFakerMakers: TDocumentIdFakerMakers
-) => {
-  const documentIdFakerMade =
-    (!name ? undefined : documentIdFakerMakers[name]?.()) ?? documentIdFaker;
-
-  return (faker: Faker) => {
-    const createdAt = faker.date.between({
-      from: "1990-01-01T00:00:00.000Z",
-      to: "2030-01-01T00:00:00.000Z",
-    });
-
-    return {
-      _createdAt: createdAt.toISOString(),
-      _id: documentIdFakerMade(faker),
-      _rev: faker.string.alphanumeric(22),
-      _type: "document" as const,
-      _updatedAt: faker.date
-        .between({
-          from: createdAt,
-          to: "2030-01-01T00:00:00.000Z",
-        })
-        .toISOString(),
-    };
+  return {
+    _createdAt: createdAt.toISOString(),
+    _id: faker.string.uuid(),
+    _rev: faker.string.alphanumeric(22),
+    _type: "document" as const,
+    _updatedAt: faker.date
+      .between({
+        from: createdAt,
+        to: "2030-01-01T00:00:00.000Z",
+      })
+      .toISOString(),
   };
 };
 
@@ -713,55 +647,32 @@ type DocumentFaker<
   TSchemaType extends _SchemaTypeDefinition<"document", any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
 > = (
   faker: Faker
 ) => Simplify<
-  ReturnType<
-    ReturnType<
-      typeof fieldsFaker<TSchemaType, TAliasedFakers, TDocumentIdFakerMakers>
-    >
-  > &
-    ReturnType<ReturnType<typeof documentFieldsFaker<TDocumentIdFakerMakers>>>
+  ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>> &
+    ReturnType<typeof documentFieldsFaker>
 >;
 
 const documentFaker = <
   TSchemaType extends _SchemaTypeDefinition<"document", any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
 >(
   schema: TSchemaType,
-  getFakers: () => TAliasedFakers,
-  documentIdFakerMakers: TDocumentIdFakerMakers
-): DocumentFaker<TSchemaType, TAliasedFakers, TDocumentIdFakerMakers> => {
-  const fields = documentFieldsFaker(schema.name, documentIdFakerMakers);
-
-  return ((faker: Faker) => ({
-    ...fields(faker),
-    ...fieldsFaker(schema, getFakers, documentIdFakerMakers)(faker),
-  })) as DocumentFaker<TSchemaType, TAliasedFakers, TDocumentIdFakerMakers>;
-};
+  getFakers: () => TAliasedFakers
+): DocumentFaker<TSchemaType, TAliasedFakers> =>
+  ((faker: Faker) => ({
+    ...documentFieldsFaker(faker),
+    ...fieldsFaker(schema, getFakers)(faker),
+  })) as DocumentFaker<TSchemaType, TAliasedFakers>;
 
 type SchemaTypeToFaker<
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
 > = TSchemaType["type"] extends keyof typeof constantFakers
   ? (typeof constantFakers)[TSchemaType["type"]]
@@ -781,6 +692,12 @@ type SchemaTypeToFaker<
   ? ReturnType<
       typeof numberFaker<
         Extract<TSchemaType, _SchemaTypeDefinition<"number", any, any>>
+      >
+    >
+  : TSchemaType["type"] extends "reference"
+  ? ReturnType<
+      typeof referenceFaker<
+        Extract<TSchemaType, _SchemaTypeDefinition<"reference", any, any>>
       >
     >
   : TSchemaType["type"] extends "string"
@@ -805,24 +722,21 @@ type SchemaTypeToFaker<
   ? ReturnType<
       typeof arrayFaker<
         Extract<TSchemaType, _SchemaTypeDefinition<"array", any, any>>,
-        TAliasedFakers,
-        TDocumentIdFakerMakers
+        TAliasedFakers
       >
     >
   : TSchemaType["type"] extends "object"
   ? ReturnType<
       typeof objectFaker<
         Extract<TSchemaType, _SchemaTypeDefinition<"object", any, any>>,
-        TAliasedFakers,
-        TDocumentIdFakerMakers
+        TAliasedFakers
       >
     >
   : TSchemaType["type"] extends "document"
   ? ReturnType<
       typeof documentFaker<
         Extract<TSchemaType, _SchemaTypeDefinition<"document", any, any>>,
-        TAliasedFakers,
-        TDocumentIdFakerMakers
+        TAliasedFakers
       >
     >
   : never;
@@ -831,17 +745,11 @@ const schemaTypeToFaker = <
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
     [name: string]: (faker: FakerOrFakerFn) => any;
-  },
-  TDocumentIdFakerMakers extends {
-    [name: string]: ReturnType<
-      typeof synchronizedFakers<(faker: Faker) => string>
-    >;
   }
 >(
   schema: TSchemaType,
-  getFakers: () => TAliasedFakers,
-  documentIdFakerMakers: TDocumentIdFakerMakers
-): SchemaTypeToFaker<TSchemaType, TAliasedFakers, TDocumentIdFakerMakers> =>
+  getFakers: () => TAliasedFakers
+): SchemaTypeToFaker<TSchemaType, TAliasedFakers> =>
   (schema.type in constantFakers
     ? constantFakers[
         schema.type as TSchemaType["type"] & keyof typeof constantFakers
@@ -862,6 +770,13 @@ const schemaTypeToFaker = <
         schema as Extract<
           TSchemaType,
           _SchemaTypeDefinition<"number", number, any>
+        >
+      )
+    : schema.type === "reference"
+    ? referenceFaker(
+        schema as Extract<
+          TSchemaType,
+          _SchemaTypeDefinition<"reference", any, any>
         >
       )
     : schema.type === "string"
@@ -891,8 +806,7 @@ const schemaTypeToFaker = <
           TSchemaType,
           _SchemaTypeDefinition<"array", any, any>
         >,
-        getFakers,
-        documentIdFakerMakers
+        getFakers
       )
     : schema.type === "object"
     ? objectFaker(
@@ -900,8 +814,7 @@ const schemaTypeToFaker = <
           TSchemaType,
           _SchemaTypeDefinition<"object", any, any>
         >,
-        getFakers,
-        documentIdFakerMakers
+        getFakers
       )
     : schema.type === "document"
     ? documentFaker(
@@ -909,14 +822,9 @@ const schemaTypeToFaker = <
           TSchemaType,
           _SchemaTypeDefinition<"document", any, any>
         >,
-        getFakers,
-        documentIdFakerMakers
+        getFakers
       )
-    : (undefined as never)) as SchemaTypeToFaker<
-    TSchemaType,
-    TAliasedFakers,
-    TDocumentIdFakerMakers
-  >;
+    : (undefined as never)) as SchemaTypeToFaker<TSchemaType, TAliasedFakers>;
 
 const getFaker = (faker: FakerOrFakerFn) =>
   faker instanceof Faker ? faker : faker();
@@ -961,15 +869,7 @@ type SanityConfigFakers<
               SchemaTypeToFaker<
                 Extract<TTypeDefinition, { name: Name }>,
                 SanityConfigFakers<TConfig, MaybeFaker> &
-                  SanityConfigFakers<TPluginOptions, MaybeFaker>,
-                {
-                  [name in Extract<
-                    TTypeDefinition,
-                    { type: "document" }
-                  >["name"]]: ReturnType<
-                    typeof synchronizedFakers<(faker: Faker) => string>
-                  >;
-                }
+                  SanityConfigFakers<TPluginOptions, MaybeFaker>
               >
             >
           >
@@ -998,25 +898,6 @@ export const sanityConfigToFaker = <
     NonNullable<_ConfigBase<TTypeDefinition, any>["schema"]>["types"]
   >;
 
-  const documentIdFakerMakers = Array.isArray(types)
-    ? (Object.fromEntries(
-        types
-          .filter(
-            (type): type is Extract<TTypeDefinition, { type: "document" }> =>
-              type.type === "document"
-          )
-          .map((type) => [type.name, synchronizedFakers(documentIdFaker)])
-      ) as {
-        [name in Extract<
-          TTypeDefinition,
-          { type: "document" }
-        >["name"]]: ReturnType<
-          typeof synchronizedFakers<(faker: Faker) => string>
-        >;
-      })
-    : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
-      (undefined as never);
-
   type TPluginOptions = TConfig extends _ConfigBase<any, infer TPluginOptions>
     ? TPluginOptions
     : never;
@@ -1044,14 +925,10 @@ export const sanityConfigToFaker = <
             options.faker,
             addType(
               type.name,
-              schemaTypeToFaker(
-                type,
-                () => ({
-                  ...pluginsFakers,
-                  ...fakers,
-                }),
-                documentIdFakerMakers
-              )
+              schemaTypeToFaker(type, () => ({
+                ...pluginsFakers,
+                ...fakers,
+              }))
             )
           ),
         ])
