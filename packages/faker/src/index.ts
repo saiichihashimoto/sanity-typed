@@ -1036,6 +1036,31 @@ const imageFaker = <
     )(faker, count),
   })) as unknown as ImageFaker<TSchemaType, TAliasedFakers>;
 
+type AliasFaker<
+  TSchemaType extends _SchemaTypeDefinition<any, any, any>,
+  TAliasedFakers extends {
+    [name: string]: (faker: Faker, count: number) => any;
+  }
+> = (
+  faker: Faker,
+  count: number
+) => TSchemaType["type"] extends keyof TAliasedFakers
+  ? ReturnType<TAliasedFakers[TSchemaType["type"]]>
+  : unknown;
+
+const aliasFaker =
+  <
+    TSchemaType extends _SchemaTypeDefinition<any, any, any>,
+    TAliasedFakers extends {
+      [name: string]: (faker: Faker, count: number) => any;
+    }
+  >(
+    { type }: TSchemaType,
+    getFakers: () => TAliasedFakers
+  ): AliasFaker<TSchemaType, TAliasedFakers> =>
+  (faker: Faker, count: number) =>
+    getFakers()[type]?.(faker, count) ?? (undefined as unknown);
+
 type SchemaTypeToFaker<
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
@@ -1127,7 +1152,7 @@ type SchemaTypeToFaker<
         TAliasedFakers
       >
     >
-  : never;
+  : ReturnType<typeof aliasFaker<TSchemaType, TAliasedFakers>>;
 
 const schemaTypeToFaker = <
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
@@ -1252,7 +1277,10 @@ const schemaTypeToFaker = <
         documentIdFaker,
         referencedIdFaker
       )
-    : (undefined as never)) as SchemaTypeToFaker<TSchemaType, TAliasedFakers>;
+    : aliasFaker(schema, getFakers)) as SchemaTypeToFaker<
+    TSchemaType,
+    TAliasedFakers
+  >;
 
 const sanityConfigToFakerInner = <const TConfig extends _ConfigBase<any, any>>(
   {
