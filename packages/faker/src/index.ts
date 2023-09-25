@@ -56,7 +56,13 @@ type _SchemaTypeDefinition<
 
 const constantFakers = {
   boolean: (faker: Faker) => faker.datatype.boolean(),
-  // TODO crossDatasetReference
+  crossDatasetReference: (faker: Faker) => ({
+    _dataset: "dataset",
+    _projectId: "projectId",
+    _ref: faker.string.uuid(),
+    _type: "crossDatasetReference" as const,
+    ...(true ? {} : { _weak: false }),
+  }),
   email: (faker: Faker) => faker.internet.email(),
   geopoint: (faker: Faker) => ({
     _type: "geopoint" as const,
