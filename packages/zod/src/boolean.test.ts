@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 describe("boolean", () => {
   describe("defineArrayMember", () => {
@@ -31,7 +31,7 @@ describe("boolean", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [true];
 
@@ -58,13 +58,14 @@ describe("boolean", () => {
                 defineField({
                   name: "bar",
                   type: "boolean",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -74,8 +75,8 @@ describe("boolean", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
   });
@@ -94,7 +95,7 @@ describe("boolean", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = true;
 

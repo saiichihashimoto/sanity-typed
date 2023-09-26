@@ -46,6 +46,7 @@ describe("boolean", () => {
                 defineField({
                   name: "bar",
                   type: "boolean",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -54,7 +55,7 @@ describe("boolean", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<boolean>();
     });
   });

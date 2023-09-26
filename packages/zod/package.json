@@ -19,7 +19,7 @@
     "inference"
   ],
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/zod",
-  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+is%3Aopen+label%3Azod",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {
     "type": "individual",
@@ -33,17 +33,24 @@
     "dev": "npm run build -- --no-dts"
   },
   "dependencies": {
-    "@sanity-typed/types": "0.0.0-development"
+    "@sanity-typed/traverse-validation": "0.0.0-development",
+    "@sanity-typed/types": "0.0.0-development",
+    "@sanity-typed/utils": "0.0.0-development",
+    "lodash": "4.17.21",
+    "type-fest": "4.3.1"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
+    "@types/lodash": "4.14.199",
     "sanity": "3.16.7",
+    "typescript": "5.2.2",
     "zod": "3.22.2"
   },
   "peerDependencies": {
     "sanity": "^3.12.0",
+    "typescript": "5.2.2",
     "zod": "^3.21.4"
   },
   "engines": {

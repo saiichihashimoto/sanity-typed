@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@sanity-typed/faker",
+  "version": "0.0.0-development",
+  "description": "Generate Mock Data from Sanity Schemas",
+  "keywords": [
+    "sanity",
+    "sanity-io",
+    "types",
+    "typescript",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "faker",
+    "faker.js",
+    "fakerjs",
+    "faker-js",
+    "fake data generator",
+    "fake data",
+    "fake-data",
+    "fake-generator",
+    "fake-data-generator",
+    "fake content generator",
+    "fake contextual data generator",
+    "fake contextual data"
+  ],
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/faker",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
+  "repository": "github:saiichihashimoto/sanity-typed",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/saiichihashimoto"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "npm run build -- --no-dts"
+  },
+  "dependencies": {
+    "@sanity-typed/traverse-validation": "0.0.0-development",
+    "@sanity-typed/types": "0.0.0-development",
+    "@sanity-typed/utils": "0.0.0-development",
+    "fast-json-stable-stringify": "2.1.0",
+    "lodash": "4.17.21",
+    "randexp": "0.5.3",
+    "type-fest": "4.3.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "8.1.0",
+    "@jest/globals": "29.7.0",
+    "@sanity-typed/test-utils": "0.0.0-development",
+    "@sanity-typed/tsconfig": "0.0.0-development",
+    "@sanity-typed/zod": "0.0.0-development",
+    "@types/lodash": "4.14.199",
+    "typescript": "5.2.2"
+  },
+  "peerDependencies": {
+    "@faker-js/faker": "^8.1.0",
+    "typescript": "5.2.2"
+  },
+  "engines": {
+    "node": "^18.15.0"
+  }
+}

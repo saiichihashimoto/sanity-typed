@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 describe("array", () => {
   describe("defineField", () => {
@@ -26,6 +26,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [defineArrayMember({ type: "boolean" })],
                 }),
               ],
@@ -33,7 +34,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -43,8 +44,8 @@ describe("array", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
 
@@ -61,6 +62,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [
                     defineArrayMember({ type: "boolean" }),
                     defineArrayMember({ type: "string" }),
@@ -71,7 +73,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -81,8 +83,8 @@ describe("array", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
 
@@ -99,6 +101,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [
                     defineArrayMember({
                       type: "object",
@@ -107,6 +110,7 @@ describe("array", () => {
                         defineField({
                           name: "bar",
                           type: "boolean",
+                          validation: (Rule) => Rule.required(),
                         }),
                       ],
                     }),
@@ -117,6 +121,7 @@ describe("array", () => {
                         defineField({
                           name: "qux",
                           type: "boolean",
+                          validation: (Rule) => Rule.required(),
                         }),
                       ],
                     }),
@@ -127,7 +132,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -140,8 +145,8 @@ describe("array", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<Required<typeof parsed>["bar"]>().toEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      expectType<(typeof parsed)["bar"]>().toEqual<
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
   });
@@ -161,7 +166,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [true];
 
@@ -190,7 +195,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [true, "foo"];
 
@@ -219,6 +224,7 @@ describe("array", () => {
                     defineField({
                       name: "bar",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -229,6 +235,7 @@ describe("array", () => {
                     defineField({
                       name: "qux",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -237,7 +244,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         { _key: "key", _type: "bar", bar: true },
@@ -272,6 +279,7 @@ describe("array", () => {
                     defineField({
                       name: "bar",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -280,7 +288,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() =>
         zods.foo.parse([
@@ -307,16 +315,16 @@ describe("array", () => {
             defineType({
               name: "foo",
               type: "array",
-              validation: (Rule) => Rule.min(1),
+              validation: (Rule) => Rule.min(4),
               of: [defineArrayMember({ type: "boolean" })],
             }),
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse([])).toThrow(
-        "Array must contain at least 1 element(s)"
+        "Array must contain at least 4 element(s)"
       );
     });
 
@@ -335,7 +343,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse([true, false])).toThrow(
         "Array must contain at most 1 element(s)"
@@ -357,7 +365,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse([])).toThrow(
         "Array must contain exactly 1 element(s)"

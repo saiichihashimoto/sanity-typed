@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues, ReferenceValue } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 const fields: Omit<ReferenceValue<"other">, symbol | "_type"> = { _ref: "foo" };
 
@@ -34,7 +34,7 @@ describe("reference", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -72,7 +72,7 @@ describe("reference", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -105,6 +105,7 @@ describe("reference", () => {
                 defineField({
                   name: "bar",
                   type: "reference",
+                  validation: (Rule) => Rule.required(),
                   to: [{ type: "other" as const }],
                 }),
               ],
@@ -112,7 +113,7 @@ describe("reference", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -125,8 +126,8 @@ describe("reference", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
   });
@@ -146,7 +147,7 @@ describe("reference", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         ...fields,
@@ -185,7 +186,7 @@ describe("reference", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {

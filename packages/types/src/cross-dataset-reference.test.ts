@@ -80,6 +80,7 @@ describe("crossDatasetReference", () => {
                 defineField({
                   name: "bar",
                   type: "crossDatasetReference",
+                  validation: (Rule) => Rule.required(),
                   dataset: "dataset",
                   to: [],
                 }),
@@ -90,7 +91,7 @@ describe("crossDatasetReference", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _dataset: string;
         _projectId: string;

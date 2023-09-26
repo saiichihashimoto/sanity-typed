@@ -73,6 +73,7 @@ describe("number", () => {
                 defineField({
                   name: "bar",
                   type: "number",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -81,7 +82,7 @@ describe("number", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<number>();
     });
 
@@ -98,6 +99,7 @@ describe("number", () => {
                 defineField({
                   name: "bar",
                   type: "number",
+                  validation: (Rule) => Rule.required(),
                   options: {
                     list: [1, { title: "Two", value: 2 }],
                   },
@@ -109,7 +111,7 @@ describe("number", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<1 | 2>();
     });
   });

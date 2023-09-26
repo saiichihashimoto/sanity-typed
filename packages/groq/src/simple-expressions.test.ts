@@ -4,12 +4,11 @@ import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
+import type { ExecuteQuery, Parse } from ".";
 import type {
-  ExecuteQuery,
-  Parse,
-  _ScopeFromPartialContext,
-  _ScopeFromPartialScope,
-} from ".";
+  ScopeFromPartialContext,
+  ScopeFromPartialScope,
+} from "./internal";
 
 describe("simple expressions", () => {
   it("@", async () => {
@@ -32,7 +31,7 @@ describe("simple expressions", () => {
 
     expect(result).toStrictEqual(expectedResult);
     expectType<
-      ExecuteQuery<typeof query, _ScopeFromPartialScope<{ this: typeof root }>>
+      ExecuteQuery<typeof query, ScopeFromPartialScope<{ this: typeof root }>>
     >().toStrictEqual<typeof expectedResult>();
   });
 
@@ -61,7 +60,7 @@ describe("simple expressions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<typeof expectedResult>();
   });
@@ -88,7 +87,7 @@ describe("simple expressions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
         }>
       >
@@ -115,8 +114,8 @@ describe("simple expressions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{
-          parent: _ScopeFromPartialScope<{
+        ScopeFromPartialScope<{
+          parent: ScopeFromPartialScope<{
             this: "foo";
           }>;
         }>
@@ -144,9 +143,9 @@ describe("simple expressions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{
-          parent: _ScopeFromPartialScope<{
-            parent: _ScopeFromPartialScope<{
+        ScopeFromPartialScope<{
+          parent: ScopeFromPartialScope<{
+            parent: ScopeFromPartialScope<{
               this: "foo";
             }>;
           }>;
@@ -175,10 +174,10 @@ describe("simple expressions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{
-          parent: _ScopeFromPartialScope<{
-            parent: _ScopeFromPartialScope<{
-              parent: _ScopeFromPartialScope<{
+        ScopeFromPartialScope<{
+          parent: ScopeFromPartialScope<{
+            parent: ScopeFromPartialScope<{
+              parent: ScopeFromPartialScope<{
                 this: "foo";
               }>;
             }>;
@@ -213,7 +212,7 @@ describe("simple expressions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           parameters: WritableDeep<typeof params>;
         }>
       >

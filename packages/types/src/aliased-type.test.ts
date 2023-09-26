@@ -20,6 +20,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -38,7 +39,7 @@ describe("<alias>", () => {
           _id: string;
           _rev: string;
           _updatedAt: string;
-          bar?: string;
+          bar: string;
         } & {
           _type: "foo";
         };
@@ -58,6 +59,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -68,6 +70,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "boolean",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -79,17 +82,17 @@ describe("<alias>", () => {
         bar: {
           _type: "bar";
         } & {
-          baz?: boolean;
+          baz: boolean;
         };
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
           _updatedAt: string;
-          bar?: {
+          bar: {
             _type: "bar";
           } & {
-            baz?: boolean;
+            baz: boolean;
           };
         } & {
           _type: "foo";
@@ -148,6 +151,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "baz",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -158,6 +162,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "foo",
                   type: "foo",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -188,6 +193,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -205,6 +211,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -220,10 +227,10 @@ describe("<alias>", () => {
           _id: string;
           _rev: string;
           _updatedAt: string;
-          pluginValue?: {
+          pluginValue: {
             _type: "pluginValue";
           } & {
-            baz?: boolean;
+            baz: boolean;
           };
         } & {
           _type: "foo";
@@ -244,6 +251,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -261,6 +269,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "plugin2Value",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -289,10 +298,10 @@ describe("<alias>", () => {
           _id: string;
           _rev: string;
           _updatedAt: string;
-          pluginValue?: {
+          pluginValue: {
             _type: "pluginValue";
           } & {
-            baz?: boolean;
+            baz: boolean;
           };
         } & {
           _type: "foo";
@@ -353,6 +362,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -363,6 +373,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "boolean",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -376,17 +387,17 @@ describe("<alias>", () => {
         bar: {
           _type: "bar";
         } & {
-          baz?: boolean;
+          baz: boolean;
         };
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
           _updatedAt: string;
-          bar?: {
+          bar: {
             _type: "bar";
           } & {
-            baz?: boolean;
+            baz: boolean;
           };
         } & {
           _type: "foo";
@@ -443,6 +454,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "baz",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -453,6 +465,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "foo",
                   type: "foo",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -482,6 +495,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -499,6 +513,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -516,10 +531,10 @@ describe("<alias>", () => {
           _id: string;
           _rev: string;
           _updatedAt: string;
-          pluginValue?: {
+          pluginValue: {
             _type: "pluginValue";
           } & {
-            baz?: boolean;
+            baz: boolean;
           };
         } & {
           _type: "foo";
@@ -539,6 +554,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -556,6 +572,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "plugin2Value",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -584,10 +601,10 @@ describe("<alias>", () => {
           _id: string;
           _rev: string;
           _updatedAt: string;
-          pluginValue?: {
+          pluginValue: {
             _type: "pluginValue";
           } & {
-            baz?: boolean;
+            baz: boolean;
           };
         } & {
           _type: "foo";

@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues, SanityDocument } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 const documentFields: Omit<SanityDocument, "_type"> = {
   _id: "id",
@@ -33,6 +33,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -43,7 +44,7 @@ describe("<alias>", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         bar: "bar",
@@ -78,6 +79,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -88,13 +90,14 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "boolean",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         bar: {
@@ -141,7 +144,7 @@ describe("<alias>", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         foo: {
@@ -192,6 +195,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "baz",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -202,13 +206,14 @@ describe("<alias>", () => {
                 defineField({
                   name: "foo",
                   type: "foo",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         foo: {
@@ -242,10 +247,7 @@ describe("<alias>", () => {
       // It really is cyclical!
       expect(parsed).toStrictEqual(unparsed);
       expect(
-        zods.foo.shape.bar
-          .unwrap()
-          .schema.shape.baz.unwrap()
-          .schema.shape.foo.unwrap().schema
+        zods.foo.shape.bar.unwrap().schema.shape.baz.schema.shape.foo.schema
       ).toStrictEqual(zods.foo);
       expectType<typeof parsed>().toStrictEqual<
         // @ts-expect-error -- Cyclical typing with zod doesn't seem to work
@@ -266,6 +268,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -283,6 +286,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -291,7 +295,7 @@ describe("<alias>", () => {
           })(),
         ],
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         foo: {
@@ -327,6 +331,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -344,6 +349,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "plugin2Value",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -365,7 +371,7 @@ describe("<alias>", () => {
           })(),
         ],
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         foo: {
@@ -402,6 +408,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -412,7 +419,7 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         bar: "bar",
@@ -446,6 +453,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "bar",
                   type: "bar",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -456,13 +464,14 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "boolean",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
           ],
         },
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         bar: {
@@ -508,7 +517,7 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         foo: {
@@ -558,6 +567,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "baz",
                   type: "baz",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -568,13 +578,14 @@ describe("<alias>", () => {
                 defineField({
                   name: "foo",
                   type: "foo",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
           ],
         },
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         foo: {
@@ -608,10 +619,7 @@ describe("<alias>", () => {
       // It really is cyclical!
       expect(parsed).toStrictEqual(unparsed);
       expect(
-        zods.foo.shape.bar
-          .unwrap()
-          .schema.shape.baz.unwrap()
-          .schema.shape.foo.unwrap().schema
+        zods.foo.shape.bar.unwrap().schema.shape.baz.schema.shape.foo.schema
       ).toStrictEqual(zods.foo);
       expectType<typeof parsed>().toStrictEqual<
         // @ts-expect-error -- Cyclical typing with zod doesn't seem to work
@@ -631,6 +639,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -648,6 +657,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -656,7 +666,7 @@ describe("<alias>", () => {
           })(),
         ],
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         foo: {
@@ -691,6 +701,7 @@ describe("<alias>", () => {
                 defineField({
                   name: "pluginValue",
                   type: "pluginValue",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -708,6 +719,7 @@ describe("<alias>", () => {
                     defineField({
                       name: "baz",
                       type: "plugin2Value",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -729,7 +741,7 @@ describe("<alias>", () => {
           })(),
         ],
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         foo: {

@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues, SlugValue } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 const fields: Omit<SlugValue, "_type"> = { current: "current" };
 
@@ -33,7 +33,7 @@ describe("slug", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -70,7 +70,7 @@ describe("slug", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -103,13 +103,14 @@ describe("slug", () => {
                 defineField({
                   name: "bar",
                   type: "slug",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -122,8 +123,8 @@ describe("slug", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
   });
@@ -142,7 +143,7 @@ describe("slug", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         ...fields,
@@ -180,7 +181,7 @@ describe("slug", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {

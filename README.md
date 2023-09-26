@@ -54,8 +54,8 @@ export const product = defineType({
           type: "object",
           name: "tag",
           fields: [
-            { type: "string", name: "label" },
-            { type: "string", name: "value" },
+            defineField({ type: "string", name: "label" }),
+            defineField({ type: "string", name: "value" }),
           ],
         }),
       ],
@@ -153,6 +153,7 @@ const data = await client.fetch('*[_type=="product"]');
 - [`@sanity-typed/groq`](packages/groq): Infer [GROQ](https://github.com/sanity-io/groq) Result Types from GROQ strings
 - [`@sanity-typed/groq-js`](packages/groq-js): [groq-js](https://github.com/sanity-io/groq-js) with typed GROQ Results
 - [`@sanity-typed/client`](packages/client): [@sanity/client](https://github.com/sanity-io/client) with typed GROQ Results
+- [`@sanity-typed/faker`](packages/faker): Generate Mock Data from Sanity Schemas
 
 ## Goals
 

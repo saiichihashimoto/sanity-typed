@@ -75,6 +75,7 @@ describe("geopoint", () => {
                 defineField({
                   name: "bar",
                   type: "geopoint",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -83,7 +84,7 @@ describe("geopoint", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _type: "geopoint";
         alt?: number;

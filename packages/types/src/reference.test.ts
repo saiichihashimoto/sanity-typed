@@ -3,7 +3,8 @@ import { describe, it } from "@jest/globals";
 import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { InferSchemaValues, _referenced } from ".";
+import type { InferSchemaValues } from ".";
+import type { referenced } from "./internal";
 
 describe("reference", () => {
   describe("defineArrayMember", () => {
@@ -30,7 +31,6 @@ describe("reference", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _ref: string;
-        [_referenced]: "other";
         _strengthenOnPublish?: {
           template?: {
             id: string;
@@ -41,6 +41,7 @@ describe("reference", () => {
         };
         _type: "reference";
         _weak?: boolean;
+        [referenced]: "other";
       }>();
     });
 
@@ -85,6 +86,7 @@ describe("reference", () => {
                 defineField({
                   name: "bar",
                   type: "reference",
+                  validation: (Rule) => Rule.required(),
                   to: [{ type: "other" as const }],
                 }),
               ],
@@ -94,10 +96,9 @@ describe("reference", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _ref: string;
-        [_referenced]: "other";
         _strengthenOnPublish?: {
           template?: {
             id: string;
@@ -108,6 +109,7 @@ describe("reference", () => {
         };
         _type: "reference";
         _weak?: boolean;
+        [referenced]: "other";
       }>();
     });
   });
@@ -130,7 +132,6 @@ describe("reference", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _ref: string;
-        [_referenced]: "other";
         _strengthenOnPublish?: {
           template?: {
             id: string;
@@ -141,6 +142,7 @@ describe("reference", () => {
         };
         _type: "foo";
         _weak?: boolean;
+        [referenced]: "other";
       }>();
     });
 

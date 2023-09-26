@@ -28,6 +28,7 @@
     "dev": "npm run build -- --no-dts"
   },
   "dependencies": {
+    "@sanity-typed/utils": "0.0.0-development",
     "type-fest": "4.3.1"
   },
   "devDependencies": {

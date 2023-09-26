@@ -46,6 +46,7 @@ describe("datetime", () => {
                 defineField({
                   name: "bar",
                   type: "datetime",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -54,7 +55,7 @@ describe("datetime", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<string>();
     });
   });

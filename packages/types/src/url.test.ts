@@ -46,6 +46,7 @@ describe("url", () => {
                 defineField({
                   name: "bar",
                   type: "url",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -54,7 +55,7 @@ describe("url", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<string>();
     });
   });

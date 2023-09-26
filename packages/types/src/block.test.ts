@@ -183,10 +183,7 @@ describe("block", () => {
       });
 
       expectType<
-        Exclude<
-          keyof Required<InferSchemaValues<typeof config>["foo"]>,
-          "_type"
-        >
+        Exclude<keyof InferSchemaValues<typeof config>["foo"], "_type">
       >().toStrictEqual<never>();
     });
   });

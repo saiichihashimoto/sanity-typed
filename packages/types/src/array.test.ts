@@ -48,6 +48,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [defineArrayMember({ type: "boolean" })],
                 }),
               ],
@@ -57,7 +58,7 @@ describe("array", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<boolean[]>();
     });
 
@@ -74,6 +75,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [
                     defineArrayMember({ type: "boolean" }),
                     defineArrayMember({ type: "string" }),
@@ -86,7 +88,7 @@ describe("array", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<(boolean | string)[]>();
     });
 
@@ -103,6 +105,7 @@ describe("array", () => {
                 defineField({
                   name: "bar",
                   type: "array",
+                  validation: (Rule) => Rule.required(),
                   of: [
                     defineArrayMember({
                       type: "object",
@@ -111,6 +114,7 @@ describe("array", () => {
                         defineField({
                           name: "bar",
                           type: "boolean",
+                          validation: (Rule) => Rule.required(),
                         }),
                       ],
                     }),
@@ -121,6 +125,7 @@ describe("array", () => {
                         defineField({
                           name: "qux",
                           type: "boolean",
+                          validation: (Rule) => Rule.required(),
                         }),
                       ],
                     }),
@@ -133,20 +138,20 @@ describe("array", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<
         (
           | ({
               _key: string;
             } & {
               _type: "bar";
-              bar?: boolean;
+              bar: boolean;
             })
           | ({
               _key: string;
             } & {
               _type: "qux";
-              qux?: boolean;
+              qux: boolean;
             })
         )[]
       >();
@@ -214,6 +219,7 @@ describe("array", () => {
                     defineField({
                       name: "bar",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -224,6 +230,7 @@ describe("array", () => {
                     defineField({
                       name: "qux",
                       type: "boolean",
+                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                 }),
@@ -239,13 +246,13 @@ describe("array", () => {
               _key: string;
             } & {
               _type: "bar";
-              bar?: boolean;
+              bar: boolean;
             })
           | ({
               _key: string;
             } & {
               _type: "qux";
-              qux?: boolean;
+              qux: boolean;
             })
         )[]
       >();

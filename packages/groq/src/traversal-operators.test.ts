@@ -4,12 +4,11 @@ import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
+import type { ExecuteQuery, Parse } from ".";
 import type {
-  ExecuteQuery,
-  Parse,
-  _ScopeFromPartialContext,
-  _ScopeFromPartialScope,
-} from ".";
+  ScopeFromPartialContext,
+  ScopeFromPartialScope,
+} from "./internal";
 
 describe("traversal operators", () => {
   it("foo.bar", async () => {
@@ -38,7 +37,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{
+        ScopeFromPartialScope<{
           this: WritableDeep<typeof root>;
         }>
       >
@@ -75,7 +74,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{
+        ScopeFromPartialScope<{
           this: WritableDeep<typeof root>;
         }>
       >
@@ -108,7 +107,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{
+        ScopeFromPartialScope<{
           this: WritableDeep<typeof root>;
         }>
       >
@@ -145,7 +144,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{
+        ScopeFromPartialScope<{
           this: WritableDeep<typeof root>;
         }>
       >
@@ -182,7 +181,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
         }>
       >
@@ -219,7 +218,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
         }>
       >
@@ -292,7 +291,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
         }>
       >
@@ -484,7 +483,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
         }>
       >
@@ -672,7 +671,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
         }>
       >
@@ -710,7 +709,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
         }>
       >
@@ -770,7 +769,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
         }>
       >
@@ -841,7 +840,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
         }>
       >
@@ -1139,7 +1138,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
         }>
       >
@@ -1193,7 +1192,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{
+        ScopeFromPartialScope<{
           this: WritableDeep<typeof root>;
         }>
       >
@@ -1232,7 +1231,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
           parameters: WritableDeep<typeof params>;
         }>
@@ -1273,7 +1272,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
           parameters: WritableDeep<typeof params>;
         }>
@@ -1331,7 +1330,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
           parameters: WritableDeep<typeof params>;
         }>
@@ -1371,7 +1370,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
           parameters: WritableDeep<typeof params>;
         }>
@@ -1415,7 +1414,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
           parameters: WritableDeep<typeof params>;
         }>
@@ -1473,7 +1472,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
           parameters: WritableDeep<typeof params>;
         }>

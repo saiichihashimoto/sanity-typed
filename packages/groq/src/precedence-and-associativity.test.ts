@@ -5,12 +5,11 @@ import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
+import type { ExecuteQuery, Parse } from ".";
 import type {
-  ExecuteQuery,
-  Parse,
-  _ScopeFromPartialContext,
-  _ScopeFromPartialScope,
-} from ".";
+  ScopeFromPartialContext,
+  ScopeFromPartialScope,
+} from "./internal";
 
 describe("precendence and associativity", () => {
   describe("level 1", () => {
@@ -2163,7 +2162,7 @@ describe("precendence and associativity", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialScope<{
+          ScopeFromPartialScope<{
             this: WritableDeep<typeof root>;
           }>
         >
@@ -2200,7 +2199,7 @@ describe("precendence and associativity", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialScope<{
+          ScopeFromPartialScope<{
             this: WritableDeep<typeof root>;
           }>
         >
@@ -2270,7 +2269,7 @@ describe("precendence and associativity", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             dataset: WritableDeep<typeof dataset>;
           }>
         >
@@ -2317,7 +2316,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2358,7 +2357,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2401,7 +2400,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2442,7 +2441,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2486,7 +2485,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2546,7 +2545,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2589,7 +2588,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2633,7 +2632,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2676,7 +2675,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2714,7 +2713,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2758,7 +2757,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2801,7 +2800,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2839,7 +2838,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >
@@ -2875,7 +2874,7 @@ describe("precendence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialScope<{
+            ScopeFromPartialScope<{
               this: WritableDeep<typeof root>;
             }>
           >

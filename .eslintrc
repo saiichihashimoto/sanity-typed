@@ -74,7 +74,6 @@
     "no-shadow": "off",
     "no-template-curly-in-string": "error",
     "no-throw-literal": "error",
-    "no-underscore-dangle": "off",
     "no-unneeded-ternary": "error",
     "no-unreachable-loop": "error",
     "no-unused-expressions": "error",
@@ -129,7 +128,7 @@
     "import/no-anonymous-default-export": "error",
     "import/no-commonjs": "error",
     "import/no-cycle": "error",
-    "import/no-deprecated": "warn",
+    "import/no-deprecated": "error",
     "import/no-dynamic-require": "error",
     "import/no-extraneous-dependencies": [
       "error",
@@ -228,7 +227,6 @@
       "extends": [
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/strict",
-        "plugin:deprecation/recommended",
         "plugin:import/typescript",
         "plugin:typescript-sort-keys/recommended"
       ],
@@ -311,7 +309,7 @@
       },
       "rules": {
         "react/jsx-filename-extension": [
-          "warn",
+          "error",
           {
             "allow": "as-needed",
             "extensions": [".jsx", ".tsx"]

@@ -78,45 +78,6 @@ describe("object", () => {
       >().toStrictEqual<"bar">();
     });
 
-    it("infers nested objects", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "array",
-              of: [
-                defineArrayMember({
-                  type: "object",
-                  fields: [
-                    defineField({
-                      name: "bar",
-                      type: "object",
-                      fields: [
-                        defineField({
-                          name: "tar",
-                          type: "number",
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        },
-      });
-
-      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
-        _key: string;
-        bar?: {
-          tar?: number;
-        };
-      }>();
-    });
-
     it("infers required fields", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -146,6 +107,47 @@ describe("object", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         bar: boolean;
+      }>();
+    });
+
+    it("infers nested objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "object",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "object",
+                      validation: (Rule) => Rule.required(),
+                      fields: [
+                        defineField({
+                          name: "tar",
+                          type: "number",
+                          validation: (Rule) => Rule.required(),
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        bar: {
+          tar: number;
+        };
       }>();
     });
   });
@@ -164,6 +166,7 @@ describe("object", () => {
                 defineField({
                   name: "bar",
                   type: "object",
+                  validation: (Rule) => Rule.required(),
                   fields: [
                     defineField({
                       name: "bar",
@@ -182,51 +185,10 @@ describe("object", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         bar?: boolean;
         tar?: number;
-      }>();
-    });
-
-    it("infers nested objects", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "object",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "object",
-                  fields: [
-                    defineField({
-                      name: "bar",
-                      type: "object",
-                      fields: [
-                        defineField({
-                          name: "tar",
-                          type: "number",
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        },
-      });
-
-      expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >().toStrictEqual<{
-        bar?: {
-          tar?: number;
-        };
       }>();
     });
 
@@ -243,6 +205,7 @@ describe("object", () => {
                 defineField({
                   name: "bar",
                   type: "object",
+                  validation: (Rule) => Rule.required(),
                   fields: [
                     defineField({
                       name: "bar",
@@ -258,9 +221,53 @@ describe("object", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         bar: boolean;
+      }>();
+    });
+
+    it("infers nested objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "object",
+                  validation: (Rule) => Rule.required(),
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "object",
+                      validation: (Rule) => Rule.required(),
+                      fields: [
+                        defineField({
+                          name: "tar",
+                          type: "number",
+                          validation: (Rule) => Rule.required(),
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["foo"]["bar"]
+      >().toStrictEqual<{
+        bar: {
+          tar: number;
+        };
       }>();
     });
   });
@@ -339,43 +346,6 @@ describe("object", () => {
       >().toStrictEqual<"bar">();
     });
 
-    it("infers nested objects", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "object",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "object",
-                  fields: [
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        },
-      });
-
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        {
-          _type: "foo";
-        } & {
-          bar?: {
-            tar?: number;
-          };
-        }
-      >();
-    });
-
     it("infers required fields", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -402,6 +372,45 @@ describe("object", () => {
           _type: "foo";
         } & {
           bar: boolean;
+        }
+      >();
+    });
+
+    it("infers nested objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "object",
+                  validation: (Rule) => Rule.required(),
+                  fields: [
+                    defineField({
+                      name: "tar",
+                      type: "number",
+                      validation: (Rule) => Rule.required(),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+        {
+          _type: "foo";
+        } & {
+          bar: {
+            tar: number;
+          };
         }
       >();
     });

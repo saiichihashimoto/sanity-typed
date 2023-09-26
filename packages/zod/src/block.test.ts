@@ -8,7 +8,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues, PortableTextBlock } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 const fields: Omit<PortableTextBlock, "_type" | "children"> = {
   level: 1,
@@ -19,7 +19,7 @@ const fields: Omit<PortableTextBlock, "_type" | "children"> = {
 
 describe("block", () => {
   describe("defineArrayMember", () => {
-    it("infers PortableTextBlock", () => {
+    it("builds parser for PortableTextBlock", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -37,7 +37,7 @@ describe("block", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -79,7 +79,7 @@ describe("block", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -102,7 +102,7 @@ describe("block", () => {
       >();
     });
 
-    it("infers array of members", () => {
+    it("builds parser for array of members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -121,7 +121,7 @@ describe("block", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -145,7 +145,7 @@ describe("block", () => {
       >();
     });
 
-    it("infers unions if there are multiple members", () => {
+    it("builds parser for unions if there are multiple members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -167,7 +167,7 @@ describe("block", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -194,7 +194,7 @@ describe("block", () => {
   });
 
   describe("defineType", () => {
-    it("infers PortableTextBlock", () => {
+    it("builds parser for PortableTextBlock", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -207,7 +207,7 @@ describe("block", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         ...fields,
@@ -248,7 +248,7 @@ describe("block", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -269,7 +269,7 @@ describe("block", () => {
       >();
     });
 
-    it("infers array of members", () => {
+    it("builds parser for array of members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -283,7 +283,7 @@ describe("block", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         ...fields,
@@ -302,7 +302,7 @@ describe("block", () => {
       >();
     });
 
-    it("infers unions if there are multiple members", () => {
+    it("builds parser for unions if there are multiple members", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -319,7 +319,7 @@ describe("block", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         ...fields,

@@ -73,6 +73,7 @@ describe("string", () => {
                 defineField({
                   name: "bar",
                   type: "string",
+                  validation: (Rule) => Rule.required(),
                 }),
               ],
             }),
@@ -81,7 +82,7 @@ describe("string", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<string>();
     });
 
@@ -98,6 +99,7 @@ describe("string", () => {
                 defineField({
                   name: "bar",
                   type: "string",
+                  validation: (Rule) => Rule.required(),
                   options: {
                     list: ["foo", { title: "Bar", value: "bar" }],
                   },
@@ -109,7 +111,7 @@ describe("string", () => {
       });
 
       expectType<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<"bar" | "foo">();
     });
   });

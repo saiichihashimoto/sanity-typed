@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues, SanityDocument } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 const fields: Omit<SanityDocument, "_type"> = {
   _id: "id",
@@ -48,7 +48,7 @@ describe("document", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -99,7 +99,7 @@ describe("document", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -108,57 +108,6 @@ describe("document", () => {
           _type: "bar",
           bar: true,
           tar: 1,
-        },
-      ];
-
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
-      const parsed = zods.foo.parse(unparsed);
-
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]>().toStrictEqual<
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
-        InferSchemaValues<typeof config>["foo"][number]
-      >();
-    });
-
-    it("infers nested objects", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "array",
-              of: [
-                defineArrayMember({
-                  type: "document",
-                  fields: [
-                    defineField({
-                      name: "bar",
-                      type: "object",
-                      fields: [
-                        defineField({
-                          name: "tar",
-                          type: "number",
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        },
-      });
-      const zods = _sanityConfigToZods(config);
-
-      const unparsed = [
-        {
-          ...fields,
-          _type: "document",
-          _key: "key",
-          bar: { tar: 1 },
         },
       ];
 
@@ -197,7 +146,7 @@ describe("document", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -205,6 +154,59 @@ describe("document", () => {
           _type: "document",
           _key: "key",
           bar: true,
+        },
+      ];
+
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
+    });
+
+    it("infers nested objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "document",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "object",
+                      validation: (Rule) => Rule.required(),
+                      fields: [
+                        defineField({
+                          name: "tar",
+                          type: "number",
+                          validation: (Rule) => Rule.required(),
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = [
+        {
+          ...fields,
+          _type: "document",
+          _key: "key",
+          bar: { tar: 1 },
         },
       ];
 
@@ -233,6 +235,7 @@ describe("document", () => {
                 defineField({
                   name: "bar",
                   type: "document",
+                  validation: (Rule) => Rule.required(),
                   fields: [
                     defineField({
                       name: "bar",
@@ -249,7 +252,7 @@ describe("document", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -265,59 +268,8 @@ describe("document", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
-      >();
-    });
-
-    it("infers nested objects", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "object",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "document",
-                  fields: [
-                    defineField({
-                      name: "bar",
-                      type: "object",
-                      fields: [
-                        defineField({
-                          name: "tar",
-                          type: "number",
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        },
-      });
-      const zods = _sanityConfigToZods(config);
-
-      const unparsed = {
-        _type: "foo",
-        bar: {
-          ...fields,
-          _type: "document",
-          bar: { tar: 1 },
-        },
-      };
-
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
-      const parsed = zods.foo.parse(unparsed);
-
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
 
@@ -334,6 +286,7 @@ describe("document", () => {
                 defineField({
                   name: "bar",
                   type: "document",
+                  validation: (Rule) => Rule.required(),
                   fields: [
                     defineField({
                       name: "bar",
@@ -347,7 +300,7 @@ describe("document", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -362,8 +315,62 @@ describe("document", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<Required<typeof parsed>["bar"]>().toStrictEqual<
-        Required<InferSchemaValues<typeof config>["foo"]>["bar"]
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]["bar"]
+      >();
+    });
+
+    it("infers nested objects", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "document",
+                  validation: (Rule) => Rule.required(),
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "object",
+                      validation: (Rule) => Rule.required(),
+                      fields: [
+                        defineField({
+                          name: "tar",
+                          type: "number",
+                          validation: (Rule) => Rule.required(),
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = {
+        _type: "foo",
+        bar: {
+          ...fields,
+          _type: "document",
+          bar: { tar: 1 },
+        },
+      };
+
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
   });
@@ -392,7 +399,7 @@ describe("document", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         ...fields,
@@ -442,7 +449,7 @@ describe("document", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         {
@@ -461,47 +468,6 @@ describe("document", () => {
       expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
         // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         InferSchemaValues<typeof config>["bar"][number]["_type"]
-      >();
-    });
-
-    it("infers nested objects", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "document",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "object",
-                  fields: [
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        },
-      });
-      const zods = _sanityConfigToZods(config);
-
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-        bar: { tar: 1 },
-      };
-
-      const parsed = zods.foo.parse(unparsed);
-
-      expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"]
       >();
     });
 
@@ -525,7 +491,7 @@ describe("document", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         ...fields,
@@ -540,6 +506,49 @@ describe("document", () => {
         InferSchemaValues<typeof config>["foo"]
       >();
     });
+  });
+
+  it("infers nested objects", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "document",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "object",
+                validation: (Rule) => Rule.required(),
+                fields: [
+                  defineField({
+                    name: "tar",
+                    type: "number",
+                    validation: (Rule) => Rule.required(),
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+    const zods = sanityConfigToZodsTyped(config);
+
+    const unparsed = {
+      ...fields,
+      _type: "foo",
+      bar: { tar: 1 },
+    };
+
+    const parsed = zods.foo.parse(unparsed);
+
+    expect(parsed).toStrictEqual(unparsed);
+    expectType<typeof parsed>().toStrictEqual<
+      InferSchemaValues<typeof config>["foo"]
+    >();
   });
 
   describe("validation", () => {
