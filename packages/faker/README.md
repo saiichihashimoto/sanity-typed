@@ -10,7 +10,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-FIXME
+Generate Mock Data from Sanity Schemas
 
 ## Page Contents
 - [Install](#install)
