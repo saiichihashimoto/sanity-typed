@@ -22,13 +22,12 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": ["dist", "src/internal.ts"],
   "scripts": {
     "build": "tsup",
     "dev": "npm run build -- --no-dts"
   },
   "dependencies": {
-    "@sanity-typed/utils": "0.0.0-development",
     "type-fest": "4.3.1"
   },
   "devDependencies": {
@@ -36,6 +35,7 @@
     "@portabletext/types": "2.0.6",
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
+    "@sanity-typed/utils": "0.0.0-development",
     "sanity": "3.16.7",
     "typescript": "5.2.2"
   },
