@@ -1,15 +1,11 @@
-import { faker } from "@faker-js/faker";
-import { beforeEach, describe, expect, it } from "@jest/globals";
+import { base, en } from "@faker-js/faker";
+import { describe, expect, it } from "@jest/globals";
 
 import { defineConfig, defineField, defineType } from "@sanity-typed/types";
 
 import { _sanityConfigToFaker } from ".";
 
 describe("document-id-memo", () => {
-  beforeEach(() => {
-    faker.seed(0);
-  });
-
   it("mocks references that refer to documents", () => {
     const config = defineConfig({
       dataset: "dataset",
@@ -34,7 +30,9 @@ describe("document-id-memo", () => {
         ],
       },
     });
-    const sanityFaker = _sanityConfigToFaker(config, { faker });
+    const sanityFaker = _sanityConfigToFaker(config, {
+      faker: { locale: [en, base] },
+    });
 
     // Mixing up the order to ensure it works regardless
 
@@ -97,7 +95,7 @@ describe("document-id-memo", () => {
       },
     });
     const sanityFaker = _sanityConfigToFaker(config, {
-      faker,
+      faker: { locale: [en, base] },
       referencedChunkSize: 2,
     });
 

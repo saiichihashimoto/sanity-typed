@@ -112,7 +112,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/faker/docs/mocks.ts -->
 ```mocks.ts```:
 ```typescript
-import { faker } from "@faker-js/faker";
+import { base, en } from "@faker-js/faker";
 
 import { sanityConfigToFaker } from "@sanity-typed/faker";
 

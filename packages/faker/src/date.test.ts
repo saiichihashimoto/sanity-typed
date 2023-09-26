@@ -1,5 +1,5 @@
-import { faker } from "@faker-js/faker";
-import { beforeEach, describe, expect, it } from "@jest/globals";
+import { base, en } from "@faker-js/faker";
+import { describe, expect, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -14,10 +14,6 @@ import { sanityConfigToZods } from "@sanity-typed/zod";
 import { _sanityConfigToFaker } from ".";
 
 describe("date", () => {
-  beforeEach(() => {
-    faker.seed(0);
-  });
-
   describe("defineArrayMember", () => {
     it("mocks string", () => {
       const config = defineConfig({
@@ -37,7 +33,9 @@ describe("date", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fake = sanityFaker.foo();
 
@@ -71,7 +69,9 @@ describe("date", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fake = sanityFaker.foo();
 
@@ -98,7 +98,9 @@ describe("date", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fake = sanityFaker.foo();
 
@@ -125,7 +127,9 @@ describe("date", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fake = sanityFaker.foo();
 
@@ -146,12 +150,14 @@ describe("date", () => {
             defineType({
               name: "foo",
               type: "date",
-              validation: (Rule) => Rule.min("2023-09-12"),
+              validation: (Rule) => Rule.min("2022-12-30"),
             }),
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fake = sanityFaker.foo();
 
@@ -172,12 +178,14 @@ describe("date", () => {
             defineType({
               name: "foo",
               type: "date",
-              validation: (Rule) => Rule.max("2023-09-12"),
+              validation: (Rule) => Rule.max("2015-01-02"),
             }),
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fake = sanityFaker.foo();
 

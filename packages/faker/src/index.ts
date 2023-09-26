@@ -1,4 +1,4 @@
-import type { Faker } from "@faker-js/faker";
+import { Faker } from "@faker-js/faker";
 import stringify from "fast-json-stable-stringify";
 import { flow } from "lodash/fp";
 import RandExp from "randexp";
@@ -101,7 +101,7 @@ const dateAndDatetimeFaker = <
                 new Date(minDate as string).valueOf()
               )
             )
-          ) ?? "1990-01-01T00:00:00.000Z"
+          ) ?? "2015-01-01T00:00:00.000Z"
         ),
         to: new Date(
           noInfinity(
@@ -110,7 +110,7 @@ const dateAndDatetimeFaker = <
                 new Date(maxDate as string).valueOf()
               )
             )
-          ) ?? "2030-01-01T00:00:00.000Z"
+          ) ?? "2023-01-01T00:00:00.000Z"
         ),
       })
       .toISOString();
@@ -212,10 +212,10 @@ const referenceFaker =
       type: string | undefined
     ) => (faker: Faker, index: number) => string
   ) =>
-  (faker: Faker, count: number) => ({
+  (faker: Faker, index: number) => ({
     _ref: referencedIdFaker(
       faker.helpers.arrayElement(schemaType.to.map(({ type }) => type))
-    )(faker, count),
+    )(faker, index),
     _type: "reference" as const,
     ...({} as {
       [_referenced]: TSchemaType extends _SchemaTypeDefinition<
@@ -371,11 +371,39 @@ const urlFaker = <
   };
 };
 
+type FakerOptions = ConstructorParameters<typeof Faker>[0];
+
+const instantiateFaker = (options: FakerOptions) => (path: string) => {
+  const faker = new Faker(options);
+  // eslint-disable-next-line fp/no-unused-expression -- Setting faker seed
+  faker.seed(
+    // https://stackoverflow.com/a/7616484
+    [...path].reduce(
+      (hash, chr) =>
+        Math.trunc(
+          // eslint-disable-next-line no-bitwise -- https://stackoverflow.com/a/7616484
+          (hash << 5) - hash + chr.codePointAt(0)!
+        ),
+      0
+    )
+  );
+
+  return <Fn extends (faker: Faker, index: number) => any>(fn: Fn) =>
+    (index: number) =>
+      fn(faker, index) as ReturnType<Fn>;
+};
+
+const _instantiateFaker = <Fn extends (faker: Faker, index: number) => any>(
+  options: FakerOptions,
+  path: string,
+  fn: Fn
+) => instantiateFaker(options)(path)(fn);
+
 const addType =
   <const Type extends string | undefined>(type: Type) =>
-  <Fn extends (faker: Faker, count: number) => any>(fn: Fn) =>
-  (faker: Faker, count: number) => {
-    const value: ReturnType<Fn> = fn(faker, count);
+  <Fn extends (...args: any[]) => any>(fn: Fn) =>
+  (...args: Parameters<Fn>) => {
+    const value: ReturnType<Fn> = fn(...args);
 
     // TODO typedTernary
     return (
@@ -396,7 +424,7 @@ const addType =
 
 const _addType = <
   const Type extends string | undefined,
-  Fn extends (faker: Faker, count: number) => any
+  Fn extends (...args: any[]) => any
 >(
   type: Type,
   fn: Fn
@@ -433,11 +461,11 @@ type MembersFaker<
     any
   >[],
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 > = (
   faker: Faker,
-  count: number
+  index: number
 ) => TMemberDefinitions extends (infer TMemberDefinition extends _ArrayMemberDefinition<
   any,
   any,
@@ -454,11 +482,15 @@ type MembersFaker<
       : ReturnType<
           ReturnType<
             typeof addKey<
-              ReturnType<
-                typeof _addType<
-                  TMemberDefinition["name"],
-                  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-                  SchemaTypeToFaker<TMemberDefinition, TAliasedFakers>
+              (
+                faker: Faker,
+                count: number
+              ) => ReturnType<
+                ReturnType<
+                  typeof _addType<
+                    TMemberDefinition["name"],
+                    SchemaTypeToFaker<TMemberDefinition, TAliasedFakers>
+                  >
                 >
               >
             >
@@ -479,11 +511,12 @@ const membersFaker = <
     any
   >[],
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 >(
   members: TMemberDefinitions,
   getFakers: () => TAliasedFakers,
+  instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string,
@@ -499,37 +532,43 @@ const membersFaker = <
   const memberFakers = members.map((member) =>
     addType(member.name)(
       // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-      schemaTypeToFaker(member, getFakers, documentIdFaker, referencedIdFaker)
+      schemaTypeToFaker(
+        member,
+        getFakers,
+        instantiateFakerByPath,
+        documentIdFaker,
+        referencedIdFaker
+      )
     )
   );
 
-  const memberFaker = (faker: Faker, count: number) =>
-    faker.helpers.arrayElement(memberFakers)(faker, count);
+  const memberFaker = (faker: Faker, index: number) =>
+    faker.helpers.arrayElement(memberFakers)(index);
 
   // @ts-expect-error -- TODO Why is this typed incorrectly
   return unique
-    ? (faker: Faker, count: number) =>
+    ? (faker: Faker, index: number) =>
         faker.helpers
           .uniqueArray(
-            () => stringify(memberFaker(faker, count)),
+            () => stringify(memberFaker(faker, index)),
             faker.number.int({ min, max })
           )
           .map((value) =>
             addKey(() => JSON.parse(value) as ReturnType<typeof memberFaker>)(
               faker,
-              count
+              index
             )
           )
-    : (faker: Faker, count: number) =>
+    : (faker: Faker, index: number) =>
         Array.from({ length: faker.number.int({ min, max }) }).map(() =>
-          addKey(memberFaker)(faker, count)
+          addKey(memberFaker)(faker, index)
         );
 };
 
 type ArrayFaker<
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 > = TSchemaType extends {
   of: infer TMemberDefinitions extends _ArrayMemberDefinition<
@@ -550,11 +589,12 @@ type ArrayFaker<
 const arrayFaker = <
   TSchemaType extends _SchemaTypeDefinition<"array", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 >(
   schemaType: TSchemaType,
   getFakers: () => TAliasedFakers,
+  instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string,
@@ -593,6 +633,7 @@ const arrayFaker = <
       ? TMemberDefinitionsInner
       : never,
     getFakers,
+    instantiateFakerByPath,
     documentIdFaker,
     referencedIdFaker,
     { min, max, unique: Boolean(traversal.unique?.length) }
@@ -617,7 +658,7 @@ const blockFieldsFaker = {
 type BlockFaker<
   TSchemaType extends _SchemaTypeDefinition<"block", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 > = (
   faker: Faker,
@@ -647,11 +688,12 @@ type BlockFaker<
 const blockFaker = <
   TSchemaType extends _SchemaTypeDefinition<"block", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 >(
   { of }: TSchemaType,
   getFakers: () => TAliasedFakers,
+  instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string,
@@ -690,6 +732,7 @@ const blockFaker = <
           : membersFaker(
               members,
               getFakers,
+              instantiateFakerByPath,
               documentIdFaker,
               referencedIdFaker,
               { min: length - numSpans, max: length - numSpans }
@@ -705,7 +748,7 @@ type FieldsFaker<
     any
   >,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 > = TSchemaType extends {
   fields?: (infer TFieldDefinition extends _FieldDefinition<
@@ -722,7 +765,7 @@ type FieldsFaker<
 }
   ? (
       faker: Faker,
-      count: number
+      index: number
     ) => Simplify<
       {
         [Name in Extract<
@@ -757,11 +800,12 @@ const fieldsFaker = <
     any
   >,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 >(
   { fields = [] }: TSchemaType,
   getFakers: () => TAliasedFakers,
+  instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string,
@@ -771,36 +815,30 @@ const fieldsFaker = <
 ): FieldsFaker<TSchemaType, TAliasedFakers> => {
   const fieldsFakers = (
     fields as _FieldDefinition<any, any, any, any, any, any, any, any, any>[]
-  ).map(
-    (field) =>
-      [
-        field.name as string,
-        // TODO typedTernary
-        traverseValidation(field).required?.length
-          ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-            schemaTypeToFaker(
-              field,
-              getFakers,
-              documentIdFaker,
-              referencedIdFaker
-            )
-          : (faker: Faker, count: number) =>
-              faker.datatype.boolean()
-                ? undefined
-                : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-                  schemaTypeToFaker(
-                    field,
-                    getFakers,
-                    documentIdFaker,
-                    referencedIdFaker
-                  )(faker, count),
-      ] as const
-  );
+  ).map((field) => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+    const fieldFaker = schemaTypeToFaker(
+      field,
+      getFakers,
+      instantiateFakerByPath,
+      documentIdFaker,
+      referencedIdFaker
+    );
 
-  return ((faker: Faker, count: number) =>
+    return [
+      field.name as string,
+      // TODO typedTernary
+      traverseValidation(field).required?.length
+        ? (faker: Faker, index: number) => fieldFaker(index)
+        : (faker: Faker, index: number) =>
+            faker.datatype.boolean() ? undefined : fieldFaker(index),
+    ] as const;
+  });
+
+  return ((faker: Faker, index: number) =>
     Object.fromEntries(
       fieldsFakers
-        .map(([name, fieldFaker]) => [name, fieldFaker(faker, count)] as const)
+        .map(([name, fieldFaker]) => [name, fieldFaker(faker, index)] as const)
         .filter(([, value]) => value !== undefined)
     )) as FieldsFaker<TSchemaType, TAliasedFakers>;
 };
@@ -808,18 +846,19 @@ const fieldsFaker = <
 type ObjectFaker<
   TSchemaType extends _SchemaTypeDefinition<"object", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 > = ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>;
 
 const objectFaker = <
   TSchemaType extends _SchemaTypeDefinition<"object", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 >(
   schema: TSchemaType,
   getFakers: () => TAliasedFakers,
+  instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string,
@@ -830,29 +869,30 @@ const objectFaker = <
   fieldsFaker(
     schema,
     getFakers,
+    instantiateFakerByPath,
     documentIdFaker,
     referencedIdFaker
   ) as ObjectFaker<TSchemaType, TAliasedFakers>;
 
 const documentFieldsFaker = (
   faker: Faker,
-  count: number,
+  index: number,
   documentIdFaker: (faker: Faker, index: number) => string
 ) => {
   const createdAt = faker.date.between({
-    from: "1990-01-01T00:00:00.000Z",
-    to: "2030-01-01T00:00:00.000Z",
+    from: "2015-01-01T00:00:00.000Z",
+    to: "2023-01-01T00:00:00.000Z",
   });
 
   return {
     _createdAt: createdAt.toISOString(),
-    _id: documentIdFaker(faker, count),
+    _id: documentIdFaker(faker, index),
     _rev: faker.string.alphanumeric(22),
     _type: "document" as const,
     _updatedAt: faker.date
       .between({
         from: createdAt,
-        to: "2030-01-01T00:00:00.000Z",
+        to: "2023-01-01T00:00:00.000Z",
       })
       .toISOString(),
   };
@@ -861,11 +901,11 @@ const documentFieldsFaker = (
 type DocumentFaker<
   TSchemaType extends _SchemaTypeDefinition<"document", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 > = (
   faker: Faker,
-  count: number
+  index: number
 ) => Simplify<
   ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>> &
     ReturnType<typeof documentFieldsFaker>
@@ -874,11 +914,12 @@ type DocumentFaker<
 const documentFaker = <
   TSchemaType extends _SchemaTypeDefinition<"document", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 >(
   schema: TSchemaType,
   getFakers: () => TAliasedFakers,
+  instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string,
@@ -886,14 +927,15 @@ const documentFaker = <
     type: string | undefined
   ) => (faker: Faker, index: number) => string
 ): DocumentFaker<TSchemaType, TAliasedFakers> =>
-  ((faker: Faker, count: number) => ({
-    ...documentFieldsFaker(faker, count, documentIdFaker(schema.name)),
+  ((faker: Faker, index: number) => ({
+    ...documentFieldsFaker(faker, index, documentIdFaker(schema.name)),
     ...fieldsFaker(
       schema,
       getFakers,
+      instantiateFakerByPath,
       documentIdFaker,
       referencedIdFaker
-    )(faker, count),
+    )(faker, index),
   })) as DocumentFaker<TSchemaType, TAliasedFakers>;
 
 const assetFaker = (faker: Faker) => ({
@@ -928,11 +970,11 @@ const fileFieldsFaker = (faker: Faker) => ({
 type FileFaker<
   TSchemaType extends _SchemaTypeDefinition<"file", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 > = (
   faker: Faker,
-  count: number
+  index: number
 ) => Simplify<
   ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>> &
     ReturnType<typeof fileFieldsFaker>
@@ -941,11 +983,12 @@ type FileFaker<
 const fileFaker = <
   TSchemaType extends _SchemaTypeDefinition<"file", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 >(
   schema: TSchemaType,
   getFakers: () => TAliasedFakers,
+  instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string,
@@ -953,14 +996,15 @@ const fileFaker = <
     type: string | undefined
   ) => (faker: Faker, index: number) => string
 ): FileFaker<TSchemaType, TAliasedFakers> =>
-  ((faker: Faker, count: number) => ({
+  ((faker: Faker, index: number) => ({
     ...fileFieldsFaker(faker),
     ...fieldsFaker(
       schema,
       getFakers,
+      instantiateFakerByPath,
       documentIdFaker,
       referencedIdFaker
-    )(faker, count),
+    )(faker, index),
   })) as FileFaker<TSchemaType, TAliasedFakers>;
 
 const imageFieldsFaker = (faker: Faker) => ({
@@ -988,11 +1032,11 @@ const imageHotspotFaker = (faker: Faker) => ({
 type ImageFaker<
   TSchemaType extends _SchemaTypeDefinition<"image", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 > = (
   faker: Faker,
-  count: number
+  index: number
 ) => Simplify<
   ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>> &
     ReturnType<typeof imageFieldsFaker> &
@@ -1006,11 +1050,12 @@ type ImageFaker<
 const imageFaker = <
   TSchemaType extends _SchemaTypeDefinition<"image", any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 >(
   schema: TSchemaType,
   getFakers: () => TAliasedFakers,
+  instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string,
@@ -1018,7 +1063,7 @@ const imageFaker = <
     type: string | undefined
   ) => (faker: Faker, index: number) => string
 ): ImageFaker<TSchemaType, TAliasedFakers> =>
-  ((faker: Faker, count: number) => ({
+  ((faker: Faker, index: number) => ({
     ...imageFieldsFaker(faker),
     ...typedTernary(
       !schema.options?.hotspot as Negate<
@@ -1032,19 +1077,20 @@ const imageFaker = <
     ...fieldsFaker(
       schema,
       getFakers,
+      instantiateFakerByPath,
       documentIdFaker,
       referencedIdFaker
-    )(faker, count),
+    )(faker, index),
   })) as unknown as ImageFaker<TSchemaType, TAliasedFakers>;
 
 type AliasFaker<
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 > = (
   faker: Faker,
-  count: number
+  index: number
 ) => TSchemaType["type"] extends keyof TAliasedFakers
   ? ReturnType<TAliasedFakers[TSchemaType["type"]]>
   : unknown;
@@ -1053,241 +1099,262 @@ const aliasFaker =
   <
     TSchemaType extends _SchemaTypeDefinition<any, any, any>,
     TAliasedFakers extends {
-      [name: string]: (faker: Faker, count: number) => any;
+      [name: string]: (index: number) => any;
     }
   >(
     { type }: TSchemaType,
     getFakers: () => TAliasedFakers
   ): AliasFaker<TSchemaType, TAliasedFakers> =>
-  (faker: Faker, count: number) =>
-    getFakers()[type]?.(faker, count) ?? (undefined as unknown);
+  (faker: Faker, index: number) =>
+    getFakers()[type]?.(index) ?? (undefined as unknown);
 
 type SchemaTypeToFaker<
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
-> = TSchemaType["type"] extends keyof typeof constantFakers
-  ? (typeof constantFakers)[TSchemaType["type"]]
-  : TSchemaType["type"] extends "date"
-  ? ReturnType<
-      typeof dateFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"date", any, any>>
-      >
-    >
-  : TSchemaType["type"] extends "datetime"
-  ? ReturnType<
-      typeof datetimeFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"datetime", any, any>>
-      >
-    >
-  : TSchemaType["type"] extends "number"
-  ? ReturnType<
-      typeof numberFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"number", any, any>>
-      >
-    >
-  : TSchemaType["type"] extends "reference"
-  ? ReturnType<
-      typeof referenceFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"reference", any, any>>
-      >
-    >
-  : TSchemaType["type"] extends "string"
-  ? ReturnType<
-      typeof stringFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"string", any, any>>
-      >
-    >
-  : TSchemaType["type"] extends "text"
-  ? ReturnType<
-      typeof textFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"text", any, any>>
-      >
-    >
-  : TSchemaType["type"] extends "url"
-  ? ReturnType<
-      typeof urlFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"url", any, any>>
-      >
-    >
-  : TSchemaType["type"] extends "array"
-  ? ReturnType<
-      typeof arrayFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"array", any, any>>,
-        TAliasedFakers
-      >
-    >
-  : TSchemaType["type"] extends "block"
-  ? ReturnType<
-      typeof blockFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"block", any, any>>,
-        TAliasedFakers
-      >
-    >
-  : TSchemaType["type"] extends "object"
-  ? ReturnType<
-      typeof objectFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"object", any, any>>,
-        TAliasedFakers
-      >
-    >
-  : TSchemaType["type"] extends "document"
-  ? ReturnType<
-      typeof documentFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"document", any, any>>,
-        TAliasedFakers
-      >
-    >
-  : TSchemaType["type"] extends "file"
-  ? ReturnType<
-      typeof fileFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"file", any, any>>,
-        TAliasedFakers
-      >
-    >
-  : TSchemaType["type"] extends "image"
-  ? ReturnType<
-      typeof imageFaker<
-        Extract<TSchemaType, _SchemaTypeDefinition<"image", any, any>>,
-        TAliasedFakers
-      >
-    >
-  : ReturnType<typeof aliasFaker<TSchemaType, TAliasedFakers>>;
+> = ReturnType<
+  typeof _instantiateFaker<
+    TSchemaType["type"] extends keyof typeof constantFakers
+      ? (typeof constantFakers)[TSchemaType["type"]]
+      : TSchemaType["type"] extends "date"
+      ? ReturnType<
+          typeof dateFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"date", any, any>>
+          >
+        >
+      : TSchemaType["type"] extends "datetime"
+      ? ReturnType<
+          typeof datetimeFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"datetime", any, any>>
+          >
+        >
+      : TSchemaType["type"] extends "number"
+      ? ReturnType<
+          typeof numberFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"number", any, any>>
+          >
+        >
+      : TSchemaType["type"] extends "reference"
+      ? ReturnType<
+          typeof referenceFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"reference", any, any>>
+          >
+        >
+      : TSchemaType["type"] extends "string"
+      ? ReturnType<
+          typeof stringFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"string", any, any>>
+          >
+        >
+      : TSchemaType["type"] extends "text"
+      ? ReturnType<
+          typeof textFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"text", any, any>>
+          >
+        >
+      : TSchemaType["type"] extends "url"
+      ? ReturnType<
+          typeof urlFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"url", any, any>>
+          >
+        >
+      : TSchemaType["type"] extends "array"
+      ? ReturnType<
+          typeof arrayFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"array", any, any>>,
+            TAliasedFakers
+          >
+        >
+      : TSchemaType["type"] extends "block"
+      ? ReturnType<
+          typeof blockFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"block", any, any>>,
+            TAliasedFakers
+          >
+        >
+      : TSchemaType["type"] extends "object"
+      ? ReturnType<
+          typeof objectFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"object", any, any>>,
+            TAliasedFakers
+          >
+        >
+      : TSchemaType["type"] extends "document"
+      ? ReturnType<
+          typeof documentFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"document", any, any>>,
+            TAliasedFakers
+          >
+        >
+      : TSchemaType["type"] extends "file"
+      ? ReturnType<
+          typeof fileFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"file", any, any>>,
+            TAliasedFakers
+          >
+        >
+      : TSchemaType["type"] extends "image"
+      ? ReturnType<
+          typeof imageFaker<
+            Extract<TSchemaType, _SchemaTypeDefinition<"image", any, any>>,
+            TAliasedFakers
+          >
+        >
+      : ReturnType<typeof aliasFaker<TSchemaType, TAliasedFakers>>
+  >
+>;
 
 const schemaTypeToFaker = <
   TSchemaType extends _SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
-    [name: string]: (faker: Faker, count: number) => any;
+    [name: string]: (index: number) => any;
   }
 >(
   schema: TSchemaType,
   getFakers: () => TAliasedFakers,
+  instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string,
   referencedIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string
-): SchemaTypeToFaker<TSchemaType, TAliasedFakers> =>
-  (schema.type in constantFakers
-    ? constantFakers[
-        schema.type as TSchemaType["type"] & keyof typeof constantFakers
-      ]
-    : schema.type === "date"
-    ? dateFaker(
-        schema as Extract<TSchemaType, _SchemaTypeDefinition<"date", any, any>>
-      )
-    : schema.type === "datetime"
-    ? datetimeFaker(
-        schema as Extract<
-          TSchemaType,
-          _SchemaTypeDefinition<"datetime", any, any>
-        >
-      )
-    : schema.type === "number"
-    ? numberFaker(
-        schema as Extract<
-          TSchemaType,
-          _SchemaTypeDefinition<"number", number, any>
-        >
-      )
-    : schema.type === "reference"
-    ? referenceFaker(
-        schema as Extract<
-          TSchemaType,
-          _SchemaTypeDefinition<"reference", any, any>
-        >,
-        referencedIdFaker
-      )
-    : schema.type === "string"
-    ? stringFaker(
-        schema as Extract<
-          TSchemaType,
-          _SchemaTypeDefinition<"string", string, any>
-        >
-      )
-    : schema.type === "text"
-    ? textFaker(
-        schema as Extract<
-          TSchemaType,
-          _SchemaTypeDefinition<"text", string, any>
-        >
-      )
-    : schema.type === "url"
-    ? urlFaker(
-        schema as Extract<
-          TSchemaType,
-          _SchemaTypeDefinition<"url", string, any>
-        >
-      )
-    : schema.type === "array"
-    ? arrayFaker(
-        schema as Extract<
-          TSchemaType,
-          _SchemaTypeDefinition<"array", any, any>
-        >,
-        getFakers,
-        documentIdFaker,
-        referencedIdFaker
-      )
-    : schema.type === "block"
-    ? blockFaker(
-        schema as Extract<
-          TSchemaType,
-          _SchemaTypeDefinition<"block", any, any>
-        >,
-        getFakers,
-        documentIdFaker,
-        referencedIdFaker
-      )
-    : schema.type === "object"
-    ? objectFaker(
-        schema as Extract<
-          TSchemaType,
-          _SchemaTypeDefinition<"object", any, any>
-        >,
-        getFakers,
-        documentIdFaker,
-        referencedIdFaker
-      )
-    : schema.type === "document"
-    ? documentFaker(
-        schema as Extract<
-          TSchemaType,
-          _SchemaTypeDefinition<"document", any, any>
-        >,
-        getFakers,
-        documentIdFaker,
-        referencedIdFaker
-      )
-    : schema.type === "file"
-    ? fileFaker(
-        schema as Extract<TSchemaType, _SchemaTypeDefinition<"file", any, any>>,
-        getFakers,
-        documentIdFaker,
-        referencedIdFaker
-      )
-    : schema.type === "image"
-    ? imageFaker(
-        schema as Extract<
-          TSchemaType,
-          _SchemaTypeDefinition<"image", any, any>
-        >,
-        getFakers,
-        documentIdFaker,
-        referencedIdFaker
-      )
-    : aliasFaker(schema, getFakers)) as SchemaTypeToFaker<
-    TSchemaType,
-    TAliasedFakers
-  >;
+): SchemaTypeToFaker<TSchemaType, TAliasedFakers> => {
+  const prefixedInstantiateFakerByPath = (path: string) =>
+    instantiateFakerByPath(`.${schema.name ?? `<${schema.type}>`}${path}`);
+
+  return prefixedInstantiateFakerByPath("")(
+    schema.type in constantFakers
+      ? constantFakers[
+          schema.type as TSchemaType["type"] & keyof typeof constantFakers
+        ]
+      : schema.type === "date"
+      ? dateFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"date", any, any>
+          >
+        )
+      : schema.type === "datetime"
+      ? datetimeFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"datetime", any, any>
+          >
+        )
+      : schema.type === "number"
+      ? numberFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"number", number, any>
+          >
+        )
+      : schema.type === "reference"
+      ? referenceFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"reference", any, any>
+          >,
+          referencedIdFaker
+        )
+      : schema.type === "string"
+      ? stringFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"string", string, any>
+          >
+        )
+      : schema.type === "text"
+      ? textFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"text", string, any>
+          >
+        )
+      : schema.type === "url"
+      ? urlFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"url", string, any>
+          >
+        )
+      : schema.type === "array"
+      ? arrayFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"array", any, any>
+          >,
+          getFakers,
+          prefixedInstantiateFakerByPath,
+          documentIdFaker,
+          referencedIdFaker
+        )
+      : schema.type === "block"
+      ? blockFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"block", any, any>
+          >,
+          getFakers,
+          prefixedInstantiateFakerByPath,
+          documentIdFaker,
+          referencedIdFaker
+        )
+      : schema.type === "object"
+      ? objectFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"object", any, any>
+          >,
+          getFakers,
+          prefixedInstantiateFakerByPath,
+          documentIdFaker,
+          referencedIdFaker
+        )
+      : schema.type === "document"
+      ? documentFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"document", any, any>
+          >,
+          getFakers,
+          prefixedInstantiateFakerByPath,
+          documentIdFaker,
+          referencedIdFaker
+        )
+      : schema.type === "file"
+      ? fileFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"file", any, any>
+          >,
+          getFakers,
+          prefixedInstantiateFakerByPath,
+          documentIdFaker,
+          referencedIdFaker
+        )
+      : schema.type === "image"
+      ? imageFaker(
+          schema as Extract<
+            TSchemaType,
+            _SchemaTypeDefinition<"image", any, any>
+          >,
+          getFakers,
+          prefixedInstantiateFakerByPath,
+          documentIdFaker,
+          referencedIdFaker
+        )
+      : aliasFaker(schema, getFakers)
+  ) as SchemaTypeToFaker<TSchemaType, TAliasedFakers>;
+};
 
 const sanityConfigToFakerInner = <const TConfig extends _ConfigBase<any, any>>(
   {
     schema: { types: typesUntyped = [] } = {},
     plugins: pluginsUntyped = [],
   }: TConfig,
+  instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (
     type: string | undefined
   ) => (faker: Faker, index: number) => string,
@@ -1328,7 +1395,12 @@ const sanityConfigToFakerInner = <const TConfig extends _ConfigBase<any, any>>(
 
   const pluginsFakers = plugins
     .map((plugin) =>
-      sanityConfigToFakerInner(plugin, documentIdFaker, referencedIdFaker)
+      sanityConfigToFakerInner(
+        plugin,
+        instantiateFakerByPath,
+        documentIdFaker,
+        referencedIdFaker
+      )
     )
     .reduce(
       (acc, fakers) => ({ ...acc, ...fakers }),
@@ -1344,6 +1416,7 @@ const sanityConfigToFakerInner = <const TConfig extends _ConfigBase<any, any>>(
               ...pluginsFakers,
               ...fakers,
             }),
+            instantiateFakerByPath,
             documentIdFaker,
             referencedIdFaker
           );
@@ -1360,31 +1433,13 @@ const sanityConfigToFakerInner = <const TConfig extends _ConfigBase<any, any>>(
   return fakers;
 };
 
-const lazyFaker =
-  <MaybeFaker extends Faker | undefined>(maybeFaker: MaybeFaker) =>
-  <Fn extends (faker: Faker) => any>(fn: Fn) =>
-    typedTernary(
-      !maybeFaker as undefined extends MaybeFaker ? true : false,
-      () => fn,
-      () => (faker?: Faker) => fn(faker ?? maybeFaker!) as ReturnType<Fn>
-    );
-
-const _lazyFaker = <
-  MaybeFaker extends Faker | undefined,
-  Fn extends (faker: Faker) => any
->(
-  maybeFaker: MaybeFaker,
-  fn: Fn
-) => lazyFaker(maybeFaker)(fn);
-
-const counter = <Fn extends (faker: Faker, count: number) => any>(fn: Fn) => {
+const counter = <Fn extends (index: number) => any>(fn: Fn) => {
   // eslint-disable-next-line fp/no-let -- Mutable
   let count = -1;
 
   // eslint-disable-next-line no-return-assign -- Mutable
-  return (faker: Faker) =>
+  return () =>
     fn(
-      faker,
       // eslint-disable-next-line fp/no-mutation -- Mutable
       (count += 1)
     ) as ReturnType<Fn>;
@@ -1392,14 +1447,13 @@ const counter = <Fn extends (faker: Faker, count: number) => any>(fn: Fn) => {
 
 /** @private */
 export const _sanityConfigToFaker = <
-  const TConfig extends _ConfigBase<any, any>,
-  const MaybeFaker extends Faker | undefined
+  const TConfig extends _ConfigBase<any, any>
 >(
   config: TConfig,
   {
     faker,
     referencedChunkSize = 5,
-  }: { faker?: MaybeFaker; referencedChunkSize?: number } = {}
+  }: { faker: FakerOptions; referencedChunkSize?: number }
 ) => {
   const documentIdMemos: { [type: string]: { [index: number]: string } } = {};
   const documentIdFaker = (type: string | undefined) =>
@@ -1416,44 +1470,42 @@ export const _sanityConfigToFaker = <
 
           return documentIdMemos[type]![index]!;
         };
-  const referencedIdFaker =
-    (type: string | undefined) => (faker: Faker, index: number) =>
-      documentIdFaker(type)(
+  const referencedIdFaker = (type: string | undefined) => {
+    const documentId = documentIdFaker(type);
+
+    return (faker: Faker, index: number) =>
+      documentId(
         faker,
         faker.number.int({
           min: index - (index % referencedChunkSize),
           max: index - (index % referencedChunkSize) + referencedChunkSize - 1,
         })
       );
+  };
 
   const fakersInner = sanityConfigToFakerInner(
     config,
+    instantiateFaker(faker),
     documentIdFaker,
     referencedIdFaker
   );
 
   return Object.fromEntries(
     Object.entries(fakersInner).map(
-      ([name, typeFaker]) =>
-        [name, flow(counter, lazyFaker(faker))(typeFaker)] as const
+      ([name, typeFaker]) => [name, counter(typeFaker)] as const
     )
   ) as {
     [type in keyof typeof fakersInner]: ReturnType<
-      typeof _lazyFaker<
-        MaybeFaker,
-        ReturnType<typeof counter<(typeof fakersInner)[type]>>
-      >
+      typeof counter<(typeof fakersInner)[type]>
     >;
   };
 };
 
 export const sanityConfigToFaker = <
-  const TConfig extends _ConfigBase<any, any>,
-  const MaybeFaker extends Faker | undefined
+  const TConfig extends _ConfigBase<any, any>
 >(
-  config: TConfig,
-  options: { faker?: MaybeFaker; referencedChunkSize?: number } = {}
+  ...args: Parameters<typeof _sanityConfigToFaker<TConfig>>
 ) =>
-  _sanityConfigToFaker(config, options) as {
+  _sanityConfigToFaker(...args) as {
     [TType in keyof InferSchemaValues<TConfig>]: () => InferSchemaValues<TConfig>[TType];
   };

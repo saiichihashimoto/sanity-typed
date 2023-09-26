@@ -1,5 +1,5 @@
-import { faker } from "@faker-js/faker";
-import { beforeEach, describe, expect, it } from "@jest/globals";
+import { base, en } from "@faker-js/faker";
+import { describe, expect, it } from "@jest/globals";
 
 import { expectType } from "@sanity-typed/test-utils";
 import {
@@ -14,10 +14,6 @@ import { sanityConfigToZods } from "@sanity-typed/zod";
 import { _sanityConfigToFaker } from ".";
 
 describe("<alias>", () => {
-  beforeEach(() => {
-    faker.seed(0);
-  });
-
   describe("defineConfig", () => {
     it("builds parser for primitive type value", () => {
       const config = defineConfig({
@@ -43,7 +39,9 @@ describe("<alias>", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -90,7 +88,9 @@ describe("<alias>", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -125,7 +125,9 @@ describe("<alias>", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         foo: sanityFaker.foo(),
@@ -181,7 +183,9 @@ describe("<alias>", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -240,7 +244,9 @@ describe("<alias>", () => {
           })(),
         ],
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         foo: sanityFaker.foo(),
@@ -307,7 +313,9 @@ describe("<alias>", () => {
           })(),
         ],
       });
-      const sanityFaker = _sanityConfigToFaker(config, { faker });
+      const sanityFaker = _sanityConfigToFaker(config, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         foo: sanityFaker.foo(),
@@ -346,7 +354,9 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -392,7 +402,9 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -426,7 +438,9 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         foo: sanityFaker.foo(),
@@ -481,7 +495,9 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         bar: sanityFaker.bar(),
@@ -539,7 +555,9 @@ describe("<alias>", () => {
           })(),
         ],
       })();
-      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         foo: sanityFaker.foo(),
@@ -605,7 +623,9 @@ describe("<alias>", () => {
           })(),
         ],
       })();
-      const sanityFaker = _sanityConfigToFaker(plugin, { faker });
+      const sanityFaker = _sanityConfigToFaker(plugin, {
+        faker: { locale: [en, base] },
+      });
 
       const fakes = {
         foo: sanityFaker.foo(),

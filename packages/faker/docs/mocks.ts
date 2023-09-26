@@ -1,10 +1,12 @@
-import { faker } from "@faker-js/faker";
+import { base, en } from "@faker-js/faker";
 
 import { sanityConfigToFaker } from "@sanity-typed/faker";
 
 import { config } from "./sanity.schema";
 
-const sanityFaker = sanityConfigToFaker(config, { faker });
+const sanityFaker = _sanityConfigToFaker(config, {
+  faker: { locale: [en, base] },
+});
 
 const mock = sanityFaker.product();
 /**
