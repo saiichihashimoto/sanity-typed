@@ -25,8 +25,8 @@ export const product = defineType({
           type: "object",
           name: "tag",
           fields: [
-            { type: "string", name: "label" },
-            { type: "string", name: "value" },
+            defineField({ type: "string", name: "label" }),
+            defineField({ type: "string", name: "value" }),
           ],
         }),
       ],

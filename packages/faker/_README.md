@@ -21,4 +21,6 @@ npm install sanity @faker-js/faker @sanity-typed/faker
 
 ## Usage
 
-FIXME
+@[typescript](../types/docs/schemas/product.ts)
+@[typescript](../types/docs/sanity.config.ts)
+@[typescript](./docs/mocks.ts)

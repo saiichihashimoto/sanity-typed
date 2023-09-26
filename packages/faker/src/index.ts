@@ -6,6 +6,7 @@ import type { IsNumericLiteral, IsStringLiteral, Simplify } from "type-fest";
 
 import { traverseValidation } from "@sanity-typed/traverse-validation";
 import type {
+  InferSchemaValues,
   MaybeTitledListValue,
   _ArrayMemberDefinition,
   _ConfigBase,
