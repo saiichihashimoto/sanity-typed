@@ -560,9 +560,9 @@ const membersFaker = <
             )
           )
     : (faker: Faker, index: number) =>
-        Array.from({ length: faker.number.int({ min, max }) }).map(() =>
-          addKey(memberFaker)(faker, index)
-        );
+        faker.helpers.multiple(() => addKey(memberFaker)(faker, index), {
+          count: { min, max },
+        });
 };
 
 type ArrayFaker<
@@ -831,7 +831,7 @@ const fieldsFaker = <
       traverseValidation(field).required?.length
         ? (faker: Faker, index: number) => fieldFaker(index)
         : (faker: Faker, index: number) =>
-            faker.datatype.boolean() ? undefined : fieldFaker(index),
+            faker.helpers.maybe(() => fieldFaker(index)),
     ] as const;
   });
 
