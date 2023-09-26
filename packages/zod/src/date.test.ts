@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 describe("date", () => {
   describe("defineArrayMember", () => {
@@ -31,7 +31,7 @@ describe("date", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = ["2023-09-12"];
 
@@ -65,7 +65,7 @@ describe("date", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -95,7 +95,7 @@ describe("date", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = "2023-09-12";
 
@@ -122,7 +122,7 @@ describe("date", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("foo")).toThrow("Invalid date");
     });
@@ -141,7 +141,7 @@ describe("date", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("2023-09-11")).toThrow(
         "Date must be greater than or equal to 2023-09-12"
@@ -162,7 +162,7 @@ describe("date", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("2023-09-13")).toThrow(
         "Date must be less than or equal to 2023-09-12"

@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 describe("url", () => {
   describe("defineArrayMember", () => {
@@ -31,7 +31,7 @@ describe("url", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = ["https://google.com"];
 
@@ -65,7 +65,7 @@ describe("url", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -95,7 +95,7 @@ describe("url", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = "https://google.com";
 
@@ -122,7 +122,7 @@ describe("url", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("foo")).toThrow("Not a valid URL");
       expect(() => zods.foo.parse("https://google.com")).not.toThrow();
@@ -152,7 +152,7 @@ describe("url", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("https://google.com")).not.toThrow();
       expect(() => zods.foo.parse("/relative")).not.toThrow();
@@ -172,7 +172,7 @@ describe("url", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("https://google.com")).toThrow(
         "Only relative URLs are allowed"
@@ -194,7 +194,7 @@ describe("url", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() =>
         zods.foo.parse("https://user:pass@google.com")
@@ -215,7 +215,7 @@ describe("url", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("mailto:foo@bar.com")).not.toThrow();
     });
@@ -234,7 +234,7 @@ describe("url", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("tel:15555555555")).not.toThrow();
     });

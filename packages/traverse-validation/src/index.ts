@@ -1,27 +1,27 @@
 import type { UnionToIntersection } from "type-fest";
 
+import type { IntrinsicTypeName } from "@sanity-typed/types";
 import type {
-  IntrinsicTypeName,
-  _ArrayMemberDefinition,
-  _FieldDefinition,
-  _GetOriginalRule,
-  _TypeDefinition,
-} from "@sanity-typed/types";
+  ArrayMemberDefinition,
+  FieldDefinition,
+  GetOriginalRule,
+  TypeDefinition,
+} from "@sanity-typed/types/src/internal";
 
-type _SchemaTypeDefinition<TType extends string> =
-  | _ArrayMemberDefinition<TType, any, any, any, any, any, any, any, any>
-  | _FieldDefinition<TType, any, any, any, any, any, any, any, any>
-  | _TypeDefinition<TType, any, any, any, any, any, any, any>;
+type SchemaTypeDefinition<TType extends string> =
+  | ArrayMemberDefinition<TType, any, any, any, any, any, any, any, any>
+  | FieldDefinition<TType, any, any, any, any, any, any, any, any>
+  | TypeDefinition<TType, any, any, any, any, any, any, any>;
 
 export const traverseValidation = <
-  TSchemaType extends _SchemaTypeDefinition<any>
+  TSchemaType extends SchemaTypeDefinition<any>
 >({
   validation,
 }: TSchemaType) => {
   /* eslint-disable fp/no-let,fp/no-mutation,fp/no-unused-expression -- mutation */
   let value: {
     [key in keyof UnionToIntersection<
-      _GetOriginalRule<_SchemaTypeDefinition<IntrinsicTypeName>>
+      GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
     >]?: any[][];
   } = {};
 
@@ -109,7 +109,7 @@ export const traverseValidation = <
       type: Symbol("TODO"),
     }),
   } as unknown as UnionToIntersection<
-    _GetOriginalRule<_SchemaTypeDefinition<IntrinsicTypeName>>
+    GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
   >;
 
   validation?.(
@@ -120,8 +120,8 @@ export const traverseValidation = <
   /* eslint-enable fp/no-let,fp/no-mutation,fp/no-unused-expression */
 
   return value as {
-    [key in keyof _GetOriginalRule<TSchemaType>]?: Parameters<
-      _GetOriginalRule<TSchemaType>[key]
+    [key in keyof GetOriginalRule<TSchemaType>]?: Parameters<
+      GetOriginalRule<TSchemaType>[key]
     >[];
   };
 };

@@ -5,7 +5,8 @@ import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { ExecuteQuery, Parse, _ScopeFromPartialContext } from ".";
+import type { ExecuteQuery, Parse } from ".";
+import type { ScopeFromPartialContext } from "./internal";
 
 describe("pipe functions", () => {
   describe("global", () => {
@@ -71,7 +72,7 @@ describe("pipe functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             dataset: WritableDeep<typeof dataset>;
           }>
         >
@@ -111,7 +112,7 @@ describe("pipe functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             dataset: WritableDeep<typeof dataset>;
           }>
         >
@@ -151,7 +152,7 @@ describe("pipe functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             dataset: WritableDeep<typeof dataset>;
           }>
         >
@@ -239,7 +240,7 @@ describe("pipe functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             dataset: WritableDeep<typeof dataset>;
           }>
         >

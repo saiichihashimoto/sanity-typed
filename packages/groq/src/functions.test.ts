@@ -15,13 +15,11 @@ import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
+import type { ExecuteQuery, Geo, Parse } from ".";
 import type {
-  ExecuteQuery,
-  Geo,
-  Parse,
-  _ScopeFromPartialContext,
-  _ScopeFromPartialScope,
-} from ".";
+  ScopeFromPartialContext,
+  ScopeFromPartialScope,
+} from "./internal";
 
 describe("functions", () => {
   describe("global", () => {
@@ -68,7 +66,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             delta: WritableDeep<typeof delta>;
           }>
         >
@@ -93,7 +91,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             delta: WritableDeep<typeof delta>;
           }>
         >
@@ -128,7 +126,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             delta: WritableDeep<typeof delta>;
           }>
         >
@@ -188,7 +186,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             delta: WritableDeep<typeof delta>;
           }>
         >
@@ -223,7 +221,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             delta: WritableDeep<typeof delta>;
           }>
         >
@@ -258,7 +256,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             delta: WritableDeep<typeof delta>;
           }>
         >
@@ -460,7 +458,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialScope<{
+          ScopeFromPartialScope<{
             this: typeof root;
           }>
         >
@@ -501,7 +499,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialScope<{
+          ScopeFromPartialScope<{
             this: typeof root;
           }>
         >
@@ -746,7 +744,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -784,7 +782,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -1683,7 +1681,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             identity: typeof identity;
           }>
         >
@@ -1721,7 +1719,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             identity: typeof identity;
           }>
         >
@@ -1799,7 +1797,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             delta: WritableDeep<typeof delta>;
           }>
         >
@@ -1840,7 +1838,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             delta: WritableDeep<typeof delta>;
           }>
         >
@@ -1881,7 +1879,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             delta: WritableDeep<typeof delta>;
           }>
         >
@@ -1922,7 +1920,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             delta: WritableDeep<typeof delta>;
           }>
         >
@@ -2206,7 +2204,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -2247,7 +2245,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -2399,7 +2397,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -2437,7 +2435,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -2639,7 +2637,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -2818,7 +2816,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -2859,7 +2857,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -3946,7 +3944,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4004,7 +4002,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4062,7 +4060,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4136,7 +4134,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4185,7 +4183,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4257,7 +4255,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4295,7 +4293,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4333,7 +4331,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4371,7 +4369,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4409,7 +4407,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4447,7 +4445,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4485,7 +4483,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4523,7 +4521,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4561,7 +4559,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4602,7 +4600,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4643,7 +4641,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4684,7 +4682,7 @@ describe("functions", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            _ScopeFromPartialContext<{
+            ScopeFromPartialContext<{
               parameters: WritableDeep<typeof params>;
             }>
           >
@@ -4725,7 +4723,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             client: WritableDeep<typeof client>;
           }>
         >
@@ -4763,7 +4761,7 @@ describe("functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             client: WritableDeep<typeof client>;
           }>
         >

@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 describe("string", () => {
   describe("defineArrayMember", () => {
@@ -31,7 +31,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = ["foo"];
 
@@ -64,7 +64,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = ["foo"];
 
@@ -98,7 +98,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -136,7 +136,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -166,7 +166,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = "foo";
 
@@ -194,7 +194,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = "foo";
 
@@ -222,7 +222,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("")).toThrow(
         "String must contain at least 4 character(s)"
@@ -243,7 +243,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("fo")).toThrow(
         "String must contain at most 1 character(s)"
@@ -264,7 +264,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("")).toThrow(
         "String must contain exactly 1 character(s)"
@@ -288,7 +288,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("foo")).toThrow(
         "Must be all uppercase letters"
@@ -309,7 +309,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("FOO")).toThrow(
         "Must be all lowercase letters"
@@ -330,7 +330,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("foo")).toThrow("Invalid email");
     });
@@ -349,7 +349,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("foo")).toThrow(
         "Does not match /^(bar)+$/-pattern"
@@ -370,7 +370,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("foo")).toThrow("Does not match bar-pattern");
     });
@@ -389,7 +389,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("foo")).toThrow("Does not match bar-pattern");
     });
@@ -408,7 +408,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("foo")).not.toThrow();
       expect(() => zods.foo.parse("bar")).toThrow(
@@ -431,7 +431,7 @@ describe("string", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("foo")).not.toThrow();
       expect(() => zods.foo.parse("bar")).toThrow(

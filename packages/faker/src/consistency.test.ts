@@ -8,7 +8,7 @@ import {
   defineType,
 } from "@sanity-typed/types";
 
-import { _sanityConfigToFaker } from ".";
+import { sanityConfigToFakerTyped } from "./internal";
 
 describe("consistency", () => {
   it("mocks identical documents each time", () => {
@@ -31,10 +31,10 @@ describe("consistency", () => {
         ],
       },
     });
-    const sanityFaker1 = _sanityConfigToFaker(config, {
+    const sanityFaker1 = sanityConfigToFakerTyped(config, {
       faker: { locale: [en, base] },
     });
-    const sanityFaker2 = _sanityConfigToFaker(config, {
+    const sanityFaker2 = sanityConfigToFakerTyped(config, {
       faker: { locale: [en, base] },
     });
 
@@ -67,7 +67,7 @@ describe("consistency", () => {
         ],
       },
     });
-    const sanityFaker1 = _sanityConfigToFaker(config1, {
+    const sanityFaker1 = sanityConfigToFakerTyped(config1, {
       faker: { locale: [en, base] },
     });
 
@@ -94,7 +94,7 @@ describe("consistency", () => {
         ],
       },
     });
-    const sanityFaker2 = _sanityConfigToFaker(config2, {
+    const sanityFaker2 = sanityConfigToFakerTyped(config2, {
       faker: { locale: [en, base] },
     });
 
@@ -134,7 +134,7 @@ describe("consistency", () => {
         ],
       },
     });
-    const sanityFaker1 = _sanityConfigToFaker(config1, {
+    const sanityFaker1 = sanityConfigToFakerTyped(config1, {
       faker: { locale: [en, base] },
     });
 
@@ -162,7 +162,7 @@ describe("consistency", () => {
         ],
       },
     });
-    const sanityFaker2 = _sanityConfigToFaker(config2, {
+    const sanityFaker2 = sanityConfigToFakerTyped(config2, {
       faker: { locale: [en, base] },
     });
 
@@ -191,7 +191,7 @@ describe("consistency", () => {
         ],
       },
     });
-    const sanityFaker1 = _sanityConfigToFaker(config1, {
+    const sanityFaker1 = sanityConfigToFakerTyped(config1, {
       faker: { locale: [en, base] },
     });
 
@@ -214,7 +214,7 @@ describe("consistency", () => {
         ],
       },
     });
-    const sanityFaker2 = _sanityConfigToFaker(config2, {
+    const sanityFaker2 = sanityConfigToFakerTyped(config2, {
       faker: { locale: [en, base] },
     });
 
@@ -243,7 +243,7 @@ describe("consistency", () => {
         ],
       },
     });
-    const sanityFaker1 = _sanityConfigToFaker(config1, {
+    const sanityFaker1 = sanityConfigToFakerTyped(config1, {
       faker: { locale: [en, base] },
     });
 
@@ -272,7 +272,7 @@ describe("consistency", () => {
         ],
       },
     });
-    const sanityFaker2 = _sanityConfigToFaker(config2, {
+    const sanityFaker2 = sanityConfigToFakerTyped(config2, {
       faker: { locale: [en, base] },
     });
 

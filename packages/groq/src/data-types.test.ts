@@ -4,7 +4,8 @@ import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { ExecuteQuery, Parse, _ScopeFromPartialScope } from ".";
+import type { ExecuteQuery, Parse } from ".";
+import type { ScopeFromPartialScope } from "./internal";
 
 describe("base case", () => {
   it('""', async () => {
@@ -701,7 +702,7 @@ describe("data types", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -737,7 +738,7 @@ describe("data types", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -778,7 +779,7 @@ describe("data types", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -938,7 +939,7 @@ describe("data types", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -968,7 +969,7 @@ describe("data types", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -1005,7 +1006,7 @@ describe("data types", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });

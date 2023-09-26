@@ -5,7 +5,8 @@ import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { ExecuteQuery, Parse, _ScopeFromPartialContext } from ".";
+import type { ExecuteQuery, Parse } from ".";
+import type { ScopeFromPartialContext } from "./internal";
 
 describe("operators", () => {
   describe("&&", () => {
@@ -836,7 +837,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -868,7 +869,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -900,7 +901,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -959,7 +960,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -991,7 +992,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >
@@ -1023,7 +1024,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          _ScopeFromPartialContext<{
+          ScopeFromPartialContext<{
             parameters: WritableDeep<typeof params>;
           }>
         >

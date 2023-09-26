@@ -11,7 +11,7 @@ import {
 import type { InferSchemaValues } from "@sanity-typed/types";
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
-import { _sanityConfigToFaker } from ".";
+import { sanityConfigToFakerTyped } from "./internal";
 
 describe("reference", () => {
   describe("defineArrayMember", () => {
@@ -34,7 +34,7 @@ describe("reference", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, {
+      const sanityFaker = sanityConfigToFakerTyped(config, {
         faker: { locale: [en, base] },
       });
 
@@ -68,7 +68,7 @@ describe("reference", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, {
+      const sanityFaker = sanityConfigToFakerTyped(config, {
         faker: { locale: [en, base] },
       });
 
@@ -105,7 +105,7 @@ describe("reference", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, {
+      const sanityFaker = sanityConfigToFakerTyped(config, {
         faker: { locale: [en, base] },
       });
 
@@ -135,7 +135,7 @@ describe("reference", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, {
+      const sanityFaker = sanityConfigToFakerTyped(config, {
         faker: { locale: [en, base] },
       });
 
@@ -173,7 +173,7 @@ describe("reference", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, {
+      const sanityFaker = sanityConfigToFakerTyped(config, {
         faker: { locale: [en, base] },
       });
 

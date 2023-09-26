@@ -11,7 +11,7 @@ import {
 import type { InferSchemaValues } from "@sanity-typed/types";
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
-import { _sanityConfigToFaker } from ".";
+import { sanityConfigToFakerTyped } from "./internal";
 
 describe("slug", () => {
   describe("defineArrayMember", () => {
@@ -33,7 +33,7 @@ describe("slug", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, {
+      const sanityFaker = sanityConfigToFakerTyped(config, {
         faker: { locale: [en, base] },
       });
 
@@ -66,7 +66,7 @@ describe("slug", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, {
+      const sanityFaker = sanityConfigToFakerTyped(config, {
         faker: { locale: [en, base] },
       });
 
@@ -102,7 +102,7 @@ describe("slug", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, {
+      const sanityFaker = sanityConfigToFakerTyped(config, {
         faker: { locale: [en, base] },
       });
 
@@ -131,7 +131,7 @@ describe("slug", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, {
+      const sanityFaker = sanityConfigToFakerTyped(config, {
         faker: { locale: [en, base] },
       });
 
@@ -168,7 +168,7 @@ describe("slug", () => {
           ],
         },
       });
-      const sanityFaker = _sanityConfigToFaker(config, {
+      const sanityFaker = sanityConfigToFakerTyped(config, {
         faker: { locale: [en, base] },
       });
 

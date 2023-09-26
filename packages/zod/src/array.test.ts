@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 describe("array", () => {
   describe("defineField", () => {
@@ -34,7 +34,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -73,7 +73,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -132,7 +132,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -166,7 +166,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [true];
 
@@ -195,7 +195,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [true, "foo"];
 
@@ -244,7 +244,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
         { _key: "key", _type: "bar", bar: true },
@@ -288,7 +288,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() =>
         zods.foo.parse([
@@ -321,7 +321,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse([])).toThrow(
         "Array must contain at least 4 element(s)"
@@ -343,7 +343,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse([true, false])).toThrow(
         "Array must contain at most 1 element(s)"
@@ -365,7 +365,7 @@ describe("array", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse([])).toThrow(
         "Array must contain exactly 1 element(s)"

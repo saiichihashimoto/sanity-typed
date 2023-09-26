@@ -3,7 +3,7 @@ import { describe, expect, it } from "@jest/globals";
 
 import { defineConfig, defineField, defineType } from "@sanity-typed/types";
 
-import { _sanityConfigToFaker } from ".";
+import { sanityConfigToFakerTyped } from "./internal";
 
 describe("document-id-memo", () => {
   it("mocks references that refer to documents", () => {
@@ -30,7 +30,7 @@ describe("document-id-memo", () => {
         ],
       },
     });
-    const sanityFaker = _sanityConfigToFaker(config, {
+    const sanityFaker = sanityConfigToFakerTyped(config, {
       faker: { locale: [en, base] },
     });
 
@@ -92,7 +92,7 @@ describe("document-id-memo", () => {
         ],
       },
     });
-    const sanityFaker = _sanityConfigToFaker(config, {
+    const sanityFaker = sanityConfigToFakerTyped(config, {
       faker: { locale: [en, base] },
       referencedChunkSize: 2,
     });
@@ -138,7 +138,7 @@ describe("document-id-memo", () => {
       },
     });
 
-    const sanityFaker1 = _sanityConfigToFaker(config, {
+    const sanityFaker1 = sanityConfigToFakerTyped(config, {
       faker: { locale: [en, base] },
     });
     const { _id: foo10 } = sanityFaker1.foo();
@@ -162,7 +162,7 @@ describe("document-id-memo", () => {
     const { _ref: bar18 } = sanityFaker1.bar();
     const { _ref: bar19 } = sanityFaker1.bar();
 
-    const sanityFaker2 = _sanityConfigToFaker(config, {
+    const sanityFaker2 = sanityConfigToFakerTyped(config, {
       faker: { locale: [en, base] },
     });
     const { _ref: bar20 } = sanityFaker2.bar();

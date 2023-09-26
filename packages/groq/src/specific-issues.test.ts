@@ -4,7 +4,8 @@ import type { WritableDeep } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 
-import type { ExecuteQuery, Parse, _ScopeFromPartialContext } from ".";
+import type { ExecuteQuery, Parse } from ".";
+import type { ScopeFromPartialContext } from "./internal";
 
 describe("specific issues", () => {
   it("#242", async () => {
@@ -88,7 +89,7 @@ describe("specific issues", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        _ScopeFromPartialContext<{
+        ScopeFromPartialContext<{
           dataset: WritableDeep<typeof dataset>;
           params: WritableDeep<typeof params>;
         }>

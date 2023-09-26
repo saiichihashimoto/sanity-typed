@@ -4,7 +4,7 @@ import { sanityConfigToFaker } from "@sanity-typed/faker";
 
 import { config } from "./sanity.schema";
 
-const sanityFaker = _sanityConfigToFaker(config, {
+const sanityFaker = sanityConfigToFaker(config, {
   faker: { locale: [en, base] },
 });
 

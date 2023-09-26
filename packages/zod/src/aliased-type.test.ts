@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues, SanityDocument } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 const documentFields: Omit<SanityDocument, "_type"> = {
   _id: "id",
@@ -44,7 +44,7 @@ describe("<alias>", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         bar: "bar",
@@ -97,7 +97,7 @@ describe("<alias>", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         bar: {
@@ -144,7 +144,7 @@ describe("<alias>", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         foo: {
@@ -213,7 +213,7 @@ describe("<alias>", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         foo: {
@@ -295,7 +295,7 @@ describe("<alias>", () => {
           })(),
         ],
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         foo: {
@@ -371,7 +371,7 @@ describe("<alias>", () => {
           })(),
         ],
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         foo: {
@@ -419,7 +419,7 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         bar: "bar",
@@ -471,7 +471,7 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         bar: {
@@ -517,7 +517,7 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         foo: {
@@ -585,7 +585,7 @@ describe("<alias>", () => {
           ],
         },
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         foo: {
@@ -666,7 +666,7 @@ describe("<alias>", () => {
           })(),
         ],
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         foo: {
@@ -741,7 +741,7 @@ describe("<alias>", () => {
           })(),
         ],
       })();
-      const zods = _sanityConfigToZods(plugin);
+      const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
         foo: {

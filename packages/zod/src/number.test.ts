@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 describe("number", () => {
   describe("defineArrayMember", () => {
@@ -31,7 +31,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [1];
 
@@ -64,7 +64,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [1];
 
@@ -98,7 +98,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -136,7 +136,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -166,7 +166,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = 1;
 
@@ -194,7 +194,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = 1;
 
@@ -222,7 +222,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse(0)).toThrow(
         "Number must be greater than or equal to 1"
@@ -243,7 +243,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse(2)).toThrow(
         "Number must be less than or equal to 1"
@@ -264,7 +264,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse(1)).toThrow("Number must be less than 1");
     });
@@ -283,7 +283,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse(1)).toThrow("Number must be greater than 1");
     });
@@ -302,7 +302,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse(1.5)).toThrow(
         "Expected integer, received float"
@@ -323,7 +323,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse(1.56)).toThrow(
         "Number must be a multiple of 0.1"
@@ -344,7 +344,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse(-1)).toThrow(
         "Number must be greater than or equal to 0"
@@ -366,7 +366,7 @@ describe("number", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse(1)).toThrow("Number must be less than 0");
       expect(() => zods.foo.parse(0)).toThrow("Number must be less than 0");

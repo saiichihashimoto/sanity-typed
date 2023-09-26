@@ -9,7 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
-import { _sanityConfigToZods } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 describe("datetime", () => {
   describe("defineArrayMember", () => {
@@ -31,7 +31,7 @@ describe("datetime", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = ["2023-09-12T20:01:36.945Z"];
 
@@ -65,7 +65,7 @@ describe("datetime", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
         _type: "foo",
@@ -95,7 +95,7 @@ describe("datetime", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = "2023-09-12T20:01:36.945Z";
 
@@ -122,7 +122,7 @@ describe("datetime", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("foo")).toThrow("Invalid datetime");
     });
@@ -141,7 +141,7 @@ describe("datetime", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("2023-09-12T20:01:36.944Z")).toThrow(
         "Datetime must be greater than or equal to 2023-09-12T20:01:36.945Z"
@@ -162,7 +162,7 @@ describe("datetime", () => {
           ],
         },
       });
-      const zods = _sanityConfigToZods(config);
+      const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("2023-09-12T20:01:36.946Z")).toThrow(
         "Datetime must be less than or equal to 2023-09-12T20:01:36.945Z"

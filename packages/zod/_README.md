@@ -45,12 +45,6 @@ const productZod: z.Type<SanityValues["product"]> = z.object({
 
 It isn't perfect and is prone to errors, but it's a decent option if importing the config isn't viable.
 
-### `ZodType` instead of `ZodObject`, `ZodString`, etc.
-
-You'll notice that all the returned types are a `z.ZodType` of the same type from `InferSchemaValues<typeof config>`, rather than the more specific zod types. The "Type instantiation is excessively deep and possibly infinite" errors were excessive and proved difficult to solve. Under the hood, it does correctly use the specific types and `sanityConfigToZods` overwrites their types with `z.ZodType` so typescript won't complain.
-
-If you absolutely must have the exact zod schemas (eg. you need to `extend` a `z.ZodObject`), it is exported at `_sanityConfigToZods`, but it is **NOT** officially supported and any changes (or removal) are not considered breaking changes.
-
 @[:markdown](../types/docs/considerations/types-vs-content-lake.md)
 
 ### Doesn't run `custom` validations
