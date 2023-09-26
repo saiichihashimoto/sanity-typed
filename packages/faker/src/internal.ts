@@ -1297,6 +1297,23 @@ const schemaTypeToFaker = <
   ) as SchemaTypeToFaker<TSchemaType, TAliasedFakers>;
 };
 
+type SanityConfigFakers<TConfig extends MaybeArray<ConfigBase<any, any>>> =
+  TConfig extends MaybeArray<
+    ConfigBase<infer TTypeDefinition, infer TPluginOptions>
+  >
+    ? {
+        [Name in TTypeDefinition["name"]]: ReturnType<
+          typeof addTypeT<
+            Name,
+            SchemaTypeToFaker<
+              Extract<TTypeDefinition, { name: Name }>,
+              SanityConfigFakers<TConfig> & SanityConfigFakers<TPluginOptions>
+            >
+          >
+        >;
+      }
+    : never;
+
 const sanityConfigToFakerInner = <const TConfig extends ConfigBase<any, any>>(
   {
     schema: { types: typesUntyped = [] } = {},
@@ -1319,23 +1336,6 @@ const sanityConfigToFakerInner = <const TConfig extends ConfigBase<any, any>>(
     : never;
 
   const plugins = pluginsUntyped as TPluginOptions[];
-
-  type SanityConfigFakers<TConfig extends MaybeArray<ConfigBase<any, any>>> =
-    TConfig extends MaybeArray<
-      ConfigBase<infer TTypeDefinition, infer TPluginOptions>
-    >
-      ? {
-          [Name in TTypeDefinition["name"]]: ReturnType<
-            typeof addTypeT<
-              Name,
-              SchemaTypeToFaker<
-                Extract<TTypeDefinition, { name: Name }>,
-                SanityConfigFakers<TConfig> & SanityConfigFakers<TPluginOptions>
-              >
-            >
-          >;
-        }
-      : never;
 
   const pluginsFakers = plugins
     .map((plugin) =>
