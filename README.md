@@ -151,20 +151,15 @@ const client = createClient<SanityValues>()({
 });
 
 /** Typescript type from GROQ queries! */
-const data = await client.fetch('*[_type=="product"]');
+const data = await client.fetch('*[_type=="product"]{productName,tags}');
 /**
  *  typeof data === {
- *    _createdAt: string;
- *    _id: string;
- *    _rev: string;
- *    _type: "product";
- *    _updatedAt: string;
- *    productName?: string;
- *    tags?: {
+ *    productName: string | null;
+ *    tags: {
  *      _key: string;
  *      label?: string;
  *      value?: string;
- *    }[];
+ *    }[] | null;
  *  }[]
  */
 ```
