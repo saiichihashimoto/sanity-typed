@@ -11,7 +11,7 @@ import {
 import { sanityConfigToFakerTyped } from "./internal";
 
 describe("consistency", () => {
-  it("mocks identical documents each time", () => {
+  it("mocks identical documents when re-instantiated", () => {
     const config = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
@@ -43,7 +43,7 @@ describe("consistency", () => {
     expect(sanityFaker1.foo()).toStrictEqual(sanityFaker2.foo());
   });
 
-  it("mocks identical documents regardless of other types", () => {
+  it("mocks identical documents when other types change", () => {
     const config1 = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
@@ -109,7 +109,7 @@ describe("consistency", () => {
     expect(sanityFaker1.foo()).toStrictEqual(sanityFaker2.foo());
   });
 
-  it("mocks identical values regardless of other fields", () => {
+  it("mocks identical values when other fields change", () => {
     const config1 = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
@@ -171,7 +171,7 @@ describe("consistency", () => {
     expect(sanityFaker1.foo().bar).toStrictEqual(sanityFaker2.foo().bar);
   });
 
-  it("mocks different values if nested differently", () => {
+  it("mocks different values when the field path changes", () => {
     const config1 = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
@@ -223,7 +223,7 @@ describe("consistency", () => {
     expect(sanityFaker1.foo().bar).not.toStrictEqual(sanityFaker2.baz().bar);
   });
 
-  it("mocks different values if nested in array", () => {
+  it("mocks different values when the field nests in an array", () => {
     const config1 = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
