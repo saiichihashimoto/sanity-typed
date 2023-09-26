@@ -24,3 +24,11 @@ npm install sanity @faker-js/faker @sanity-typed/faker
 @[typescript](../types/docs/schemas/product.ts)
 @[typescript](../types/docs/sanity.config.ts)
 @[typescript](./docs/mocks.ts)
+
+### Features
+
+- `reference._ref` will point to the correct `document._id`, so you can use [`groq-js` or `@sanity-typed/groq-js`](../groq-js) and be certain that your references will work.
+  - How this works is that, for any `sanityConfigToFaker(...).type()`, the first 5 documents will have references that only point to ids of the first 5 documents of that type. For example, if type `foo` had references that pointed to type `bar`, then all references in the first 5 mocks of `foo` could only point to the first 5 mocks of `bar`. If you want to change this number, pass a different `referencedChunkSize` to `sanityConfigToFaker(config, { faker, referencedChunkSize })`. The [tests for this](./src/document-id-memo.test.ts) are a good explanation.
+  - TLDR, mock 5 of every document, all their references will point to each other. If you want more or less, change `referencedChunkSize`.
+- Any field's mocked values should stay consistent, even as you change the other fields. If you're using `slug` for url paths, this will keep your emails consistent as schemas change.
+  - Fakers are instantiated per schema type with a seed corresponding to the field's path. This will hopefully keep "mock flux" to a minimum, so only fields you change should generate new mock data. The [tests for this](./src/consistency.test.ts) are a good explanation.
