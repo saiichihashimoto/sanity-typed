@@ -29,17 +29,22 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
 
 This project aims to complete sanity's developer experience with (almost) completely drop-in solutions. It's scope includes:
 
-- [x] Typescript for all Sanity results
-  - [x] [Typed Sanity Documents](packages/types)
-  - [x] [Typed GROQ Queries](packages/groq)
-  - [x] [Typed Sanity Client](packages/client)
-- [x] Runtime safety for all Sanity results
-  - [x] [Sanity Documents Zod Parser](packages/zod)
-  - [ ] [GROQ Queries Zod Parser](https://github.com/saiichihashimoto/sanity-typed/issues/306)
-- [x] Fully local development environment
-  - [x] [Mocked Sanity Documents](packages/faker)
-  - [x] [Local GROQ execution](https://github.com/sanity-io/groq-js)
-  - [ ] [Mocked Sanity Client](https://github.com/saiichihashimoto/sanity-typed/issues/320)
+1. Typescript for all Sanity results
+
+- [x] [Typed Sanity Documents](packages/types)
+- [x] [Typed GROQ Queries](packages/groq)
+- [x] [Typed Sanity Client](packages/client)
+
+2. Fully local development environment
+
+- [x] [Mocked Sanity Documents](packages/faker)
+- [x] [Local GROQ execution](https://github.com/sanity-io/groq-js)
+- [ ] [Mocked Sanity Client](https://github.com/saiichihashimoto/sanity-typed/issues/320)
+
+3. Runtime safety for all Sanity results
+
+- [x] [Sanity Documents Zod Parser](packages/zod)
+- [ ] [GROQ Queries Zod Parser](https://github.com/saiichihashimoto/sanity-typed/issues/306)
 
 With the full suite, everything would be fully typed, runtime safe, and fully local. The drop-in nature means that working these solutions into native sanity is a possibility and keeps new documentation and learning curve to a minimum.
 
