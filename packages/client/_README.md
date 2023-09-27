@@ -36,3 +36,7 @@ The `createClient<SanityValues>()(config)` syntax is due to having to infer one 
 
 @[:markdown](../types/docs/considerations/types-vs-content-lake.md)
 @[:markdown](../groq-js/docs/considerations/evaluate-type-flakiness.md)
+
+## Alternatives
+
+- [`@sanity-codegen/client`](https://www.npmjs.com/package/@sanity-codegen/client)
