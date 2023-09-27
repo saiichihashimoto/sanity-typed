@@ -10,10 +10,12 @@
   "types": "src/index.ts",
   "dependencies": {
     "@sanity-typed/types": "0.0.0-development",
+    "lodash": "4.17.21",
     "type-fest": "4.3.2"
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development",
+    "@types/lodash": "4.14.199",
     "typescript": "5.2.2"
   },
   "peerDependencies": {

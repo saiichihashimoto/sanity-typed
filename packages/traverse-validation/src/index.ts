@@ -1,3 +1,4 @@
+import { omit } from "lodash/fp";
 import type { UnionToIntersection } from "type-fest";
 
 import type { IntrinsicTypeName } from "@sanity-typed/types";
@@ -7,11 +8,18 @@ import type {
   GetOriginalRule,
   TypeDefinition,
 } from "@sanity-typed/types/src/internal";
+import type { MaybeArray } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<TType extends string> =
   | ArrayMemberDefinition<TType, any, any, any, any, any, any, any, any>
   | FieldDefinition<TType, any, any, any, any, any, any, any, any>
   | TypeDefinition<TType, any, any, any, any, any, any, any>;
+
+type ArgsObject = {
+  [key in keyof UnionToIntersection<
+    GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
+  >]?: any[];
+};
 
 export const traverseValidation = <
   TSchemaType extends SchemaTypeDefinition<any>
@@ -19,147 +27,87 @@ export const traverseValidation = <
   validation,
 }: TSchemaType) => {
   // https://sanity-io-land.slack.com/archives/C9Z7RC3V1/p1695660296907819?thread_ts=1695522767.850489&cid=C9Z7RC3V1
-  // Only the last invocation of any method matters, so we can just overwrite the value each time
-  /* eslint-disable fp/no-let,fp/no-mutation,fp/no-unused-expression -- mutation */
-  let value: {
-    [key in keyof UnionToIntersection<
+  const Rule = (value: ArgsObject) => {
+    const rule = {
+      value,
+      error: () => rule,
+      warning: () => Rule({}),
+      custom: (...args: any[]) => Rule({ ...value, custom: args }),
+      email: (...args: any[]) => Rule({ ...value, email: args }),
+      greaterThan: (...args: any[]) => Rule({ ...value, greaterThan: args }),
+      lessThan: (...args: any[]) => Rule({ ...value, lessThan: args }),
+      regex: (...args: any[]) => Rule({ ...value, regex: args }),
+      required: (...args: any[]) => Rule({ ...value, required: args }),
+      unique: (...args: any[]) => Rule({ ...value, unique: args }),
+      uri: (...args: any[]) => Rule({ ...value, uri: args }),
+      integer: (...args: any[]) =>
+        Rule({
+          ...omit(["precision"], value),
+          integer: args,
+        }),
+      precision: (...args: any[]) =>
+        Rule({
+          ...omit(["integer"], value),
+          precision: args,
+        }),
+      max: (...args: any[]) => Rule({ ...value, max: args }),
+      min: (...args: any[]) => Rule({ ...value, min: args }),
+      length: (...args: any[]) =>
+        Rule({
+          ...value,
+          min: args,
+          max: args,
+        }),
+      lowercase: (...args: any[]) =>
+        Rule({
+          ...omit(["uppercase"], value),
+          lowercase: args,
+        }),
+      uppercase: (...args: any[]) =>
+        Rule({
+          ...omit(["lowercase"], value),
+          uppercase: args,
+        }),
+      negative: (...args: any[]) =>
+        Rule({
+          ...omit(["positive"], value),
+          negative: args,
+        }),
+      positive: (...args: any[]) =>
+        Rule({
+          ...omit(["negative"], value),
+          positive: args,
+        }),
+      valueOfField: () => ({
+        // TODO https://github.com/saiichihashimoto/sanity-typed/issues/336
+        path: "",
+        type: Symbol("TODO"),
+      }),
+    } as unknown as UnionToIntersection<
       GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
-    >]?: any[];
-  } = {};
+    > & {
+      value: ArgsObject;
+    };
 
-  const rule = {
-    custom: (...args: any[]) => {
-      value = { ...value, custom: args };
-      return rule;
-    },
-    email: (...args: any[]) => {
-      value = { ...value, email: args };
-      return rule;
-    },
-    error: (...args: any[]) => {
-      value = { ...value, error: args };
-      return rule;
-    },
-    greaterThan: (...args: any[]) => {
-      value = { ...value, greaterThan: args };
-      return rule;
-    },
-    integer: (...args: any[]) => {
-      value = {
-        ...value,
-        integer: args,
-        // both integer and precision existing makes no sense
-        precision: undefined,
-      };
-      return rule;
-    },
-    length: (...args: any[]) => {
-      value = {
-        ...value,
-        length: args,
-        // length effectively overwrites min and max, and overwriting it here let's us care only about the last invocation
-        min: args,
-        max: args,
-      };
-      return rule;
-    },
-    lessThan: (...args: any[]) => {
-      value = { ...value, lessThan: args };
-      return rule;
-    },
-    lowercase: (...args: any[]) => {
-      value = {
-        ...value,
-        lowercase: args,
-        // both lowercase and uppercase existing makes no sense
-        uppercase: undefined,
-      };
-      return rule;
-    },
-    max: (...args: any[]) => {
-      value = { ...value, max: args };
-      return rule;
-    },
-    min: (...args: any[]) => {
-      value = { ...value, min: args };
-      return rule;
-    },
-    negative: (...args: any[]) => {
-      value = {
-        ...value,
-        negative: args,
-        // both positive and negative existing makes no sense
-        positive: undefined,
-      };
-      return rule;
-    },
-    positive: (...args: any[]) => {
-      value = {
-        ...value,
-        positive: args,
-        // both positive and negative existing makes no sense
-        negative: undefined,
-      };
-      return rule;
-    },
-    precision: (...args: any[]) => {
-      value = {
-        ...value,
-        precision: args,
-        // both integer and precision existing makes no sense
-        integer: undefined,
-      };
-      return rule;
-    },
-    regex: (...args: any[]) => {
-      value = { ...value, regex: args };
-      return rule;
-    },
-    required: (...args: any[]) => {
-      value = { ...value, required: args };
-      return rule;
-    },
-    unique: (...args: any[]) => {
-      value = { ...value, unique: args };
-      return rule;
-    },
-    uppercase: (...args: any[]) => {
-      value = {
-        ...value,
-        uppercase: args,
-        // both lowercase and uppercase existing makes no sense
-        lowercase: undefined,
-      };
-      return rule;
-    },
-    uri: (...args: any[]) => {
-      value = { ...value, uri: args };
-      return rule;
-    },
-    // TODO Handle rule arrays, especially with warnings
-    warning: (...args: any[]) => {
-      value = { ...value, warning: args };
-      return rule;
-    },
-    valueOfField: () => ({
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/336
-      path: "",
-      type: Symbol("TODO"),
-    }),
-  } as unknown as UnionToIntersection<
-    GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
-  >;
-
-  validation?.(
-    // @ts-expect-error -- This type is technically impossible, mainly because custom is conflicting across everything
-    rule
-  );
-
-  /* eslint-enable fp/no-let,fp/no-mutation,fp/no-unused-expression */
-
-  return value as {
-    [key in keyof GetOriginalRule<TSchemaType>]?: Parameters<
-      GetOriginalRule<TSchemaType>[key]
-    >;
+    return rule;
   };
+
+  const rule = validation?.(
+    // @ts-expect-error -- This type is technically impossible, mainly because custom is conflicting across everything
+    Rule({})
+  ) as unknown as
+    | MaybeArray<
+        UnionToIntersection<
+          GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
+        > & {
+          value: ArgsObject;
+        }
+      >
+    | undefined;
+
+  return !rule
+    ? {}
+    : (Array.isArray(rule) ? rule : [rule])
+        .map(({ value }) => value)
+        .reduce((acc, current) => ({ ...acc, ...current }));
 };
