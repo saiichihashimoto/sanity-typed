@@ -267,10 +267,10 @@ describe("string", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("")).toThrow(
-        "String must contain exactly 1 character(s)"
+        "String must contain at least 1 character(s)"
       );
       expect(() => zods.foo.parse("fo")).toThrow(
-        "String must contain exactly 1 character(s)"
+        "String must contain at most 1 character(s)"
       );
     });
 

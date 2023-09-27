@@ -244,12 +244,8 @@ const stringAndTextFaker = <
 ) => {
   const traversal = traverseValidation(schemaType);
 
-  const length = traversal.length?.[0] as number | undefined;
-
-  const minChosen =
-    length ?? (!traversal.min ? undefined : (traversal.min[0] as number));
-  const maxChosen =
-    length ?? (!traversal.max ? undefined : (traversal.max[0] as number));
+  const minChosen = !traversal.min ? undefined : (traversal.min[0] as number);
+  const maxChosen = !traversal.max ? undefined : (traversal.max[0] as number);
 
   const min =
     minChosen ?? (maxChosen !== undefined ? Math.max(0, maxChosen - 15) : 5);
@@ -558,12 +554,8 @@ const arrayFaker = <
 ): ArrayFaker<TSchemaType, TAliasedFakers> => {
   const traversal = traverseValidation(schemaType);
 
-  const length = traversal.length?.[0] as number | undefined;
-
-  const minChosen =
-    length ?? (!traversal.min ? undefined : (traversal.min[0] as number));
-  const maxChosen =
-    length ?? (!traversal.max ? undefined : (traversal.max[0] as number));
+  const minChosen = !traversal.min ? undefined : (traversal.min[0] as number);
+  const maxChosen = !traversal.max ? undefined : (traversal.max[0] as number);
 
   const min =
     minChosen ?? (maxChosen !== undefined ? Math.max(0, maxChosen - 4) : 1);
