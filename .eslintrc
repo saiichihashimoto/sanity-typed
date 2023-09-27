@@ -184,6 +184,7 @@
         "checkArrowFunctions": false
       }
     ],
+    "unicorn/explicit-length-check": "off",
     "unicorn/import-style": "off",
     "unicorn/no-array-callback-reference": "off",
     "unicorn/no-array-method-this-argument": "off",

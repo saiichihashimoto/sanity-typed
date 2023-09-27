@@ -70,11 +70,6 @@ const constantFakers = {
   }),
 };
 
-const noInfinity = (value: number) =>
-  value === Number.POSITIVE_INFINITY || value === Number.NEGATIVE_INFINITY
-    ? undefined
-    : value;
-
 const dateAndDatetimeFaker = <
   TSchemaType extends SchemaTypeDefinition<"date" | "datetime", string, any>
 >(
@@ -86,22 +81,12 @@ const dateAndDatetimeFaker = <
     faker.date
       .between({
         from: new Date(
-          noInfinity(
-            Math.max(
-              ...(traversal.min ?? []).map(([minDate]) =>
-                new Date(minDate as string).valueOf()
-              )
-            )
-          ) ?? "2015-01-01T00:00:00.000Z"
+          (traversal.min?.[0] as string | undefined) ??
+            "2015-01-01T00:00:00.000Z"
         ),
         to: new Date(
-          noInfinity(
-            Math.min(
-              ...(traversal.max ?? []).map(([maxDate]) =>
-                new Date(maxDate as string).valueOf()
-              )
-            )
-          ) ?? "2023-01-01T00:00:00.000Z"
+          (traversal.max?.[0] as string | undefined) ??
+            "2023-01-01T00:00:00.000Z"
         ),
       })
       .toISOString();
@@ -123,6 +108,11 @@ const datetimeFaker = <
   schemaType: TSchemaType
 ) => dateAndDatetimeFaker(schemaType);
 
+const noInfinity = (value: number) =>
+  value === Number.POSITIVE_INFINITY || value === Number.NEGATIVE_INFINITY
+    ? undefined
+    : value;
+
 const numberFaker = <
   TSchemaType extends SchemaTypeDefinition<"number", number, any>
 >(
@@ -130,24 +120,24 @@ const numberFaker = <
 ) => {
   const traversal = traverseValidation(schemaType);
 
-  const epsilon = traversal.integer?.length ? 1 : Number.EPSILON;
+  const epsilon = traversal.integer ? 1 : Number.EPSILON;
 
   const minChosen = noInfinity(
     Math.max(
-      ...(traversal.min ?? []).map(([minNumber]) => minNumber as number),
-      ...(traversal.greaterThan ?? []).map(
-        ([limit]) => (limit as number) - epsilon
-      ),
-      ...(!traversal.positive?.length ? [] : [0])
+      ...(!traversal.min ? [] : [traversal.min[0] as number]),
+      ...(!traversal.greaterThan
+        ? []
+        : [(traversal.greaterThan[0] as number) - epsilon]),
+      ...(!traversal.positive ? [] : [0])
     )
   );
   const maxChosen = noInfinity(
     Math.min(
-      ...(traversal.max ?? []).map(([maxNumber]) => maxNumber as number),
-      ...(traversal.lessThan ?? []).map(
-        ([limit]) => (limit as number) - epsilon
-      ),
-      ...(!traversal.negative?.length ? [] : [-epsilon])
+      ...(!traversal.max ? [] : [traversal.max[0] as number]),
+      ...(!traversal.lessThan
+        ? []
+        : [(traversal.lessThan[0] as number) - epsilon]),
+      ...(!traversal.negative ? [] : [-epsilon])
     )
   );
 
@@ -178,7 +168,7 @@ const numberFaker = <
       return (faker: Faker) => faker.helpers.arrayElement(literals);
     },
     () =>
-      traversal.integer?.length
+      traversal.integer
         ? (faker: Faker) =>
             faker.number.int({
               min,
@@ -188,10 +178,9 @@ const numberFaker = <
             faker.number.float({
               min,
               max,
-              precision: !traversal.precision?.length
+              precision: !traversal.precision
                 ? undefined
-                : // TODO Handle multiple precisions, somehow
-                  10 ** -(traversal.precision[0]![0]! as number),
+                : 10 ** -(traversal.precision[0] as number),
             })
   );
 };
@@ -255,40 +244,26 @@ const stringAndTextFaker = <
 ) => {
   const traversal = traverseValidation(schemaType);
 
-  // TODO Handle multiple length, somehow
-  const length = traversal.length?.[0]?.[0] as number | undefined;
+  const length = traversal.length?.[0] as number | undefined;
 
   const minChosen =
-    length ??
-    noInfinity(
-      Math.max(
-        ...(traversal.min ?? []).map(([minNumber]) => minNumber as number)
-      )
-    );
+    length ?? (!traversal.min ? undefined : (traversal.min[0] as number));
   const maxChosen =
-    length ??
-    noInfinity(
-      Math.min(
-        ...(traversal.max ?? []).map(([maxNumber]) => maxNumber as number)
-      )
-    );
+    length ?? (!traversal.max ? undefined : (traversal.max[0] as number));
 
   const min =
     minChosen ?? (maxChosen !== undefined ? Math.max(0, maxChosen - 15) : 5);
   const max = maxChosen ?? (minChosen !== undefined ? minChosen + 15 : 20);
 
-  return traversal.regex?.length
-    ? // TODO Combine multiple regex, somehow
-      regexFaker(traversal.regex![0]![0])
-    : traversal.email?.length
+  return traversal.regex
+    ? regexFaker(traversal.regex[0])
+    : traversal.email
     ? (faker: Faker) => faker.internet.email()
     : (faker: Faker) =>
         flow(
           (value: string) => value,
-          (value) =>
-            !traversal.uppercase?.length ? value : value.toUpperCase(),
-          (value) =>
-            !traversal.lowercase?.length ? value : value.toLowerCase()
+          (value) => (!traversal.uppercase ? value : value.toUpperCase()),
+          (value) => (!traversal.lowercase ? value : value.toLowerCase())
         )(stringFaker(faker).slice(0, faker.number.int({ min, max })));
 };
 
@@ -343,7 +318,7 @@ const urlFaker = <TSchemaType extends SchemaTypeDefinition<"url", string, any>>(
     // TODO allowCredentials = false,
     relativeOnly = false,
     // TODO scheme: schemaRaw = ["http", "https"],
-  } = traversal.uri?.[0]?.[0] ?? {};
+  } = traversal.uri?.[0] ?? {};
 
   // const schemes = Array.isArray(schemaRaw) ? schemaRaw : [schemaRaw];
 
@@ -583,23 +558,12 @@ const arrayFaker = <
 ): ArrayFaker<TSchemaType, TAliasedFakers> => {
   const traversal = traverseValidation(schemaType);
 
-  // TODO Handle multiple length, somehow
-  const length = traversal.length?.[0]?.[0] as number | undefined;
+  const length = traversal.length?.[0] as number | undefined;
 
   const minChosen =
-    length ??
-    noInfinity(
-      Math.max(
-        ...(traversal.min ?? []).map(([minLength]) => minLength as number)
-      )
-    );
+    length ?? (!traversal.min ? undefined : (traversal.min[0] as number));
   const maxChosen =
-    length ??
-    noInfinity(
-      Math.min(
-        ...(traversal.max ?? []).map(([maxLength]) => maxLength as number)
-      )
-    );
+    length ?? (!traversal.max ? undefined : (traversal.max[0] as number));
 
   const min =
     minChosen ?? (maxChosen !== undefined ? Math.max(0, maxChosen - 4) : 1);
@@ -615,7 +579,7 @@ const arrayFaker = <
     instantiateFakerByPath,
     documentIdFaker,
     referencedIdFaker,
-    { min, max, unique: Boolean(traversal.unique?.length) }
+    { min, max, unique: Boolean(traversal.unique) }
   ) as ArrayFaker<TSchemaType, TAliasedFakers>;
 };
 
@@ -695,8 +659,9 @@ const blockFaker = <
     const members = (of as TMemberDefinitions) ?? [];
 
     const length = faker.number.int({ min: 1, max: 5 });
-    const numSpans =
-      members.length === 0 ? length : faker.number.int({ min: 0, max: length });
+    const numSpans = !members.length
+      ? length
+      : faker.number.int({ min: 0, max: length });
 
     return {
       ...blockFieldsFaker,
@@ -799,7 +764,7 @@ const fieldsFaker = <
     return [
       field.name as string,
       // TODO typedTernary
-      traverseValidation(field).required?.length
+      traverseValidation(field).required
         ? (faker: Faker, index: number) => fieldFaker(index)
         : (faker: Faker, index: number) =>
             faker.helpers.maybe(() => fieldFaker(index)),
