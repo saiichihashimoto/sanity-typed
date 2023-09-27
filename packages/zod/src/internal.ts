@@ -1,4 +1,4 @@
-import { flow, reduce } from "lodash/fp";
+import { flow } from "lodash/fp";
 import type { IsNumericLiteral, IsStringLiteral } from "type-fest";
 import { z } from "zod";
 
@@ -7,11 +7,11 @@ import type { InferSchemaValues } from "@sanity-typed/types";
 import { referenced } from "@sanity-typed/types/src/internal";
 import type {
   ArrayMemberDefinition,
+  ConfigBase,
   FieldDefinition,
   GetOriginalRule,
   MaybeTitledListValue,
   TypeDefinition,
-  ConfigBase as _ConfigBase,
 } from "@sanity-typed/types/src/internal";
 import { typedTernary } from "@sanity-typed/utils";
 import type { MaybeArray } from "@sanity-typed/utils";
@@ -78,15 +78,6 @@ const constantZods = {
   }),
 };
 
-const reduceAcc =
-  <T, TResult>(
-    collection: T[] | null | undefined,
-    // eslint-disable-next-line promise/prefer-await-to-callbacks -- lodash/fp reorder
-    callback: (prev: TResult, current: T) => TResult
-  ) =>
-  (accumulator: TResult) =>
-    reduce(callback, accumulator, collection);
-
 const toZodType = <T>(zod: z.ZodType<T>) => zod as z.ZodType<T>;
 
 const dateZod = <TSchemaType extends SchemaTypeDefinition<"date", string, any>>(
@@ -98,16 +89,28 @@ const dateZod = <TSchemaType extends SchemaTypeDefinition<"date", string, any>>(
     (zod: z.ZodString) =>
       zod.regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Invalid date" }),
     toZodType,
-    reduceAcc(traversal.min, (zod, [minDate]) =>
-      zod.refine((value) => new Date(value) >= new Date(minDate as string), {
-        message: `Date must be greater than or equal to ${minDate as string}`,
-      })
-    ),
-    reduceAcc(traversal.max, (zod, [maxDate]) =>
-      zod.refine((value) => new Date(value) <= new Date(maxDate as string), {
-        message: `Date must be less than or equal to ${maxDate as string}`,
-      })
-    )
+    (zod) =>
+      !traversal.min
+        ? zod
+        : zod.refine(
+            (value) => new Date(value) >= new Date(traversal.min![0] as string),
+            {
+              message: `Date must be greater than or equal to ${
+                traversal.min[0] as string
+              }`,
+            }
+          ),
+    (zod) =>
+      !traversal.max
+        ? zod
+        : zod.refine(
+            (value) => new Date(value) <= new Date(traversal.max![0] as string),
+            {
+              message: `Date must be less than or equal to ${
+                traversal.max[0] as string
+              }`,
+            }
+          )
   )(z.string());
 };
 
@@ -121,18 +124,28 @@ const datetimeZod = <
   return flow(
     (zod: z.ZodString) => zod.datetime(),
     toZodType,
-    reduceAcc(traversal.min, (zod, [minDate]) =>
-      zod.refine((value) => new Date(value) >= new Date(minDate as string), {
-        message: `Datetime must be greater than or equal to ${
-          minDate as string
-        }`,
-      })
-    ),
-    reduceAcc(traversal.max, (zod, [maxDate]) =>
-      zod.refine((value) => new Date(value) <= new Date(maxDate as string), {
-        message: `Datetime must be less than or equal to ${maxDate as string}`,
-      })
-    )
+    (zod) =>
+      !traversal.min
+        ? zod
+        : zod.refine(
+            (value) => new Date(value) >= new Date(traversal.min![0] as string),
+            {
+              message: `Datetime must be greater than or equal to ${
+                traversal.min[0] as string
+              }`,
+            }
+          ),
+    (zod) =>
+      !traversal.max
+        ? zod
+        : zod.refine(
+            (value) => new Date(value) <= new Date(traversal.max![0] as string),
+            {
+              message: `Datetime must be less than or equal to ${
+                traversal.max[0] as string
+              }`,
+            }
+          )
   )(z.string());
 };
 
@@ -171,25 +184,26 @@ const numberZod = <
       flow(
         flow(
           (zod: z.ZodNumber) => zod,
-          reduceAcc(traversal.min, (zod, [minNumber]) =>
-            zod.min(minNumber as number)
-          ),
-          reduceAcc(traversal.max, (zod, [maxNumber]) =>
-            zod.max(maxNumber as number)
-          ),
-          reduceAcc(traversal.lessThan, (zod, [limit]) =>
-            zod.lt(limit as number)
-          ),
-          reduceAcc(traversal.greaterThan, (zod, [limit]) =>
-            zod.gt(limit as number)
-          ),
-          (zod) => (!traversal.integer?.length ? zod : zod.int()),
-          reduceAcc(traversal.precision, (zod, [limit]) =>
-            zod.multipleOf(1 / 10 ** (limit as number))
-          )
+          (zod) =>
+            !traversal.min ? zod : zod.min(traversal.min![0] as number),
+          (zod) =>
+            !traversal.max ? zod : zod.max(traversal.max![0] as number),
+          (zod) =>
+            !traversal.lessThan
+              ? zod
+              : zod.lt(traversal.lessThan![0] as number),
+          (zod) =>
+            !traversal.greaterThan
+              ? zod
+              : zod.gt(traversal.greaterThan![0] as number),
+          (zod) => (!traversal.integer ? zod : zod.int()),
+          (zod) =>
+            !traversal.precision
+              ? zod
+              : zod.multipleOf(1 / 10 ** (traversal.precision![0] as number))
         ),
-        (zod) => (!traversal.positive?.length ? zod : zod.nonnegative()),
-        (zod) => (!traversal.negative?.length ? zod : zod.negative())
+        (zod) => (!traversal.positive ? zod : zod.nonnegative()),
+        (zod) => (!traversal.negative ? zod : zod.negative())
       )(z.number())
   );
 };
@@ -235,69 +249,70 @@ const stringAndTextZod = <
   return flow(
     flow(
       (zod: z.ZodString) => zod,
-      reduceAcc(traversal.min, (zod, [minLength]) =>
-        zod.min(minLength as number)
-      ),
-      reduceAcc(traversal.max, (zod, [maxLength]) =>
-        zod.max(maxLength as number)
-      ),
-      reduceAcc(traversal.length, (zod, [exactLength]) =>
-        zod.length(exactLength as number)
-      ),
+      (zod) => (!traversal.min ? zod : zod.min(traversal.min![0] as number)),
+      (zod) => (!traversal.max ? zod : zod.max(traversal.max![0] as number)),
       (zod) =>
-        !traversal.email?.length
+        !traversal.length ? zod : zod.length(traversal.length![0] as number),
+      (zod) =>
+        !traversal.email
           ? zod
           : zod.regex(emailRegex, { message: "Invalid email" }),
-      reduceAcc(
-        traversal.regex,
-        (zod, [pattern, nameOrOptions, optionsMaybe]) => {
-          const [name = pattern.toString(), invert = false] = optionsMaybe
-            ? [nameOrOptions as string, optionsMaybe.invert]
-            : !nameOrOptions
-            ? []
-            : typeof nameOrOptions === "string"
-            ? [nameOrOptions]
-            : [nameOrOptions.name, nameOrOptions.invert];
+      (zod) =>
+        !traversal.regex
+          ? zod
+          : (() => {
+              const [pattern, nameOrOptions, optionsMaybe] = traversal.regex!;
 
-          return invert
-            ? // Hack zod.regex can't invert the pattern, so we do a refine
-              zod
-            : zod.regex(pattern, { message: `Does not match ${name}-pattern` });
-        }
-      ),
+              const [name = pattern.toString(), invert = false] = optionsMaybe
+                ? [nameOrOptions as string, optionsMaybe.invert]
+                : !nameOrOptions
+                ? []
+                : typeof nameOrOptions === "string"
+                ? [nameOrOptions]
+                : [nameOrOptions.name, nameOrOptions.invert];
+
+              return invert
+                ? // Hack zod.regex can't invert the pattern, so we do a refine
+                  zod
+                : zod.regex(pattern, {
+                    message: `Does not match ${name}-pattern`,
+                  });
+            })(),
       toZodType
     ),
     (zod) =>
-      !traversal.uppercase?.length
+      !traversal.uppercase
         ? zod
         : zod.refine((value) => value === value.toLocaleUpperCase(), {
             message: "Must be all uppercase letters",
           }),
     (zod) =>
-      !traversal.lowercase?.length
+      !traversal.lowercase
         ? zod
         : zod.refine((value) => value === value.toLocaleLowerCase(), {
             message: "Must be all lowercase letters",
           }),
-    reduceAcc(
-      traversal.regex,
-      (zod, [pattern, nameOrOptions, optionsMaybe]) => {
-        const [name = pattern.toString(), invert = false] = optionsMaybe
-          ? [nameOrOptions as string, optionsMaybe.invert]
-          : !nameOrOptions
-          ? []
-          : typeof nameOrOptions === "string"
-          ? [nameOrOptions]
-          : [nameOrOptions.name, nameOrOptions.invert];
+    (zod) =>
+      !traversal.regex
+        ? zod
+        : (() => {
+            const [pattern, nameOrOptions, optionsMaybe] = traversal.regex!;
 
-        return !invert
-          ? // Hack zod.regex can't invert the pattern, so we do a refine
-            zod
-          : zod.refine((value) => !pattern.test(value), {
-              message: `Should not match ${name}-pattern`,
-            });
-      }
-    )
+            const [name = pattern.toString(), invert = false] = optionsMaybe
+              ? [nameOrOptions as string, optionsMaybe.invert]
+              : !nameOrOptions
+              ? []
+              : typeof nameOrOptions === "string"
+              ? [nameOrOptions]
+              : [nameOrOptions.name, nameOrOptions.invert];
+
+            return !invert
+              ? // Hack zod.regex can't invert the pattern, so we do a refine
+                zod
+              : zod.refine((value) => !pattern.test(value), {
+                  message: `Should not match ${name}-pattern`,
+                });
+          })()
   )(z.string());
 };
 
@@ -342,76 +357,71 @@ const DUMMY_ORIGIN = "http://sanity";
 
 const urlZod = <TSchemaType extends SchemaTypeDefinition<"url", any, any>>(
   schemaType: TSchemaType
-) =>
-  reduceAcc(
+) => {
+  const [
+    {
+      allowRelative: allowRelativeRaw = false,
+      allowCredentials = false,
+      relativeOnly = false,
+      scheme: schemaRaw = ["http", "https"],
+    },
+  ] =
     traverseValidation(schemaType).uri ??
-      ([[{}]] as Parameters<GetOriginalRule<TSchemaType>["uri"]>[]),
-    (
-      zod: z.ZodType<string>,
-      [
-        {
-          allowRelative: allowRelativeRaw = false,
-          allowCredentials = false,
-          relativeOnly = false,
-          scheme: schemaRaw = ["http", "https"],
-        },
-      ]
-    ) => {
-      const allowRelative = allowRelativeRaw || relativeOnly;
-      const schemes = Array.isArray(schemaRaw) ? schemaRaw : [schemaRaw];
+    ([{}] as Parameters<GetOriginalRule<TSchemaType>["uri"]>);
+  const allowRelative = allowRelativeRaw || relativeOnly;
+  const schemes = Array.isArray(schemaRaw) ? schemaRaw : [schemaRaw];
 
-      // https://github.com/sanity-io/sanity/blob/6020a46588ffd324e233b45eaf526a58652c62f2/packages/sanity/src/core/validation/validators/stringValidator.ts#L37
-      return zod.superRefine((value, ctx) => {
-        /* eslint-disable fp/no-unused-expression -- zod.superRefine */
+  // https://github.com/sanity-io/sanity/blob/6020a46588ffd324e233b45eaf526a58652c62f2/packages/sanity/src/core/validation/validators/stringValidator.ts#L37
+  return z.string().superRefine((value, ctx) => {
+    /* eslint-disable fp/no-unused-expression -- zod.superRefine */
 
-        // eslint-disable-next-line fp/no-let -- using new URL
-        let url: URL;
-        try {
-          // eslint-disable-next-line fp/no-mutation -- using new URL
-          url = allowRelative ? new URL(value, DUMMY_ORIGIN) : new URL(value);
-        } catch {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Not a valid URL",
-          });
+    // eslint-disable-next-line fp/no-let -- using new URL
+    let url: URL;
+    try {
+      // eslint-disable-next-line fp/no-mutation -- using new URL
+      url = allowRelative ? new URL(value, DUMMY_ORIGIN) : new URL(value);
+    } catch {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Not a valid URL",
+      });
 
-          return z.NEVER;
-        }
+      return z.NEVER;
+    }
 
-        if (relativeOnly && url.origin !== DUMMY_ORIGIN) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Only relative URLs are allowed",
-          });
-        }
-
-        if (!allowCredentials && (url.username || url.password)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Username/password not allowed",
-          });
-        }
-
-        const urlScheme = url.protocol.replace(/:$/, "");
-        if (
-          !schemes.some((scheme) =>
-            typeof scheme === "string"
-              ? urlScheme.startsWith(scheme)
-              : scheme.test(urlScheme)
-          )
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Does not match allowed protocols/schemes",
-          });
-        }
-
-        return z.NEVER;
-
-        /* eslint-enable fp/no-unused-expression */
+    if (relativeOnly && url.origin !== DUMMY_ORIGIN) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Only relative URLs are allowed",
       });
     }
-  )(z.string());
+
+    if (!allowCredentials && (url.username || url.password)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Username/password not allowed",
+      });
+    }
+
+    const urlScheme = url.protocol.replace(/:$/, "");
+    if (
+      !schemes.some((scheme) =>
+        typeof scheme === "string"
+          ? urlScheme.startsWith(scheme)
+          : scheme.test(urlScheme)
+      )
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Does not match allowed protocols/schemes",
+      });
+    }
+
+    return z.NEVER;
+
+    /* eslint-enable fp/no-unused-expression */
+  });
+};
 
 type ExtendViaIntersection<
   Zod extends z.ZodTypeAny,
@@ -647,18 +657,13 @@ const arrayZod = <
 
   return flow(
     (zod: typeof arrayZodInner) => zod,
-    reduceAcc(traversal.min, (zod, [minLength]) =>
-      zod.min(minLength as number)
-    ),
-    reduceAcc(traversal.max, (zod, [maxLength]) =>
-      zod.max(maxLength as number)
-    ),
-    reduceAcc(traversal.length, (zod, [exactLength]) =>
-      zod.length(exactLength as number)
-    ),
+    (zod) => (!traversal.min ? zod : zod.min(traversal.min![0] as number)),
+    (zod) => (!traversal.max ? zod : zod.max(traversal.max![0] as number)),
+    (zod) =>
+      !traversal.length ? zod : zod.length(traversal.length![0] as number),
     toZodType,
     (zod) =>
-      !traversal.unique?.length
+      !traversal.unique
         ? zod
         : zod.refine(
             (array) =>
@@ -811,7 +816,7 @@ const fieldsZods = <
       (field) =>
         [
           field.name,
-          traverseValidation(field).required?.length
+          traverseValidation(field).required
             ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
               schemaTypeToZod(field, getZods)
             : z.optional(
@@ -1148,9 +1153,9 @@ const schemaTypeToZod = <
       )
     : aliasZod(schema, getZods)) as SchemaTypeToZod<TSchemaType, TAliasedZods>;
 
-type SanityConfigZods<TConfig extends MaybeArray<_ConfigBase<any, any>>> =
+type SanityConfigZods<TConfig extends MaybeArray<ConfigBase<any, any>>> =
   TConfig extends MaybeArray<
-    _ConfigBase<infer TTypeDefinition, infer TPluginOptions>
+    ConfigBase<infer TTypeDefinition, infer TPluginOptions>
   >
     ? {
         [Name in TTypeDefinition["name"]]: AddType<
@@ -1164,20 +1169,20 @@ type SanityConfigZods<TConfig extends MaybeArray<_ConfigBase<any, any>>> =
     : never;
 
 export const sanityConfigToZodsTyped = <
-  const TConfig extends _ConfigBase<any, any>
+  const TConfig extends ConfigBase<any, any>
 >({
   schema: { types: typesUntyped = [] } = {},
   plugins: pluginsUntyped = [],
 }: TConfig) => {
-  type TTypeDefinition = TConfig extends _ConfigBase<infer TTypeDefinition, any>
+  type TTypeDefinition = TConfig extends ConfigBase<infer TTypeDefinition, any>
     ? TTypeDefinition
     : never;
 
   const types = typesUntyped as NonNullable<
-    NonNullable<_ConfigBase<TTypeDefinition, any>["schema"]>["types"]
+    NonNullable<ConfigBase<TTypeDefinition, any>["schema"]>["types"]
   >;
 
-  type TPluginOptions = TConfig extends _ConfigBase<any, infer TPluginOptions>
+  type TPluginOptions = TConfig extends ConfigBase<any, infer TPluginOptions>
     ? TPluginOptions
     : never;
 
@@ -1209,7 +1214,7 @@ export const sanityConfigToZodsTyped = <
   return zods;
 };
 
-export const sanityConfigToZods = <const TConfig extends _ConfigBase<any, any>>(
+export const sanityConfigToZods = <const TConfig extends ConfigBase<any, any>>(
   config: TConfig
 ) =>
   sanityConfigToZodsTyped(config) as {

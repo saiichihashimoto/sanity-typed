@@ -18,89 +18,91 @@ export const traverseValidation = <
 >({
   validation,
 }: TSchemaType) => {
+  // https://sanity-io-land.slack.com/archives/C9Z7RC3V1/p1695660296907819?thread_ts=1695522767.850489&cid=C9Z7RC3V1
+  // Only the last invocation of any method matters, so we can just overwrite the value each time
   /* eslint-disable fp/no-let,fp/no-mutation,fp/no-unused-expression -- mutation */
   let value: {
     [key in keyof UnionToIntersection<
       GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
-    >]?: any[][];
+    >]?: any[];
   } = {};
 
   const rule = {
     custom: (...args: any[]) => {
-      value = { ...value, custom: [...(value.custom ?? []), args] };
+      value = { ...value, custom: args };
       return rule;
     },
-    email: () => {
-      value = { ...value, email: [...(value.email ?? []), []] };
+    email: (...args: any[]) => {
+      value = { ...value, email: args };
       return rule;
     },
     error: (...args: any[]) => {
-      value = { ...value, error: [...(value.error ?? []), args] };
+      value = { ...value, error: args };
       return rule;
     },
     greaterThan: (...args: any[]) => {
-      value = { ...value, greaterThan: [...(value.greaterThan ?? []), args] };
+      value = { ...value, greaterThan: args };
       return rule;
     },
-    integer: () => {
-      value = { ...value, integer: [...(value.integer ?? []), []] };
+    integer: (...args: any[]) => {
+      value = { ...value, integer: args };
       return rule;
     },
     length: (...args: any[]) => {
-      value = { ...value, length: [...(value.length ?? []), args] };
+      value = { ...value, length: args };
       return rule;
     },
     lessThan: (...args: any[]) => {
-      value = { ...value, lessThan: [...(value.lessThan ?? []), args] };
+      value = { ...value, lessThan: args };
       return rule;
     },
-    lowercase: () => {
-      value = { ...value, lowercase: [...(value.lowercase ?? []), []] };
+    lowercase: (...args: any[]) => {
+      value = { ...value, lowercase: args };
       return rule;
     },
     max: (...args: any[]) => {
-      value = { ...value, max: [...(value.max ?? []), args] };
+      value = { ...value, max: args };
       return rule;
     },
     min: (...args: any[]) => {
-      value = { ...value, min: [...(value.min ?? []), args] };
+      value = { ...value, min: args };
       return rule;
     },
-    negative: () => {
-      value = { ...value, negative: [...(value.negative ?? []), []] };
+    negative: (...args: any[]) => {
+      value = { ...value, negative: args };
       return rule;
     },
-    positive: () => {
-      value = { ...value, positive: [...(value.positive ?? []), []] };
+    positive: (...args: any[]) => {
+      value = { ...value, positive: args };
       return rule;
     },
     precision: (...args: any[]) => {
-      value = { ...value, precision: [...(value.precision ?? []), args] };
+      value = { ...value, precision: args };
       return rule;
     },
     regex: (...args: any[]) => {
-      value = { ...value, regex: [...(value.regex ?? []), args] };
+      value = { ...value, regex: args };
       return rule;
     },
-    required: () => {
-      value = { ...value, required: [...(value.required ?? []), []] };
+    required: (...args: any[]) => {
+      value = { ...value, required: args };
       return rule;
     },
-    unique: () => {
-      value = { ...value, unique: [...(value.unique ?? []), []] };
+    unique: (...args: any[]) => {
+      value = { ...value, unique: args };
       return rule;
     },
-    uppercase: () => {
-      value = { ...value, uppercase: [...(value.uppercase ?? []), []] };
+    uppercase: (...args: any[]) => {
+      value = { ...value, uppercase: args };
       return rule;
     },
     uri: (...args: any[]) => {
-      value = { ...value, uri: [...(value.uri ?? []), args] };
+      value = { ...value, uri: args };
       return rule;
     },
     // TODO Handle rule arrays, especially with warnings
     warning: (...args: any[]) => {
-      value = { ...value, warning: [...(value.warning ?? []), args] };
+      value = { ...value, warning: args };
       return rule;
     },
     valueOfField: () => ({
@@ -113,7 +115,7 @@ export const traverseValidation = <
   >;
 
   validation?.(
-    // @ts-expect-error -- TODO Honestly, idk
+    // @ts-expect-error -- This type is technically impossible, mainly because custom is conflicting across everything
     rule
   );
 
@@ -122,6 +124,6 @@ export const traverseValidation = <
   return value as {
     [key in keyof GetOriginalRule<TSchemaType>]?: Parameters<
       GetOriginalRule<TSchemaType>[key]
-    >[];
+    >;
   };
 };
