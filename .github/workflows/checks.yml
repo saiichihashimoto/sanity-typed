@@ -133,6 +133,9 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [client, faker, groq, groq-js, test-utils, types, zod]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -159,8 +162,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ${{ env.JEST_CACHE_DIRECTORY }}
-          key: jest-${{ github.run_id }}
+          key: jest-${{ matrix.package }}-${{ github.run_id }}
           restore-keys: |
+            jest-${{ matrix.package }}-
             jest-
 
-      - run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }}
+      - run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }} -- ${{ matrix.package }}/src
