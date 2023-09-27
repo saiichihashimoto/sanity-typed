@@ -12,6 +12,7 @@ import type {
   ObservableSanityClient as ObservableSanityClientNative,
   QueryParams,
   RawQueryResponse as RawQueryResponseNative,
+  SanityAssetDocument,
   SanityClient as SanityClientNative,
   SingleMutationResult,
   UnfilteredResponseQueryOptions,
@@ -177,17 +178,17 @@ type OverrideSanityClient<
       returnFirst?: boolean;
     }
   >(
-    selection: MutationSelection | string,
+    idOrSelection: MutationSelection | string,
     options?: TOptions
   ) => PromiseOrObservable<
     TIsPromise,
     TOptions extends { returnDocuments: false; returnFirst: false }
       ? MultipleMutationResult
       : TOptions extends { returnFirst: false }
-      ? TDocument[]
+      ? (SanityAssetDocument | TDocument)[]
       : TOptions extends { returnDocuments: false }
       ? SingleMutationResult
-      : TDocument
+      : SanityAssetDocument | TDocument
   >;
   fetch: <
     const TQuery extends string,

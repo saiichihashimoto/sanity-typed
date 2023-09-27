@@ -3,6 +3,7 @@ import type {
   ClientConfig,
   ClientPerspective,
   RequestFetchOptions,
+  SanityAssetDocument,
 } from "@sanity/client";
 import type { Observable } from "rxjs";
 import type { SetOptional } from "type-fest";
@@ -388,7 +389,7 @@ describe("createClient", () => {
   });
 
   describe("delete", () => {
-    it("returns a union of the documents", () => {
+    it("returns a union of the documents and an asset document", () => {
       const exec = () =>
         createClient<{
           bar: { _type: "bar"; bar: "bar" };
@@ -398,6 +399,7 @@ describe("createClient", () => {
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
+          | SanityAssetDocument
           | (AnySanityDocument & { _type: "foo" })
           | (AnySanityDocument & { _type: "qux" })
         >
@@ -413,8 +415,6 @@ describe("createClient", () => {
     it.todo(
       "handle MutationSelection that selects multiple documents via query"
     );
-
-    it.todo("https://github.com/sanity-io/client#deleting-an-asset");
 
     it.todo("https://github.com/sanity-io/client#mutation-options");
   });
