@@ -45,11 +45,22 @@ export const traverseValidation = <
       return rule;
     },
     integer: (...args: any[]) => {
-      value = { ...value, integer: args };
+      value = {
+        ...value,
+        integer: args,
+        // both integer and precision existing makes no sense
+        precision: undefined,
+      };
       return rule;
     },
     length: (...args: any[]) => {
-      value = { ...value, length: args };
+      value = {
+        ...value,
+        length: args,
+        // length effectively overwrites min and max, and overwriting it here let's us care only about the last invocation
+        min: args,
+        max: args,
+      };
       return rule;
     },
     lessThan: (...args: any[]) => {
@@ -57,7 +68,12 @@ export const traverseValidation = <
       return rule;
     },
     lowercase: (...args: any[]) => {
-      value = { ...value, lowercase: args };
+      value = {
+        ...value,
+        lowercase: args,
+        // both lowercase and uppercase existing makes no sense
+        uppercase: undefined,
+      };
       return rule;
     },
     max: (...args: any[]) => {
@@ -69,15 +85,30 @@ export const traverseValidation = <
       return rule;
     },
     negative: (...args: any[]) => {
-      value = { ...value, negative: args };
+      value = {
+        ...value,
+        negative: args,
+        // both positive and negative existing makes no sense
+        positive: undefined,
+      };
       return rule;
     },
     positive: (...args: any[]) => {
-      value = { ...value, positive: args };
+      value = {
+        ...value,
+        positive: args,
+        // both positive and negative existing makes no sense
+        negative: undefined,
+      };
       return rule;
     },
     precision: (...args: any[]) => {
-      value = { ...value, precision: args };
+      value = {
+        ...value,
+        precision: args,
+        // both integer and precision existing makes no sense
+        integer: undefined,
+      };
       return rule;
     },
     regex: (...args: any[]) => {
@@ -93,7 +124,12 @@ export const traverseValidation = <
       return rule;
     },
     uppercase: (...args: any[]) => {
-      value = { ...value, uppercase: args };
+      value = {
+        ...value,
+        uppercase: args,
+        // both lowercase and uppercase existing makes no sense
+        lowercase: undefined,
+      };
       return rule;
     },
     uri: (...args: any[]) => {

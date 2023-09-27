@@ -252,8 +252,6 @@ const stringAndTextZod = <
       (zod) => (!traversal.min ? zod : zod.min(traversal.min![0] as number)),
       (zod) => (!traversal.max ? zod : zod.max(traversal.max![0] as number)),
       (zod) =>
-        !traversal.length ? zod : zod.length(traversal.length![0] as number),
-      (zod) =>
         !traversal.email
           ? zod
           : zod.regex(emailRegex, { message: "Invalid email" }),
@@ -659,8 +657,6 @@ const arrayZod = <
     (zod: typeof arrayZodInner) => zod,
     (zod) => (!traversal.min ? zod : zod.min(traversal.min![0] as number)),
     (zod) => (!traversal.max ? zod : zod.max(traversal.max![0] as number)),
-    (zod) =>
-      !traversal.length ? zod : zod.length(traversal.length![0] as number),
     toZodType,
     (zod) =>
       !traversal.unique

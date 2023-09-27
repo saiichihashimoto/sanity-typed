@@ -368,10 +368,10 @@ describe("array", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse([])).toThrow(
-        "Array must contain exactly 1 element(s)"
+        "Array must contain at least 1 element(s)"
       );
       expect(() => zods.foo.parse([true, false])).toThrow(
-        "Array must contain exactly 1 element(s)"
+        "Array must contain at most 1 element(s)"
       );
     });
 
