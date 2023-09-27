@@ -46,10 +46,8 @@ type MaybeRawQueryResponse<
   ? RawQueryResponse<Result, Query>
   : Result;
 
-type GetDocuments<Ids extends string[], TDocument extends AnySanityDocument> = {
-  [index in keyof Ids]:
-    | (TDocument extends never ? never : TDocument & { _id: Ids[index] })
-    | null;
+type GetDocuments<TDocument extends AnySanityDocument, Ids extends string[]> = {
+  [index in keyof Ids]: (TDocument & { _id: Ids[index] }) | null;
 };
 
 type PromiseOrObservable<
@@ -194,11 +192,7 @@ type OverrideSanityClient<
         Query,
         RootScope<{
           client: WritableDeep<TClientConfig>;
-          dataset: (TDocument extends never
-            ? never
-            : TClientConfig extends { perspective: "previewDrafts" }
-            ? TDocument & { _originalId: string }
-            : TDocument)[];
+          dataset: (TDocument extends never ? never : TDocument)[];
           delta: { after: null; before: null };
           identity: string;
           parameters: NonNullable<Q>;
@@ -211,19 +205,16 @@ type OverrideSanityClient<
   getDocument: <const Id extends string>(
     id: Id,
     options?: Parameters<SanityClientNative["getDocument"]>[1]
-  ) => PromiseOrObservable<
-    TIsPromise,
-    (TDocument extends never ? never : TDocument & { _id: Id }) | undefined
-  >;
+  ) => PromiseOrObservable<TIsPromise, (TDocument & { _id: Id }) | undefined>;
   getDocuments: <const Ids extends readonly string[]>(
     ids: Ids,
     options?: Parameters<SanityClientNative["getDocuments"]>[1]
   ) => PromiseOrObservable<
     TIsPromise,
-    GetDocuments<WritableDeep<Ids>, TDocument>
+    GetDocuments<TDocument, WritableDeep<Ids>>
   >;
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
-  observable: ObservableSanityClient<TClientConfig, TDocument>;
+  observable: // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
+  ObservableSanityClient<TClientConfig, TDocument>;
   withConfig: <const NewConfig extends Partial<ClientConfig>>(
     newConfig?: NewConfig
   ) => OverrideSanityClient<
@@ -249,16 +240,25 @@ export type SanityClient<
   TDocument extends AnySanityDocument
 > = OverrideSanityClient<SanityClientNative, TClientConfig, TDocument, true>;
 
+type SanityValuesToDocumentUnion<
+  SanityValues extends { [type: string]: any },
+  TClientConfig extends ClientConfig
+> = TClientConfig extends { perspective: "previewDrafts" }
+  ? Extract<SanityValues[keyof SanityValues], AnySanityDocument> & {
+      _originalId: string;
+    }
+  : Extract<SanityValues[keyof SanityValues], AnySanityDocument>;
+
 /**
  * Unfortunately, this has to have a very weird function signature due to this typescript issue:
  * https://github.com/microsoft/TypeScript/issues/10571
  */
 export const createClient =
   <SanityValues extends { [type: string]: any }>() =>
-  <const Config extends ClientConfig>(config: Config) =>
+  <const TClientConfig extends ClientConfig>(config: TClientConfig) =>
     createClientNative(config) as unknown as SanityClient<
-      Config,
-      Extract<SanityValues[keyof SanityValues], AnySanityDocument>
+      TClientConfig,
+      SanityValuesToDocumentUnion<SanityValues, TClientConfig>
     >;
 
 export const castToTyped =
@@ -272,14 +272,17 @@ export const castToTyped =
           }
         ]
   ) =>
-  <Untyped extends SanityClientNative, const Config extends ClientConfig>(
+  <
+    Untyped extends SanityClientNative,
+    const TClientConfig extends ClientConfig
+  >(
     untyped: Untyped,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- not actually used
-    config?: Config
+    config?: TClientConfig
   ) =>
     untyped as SanityClient<
-      Config,
-      Extract<SanityValues[keyof SanityValues], AnySanityDocument>
+      TClientConfig,
+      SanityValuesToDocumentUnion<SanityValues, TClientConfig>
     >;
 
 export const castFromTyped = <TSanityClient extends SanityClient<any, any>>(
