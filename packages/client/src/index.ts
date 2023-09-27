@@ -10,6 +10,9 @@ import type {
   MutationEvent as MutationEventNative,
   MutationSelection,
   ObservableSanityClient as ObservableSanityClientNative,
+  Patch as PatchNative,
+  PatchOperations,
+  PatchSelection,
   QueryParams,
   RawQueryResponse as RawQueryResponseNative,
   SanityAssetDocument,
@@ -26,6 +29,116 @@ import type { SanityDocument } from "@sanity-typed/types";
 declare const README: unique symbol;
 
 type AnySanityDocument = Omit<SanityDocument, "_type"> & { _type: string };
+
+type PromiseOrObservable<
+  TIsPromise extends boolean,
+  T
+> = TIsPromise extends true ? Promise<T> : Observable<T>;
+
+type Patch<
+  TDocument extends AnySanityDocument,
+  TOriginalDocument extends AnySanityDocument,
+  TIsPromise extends boolean
+> = Omit<
+  PatchNative,
+  | "append"
+  | "clone"
+  | "commit"
+  | "dec"
+  | "diffMatchPatch"
+  | "ifRevisionId"
+  | "inc"
+  | "insert"
+  | "prepend"
+  | "reset"
+  | "set"
+  | "setIfMissing"
+  | "splice"
+  | "unset"
+> & {
+  append: (
+    ...args: Parameters<PatchNative["append"]>
+  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
+  clone: (
+    ...args: Parameters<PatchNative["clone"]>
+  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
+  commit: <
+    const TOptions extends
+      | (BaseMutationOptions & {
+          returnDocuments?: boolean;
+          returnFirst?: boolean;
+        })
+      | undefined = undefined
+  >(
+    options?: TOptions
+  ) => PromiseOrObservable<
+    TIsPromise,
+    TOptions extends { returnDocuments: false; returnFirst: false }
+      ? MultipleMutationResult
+      : TOptions extends { returnFirst: false }
+      ? TDocument[]
+      : TOptions extends { returnDocuments: false }
+      ? SingleMutationResult
+      : TDocument
+  >;
+  dec: <TAttrs extends Partial<TDocument & { [key: string]: number }>>(
+    attrs: TAttrs
+  ) => Patch<
+    Extract<TDocument, Partial<TAttrs>>,
+    TOriginalDocument,
+    TIsPromise
+  >;
+  diffMatchPatch: (
+    ...args: Parameters<PatchNative["diffMatchPatch"]>
+  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
+  ifRevisionId: (
+    ...args: Parameters<PatchNative["ifRevisionId"]>
+  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
+  inc: <TAttrs extends Partial<TDocument & { [key: string]: number }>>(
+    attrs: TAttrs
+  ) => Patch<
+    Extract<TDocument, Partial<TAttrs>>,
+    TOriginalDocument,
+    TIsPromise
+  >;
+  insert: (
+    ...args: Parameters<PatchNative["insert"]>
+  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
+  prepend: (
+    ...args: Parameters<PatchNative["prepend"]>
+  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
+  reset: (
+    ...args: Parameters<PatchNative["reset"]>
+  ) => Patch<TOriginalDocument, TOriginalDocument, TIsPromise>;
+  set: <TAttrs extends Partial<TDocument>>(
+    attrs: TAttrs
+  ) => Patch<
+    Extract<TDocument, Partial<TAttrs>>,
+    TOriginalDocument,
+    TIsPromise
+  >;
+  setIfMissing: <TAttrs extends Partial<TDocument>>(
+    attrs: TAttrs
+  ) => Patch<
+    Extract<TDocument, Partial<TAttrs>>,
+    TOriginalDocument,
+    TIsPromise
+  >;
+  splice: (
+    ...args: Parameters<PatchNative["splice"]>
+  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
+  unset: <TAttrs extends TDocument extends never ? never : (keyof TDocument)[]>(
+    attrs: TAttrs
+  ) => Patch<
+    TDocument extends never
+      ? never
+      : TAttrs[number] extends keyof TDocument
+      ? TDocument
+      : never,
+    TOriginalDocument,
+    TIsPromise
+  >;
+};
 
 export type InitializedClientConfig<TClientConfig extends ClientConfig> = Merge<
   InitializedClientConfigNative,
@@ -66,11 +179,6 @@ type GetDocuments<TDocument extends AnySanityDocument, Ids extends string[]> = {
   [index in keyof Ids]: (TDocument & { _id: Ids[index] }) | null;
 };
 
-type PromiseOrObservable<
-  TIsPromise extends boolean,
-  T
-> = TIsPromise extends true ? Promise<T> : Observable<T>;
-
 type OverrideSanityClient<
   TSanityClient,
   TClientConfig extends ClientConfig,
@@ -88,6 +196,7 @@ type OverrideSanityClient<
   | "getDocument"
   | "getDocuments"
   | "observable"
+  | "patch"
   | "withConfig"
 > & {
   clone: () => OverrideSanityClient<
@@ -113,10 +222,12 @@ type OverrideSanityClient<
       SetOptional<TDocument, "_id">,
       "_createdAt" | "_rev" | "_updatedAt"
     > & { _type: string },
-    const TOptions extends BaseMutationOptions & {
-      returnDocuments?: boolean;
-      returnFirst?: boolean;
-    }
+    const TOptions extends
+      | (BaseMutationOptions & {
+          returnDocuments?: boolean;
+          returnFirst?: boolean;
+        })
+      | undefined = undefined
   >(
     document: Doc,
     options?: TOptions
@@ -134,10 +245,12 @@ type OverrideSanityClient<
     const Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
       _type: string;
     },
-    const TOptions extends BaseMutationOptions & {
-      returnDocuments?: boolean;
-      returnFirst?: boolean;
-    }
+    const TOptions extends
+      | (BaseMutationOptions & {
+          returnDocuments?: boolean;
+          returnFirst?: boolean;
+        })
+      | undefined = undefined
   >(
     document: Doc,
     options?: TOptions
@@ -155,10 +268,12 @@ type OverrideSanityClient<
     const Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
       _type: string;
     },
-    const TOptions extends BaseMutationOptions & {
-      returnDocuments?: boolean;
-      returnFirst?: boolean;
-    }
+    const TOptions extends
+      | (BaseMutationOptions & {
+          returnDocuments?: boolean;
+          returnFirst?: boolean;
+        })
+      | undefined = undefined
   >(
     document: Doc,
     options?: TOptions
@@ -173,10 +288,12 @@ type OverrideSanityClient<
       : Extract<TDocument, { _type: Doc["_type"] }>
   >;
   delete: <
-    const TOptions extends BaseMutationOptions & {
-      returnDocuments?: boolean;
-      returnFirst?: boolean;
-    }
+    const TOptions extends
+      | (BaseMutationOptions & {
+          returnDocuments?: boolean;
+          returnFirst?: boolean;
+        })
+      | undefined = undefined
   >(
     idOrSelection: MutationSelection | string,
     options?: TOptions
@@ -270,6 +387,11 @@ type OverrideSanityClient<
   >;
   observable: // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
   ObservableSanityClient<TClientConfig, TDocument>;
+  patch: (
+    idOrSelection: PatchSelection,
+    // TODO PatchOperations should filter like Patch fns do
+    options?: PatchOperations
+  ) => Patch<TDocument, TDocument, TIsPromise>;
   withConfig: <const NewConfig extends Partial<ClientConfig>>(
     newConfig?: NewConfig
   ) => OverrideSanityClient<

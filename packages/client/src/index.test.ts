@@ -376,10 +376,6 @@ describe("createClient", () => {
     });
   });
 
-  describe("patch", () => {
-    it.todo("https://github.com/sanity-io/client#patchupdate-a-document");
-  });
-
   describe("delete", () => {
     it("returns a union of the documents and an asset document", () => {
       const exec = () =>
@@ -407,6 +403,140 @@ describe("createClient", () => {
     it.todo(
       "handle MutationSelection that selects multiple documents via query"
     );
+  });
+
+  describe("patch", () => {
+    it.todo("https://github.com/sanity-io/client#patchupdate-a-document");
+
+    it("returns a union of the documents", () => {
+      const exec = () =>
+        createClient<{
+          bar: { _type: "bar"; bar: "bar" };
+          foo: AnySanityDocument & { _type: "foo"; foo: string };
+          qux: AnySanityDocument & { _type: "qux"; qux: number };
+        }>()({})
+          .patch("id")
+          .commit();
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Promise<
+          | (AnySanityDocument & { _type: "foo"; foo: string })
+          | (AnySanityDocument & { _type: "qux"; qux: number })
+        >
+      >();
+    });
+
+    it("filters the union to set attrs", () => {
+      const exec = () =>
+        createClient<{
+          bar: { _type: "bar"; bar: "bar" };
+          foo: AnySanityDocument & { _type: "foo"; foo: string };
+          qux: AnySanityDocument & { _type: "qux"; qux: number };
+        }>()({})
+          .patch("id")
+          .set({ foo: "foo" })
+          .commit();
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+      >();
+    });
+
+    it("filters the union to setIfMissing attrs", () => {
+      const exec = () =>
+        createClient<{
+          bar: { _type: "bar"; bar: "bar" };
+          foo: AnySanityDocument & { _type: "foo"; foo: string };
+          qux: AnySanityDocument & { _type: "qux"; qux: number };
+        }>()({})
+          .patch("id")
+          .setIfMissing({ foo: "foo" })
+          .commit();
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+      >();
+    });
+
+    it.todo("diffMatchPatch");
+
+    it("filters the union to unset keys", () => {
+      const exec = () =>
+        createClient<{
+          bar: { _type: "bar"; bar: "bar" };
+          foo: AnySanityDocument & { _type: "foo"; foo: string };
+          qux: AnySanityDocument & { _type: "qux"; qux: number };
+        }>()({})
+          .patch("id")
+          .unset(["foo"])
+          .commit();
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+      >();
+    });
+
+    it("filters the union to inc attrs", () => {
+      const exec = () =>
+        createClient<{
+          bar: { _type: "bar"; bar: "bar" };
+          foo: AnySanityDocument & { _type: "foo"; foo: number };
+          qux: AnySanityDocument & { _type: "qux"; qux: number };
+        }>()({})
+          .patch("id")
+          .inc({ foo: 1 })
+          .commit();
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Promise<AnySanityDocument & { _type: "foo"; foo: number }>
+      >();
+    });
+
+    it("filters the union to dec attrs", () => {
+      const exec = () =>
+        createClient<{
+          bar: { _type: "bar"; bar: "bar" };
+          foo: AnySanityDocument & { _type: "foo"; foo: number };
+          qux: AnySanityDocument & { _type: "qux"; qux: number };
+        }>()({})
+          .patch("id")
+          .dec({ foo: 1 })
+          .commit();
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Promise<AnySanityDocument & { _type: "foo"; foo: number }>
+      >();
+    });
+
+    it.todo("insert");
+
+    it.todo("append");
+
+    it.todo("prepend");
+
+    it.todo("splice, it does JSON paths");
+
+    it("returns original documents after reset", () => {
+      const exec = () =>
+        createClient<{
+          bar: { _type: "bar"; bar: "bar" };
+          foo: AnySanityDocument & { _type: "foo"; foo: string };
+          qux: AnySanityDocument & { _type: "qux"; qux: number };
+        }>()({})
+          .patch("id")
+          .set({ foo: "foo" })
+          .reset()
+          .commit();
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Promise<
+          | (AnySanityDocument & { _type: "foo"; foo: string })
+          | (AnySanityDocument & { _type: "qux"; qux: number })
+        >
+      >();
+    });
+
+    it.todo("try all of them with deep and JSON Paths");
   });
 
   describe("transaction", () => {
