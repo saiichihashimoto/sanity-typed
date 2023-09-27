@@ -430,8 +430,4 @@ describe("createClient", () => {
 
     it.todo("https://github.com/sanity-io/client#mutation-options");
   });
-
-  describe("assets", () => {
-    it.todo("https://github.com/sanity-io/client#uploading-assets");
-  });
 });
