@@ -30,6 +30,7 @@ Infer Sanity Document Types from Sanity Schemas
   - [2 to 3](#2-to-3)
     - [InferSchemaValues](#inferschemavalues)
     - [InferValue](#infervalue)
+- [Alternatives](#alternatives)
 
 ## Install
 
@@ -383,4 +384,15 @@ const product = defineType({
 - export type Product = InferValue<typeof product>;
 + export type Product = _InferValue<typeof product>;
 ```
+
+## Alternatives
+
+- [`sanity-codegen`](https://www.npmjs.com/package/sanity-codegen)
+- [`@sanity-codegen/cli`](https://www.npmjs.com/package/@sanity-codegen/cli)
+- [`sanity-generator`](https://www.npmjs.com/package/sanity-generator)
+- [`sanity-typed-queries`](https://www.npmjs.com/package/sanity-generator)
+- [`sanity-typed-schema`](https://www.npmjs.com/package/sanity-typed-schema)
+- [`sanity-schema-builder`](https://www.npmjs.com/package/sanity-typed-schema)
+- [`@sanity-typed/schema-builder`](https://www.npmjs.com/package/@sanity-typed/schema-builder)
+- [`sanity-typed-schema-builder`](https://www.npmjs.com/package/sanity-typed-schema-builder)
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/types/_README.md -->

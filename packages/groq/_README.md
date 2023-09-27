@@ -81,3 +81,11 @@ Chances are, you don't need this package directly.
 ## Considerations
 
 @[:markdown](docs/considerations/parse-type-flakiness.md)
+
+## Alternatives
+
+- [`@sanity-codegen/cli`](https://www.npmjs.com/package/@sanity-codegen/cli)
+- [`sanity-generator`](https://www.npmjs.com/package/sanity-generator)
+- [`sanity-typed-queries`](https://www.npmjs.com/package/sanity-generator)
+- [`@sanity-codegen/groq-codegen`](https://www.npmjs.com/package/@sanity-codegen/groq-codegen)
+- [`sanity-query-helper`](https://www.npmjs.com/package/sanity-query-helper)

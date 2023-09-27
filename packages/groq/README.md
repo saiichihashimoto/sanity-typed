@@ -18,6 +18,7 @@ Infer [GROQ](https://github.com/sanity-io/groq) Result Types from GROQ strings
 - [Usage](#usage)
 - [Considerations](#considerations)
   - [The parsed tree changes in seemingly breaking ways](#the-parsed-tree-changes-in-seemingly-breaking-ways)
+- [Alternatives](#alternatives)
 
 ## Install
 
@@ -90,4 +91,12 @@ Chances are, you don't need this package directly.
 
 `@sanity-typed/groq` attempts to type its parsed types as close as possible to [`groq-js`](https://github.com/sanity-io/groq-js)'s `parse` function output. Any fixes to match it more correctly won't be considered a major change and, if `groq-js` changes it's output in a version update, we're likely to match it. If you're using the parsed tree's types directly, this might cause your code to break. We don't consider this a breaking change because the intent of these groq libraries is to match the types of a groq query as closely as possible.
 <!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/groq/docs/considerations/docs/considerations/parse-type-flakiness.md -->
+
+## Alternatives
+
+- [`@sanity-codegen/cli`](https://www.npmjs.com/package/@sanity-codegen/cli)
+- [`sanity-generator`](https://www.npmjs.com/package/sanity-generator)
+- [`sanity-typed-queries`](https://www.npmjs.com/package/sanity-generator)
+- [`@sanity-codegen/groq-codegen`](https://www.npmjs.com/package/@sanity-codegen/groq-codegen)
+- [`sanity-query-helper`](https://www.npmjs.com/package/sanity-query-helper)
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/groq/_README.md -->

@@ -253,3 +253,14 @@ const product = defineType({
 - export type Product = InferValue<typeof product>;
 + export type Product = _InferValue<typeof product>;
 ```
+
+## Alternatives
+
+- [`sanity-codegen`](https://www.npmjs.com/package/sanity-codegen)
+- [`@sanity-codegen/cli`](https://www.npmjs.com/package/@sanity-codegen/cli)
+- [`sanity-generator`](https://www.npmjs.com/package/sanity-generator)
+- [`sanity-typed-queries`](https://www.npmjs.com/package/sanity-generator)
+- [`sanity-typed-schema`](https://www.npmjs.com/package/sanity-typed-schema)
+- [`sanity-schema-builder`](https://www.npmjs.com/package/sanity-typed-schema)
+- [`@sanity-typed/schema-builder`](https://www.npmjs.com/package/@sanity-typed/schema-builder)
+- [`sanity-typed-schema-builder`](https://www.npmjs.com/package/sanity-typed-schema-builder)
