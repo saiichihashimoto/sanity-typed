@@ -1,21 +1,27 @@
 import { createClient as createClientNative } from "@sanity/client";
 import type {
+  BaseMutationOptions,
   ClientConfig,
   FilteredResponseQueryOptions,
   InitializedClientConfig as InitializedClientConfigNative,
+  MultipleMutationResult,
+  MutationSelection,
+  ObservableSanityClient as ObservableSanityClientNative,
   QueryParams,
   RawQueryResponse as RawQueryResponseNative,
   SanityClient as SanityClientNative,
+  SingleMutationResult,
   UnfilteredResponseQueryOptions,
 } from "@sanity/client";
-import type { IsNever, Merge, WritableDeep } from "type-fest";
+import type { Observable } from "rxjs";
+import type { IsNever, Merge, SetOptional, WritableDeep } from "type-fest";
 
 import type { ExecuteQuery, RootScope } from "@sanity-typed/groq";
 import type { SanityDocument } from "@sanity-typed/types";
 
 declare const README: unique symbol;
 
-type AnySanityDocument = Omit<SanityDocument, "_type">;
+type AnySanityDocument = Omit<SanityDocument, "_type"> & { _type: string };
 
 export type InitializedClientConfig<TClientConfig extends ClientConfig> = Merge<
   InitializedClientConfigNative,
@@ -46,22 +52,130 @@ type GetDocuments<Ids extends string[], TDocument extends AnySanityDocument> = {
     | null;
 };
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- recursive type
-export interface SanityClient<
+type PromiseOrObservable<
+  TIsPromise extends boolean,
+  T
+> = TIsPromise extends true ? Promise<T> : Observable<T>;
+
+type OverrideSanityClient<
+  TSanityClient,
   TClientConfig extends ClientConfig,
-  TDocument extends AnySanityDocument
-> extends Omit<
-    SanityClientNative,
-    "clone" | "config" | "fetch" | "getDocument" | "getDocuments" | "withConfig"
-  > {
-  clone: () => SanityClient<TClientConfig, TDocument>;
+  TDocument extends AnySanityDocument,
+  TIsPromise extends boolean
+> = Omit<
+  TSanityClient,
+  | "clone"
+  | "config"
+  | "create"
+  | "createIfNotExists"
+  | "createOrReplace"
+  | "delete"
+  | "fetch"
+  | "getDocument"
+  | "getDocuments"
+  | "observable"
+  | "withConfig"
+> & {
+  clone: () => OverrideSanityClient<
+    TSanityClient,
+    TClientConfig,
+    TDocument,
+    TIsPromise
+  >;
   config: <
     const NewConfig extends Partial<ClientConfig> | undefined = undefined
   >(
     newConfig?: NewConfig
   ) => NewConfig extends undefined
     ? InitializedClientConfig<WritableDeep<TClientConfig>>
-    : SanityClient<Merge<TClientConfig, NewConfig>, TDocument>;
+    : OverrideSanityClient<
+        TSanityClient,
+        Merge<TClientConfig, NewConfig>,
+        TDocument,
+        TIsPromise
+      >;
+  create: <
+    const Doc extends Omit<
+      SetOptional<TDocument, "_id">,
+      "_createdAt" | "_rev" | "_updatedAt"
+    > & { _type: string },
+    const Options extends BaseMutationOptions & {
+      returnDocuments?: boolean;
+      returnFirst?: boolean;
+    }
+  >(
+    document: Doc,
+    options?: Options
+  ) => PromiseOrObservable<
+    TIsPromise,
+    Options extends { returnDocuments: false; returnFirst: false }
+      ? MultipleMutationResult
+      : Options extends { returnFirst: false }
+      ? Extract<TDocument, { _type: Doc["_type"] }>[]
+      : Options extends { returnDocuments: false }
+      ? SingleMutationResult
+      : Extract<TDocument, { _type: Doc["_type"] }>
+  >;
+  createIfNotExists: <
+    const Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+      _type: string;
+    },
+    const Options extends BaseMutationOptions & {
+      returnDocuments?: boolean;
+      returnFirst?: boolean;
+    }
+  >(
+    document: Doc,
+    options?: Options
+  ) => PromiseOrObservable<
+    TIsPromise,
+    Options extends { returnDocuments: false; returnFirst: false }
+      ? MultipleMutationResult
+      : Options extends { returnFirst: false }
+      ? Extract<TDocument, { _type: Doc["_type"] }>[]
+      : Options extends { returnDocuments: false }
+      ? SingleMutationResult
+      : Extract<TDocument, { _type: Doc["_type"] }>
+  >;
+  createOrReplace: <
+    const Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+      _type: string;
+    },
+    const Options extends BaseMutationOptions & {
+      returnDocuments?: boolean;
+      returnFirst?: boolean;
+    }
+  >(
+    document: Doc,
+    options?: Options
+  ) => PromiseOrObservable<
+    TIsPromise,
+    Options extends { returnDocuments: false; returnFirst: false }
+      ? MultipleMutationResult
+      : Options extends { returnFirst: false }
+      ? Extract<TDocument, { _type: Doc["_type"] }>[]
+      : Options extends { returnDocuments: false }
+      ? SingleMutationResult
+      : Extract<TDocument, { _type: Doc["_type"] }>
+  >;
+  delete: <
+    const Options extends BaseMutationOptions & {
+      returnDocuments?: boolean;
+      returnFirst?: boolean;
+    }
+  >(
+    selection: MutationSelection | string,
+    options?: Options
+  ) => PromiseOrObservable<
+    TIsPromise,
+    Options extends { returnDocuments: false; returnFirst: false }
+      ? MultipleMutationResult
+      : Options extends { returnFirst: false }
+      ? TDocument[]
+      : Options extends { returnDocuments: false }
+      ? SingleMutationResult
+      : TDocument
+  >;
   fetch: <
     const Query extends string,
     const Q = QueryParams,
@@ -73,7 +187,8 @@ export interface SanityClient<
     query: Query,
     params?: Q,
     options?: Options
-  ) => Promise<
+  ) => PromiseOrObservable<
+    TIsPromise,
     MaybeRawQueryResponse<
       ExecuteQuery<
         Query,
@@ -96,17 +211,43 @@ export interface SanityClient<
   getDocument: <const Id extends string>(
     id: Id,
     options?: Parameters<SanityClientNative["getDocument"]>[1]
-  ) => Promise<
+  ) => PromiseOrObservable<
+    TIsPromise,
     (TDocument extends never ? never : TDocument & { _id: Id }) | undefined
   >;
   getDocuments: <const Ids extends readonly string[]>(
     ids: Ids,
     options?: Parameters<SanityClientNative["getDocuments"]>[1]
-  ) => Promise<GetDocuments<WritableDeep<Ids>, TDocument>>;
+  ) => PromiseOrObservable<
+    TIsPromise,
+    GetDocuments<WritableDeep<Ids>, TDocument>
+  >;
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
+  observable: ObservableSanityClient<TClientConfig, TDocument>;
   withConfig: <const NewConfig extends Partial<ClientConfig>>(
     newConfig?: NewConfig
-  ) => SanityClient<Merge<TClientConfig, NewConfig>, TDocument>;
-}
+  ) => OverrideSanityClient<
+    TSanityClient,
+    Merge<TClientConfig, NewConfig>,
+    TDocument,
+    TIsPromise
+  >;
+};
+
+export type ObservableSanityClient<
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+> = OverrideSanityClient<
+  ObservableSanityClientNative,
+  TClientConfig,
+  TDocument,
+  false
+>;
+
+export type SanityClient<
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+> = OverrideSanityClient<SanityClientNative, TClientConfig, TDocument, true>;
 
 /**
  * Unfortunately, this has to have a very weird function signature due to this typescript issue:

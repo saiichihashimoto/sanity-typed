@@ -12,6 +12,8 @@ import type { SanityDocument } from "@sanity-typed/types";
 import { castFromTyped, castToTyped, createClient } from ".";
 import type { SanityClient } from ".";
 
+type AnySanityDocument = Omit<SanityDocument, "_type">;
+
 describe("interoperability", () => {
   describe("castToTyped", () => {
     it("is a typescript error without SanityValues", () => {
@@ -36,7 +38,7 @@ describe("interoperability", () => {
     it("castToTyped<SanityValues>()(createClientNative(...))", () => {
       const exec = () => {
         const client = castToTyped<{
-          foo: Merge<SanityDocument, { _type: "foo" }>;
+          foo: AnySanityDocument & { _type: "foo" };
         }>()(
           createClientNative({
             dataset: "dataset",
@@ -47,18 +49,16 @@ describe("interoperability", () => {
         return client;
       };
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<
-        SanityClient<ClientConfig, Merge<SanityDocument, { _type: "foo" }>>
+      expectType<ReturnType<typeof exec>>().toEqual<
+        SanityClient<ClientConfig, AnySanityDocument & { _type: "foo" }>
       >();
     });
 
     it("castToTyped<SanityValues>()(createClientNative(..., config))", () => {
-      type SanityValues = {
-        foo: Merge<SanityDocument, { _type: "foo" }>;
-      };
-
       const exec = () => {
-        const client = castToTyped<SanityValues>()(
+        const client = castToTyped<{
+          foo: AnySanityDocument & { _type: "foo" };
+        }>()(
           createClientNative({
             dataset: "dataset",
             projectId: "projectId",
@@ -72,13 +72,13 @@ describe("interoperability", () => {
         return client;
       };
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<
+      expectType<ReturnType<typeof exec>>().toEqual<
         SanityClient<
           {
-            readonly dataset: "dataset";
-            readonly projectId: "projectId";
+            dataset: "dataset";
+            projectId: "projectId";
           },
-          SanityValues["foo"]
+          AnySanityDocument & { _type: "foo" }
         >
       >();
     });

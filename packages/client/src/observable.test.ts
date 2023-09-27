@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/promise-function-async -- I don't want to cooerce any types */
 import { describe, it } from "@jest/globals";
 import type {
   ClientConfig,
   ClientPerspective,
   RequestFetchOptions,
 } from "@sanity/client";
+import type { Observable } from "rxjs";
 import type { SetOptional } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
@@ -15,7 +15,7 @@ import type { RawQueryResponse } from ".";
 
 type AnySanityDocument = Omit<SanityDocument, "_type">;
 
-describe("createClient", () => {
+describe("observable", () => {
   describe("clone", () => {
     it("returns the same type", () => {
       const exec = () => {
@@ -23,7 +23,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo" };
         }>()({});
 
-        return client;
+        return client.observable;
       };
 
       const execClone = () => {
@@ -31,7 +31,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo" };
         }>()({});
 
-        return client.clone();
+        return client.observable.clone();
       };
 
       expectType<ReturnType<typeof execClone>>().toEqual<
@@ -48,7 +48,7 @@ describe("createClient", () => {
           projectId: "projectId",
         });
 
-        return client.config();
+        return client.observable.config();
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<{
@@ -86,7 +86,7 @@ describe("createClient", () => {
           projectId: "newProjectId",
         });
 
-        return client;
+        return client.observable;
       };
 
       const execWithConfig = () => {
@@ -97,7 +97,7 @@ describe("createClient", () => {
           projectId: "projectId",
         });
 
-        return client.config({
+        return client.observable.config({
           projectId: "newProjectId",
         });
       };
@@ -118,7 +118,7 @@ describe("createClient", () => {
           projectId: "newProjectId",
         });
 
-        return client;
+        return client.observable;
       };
 
       const execWithConfig = () => {
@@ -129,7 +129,7 @@ describe("createClient", () => {
           projectId: "projectId",
         });
 
-        return client.withConfig({
+        return client.observable.withConfig({
           projectId: "newProjectId",
         });
       };
@@ -147,11 +147,11 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo" };
         }>()({});
 
-        return client.fetch("*");
+        return client.observable.fetch("*");
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<(AnySanityDocument & { _type: "foo" })[]>
+        Observable<(AnySanityDocument & { _type: "foo" })[]>
       >();
     });
 
@@ -162,11 +162,11 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo" };
         }>()({});
 
-        return client.fetch("*");
+        return client.observable.fetch("*");
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<(AnySanityDocument & { _type: "foo" })[]>
+        Observable<(AnySanityDocument & { _type: "foo" })[]>
       >();
     });
 
@@ -176,11 +176,11 @@ describe("createClient", () => {
           projectId: "projectId",
         });
 
-        return client.fetch("sanity::projectId()");
+        return client.observable.fetch("sanity::projectId()");
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<"projectId">
+        Observable<"projectId">
       >();
     });
 
@@ -188,21 +188,23 @@ describe("createClient", () => {
       const exec = () => {
         const client = createClient()({});
 
-        return client.fetch("$param", { param: "foo" });
+        return client.observable.fetch("$param", { param: "foo" });
       };
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<Promise<"foo">>();
+      expectType<ReturnType<typeof exec>>().toStrictEqual<Observable<"foo">>();
     });
 
     it("returns RawQueryResponse", () => {
       const exec = () => {
         const client = createClient()({});
 
-        return client.fetch("5", undefined, { filterResponse: false });
+        return client.observable.fetch("5", undefined, {
+          filterResponse: false,
+        });
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<RawQueryResponse<5, "5">>
+        Observable<RawQueryResponse<5, "5">>
       >();
     });
 
@@ -215,11 +217,11 @@ describe("createClient", () => {
           perspective: "previewDrafts",
         });
 
-        return client.fetch("*", undefined);
+        return client.observable.fetch("*", undefined);
       };
 
       expectType<ReturnType<typeof exec>>().toEqual<
-        Promise<
+        Observable<
           (
             | (AnySanityDocument & {
                 _originalId: string;
@@ -248,11 +250,11 @@ describe("createClient", () => {
           qux: AnySanityDocument & { _type: "qux" };
         }>()({});
 
-        return client.getDocument("id");
+        return client.observable.getDocument("id");
       };
 
       expectType<ReturnType<typeof exec>>().toEqual<
-        Promise<
+        Observable<
           | (AnySanityDocument & {
               _id: "id";
               _type: "foo";
@@ -276,11 +278,11 @@ describe("createClient", () => {
           qux: AnySanityDocument & { _type: "qux" };
         }>()({});
 
-        return client.getDocuments(["id", "id2"]);
+        return client.observable.getDocuments(["id", "id2"]);
       };
 
       expectType<ReturnType<typeof exec>>().toEqual<
-        Promise<
+        Observable<
           [
             (
               | (AnySanityDocument & {
@@ -330,11 +332,11 @@ describe("createClient", () => {
           >
         >();
 
-        return client.create({ _type: "foo" });
+        return client.observable.create({ _type: "foo" });
       };
 
       expectType<ReturnType<typeof exec>>().toEqual<
-        Promise<AnySanityDocument & { _type: "foo" }>
+        Observable<AnySanityDocument & { _type: "foo" }>
       >();
     });
 
@@ -358,11 +360,11 @@ describe("createClient", () => {
           >
         >();
 
-        return client.createOrReplace({ _type: "foo", _id: "id" });
+        return client.observable.createOrReplace({ _type: "foo", _id: "id" });
       };
 
       expectType<ReturnType<typeof exec>>().toEqual<
-        Promise<AnySanityDocument & { _type: "foo" }>
+        Observable<AnySanityDocument & { _type: "foo" }>
       >();
     });
 
@@ -386,11 +388,11 @@ describe("createClient", () => {
           >
         >();
 
-        return client.createIfNotExists({ _type: "foo", _id: "id" });
+        return client.observable.createIfNotExists({ _type: "foo", _id: "id" });
       };
 
       expectType<ReturnType<typeof exec>>().toEqual<
-        Promise<AnySanityDocument & { _type: "foo" }>
+        Observable<AnySanityDocument & { _type: "foo" }>
       >();
     });
 
@@ -410,11 +412,11 @@ describe("createClient", () => {
           qux: AnySanityDocument & { _type: "qux" };
         }>()({});
 
-        return client.delete("id");
+        return client.observable.delete("id");
       };
 
       expectType<ReturnType<typeof exec>>().toEqual<
-        Promise<
+        Observable<
           | (AnySanityDocument & { _type: "foo" })
           | (AnySanityDocument & { _type: "qux" })
         >
