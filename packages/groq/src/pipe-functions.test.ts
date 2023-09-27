@@ -247,4 +247,263 @@ describe("pipe functions", () => {
       >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
   });
+
+  it("false|score(foo>1)", async () => {
+    const query = "false|score(foo>1)";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        {
+          left: { name: "foo", type: "AccessAttribute" },
+          op: ">",
+          right: { type: "Value", value: 1 },
+          type: "OpCall",
+        },
+      ],
+      base: { type: "Value", value: false },
+      func: (() => {}) as unknown as GroqPipeFunction,
+      name: "score",
+      type: "PipeFuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = null;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it("*|score(foo>1) (primitives)", async () => {
+    const query = "*|score(foo>1)";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        {
+          left: { name: "foo", type: "AccessAttribute" },
+          op: ">",
+          right: { type: "Value", value: 1 },
+          type: "OpCall",
+        },
+      ],
+      base: { type: "Everything" },
+      func: (() => {}) as unknown as GroqPipeFunction,
+      name: "score",
+      type: "PipeFuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const dataset = ["foo", "bar"] as const;
+
+    const result = await (await evaluate(tree, { dataset })).get();
+
+    const expectedResult = [] as never[];
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        ScopeFromPartialContext<{
+          dataset: WritableDeep<typeof dataset>;
+        }>
+      >
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+  });
+
+  it("*|score(foo>1) (objects)", async () => {
+    const query = "*|score(foo>1)";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        {
+          left: { name: "foo", type: "AccessAttribute" },
+          op: ">",
+          right: { type: "Value", value: 1 },
+          type: "OpCall",
+        },
+      ],
+      base: { type: "Everything" },
+      func: (() => {}) as unknown as GroqPipeFunction,
+      name: "score",
+      type: "PipeFuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const dataset = [{ foo: 2 }, { foo: 3 }] as const;
+
+    const result = await (await evaluate(tree, { dataset })).get();
+
+    const expectedResult = [
+      { _score: 1, foo: 2 },
+      { _score: 1, foo: 3 },
+    ] as ({ _score: number; foo: 2 } | { _score: number; foo: 3 })[];
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        ScopeFromPartialContext<{
+          dataset: WritableDeep<typeof dataset>;
+        }>
+      >
+    >().toEqual<WritableDeep<typeof expectedResult>>();
+  });
+
+  it("boost(foo>2,5)", async () => {
+    const query = "boost(foo>2,5)";
+
+    expect(() => parse(query)).toThrow("unexpected boost");
+    // TODO
+    // expectType<Parse<typeof query>>().toStrictEqual<never>();
+
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
+  });
+
+  it("*|score(foo>1,boost(foo>2,5))", async () => {
+    const query = "*|score(foo>1,boost(foo>2,5))";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        {
+          left: { name: "foo", type: "AccessAttribute" },
+          op: ">",
+          right: { type: "Value", value: 1 },
+          type: "OpCall",
+        },
+        {
+          args: [
+            {
+              left: { name: "foo", type: "AccessAttribute" },
+              op: ">",
+              right: { type: "Value", value: 2 },
+              type: "OpCall",
+            },
+            { type: "Value", value: 5 },
+          ],
+          func: (() => {}) as unknown as GroqPipeFunction,
+          name: "boost",
+          namespace: "global",
+          type: "FuncCall",
+        },
+      ],
+      base: { type: "Everything" },
+      func: (() => {}) as unknown as GroqPipeFunction,
+      name: "score",
+      type: "PipeFuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      args: [
+        expectedTree.args[0],
+        {
+          ...expectedTree.args[1],
+          func: expect.any(Function),
+        },
+      ],
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const dataset = [{ foo: 2 }, { foo: 3 }] as const;
+
+    const result = await (await evaluate(tree, { dataset })).get();
+
+    const expectedResult = [
+      { _score: 7, foo: 3 },
+      { _score: 1, foo: 2 },
+    ] as ({ _score: number; foo: 2 } | { _score: number; foo: 3 })[];
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        ScopeFromPartialContext<{
+          dataset: WritableDeep<typeof dataset>;
+        }>
+      >
+    >().toEqual<WritableDeep<typeof expectedResult>>();
+  });
+
+  it("*|global::score(foo>1)", async () => {
+    const query = "*|global::score(foo>1)";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        {
+          left: { name: "foo", type: "AccessAttribute" },
+          op: ">",
+          right: { type: "Value", value: 1 },
+          type: "OpCall",
+        },
+      ],
+      base: { type: "Everything" },
+      func: (() => {}) as unknown as GroqPipeFunction,
+      name: "score",
+      type: "PipeFuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const dataset = [{ foo: 2 }, { foo: 3 }] as const;
+
+    const result = await (await evaluate(tree, { dataset })).get();
+
+    const expectedResult = [
+      { _score: 1, foo: 2 },
+      { _score: 1, foo: 3 },
+    ] as ({ _score: number; foo: 2 } | { _score: number; foo: 3 })[];
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        ScopeFromPartialContext<{
+          dataset: WritableDeep<typeof dataset>;
+        }>
+      >
+    >().toEqual<WritableDeep<typeof expectedResult>>();
+  });
 });
