@@ -141,7 +141,7 @@ describe("array", () => {
       const zods = sanityConfigToZods(config);
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<(typeof fake)["bar"]>().toEqual<
+      expectType<(typeof fake)["bar"]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]["bar"]
       >();
     });
@@ -253,7 +253,7 @@ describe("array", () => {
       const zods = sanityConfigToZods(config);
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<typeof fake>().toEqual<
+      expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
@@ -301,7 +301,7 @@ describe("array", () => {
       const zods = sanityConfigToZods(config);
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<typeof fake>().toEqual<
+      expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
@@ -330,7 +330,7 @@ describe("array", () => {
       const zods = sanityConfigToZods(config);
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<typeof fake>().toEqual<
+      expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
@@ -359,7 +359,7 @@ describe("array", () => {
       const zods = sanityConfigToZods(config);
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<typeof fake>().toEqual<
+      expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
@@ -388,7 +388,7 @@ describe("array", () => {
       const zods = sanityConfigToZods(config);
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<typeof fake>().toEqual<
+      expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });

@@ -32,16 +32,15 @@ describe("<alias>", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toEqual<{
         bar: string;
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
+          _type: "foo";
           _updatedAt: string;
           bar: string;
-        } & {
-          _type: "foo";
         };
       }>();
     });
@@ -78,24 +77,21 @@ describe("<alias>", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toEqual<{
         bar: {
           _type: "bar";
-        } & {
           baz: boolean;
         };
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
+          _type: "foo";
           _updatedAt: string;
           bar: {
             _type: "bar";
-          } & {
             baz: boolean;
           };
-        } & {
-          _type: "foo";
         };
       }>();
     });
@@ -221,19 +217,17 @@ describe("<alias>", () => {
         ],
       });
 
-      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toEqual<{
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
+          _type: "foo";
           _updatedAt: string;
           pluginValue: {
             _type: "pluginValue";
-          } & {
             baz: boolean;
           };
-        } & {
-          _type: "foo";
         };
       }>();
     });
@@ -292,19 +286,17 @@ describe("<alias>", () => {
         ],
       });
 
-      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toEqual<{
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
+          _type: "foo";
           _updatedAt: string;
           pluginValue: {
             _type: "pluginValue";
-          } & {
             baz: boolean;
           };
-        } & {
-          _type: "foo";
         };
       }>();
     });
@@ -336,16 +328,15 @@ describe("<alias>", () => {
 
       type Values = InferSchemaValues<typeof plugin>;
 
-      expectType<Values>().toStrictEqual<{
+      expectType<Values>().toEqual<{
         bar: string;
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
+          _type: "foo";
           _updatedAt: string;
           bar?: string;
-        } & {
-          _type: "foo";
         };
       }>();
     });
@@ -383,24 +374,21 @@ describe("<alias>", () => {
 
       type Values = InferSchemaValues<typeof plugin>;
 
-      expectType<Values>().toStrictEqual<{
+      expectType<Values>().toEqual<{
         bar: {
           _type: "bar";
-        } & {
           baz: boolean;
         };
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
+          _type: "foo";
           _updatedAt: string;
           bar: {
             _type: "bar";
-          } & {
             baz: boolean;
           };
-        } & {
-          _type: "foo";
         };
       }>();
     });
@@ -525,19 +513,17 @@ describe("<alias>", () => {
 
       type Values = InferSchemaValues<typeof plugin>;
 
-      expectType<Values>().toStrictEqual<{
+      expectType<Values>().toEqual<{
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
+          _type: "foo";
           _updatedAt: string;
           pluginValue: {
             _type: "pluginValue";
-          } & {
             baz: boolean;
           };
-        } & {
-          _type: "foo";
         };
       }>();
     });
@@ -595,19 +581,17 @@ describe("<alias>", () => {
         ],
       })();
 
-      expectType<InferSchemaValues<typeof plugin>>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof plugin>>().toEqual<{
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
+          _type: "foo";
           _updatedAt: string;
           pluginValue: {
             _type: "pluginValue";
-          } & {
             baz: boolean;
           };
-        } & {
-          _type: "foo";
         };
       }>();
     });

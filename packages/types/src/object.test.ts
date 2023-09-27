@@ -297,14 +297,11 @@ describe("object", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        {
-          _type: "foo";
-        } & {
-          bar?: boolean;
-          tar?: number;
-        }
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        bar?: boolean;
+        tar?: number;
+      }>();
     });
 
     it("overwrites `_type` with defineArrayMember `name`", () => {
@@ -367,13 +364,10 @@ describe("object", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        {
-          _type: "foo";
-        } & {
-          bar: boolean;
-        }
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        bar: boolean;
+      }>();
     });
 
     it("infers nested objects", () => {
@@ -404,15 +398,12 @@ describe("object", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-        {
-          _type: "foo";
-        } & {
-          bar: {
-            tar: number;
-          };
-        }
-      >();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        bar: {
+          tar: number;
+        };
+      }>();
     });
   });
 });

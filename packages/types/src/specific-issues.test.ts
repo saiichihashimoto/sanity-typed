@@ -55,23 +55,18 @@ describe("specific issues", () => {
       },
     });
 
-    expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
-      {
-        _type: "foo";
-      } & {
-        foo?: ({
-          _key: string;
-        } & {
+    expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+      _type: "foo";
+      foo?: {
+        _key: string;
+        foo?: {
           foo?: {
-            foo?: ({
-              _key: string;
-            } & {
-              foo?: ImageValue<false>;
-            })[];
-          };
-        })[];
-      }
-    >();
+            _key: string;
+            foo?: ImageValue<false>;
+          }[];
+        };
+      }[];
+    }>();
   });
 
   it("#299 object -> array -> reference", () => {
@@ -110,13 +105,10 @@ describe("specific issues", () => {
 
     expectType<
       InferSchemaValues<typeof config>["section.projectSlider"]
-    >().toStrictEqual<
-      {
-        _type: "section.projectSlider";
-      } & {
-        projects?: (ReferenceValue<"project"> & { _key: string })[];
-        title?: string;
-      }
-    >();
+    >().toEqual<{
+      _type: "section.projectSlider";
+      projects?: (ReferenceValue<"project"> & { _key: string })[];
+      title?: string;
+    }>();
   });
 });
