@@ -5,13 +5,19 @@ import type {
   ClientPerspective,
   RequestFetchOptions,
 } from "@sanity/client";
+import type { Observable } from "rxjs";
 import type { SetOptional } from "type-fest";
 
 import { expectType } from "@sanity-typed/test-utils";
 import type { SanityDocument } from "@sanity-typed/types";
 
 import { createClient } from ".";
-import type { RawQueryResponse, SanityClient } from ".";
+import type {
+  ListenEvent,
+  MutationEvent,
+  RawQueryResponse,
+  SanityClient,
+} from ".";
 
 type AnySanityDocument = Omit<SanityDocument, "_type">;
 
@@ -200,7 +206,27 @@ describe("createClient", () => {
   });
 
   describe("listen", () => {
-    it.todo("https://github.com/sanity-io/client#listening-to-queries");
+    it("observes the groq query result", () => {
+      const exec = () =>
+        createClient<{
+          foo: AnySanityDocument & { _type: "foo" };
+        }>()({}).listen("*");
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Observable<MutationEvent<AnySanityDocument & { _type: "foo" }>>
+      >();
+    });
+
+    it("returns ListenEvent with options", () => {
+      const exec = () =>
+        createClient<{
+          foo: AnySanityDocument & { _type: "foo" };
+        }>()({}).listen("*", {}, {});
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Observable<ListenEvent<AnySanityDocument & { _type: "foo" }>>
+      >();
+    });
   });
 
   describe("getDocument", () => {

@@ -11,7 +11,12 @@ import { expectType } from "@sanity-typed/test-utils";
 import type { SanityDocument } from "@sanity-typed/types";
 
 import { createClient } from ".";
-import type { ObservableSanityClient, RawQueryResponse } from ".";
+import type {
+  ListenEvent,
+  MutationEvent,
+  ObservableSanityClient,
+  RawQueryResponse,
+} from ".";
 
 type AnySanityDocument = Omit<SanityDocument, "_type">;
 
@@ -203,7 +208,27 @@ describe("createClient", () => {
   });
 
   describe("listen", () => {
-    it.todo("https://github.com/sanity-io/client#listening-to-queries");
+    it("observes the groq query result", () => {
+      const exec = () =>
+        createClient<{
+          foo: AnySanityDocument & { _type: "foo" };
+        }>()({}).listen("*");
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Observable<MutationEvent<AnySanityDocument & { _type: "foo" }>>
+      >();
+    });
+
+    it("returns ListenEvent with options", () => {
+      const exec = () =>
+        createClient<{
+          foo: AnySanityDocument & { _type: "foo" };
+        }>()({}).listen("*", {}, {});
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Observable<ListenEvent<AnySanityDocument & { _type: "foo" }>>
+      >();
+    });
   });
 
   describe("getDocument", () => {
