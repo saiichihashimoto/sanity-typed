@@ -60,7 +60,7 @@ import type {
 
 import type { ReferenceValue } from "@sanity-typed/types";
 import type { referenced } from "@sanity-typed/types/src/internal";
-import type { TupleOfLength } from "@sanity-typed/utils";
+import type { IsPlainObject, TupleOfLength } from "@sanity-typed/utils";
 
 type Simplify<AnyType> = SimplifyNative<AnyType> extends AnyType
   ? SimplifyNative<AnyType>
@@ -1906,6 +1906,17 @@ type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#order()
      */
     order: TArgs extends [] ? never : TupleToUnionArray<TBase>;
+    // HACK As long as the args evaluate, we don't actually use them so... why bother evaluating boost at all?
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#score()
+     */
+    score: TArgs extends []
+      ? never
+      : TBase extends (infer Element)[]
+      ? (IsPlainObject<Element> extends false
+          ? never
+          : Element & { _score: number })[]
+      : never;
   };
 };
 
