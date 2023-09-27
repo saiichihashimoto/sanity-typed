@@ -137,22 +137,18 @@ describe("array", () => {
         },
       });
 
-      expectType<
-        InferSchemaValues<typeof config>["foo"]["bar"]
-      >().toStrictEqual<
+      expectType<InferSchemaValues<typeof config>["foo"]["bar"]>().toEqual<
         (
-          | ({
+          | {
               _key: string;
-            } & {
               _type: "bar";
               bar: boolean;
-            })
-          | ({
+            }
+          | {
               _key: string;
-            } & {
               _type: "qux";
               qux: boolean;
-            })
+            }
         )[]
       >();
     });
@@ -240,20 +236,18 @@ describe("array", () => {
         },
       });
 
-      expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<
         (
-          | ({
+          | {
               _key: string;
-            } & {
               _type: "bar";
               bar: boolean;
-            })
-          | ({
+            }
+          | {
               _key: string;
-            } & {
               _type: "qux";
               qux: boolean;
-            })
+            }
         )[]
       >();
     });

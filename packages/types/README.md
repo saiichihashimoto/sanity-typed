@@ -199,7 +199,6 @@ export type Foo = SanityValues["foo"];
  *    _updatedAt: string;
  *    bar?: {
  *      _type: "myPlugin";
- *    } & {
  *      baz?: boolean;
  *    };
  *  };

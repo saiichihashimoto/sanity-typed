@@ -63,15 +63,14 @@ describe("interoperability", () => {
         ],
       });
 
-      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toEqual<{
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
+          _type: "foo";
           _updatedAt: string;
           pluginValue?: unknown;
-        } & {
-          _type: "foo";
         };
       }>();
     });
@@ -117,15 +116,14 @@ describe("interoperability", () => {
         ],
       });
 
-      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toEqual<{
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
+          _type: "foo";
           _updatedAt: string;
           pluginValue?: unknown;
-        } & {
-          _type: "foo";
         };
       }>();
     });
@@ -169,15 +167,14 @@ describe("interoperability", () => {
         ],
       });
 
-      expectType<InferSchemaValues<typeof config>>().toStrictEqual<{
+      expectType<InferSchemaValues<typeof config>>().toEqual<{
         foo: {
           _createdAt: string;
           _id: string;
           _rev: string;
+          _type: "foo";
           _updatedAt: string;
           pluginValue?: unknown;
-        } & {
-          _type: "foo";
         };
       }>();
     });
