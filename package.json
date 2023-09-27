@@ -19,7 +19,7 @@
     "prepare": "is-ci || concurrently --timings --prefix-colors \"auto\" npm:prepare:*",
     "prepare:gem": "bundle install",
     "prepare:husky": "husky install",
-    "test": "jest --color"
+    "test": "jest --color --cache"
   },
   "dependencies": {
     "@jest/types": "29.6.3",

@@ -156,14 +156,15 @@ jobs:
 
       - id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v2
-      # - run: |
-      #     JEST_CACHE_DIRECTORY=$(npx jest --color --showConfig | jq --raw-output ".configs[0].cacheDirectory")
-      #     echo "JEST_CACHE_DIRECTORY=$JEST_CACHE_DIRECTORY" >> $GITHUB_ENV
-      # - uses: actions/cache@v3
-      #   with:
-      #     path: ${{ env.JEST_CACHE_DIRECTORY }}
-      #     key: jest-${{ github.run_id }}
-      #     restore-keys: |
-      #       jest-
+      - run: |
+          JEST_CACHE_DIRECTORY=$(npx jest --color --showConfig | jq --raw-output ".configs[0].cacheDirectory")
+          echo "JEST_CACHE_DIRECTORY=$JEST_CACHE_DIRECTORY" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        with:
+          path: ${{ env.JEST_CACHE_DIRECTORY }}
+          key: jest-${{ matrix.package }}-${{ github.run_id }}
+          restore-keys: |
+            jest-${{ matrix.package }}-
+            jest-
 
       - run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }} -- ${{ matrix.package }}/src

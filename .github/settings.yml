@@ -16,4 +16,10 @@ branches:
         contexts:
           - Build
           - Lint
-          - Test
+          - Test (client)
+          - Test (faker)
+          - Test (groq)
+          - Test (groq-js)
+          - Test (test-utils)
+          - Test (types)
+          - Test (zod)
