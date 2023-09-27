@@ -335,7 +335,7 @@ describe("observable", () => {
         return client.observable.create({ _type: "foo" });
       };
 
-      expectType<ReturnType<typeof exec>>().toEqual<
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<AnySanityDocument & { _type: "foo" }>
       >();
     });
@@ -363,7 +363,7 @@ describe("observable", () => {
         return client.observable.createOrReplace({ _type: "foo", _id: "id" });
       };
 
-      expectType<ReturnType<typeof exec>>().toEqual<
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<AnySanityDocument & { _type: "foo" }>
       >();
     });
@@ -391,7 +391,7 @@ describe("observable", () => {
         return client.observable.createIfNotExists({ _type: "foo", _id: "id" });
       };
 
-      expectType<ReturnType<typeof exec>>().toEqual<
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<AnySanityDocument & { _type: "foo" }>
       >();
     });
@@ -415,7 +415,7 @@ describe("observable", () => {
         return client.observable.delete("id");
       };
 
-      expectType<ReturnType<typeof exec>>().toEqual<
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
           | (AnySanityDocument & { _type: "foo" })
           | (AnySanityDocument & { _type: "qux" })

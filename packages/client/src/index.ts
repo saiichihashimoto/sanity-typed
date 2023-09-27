@@ -46,10 +46,15 @@ type MaybeRawQueryResponse<
   ? RawQueryResponse<Result, Query>
   : Result;
 
-type GetDocuments<Ids extends string[], TDocument extends AnySanityDocument> = {
-  [index in keyof Ids]:
-    | (TDocument extends never ? never : TDocument & { _id: Ids[index] })
-    | null;
+type AddOriginalId<
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+> = TClientConfig extends { perspective: "previewDrafts" }
+  ? TDocument & { _originalId: string }
+  : TDocument;
+
+type GetDocuments<TDocument extends AnySanityDocument, Ids extends string[]> = {
+  [index in keyof Ids]: (TDocument & { _id: Ids[index] }) | null;
 };
 
 type PromiseOrObservable<
@@ -111,10 +116,16 @@ type OverrideSanityClient<
     Options extends { returnDocuments: false; returnFirst: false }
       ? MultipleMutationResult
       : Options extends { returnFirst: false }
-      ? Extract<TDocument, { _type: Doc["_type"] }>[]
+      ? AddOriginalId<
+          TClientConfig,
+          Extract<TDocument, { _type: Doc["_type"] }>
+        >[]
       : Options extends { returnDocuments: false }
       ? SingleMutationResult
-      : Extract<TDocument, { _type: Doc["_type"] }>
+      : AddOriginalId<
+          TClientConfig,
+          Extract<TDocument, { _type: Doc["_type"] }>
+        >
   >;
   createIfNotExists: <
     const Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
@@ -132,10 +143,16 @@ type OverrideSanityClient<
     Options extends { returnDocuments: false; returnFirst: false }
       ? MultipleMutationResult
       : Options extends { returnFirst: false }
-      ? Extract<TDocument, { _type: Doc["_type"] }>[]
+      ? AddOriginalId<
+          TClientConfig,
+          Extract<TDocument, { _type: Doc["_type"] }>
+        >[]
       : Options extends { returnDocuments: false }
       ? SingleMutationResult
-      : Extract<TDocument, { _type: Doc["_type"] }>
+      : AddOriginalId<
+          TClientConfig,
+          Extract<TDocument, { _type: Doc["_type"] }>
+        >
   >;
   createOrReplace: <
     const Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
@@ -153,10 +170,16 @@ type OverrideSanityClient<
     Options extends { returnDocuments: false; returnFirst: false }
       ? MultipleMutationResult
       : Options extends { returnFirst: false }
-      ? Extract<TDocument, { _type: Doc["_type"] }>[]
+      ? AddOriginalId<
+          TClientConfig,
+          Extract<TDocument, { _type: Doc["_type"] }>
+        >[]
       : Options extends { returnDocuments: false }
       ? SingleMutationResult
-      : Extract<TDocument, { _type: Doc["_type"] }>
+      : AddOriginalId<
+          TClientConfig,
+          Extract<TDocument, { _type: Doc["_type"] }>
+        >
   >;
   delete: <
     const Options extends BaseMutationOptions & {
@@ -171,10 +194,10 @@ type OverrideSanityClient<
     Options extends { returnDocuments: false; returnFirst: false }
       ? MultipleMutationResult
       : Options extends { returnFirst: false }
-      ? TDocument[]
+      ? AddOriginalId<TClientConfig, TDocument>[]
       : Options extends { returnDocuments: false }
       ? SingleMutationResult
-      : TDocument
+      : AddOriginalId<TClientConfig, TDocument>
   >;
   fetch: <
     const Query extends string,
@@ -196,9 +219,7 @@ type OverrideSanityClient<
           client: WritableDeep<TClientConfig>;
           dataset: (TDocument extends never
             ? never
-            : TClientConfig extends { perspective: "previewDrafts" }
-            ? TDocument & { _originalId: string }
-            : TDocument)[];
+            : AddOriginalId<TClientConfig, TDocument>)[];
           delta: { after: null; before: null };
           identity: string;
           parameters: NonNullable<Q>;
@@ -213,17 +234,17 @@ type OverrideSanityClient<
     options?: Parameters<SanityClientNative["getDocument"]>[1]
   ) => PromiseOrObservable<
     TIsPromise,
-    (TDocument extends never ? never : TDocument & { _id: Id }) | undefined
+    (AddOriginalId<TClientConfig, TDocument> & { _id: Id }) | undefined
   >;
   getDocuments: <const Ids extends readonly string[]>(
     ids: Ids,
     options?: Parameters<SanityClientNative["getDocuments"]>[1]
   ) => PromiseOrObservable<
     TIsPromise,
-    GetDocuments<WritableDeep<Ids>, TDocument>
+    GetDocuments<AddOriginalId<TClientConfig, TDocument>, WritableDeep<Ids>>
   >;
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
-  observable: ObservableSanityClient<TClientConfig, TDocument>;
+  observable: // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
+  ObservableSanityClient<TClientConfig, TDocument>;
   withConfig: <const NewConfig extends Partial<ClientConfig>>(
     newConfig?: NewConfig
   ) => OverrideSanityClient<

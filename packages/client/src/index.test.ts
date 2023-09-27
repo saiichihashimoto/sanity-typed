@@ -333,7 +333,7 @@ describe("createClient", () => {
         return client.create({ _type: "foo" });
       };
 
-      expectType<ReturnType<typeof exec>>().toEqual<
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<AnySanityDocument & { _type: "foo" }>
       >();
     });
@@ -361,7 +361,7 @@ describe("createClient", () => {
         return client.createOrReplace({ _type: "foo", _id: "id" });
       };
 
-      expectType<ReturnType<typeof exec>>().toEqual<
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<AnySanityDocument & { _type: "foo" }>
       >();
     });
@@ -389,7 +389,7 @@ describe("createClient", () => {
         return client.createIfNotExists({ _type: "foo", _id: "id" });
       };
 
-      expectType<ReturnType<typeof exec>>().toEqual<
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<AnySanityDocument & { _type: "foo" }>
       >();
     });
@@ -413,7 +413,7 @@ describe("createClient", () => {
         return client.delete("id");
       };
 
-      expectType<ReturnType<typeof exec>>().toEqual<
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<
           | (AnySanityDocument & { _type: "foo" })
           | (AnySanityDocument & { _type: "qux" })
