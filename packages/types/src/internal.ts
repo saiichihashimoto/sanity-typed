@@ -110,6 +110,7 @@ type WithRequired<
   {
     required: () => WithRequired<true, Rule>;
     [required]: TRequired;
+    warning: () => WithRequired<false, Rule>;
   }
 >;
 
