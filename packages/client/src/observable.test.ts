@@ -324,8 +324,6 @@ describe("createClient", () => {
         Observable<AnySanityDocument & { _type: "foo" }>
       >();
     });
-
-    it.todo("https://github.com/sanity-io/client#mutation-options");
   });
 
   describe("createOrReplace", () => {
@@ -352,8 +350,6 @@ describe("createClient", () => {
         Observable<AnySanityDocument & { _type: "foo" }>
       >();
     });
-
-    it.todo("https://github.com/sanity-io/client#mutation-options");
   });
 
   describe("createIfNotExists", () => {
@@ -380,8 +376,6 @@ describe("createClient", () => {
         Observable<AnySanityDocument & { _type: "foo" }>
       >();
     });
-
-    it.todo("https://github.com/sanity-io/client#mutation-options");
   });
 
   describe("patch", () => {
@@ -415,8 +409,6 @@ describe("createClient", () => {
     it.todo(
       "handle MutationSelection that selects multiple documents via query"
     );
-
-    it.todo("https://github.com/sanity-io/client#mutation-options");
   });
 
   describe("transaction", () => {
@@ -429,7 +421,5 @@ describe("createClient", () => {
     it.todo(
       "https://github.com/sanity-io/client#clientless-patches--transactions"
     );
-
-    it.todo("https://github.com/sanity-io/client#mutation-options");
   });
 });
