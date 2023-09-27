@@ -11,228 +11,190 @@ import { expectType } from "@sanity-typed/test-utils";
 import type { SanityDocument } from "@sanity-typed/types";
 
 import { createClient } from ".";
-import type { RawQueryResponse } from ".";
+import type { RawQueryResponse, SanityClient } from ".";
 
 type AnySanityDocument = Omit<SanityDocument, "_type">;
 
 describe("createClient", () => {
-  describe("clone", () => {
-    it("returns the same type", () => {
-      const exec = () => {
-        const client = createClient<{
-          foo: AnySanityDocument & { _type: "foo" };
-        }>()({});
+  it("adds _originalId to documents when perspective is `previewDrafts`", () => {
+    const exec = () =>
+      createClient<{
+        foo: AnySanityDocument & { _type: "foo" };
+        qux: AnySanityDocument & { _type: "qux" };
+      }>()({
+        perspective: "previewDrafts",
+      });
 
-        return client;
-      };
+    expectType<ReturnType<typeof exec>>().toEqual<
+      SanityClient<
+        {
+          perspective: "previewDrafts";
+        },
+        | (AnySanityDocument & {
+            _originalId: string;
+            _type: "foo";
+          })
+        | (AnySanityDocument & {
+            _originalId: string;
+            _type: "qux";
+          })
+      >
+    >();
+  });
+});
 
-      const execClone = () => {
-        const client = createClient<{
-          foo: AnySanityDocument & { _type: "foo" };
-        }>()({});
+describe("clone", () => {
+  it("returns the same type", () => {
+    const exec = () =>
+      createClient<{
+        foo: AnySanityDocument & { _type: "foo" };
+      }>()({});
 
-        return client.clone();
-      };
+    const execClone = () =>
+      createClient<{
+        foo: AnySanityDocument & { _type: "foo" };
+      }>()({}).clone();
 
-      expectType<ReturnType<typeof execClone>>().toEqual<
-        ReturnType<typeof exec>
-      >();
-    });
+    expectType<ReturnType<typeof execClone>>().toEqual<
+      ReturnType<typeof exec>
+    >();
+  });
+});
+
+describe("config", () => {
+  it("returns the config with more", () => {
+    const exec = () =>
+      createClient()({
+        dataset: "dataset",
+        projectId: "projectId",
+      }).config();
+
+    expectType<ReturnType<typeof exec>>().toStrictEqual<{
+      allowReconfigure?: boolean;
+      apiHost: string;
+      apiVersion: string;
+      cdnUrl: string;
+      dataset: "dataset";
+      fetch?: RequestFetchOptions | boolean;
+      ignoreBrowserTokenWarning?: boolean;
+      isDefaultApi: boolean;
+      maxRetries?: number;
+      perspective?: ClientPerspective;
+      projectId: "projectId";
+      proxy?: string;
+      requestTagPrefix?: string;
+      requester?: Required<ClientConfig>["requester"];
+      resultSourceMap?: boolean;
+      retryDelay?: (attemptNumber: number) => number;
+      timeout?: number;
+      token?: string;
+      url: string;
+      useCdn: boolean;
+      useProjectHostname: boolean;
+      withCredentials?: boolean;
+    }>();
   });
 
-  describe("config", () => {
-    it("returns the config with more", () => {
-      const exec = () => {
-        const client = createClient()({
-          dataset: "dataset",
-          projectId: "projectId",
-        });
+  it("returns the altered type", () => {
+    const exec = () =>
+      createClient<{
+        foo: AnySanityDocument & { _type: "foo" };
+      }>()({
+        dataset: "dataset",
+        projectId: "newProjectId",
+      });
 
-        return client.config();
-      };
+    const execWithConfig = () =>
+      createClient<{
+        foo: AnySanityDocument & { _type: "foo" };
+      }>()({
+        dataset: "dataset",
+        projectId: "projectId",
+      }).config({
+        projectId: "newProjectId",
+      });
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<{
-        allowReconfigure?: boolean;
-        apiHost: string;
-        apiVersion: string;
-        cdnUrl: string;
-        dataset: "dataset";
-        fetch?: RequestFetchOptions | boolean;
-        ignoreBrowserTokenWarning?: boolean;
-        isDefaultApi: boolean;
-        maxRetries?: number;
-        perspective?: ClientPerspective;
-        projectId: "projectId";
-        proxy?: string;
-        requestTagPrefix?: string;
-        requester?: Required<ClientConfig>["requester"];
-        resultSourceMap?: boolean;
-        retryDelay?: (attemptNumber: number) => number;
-        timeout?: number;
-        token?: string;
-        url: string;
-        useCdn: boolean;
-        useProjectHostname: boolean;
-        withCredentials?: boolean;
-      }>();
-    });
+    expectType<ReturnType<typeof execWithConfig>>().toEqual<
+      ReturnType<typeof exec>
+    >();
+  });
+});
 
-    it("returns the altered type", () => {
-      const exec = () => {
-        const client = createClient<{
-          foo: AnySanityDocument & { _type: "foo" };
-        }>()({
-          dataset: "dataset",
-          projectId: "newProjectId",
-        });
+describe("withConfig", () => {
+  it("returns the altered type", () => {
+    const exec = () =>
+      createClient<{
+        foo: AnySanityDocument & { _type: "foo" };
+      }>()({
+        dataset: "dataset",
+        projectId: "newProjectId",
+      });
 
-        return client;
-      };
+    const execWithConfig = () => {
+      const client = createClient<{
+        foo: AnySanityDocument & { _type: "foo" };
+      }>()({
+        dataset: "dataset",
+        projectId: "projectId",
+      });
 
-      const execWithConfig = () => {
-        const client = createClient<{
-          foo: AnySanityDocument & { _type: "foo" };
-        }>()({
-          dataset: "dataset",
-          projectId: "projectId",
-        });
+      return client.withConfig({
+        projectId: "newProjectId",
+      });
+    };
 
-        return client.config({
-          projectId: "newProjectId",
-        });
-      };
+    expectType<ReturnType<typeof execWithConfig>>().toEqual<
+      ReturnType<typeof exec>
+    >();
+  });
+});
 
-      expectType<ReturnType<typeof execWithConfig>>().toEqual<
-        ReturnType<typeof exec>
-      >();
-    });
+describe("fetch", () => {
+  it("returns the groq query result", () => {
+    const exec = () =>
+      createClient<{
+        foo: AnySanityDocument & { _type: "foo" };
+      }>()({}).fetch("*");
+
+    expectType<ReturnType<typeof exec>>().toStrictEqual<
+      Promise<(AnySanityDocument & { _type: "foo" })[]>
+    >();
   });
 
-  describe("withConfig", () => {
-    it("returns the altered type", () => {
-      const exec = () => {
-        const client = createClient<{
-          foo: AnySanityDocument & { _type: "foo" };
-        }>()({
-          dataset: "dataset",
-          projectId: "newProjectId",
-        });
+  it("filters the results to documents", () => {
+    const exec = () =>
+      createClient<{
+        bar: { _type: "bar"; bar: "bar" };
+        foo: AnySanityDocument & { _type: "foo" };
+      }>()({}).fetch("*");
 
-        return client;
-      };
-
-      const execWithConfig = () => {
-        const client = createClient<{
-          foo: AnySanityDocument & { _type: "foo" };
-        }>()({
-          dataset: "dataset",
-          projectId: "projectId",
-        });
-
-        return client.withConfig({
-          projectId: "newProjectId",
-        });
-      };
-
-      expectType<ReturnType<typeof execWithConfig>>().toEqual<
-        ReturnType<typeof exec>
-      >();
-    });
+    expectType<ReturnType<typeof exec>>().toStrictEqual<
+      Promise<(AnySanityDocument & { _type: "foo" })[]>
+    >();
   });
 
-  describe("fetch", () => {
-    it("returns the groq query result", () => {
-      const exec = () => {
-        const client = createClient<{
-          foo: AnySanityDocument & { _type: "foo" };
-        }>()({});
+  it("uses the client in queries", () => {
+    const exec = () =>
+      createClient()({
+        projectId: "projectId",
+      }).fetch("sanity::projectId()");
 
-        return client.fetch("*");
-      };
+    expectType<ReturnType<typeof exec>>().toStrictEqual<Promise<"projectId">>();
+  });
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<(AnySanityDocument & { _type: "foo" })[]>
-      >();
-    });
+  it("uses the params in queries", () => {
+    const exec = () => createClient()({}).fetch("$param", { param: "foo" });
 
-    it("filters the results to documents", () => {
-      const exec = () => {
-        const client = createClient<{
-          bar: { _type: "bar"; bar: "bar" };
-          foo: AnySanityDocument & { _type: "foo" };
-        }>()({});
+    expectType<ReturnType<typeof exec>>().toStrictEqual<Promise<"foo">>();
+  });
 
-        return client.fetch("*");
-      };
+  it("returns RawQueryResponse", () => {
+    const exec = () =>
+      createClient()({}).fetch("5", undefined, { filterResponse: false });
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<(AnySanityDocument & { _type: "foo" })[]>
-      >();
-    });
-
-    it("uses the client in queries", () => {
-      const exec = () => {
-        const client = createClient()({
-          projectId: "projectId",
-        });
-
-        return client.fetch("sanity::projectId()");
-      };
-
-      expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<"projectId">
-      >();
-    });
-
-    it("uses the params in queries", () => {
-      const exec = () => {
-        const client = createClient()({});
-
-        return client.fetch("$param", { param: "foo" });
-      };
-
-      expectType<ReturnType<typeof exec>>().toStrictEqual<Promise<"foo">>();
-    });
-
-    it("returns RawQueryResponse", () => {
-      const exec = () => {
-        const client = createClient()({});
-
-        return client.fetch("5", undefined, { filterResponse: false });
-      };
-
-      expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<RawQueryResponse<5, "5">>
-      >();
-    });
-
-    it("adds _originalId when perspective is `previewDrafts`", () => {
-      const exec = () => {
-        const client = createClient<{
-          foo: AnySanityDocument & { _type: "foo" };
-          qux: AnySanityDocument & { _type: "qux" };
-        }>()({
-          perspective: "previewDrafts",
-        });
-
-        return client.fetch("*", undefined);
-      };
-
-      expectType<ReturnType<typeof exec>>().toEqual<
-        Promise<
-          (
-            | (AnySanityDocument & {
-                _originalId: string;
-                _type: "foo";
-              })
-            | (AnySanityDocument & {
-                _originalId: string;
-                _type: "qux";
-              })
-          )[]
-        >
-      >();
-    });
+    expectType<ReturnType<typeof exec>>().toStrictEqual<
+      Promise<RawQueryResponse<5, "5">>
+    >();
   });
 
   describe("listen", () => {
@@ -241,15 +203,12 @@ describe("createClient", () => {
 
   describe("getDocument", () => {
     it("returns a union of the documents or undefined", () => {
-      const exec = () => {
-        const client = createClient<{
+      const exec = () =>
+        createClient<{
           bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo" };
           qux: AnySanityDocument & { _type: "qux" };
-        }>()({});
-
-        return client.getDocument("id");
-      };
+        }>()({}).getDocument("id");
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Promise<
@@ -269,15 +228,12 @@ describe("createClient", () => {
 
   describe("getDocuments", () => {
     it("returns a tuple of a union of the documents or null", () => {
-      const exec = () => {
-        const client = createClient<{
+      const exec = () =>
+        createClient<{
           bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo" };
           qux: AnySanityDocument & { _type: "qux" };
-        }>()({});
-
-        return client.getDocuments(["id", "id2"]);
-      };
+        }>()({}).getDocuments(["id", "id2"]);
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Promise<
@@ -403,15 +359,12 @@ describe("createClient", () => {
 
   describe("delete", () => {
     it("returns a union of the documents", () => {
-      const exec = () => {
-        const client = createClient<{
+      const exec = () =>
+        createClient<{
           bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo" };
           qux: AnySanityDocument & { _type: "qux" };
-        }>()({});
-
-        return client.delete("id");
-      };
+        }>()({}).delete("id");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<
