@@ -1,3 +1,4 @@
+import { omit } from "lodash/fp";
 import type { UnionToIntersection } from "type-fest";
 
 import type { IntrinsicTypeName } from "@sanity-typed/types";
@@ -51,6 +52,9 @@ export const traverseValidation = <
         Rule({ ...value, min: [...(value.min ?? []), args] }),
       negative: (...args: any[]) =>
         Rule({ ...value, negative: [...(value.negative ?? []), args] }),
+      optional: () =>
+        // Looks like the only rule that actually overwrites another one
+        Rule({ ...omit("required", value) }),
       positive: (...args: any[]) =>
         Rule({ ...value, positive: [...(value.positive ?? []), args] }),
       precision: (...args: any[]) =>
