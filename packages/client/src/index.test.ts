@@ -406,8 +406,6 @@ describe("createClient", () => {
   });
 
   describe("patch", () => {
-    it.todo("https://github.com/sanity-io/client#patchupdate-a-document");
-
     it("returns a union of the documents", () => {
       const exec = () =>
         createClient<{
