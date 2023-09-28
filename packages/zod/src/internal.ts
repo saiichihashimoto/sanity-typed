@@ -87,7 +87,9 @@ const reduceAcc =
   (accumulator: TResult) =>
     reduce(callback, accumulator, collection);
 
-const toZodType = <T>(zod: z.ZodType<T>) => zod as z.ZodType<T>;
+const toZodType = <Output, Input>(
+  zod: z.ZodType<Output, z.ZodTypeDef, Input>
+) => zod as z.ZodType<Output, z.ZodTypeDef, Input>;
 
 const dateZod = <TSchemaType extends SchemaTypeDefinition<"date", string, any>>(
   schemaType: TSchemaType
