@@ -58,6 +58,51 @@ describe("validation", () => {
       >();
     });
 
+    it("removes required() with optional()", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "object",
+                  fields: [
+                    defineField({
+                      name: "bar",
+                      type: "boolean",
+                      validation: (Rule) => Rule.required().optional(),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = [
+        {
+          _key: "key",
+        },
+        {
+          _key: "key",
+          bar: true,
+        },
+      ];
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+    });
+
     it("uses validations in arrays", () => {
       const config = defineConfig({
         dataset: "dataset",

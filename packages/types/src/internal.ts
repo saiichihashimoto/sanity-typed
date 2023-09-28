@@ -108,6 +108,7 @@ type WithRequired<
       : Rule[key];
   },
   {
+    optional: () => WithRequired<false, Rule>;
     required: () => WithRequired<true, Rule>;
     [required]: TRequired;
     warning: () => WithRequired<false, Rule>;

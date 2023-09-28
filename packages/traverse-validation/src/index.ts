@@ -18,7 +18,7 @@ type SchemaTypeDefinition<TType extends string> =
 type ArgsObject = {
   [key in keyof UnionToIntersection<
     GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
-  >]?: any[];
+  >]?: any[][];
 };
 
 export const traverseValidation = <
@@ -32,52 +32,43 @@ export const traverseValidation = <
       value,
       error: () => rule,
       warning: () => Rule({}),
-      custom: (...args: any[]) => Rule({ ...value, custom: args }),
-      email: (...args: any[]) => Rule({ ...value, email: args }),
-      greaterThan: (...args: any[]) => Rule({ ...value, greaterThan: args }),
-      lessThan: (...args: any[]) => Rule({ ...value, lessThan: args }),
-      regex: (...args: any[]) => Rule({ ...value, regex: args }),
-      required: (...args: any[]) => Rule({ ...value, required: args }),
-      unique: (...args: any[]) => Rule({ ...value, unique: args }),
-      uri: (...args: any[]) => Rule({ ...value, uri: args }),
+      custom: (...args: any[]) =>
+        Rule({ ...value, custom: [...(value.custom ?? []), args] }),
+      email: (...args: any[]) =>
+        Rule({ ...value, email: [...(value.email ?? []), args] }),
+      greaterThan: (...args: any[]) =>
+        Rule({ ...value, greaterThan: [...(value.greaterThan ?? []), args] }),
       integer: (...args: any[]) =>
-        Rule({
-          ...omit(["precision"], value),
-          integer: args,
-        }),
-      precision: (...args: any[]) =>
-        Rule({
-          ...omit(["integer"], value),
-          precision: args,
-        }),
-      max: (...args: any[]) => Rule({ ...value, max: args }),
-      min: (...args: any[]) => Rule({ ...value, min: args }),
+        Rule({ ...value, integer: [...(value.integer ?? []), args] }),
       length: (...args: any[]) =>
-        Rule({
-          ...value,
-          min: args,
-          max: args,
-        }),
+        Rule({ ...value, length: [...(value.length ?? []), args] }),
+      lessThan: (...args: any[]) =>
+        Rule({ ...value, lessThan: [...(value.lessThan ?? []), args] }),
       lowercase: (...args: any[]) =>
-        Rule({
-          ...omit(["uppercase"], value),
-          lowercase: args,
-        }),
-      uppercase: (...args: any[]) =>
-        Rule({
-          ...omit(["lowercase"], value),
-          uppercase: args,
-        }),
+        Rule({ ...value, lowercase: [...(value.lowercase ?? []), args] }),
+      max: (...args: any[]) =>
+        Rule({ ...value, max: [...(value.max ?? []), args] }),
+      min: (...args: any[]) =>
+        Rule({ ...value, min: [...(value.min ?? []), args] }),
       negative: (...args: any[]) =>
-        Rule({
-          ...omit(["positive"], value),
-          negative: args,
-        }),
+        Rule({ ...value, negative: [...(value.negative ?? []), args] }),
+      optional: () =>
+        // Looks like the only rule that actually overwrites another one
+        Rule({ ...omit("required", value) }),
       positive: (...args: any[]) =>
-        Rule({
-          ...omit(["negative"], value),
-          positive: args,
-        }),
+        Rule({ ...value, positive: [...(value.positive ?? []), args] }),
+      precision: (...args: any[]) =>
+        Rule({ ...value, precision: [...(value.precision ?? []), args] }),
+      regex: (...args: any[]) =>
+        Rule({ ...value, regex: [...(value.regex ?? []), args] }),
+      required: (...args: any[]) =>
+        Rule({ ...value, required: [...(value.required ?? []), args] }),
+      unique: (...args: any[]) =>
+        Rule({ ...value, unique: [...(value.unique ?? []), args] }),
+      uppercase: (...args: any[]) =>
+        Rule({ ...value, uppercase: [...(value.uppercase ?? []), args] }),
+      uri: (...args: any[]) =>
+        Rule({ ...value, uri: [...(value.uri ?? []), args] }),
       valueOfField: () => ({
         // TODO https://github.com/saiichihashimoto/sanity-typed/issues/336
         path: "",
@@ -105,9 +96,15 @@ export const traverseValidation = <
       >
     | undefined;
 
-  return !rule
-    ? {}
-    : (Array.isArray(rule) ? rule : [rule])
-        .map(({ value }) => value)
-        .reduce((acc, current) => ({ ...acc, ...current }));
+  return (
+    !rule
+      ? {}
+      : (Array.isArray(rule) ? rule : [rule])
+          .map(({ value }) => value)
+          .reduce((acc, current) => ({ ...acc, ...current }))
+  ) as {
+    [key in keyof UnionToIntersection<
+      GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
+    >]?: Parameters<GetOriginalRule<TSchemaType>[key]>[];
+  };
 };
