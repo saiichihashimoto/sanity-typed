@@ -103,8 +103,8 @@ export const traverseValidation = <
           .map(({ value }) => value)
           .reduce((acc, current) => ({ ...acc, ...current }))
   ) as {
-    [key in keyof UnionToIntersection<
-      GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
-    >]?: Parameters<GetOriginalRule<TSchemaType>[key]>[];
+    [key in keyof GetOriginalRule<TSchemaType>]?: Parameters<
+      GetOriginalRule<TSchemaType>[key]
+    >[];
   };
 };

@@ -323,6 +323,7 @@ export type UrlDefinition<TRequired extends boolean> = MergeOld<
   UrlDefinitionNative,
   DefinitionBase<TRequired, string, UrlRule>
 >;
+
 type InferRawValue<Def extends DefinitionBase<any, any, any>> =
   Def extends DefinitionBase<any, infer Value, any> ? Value : never;
 
