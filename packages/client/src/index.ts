@@ -1,4 +1,7 @@
-import { createClient as createClientNative } from "@sanity/client";
+import {
+  Patch as PatchNative,
+  createClient as createClientNative,
+} from "@sanity/client";
 import type {
   BaseMutationOptions,
   ClientConfig,
@@ -7,10 +10,11 @@ import type {
   ListenEvent as ListenEventNative,
   ListenOptions,
   MultipleMutationResult,
+  Mutation,
   MutationEvent as MutationEventNative,
   MutationSelection,
   ObservableSanityClient as ObservableSanityClientNative,
-  Patch as PatchNative,
+  PatchMutationOperation,
   PatchOperations,
   PatchSelection,
   QueryParams,
@@ -18,6 +22,7 @@ import type {
   SanityAssetDocument,
   SanityClient as SanityClientNative,
   SingleMutationResult,
+  Transaction,
   UnfilteredResponseQueryOptions,
 } from "@sanity/client";
 import type { Observable } from "rxjs";
@@ -35,110 +40,138 @@ type PromiseOrObservable<
   T
 > = TIsPromise extends true ? Promise<T> : Observable<T>;
 
-type Patch<
+type MutationOptions = BaseMutationOptions & {
+  returnDocuments?: boolean;
+  returnFirst?: boolean;
+};
+
+type MutationResult<
+  Value,
+  TOptions extends MutationOptions | undefined
+> = TOptions extends { returnDocuments: false; returnFirst: false }
+  ? MultipleMutationResult
+  : TOptions extends { returnFirst: false }
+  ? Value[]
+  : TOptions extends { returnDocuments: false }
+  ? SingleMutationResult
+  : Value;
+
+export type PatchType<
   TDocument extends AnySanityDocument,
   TOriginalDocument extends AnySanityDocument,
-  TIsPromise extends boolean
-> = Omit<
-  PatchNative,
-  | "append"
-  | "clone"
-  | "commit"
-  | "dec"
-  | "diffMatchPatch"
-  | "ifRevisionId"
-  | "inc"
-  | "insert"
-  | "prepend"
-  | "reset"
-  | "set"
-  | "setIfMissing"
-  | "splice"
-  | "unset"
-> & {
+  TIsPromise extends boolean,
+  /**
+   * If TIsScoped extends true, TDocument is a union of types that we're removing from
+   * If TIsScoped extends true, TDocument is AnySanityDocument that we're adding to
+   */
+  TIsScoped extends boolean
+> = {
   append: (
     ...args: Parameters<PatchNative["append"]>
-  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
   clone: (
     ...args: Parameters<PatchNative["clone"]>
-  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
-  commit: <
-    const TOptions extends
-      | (BaseMutationOptions & {
-          returnDocuments?: boolean;
-          returnFirst?: boolean;
-        })
-      | undefined = undefined
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  commit: TIsScoped extends false
+    ? never
+    : <const TOptions extends MutationOptions | undefined = undefined>(
+        options?: TOptions
+      ) => PromiseOrObservable<TIsPromise, MutationResult<TDocument, TOptions>>;
+  dec: <
+    TAttrs extends TIsScoped extends true
+      ? Partial<TDocument & { [key: string]: number }>
+      : any
   >(
-    options?: TOptions
-  ) => PromiseOrObservable<
-    TIsPromise,
-    TOptions extends { returnDocuments: false; returnFirst: false }
-      ? MultipleMutationResult
-      : TOptions extends { returnFirst: false }
-      ? TDocument[]
-      : TOptions extends { returnDocuments: false }
-      ? SingleMutationResult
-      : TDocument
-  >;
-  dec: <TAttrs extends Partial<TDocument & { [key: string]: number }>>(
     attrs: TAttrs
-  ) => Patch<
-    Extract<TDocument, Partial<TAttrs>>,
+  ) => PatchType<
+    TIsScoped extends true
+      ? Extract<TDocument, Partial<TAttrs>>
+      : TAttrs & TDocument,
     TOriginalDocument,
-    TIsPromise
+    TIsPromise,
+    TIsScoped
   >;
   diffMatchPatch: (
     ...args: Parameters<PatchNative["diffMatchPatch"]>
-  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
   ifRevisionId: (
     ...args: Parameters<PatchNative["ifRevisionId"]>
-  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
-  inc: <TAttrs extends Partial<TDocument & { [key: string]: number }>>(
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  inc: <
+    TAttrs extends TIsScoped extends true
+      ? Partial<TDocument & { [key: string]: number }>
+      : any
+  >(
     attrs: TAttrs
-  ) => Patch<
-    Extract<TDocument, Partial<TAttrs>>,
+  ) => PatchType<
+    TIsScoped extends true
+      ? Extract<TDocument, Partial<TAttrs>>
+      : TAttrs & TDocument,
     TOriginalDocument,
-    TIsPromise
+    TIsPromise,
+    TIsScoped
   >;
   insert: (
     ...args: Parameters<PatchNative["insert"]>
-  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
   prepend: (
     ...args: Parameters<PatchNative["prepend"]>
-  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
   reset: (
     ...args: Parameters<PatchNative["reset"]>
-  ) => Patch<TOriginalDocument, TOriginalDocument, TIsPromise>;
-  set: <TAttrs extends Partial<TDocument>>(
+  ) => PatchType<TOriginalDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  serialize: () => PatchMutationOperation;
+  set: <TAttrs extends TIsScoped extends true ? Partial<TDocument> : any>(
     attrs: TAttrs
-  ) => Patch<
-    Extract<TDocument, Partial<TAttrs>>,
+  ) => PatchType<
+    TIsScoped extends true
+      ? Extract<TDocument, Partial<TAttrs>>
+      : TAttrs & TDocument,
     TOriginalDocument,
-    TIsPromise
+    TIsPromise,
+    TIsScoped
   >;
-  setIfMissing: <TAttrs extends Partial<TDocument>>(
+  setIfMissing: <
+    TAttrs extends TIsScoped extends true ? Partial<TDocument> : any
+  >(
     attrs: TAttrs
-  ) => Patch<
-    Extract<TDocument, Partial<TAttrs>>,
+  ) => PatchType<
+    TIsScoped extends true
+      ? Extract<TDocument, Partial<TAttrs>>
+      : TAttrs & TDocument,
     TOriginalDocument,
-    TIsPromise
+    TIsPromise,
+    TIsScoped
   >;
   splice: (
     ...args: Parameters<PatchNative["splice"]>
-  ) => Patch<TDocument, TOriginalDocument, TIsPromise>;
-  unset: <TAttrs extends TDocument extends never ? never : (keyof TDocument)[]>(
-    attrs: TAttrs
-  ) => Patch<
-    TDocument extends never
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  toJSON: () => PatchMutationOperation;
+  unset: <
+    TAttrs extends TDocument extends never
       ? never
-      : TAttrs[number] extends keyof TDocument
-      ? TDocument
-      : never,
+      : TIsScoped extends true
+      ? (keyof TDocument)[]
+      : string[]
+  >(
+    attrs: TAttrs
+  ) => PatchType<
+    TIsScoped extends true
+      ? TDocument extends never
+        ? never
+        : TAttrs[number] extends keyof TDocument
+        ? TDocument
+        : never
+      : TDocument & { [key in TAttrs[number]]: any },
     TOriginalDocument,
-    TIsPromise
+    TIsPromise,
+    TIsScoped
   >;
 };
+
+export const Patch = PatchNative as unknown as new (
+  ...args: ConstructorParameters<typeof PatchNative>
+) => PatchType<AnySanityDocument, AnySanityDocument, any, false>;
 
 export type InitializedClientConfig<TClientConfig extends ClientConfig> = Merge<
   InitializedClientConfigNative,
@@ -195,6 +228,7 @@ type OverrideSanityClient<
   | "fetch"
   | "getDocument"
   | "getDocuments"
+  | "mutate"
   | "observable"
   | "patch"
   | "withConfig"
@@ -222,90 +256,44 @@ type OverrideSanityClient<
       SetOptional<TDocument, "_id">,
       "_createdAt" | "_rev" | "_updatedAt"
     > & { _type: string },
-    const TOptions extends
-      | (BaseMutationOptions & {
-          returnDocuments?: boolean;
-          returnFirst?: boolean;
-        })
-      | undefined = undefined
+    const TOptions extends MutationOptions | undefined = undefined
   >(
     document: Doc,
     options?: TOptions
   ) => PromiseOrObservable<
     TIsPromise,
-    TOptions extends { returnDocuments: false; returnFirst: false }
-      ? MultipleMutationResult
-      : TOptions extends { returnFirst: false }
-      ? Extract<TDocument, { _type: Doc["_type"] }>[]
-      : TOptions extends { returnDocuments: false }
-      ? SingleMutationResult
-      : Extract<TDocument, { _type: Doc["_type"] }>
+    MutationResult<Extract<TDocument, { _type: Doc["_type"] }>, TOptions>
   >;
   createIfNotExists: <
     const Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
       _type: string;
     },
-    const TOptions extends
-      | (BaseMutationOptions & {
-          returnDocuments?: boolean;
-          returnFirst?: boolean;
-        })
-      | undefined = undefined
+    const TOptions extends MutationOptions | undefined = undefined
   >(
     document: Doc,
     options?: TOptions
   ) => PromiseOrObservable<
     TIsPromise,
-    TOptions extends { returnDocuments: false; returnFirst: false }
-      ? MultipleMutationResult
-      : TOptions extends { returnFirst: false }
-      ? Extract<TDocument, { _type: Doc["_type"] }>[]
-      : TOptions extends { returnDocuments: false }
-      ? SingleMutationResult
-      : Extract<TDocument, { _type: Doc["_type"] }>
+    MutationResult<Extract<TDocument, { _type: Doc["_type"] }>, TOptions>
   >;
   createOrReplace: <
     const Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
       _type: string;
     },
-    const TOptions extends
-      | (BaseMutationOptions & {
-          returnDocuments?: boolean;
-          returnFirst?: boolean;
-        })
-      | undefined = undefined
+    const TOptions extends MutationOptions | undefined = undefined
   >(
     document: Doc,
     options?: TOptions
   ) => PromiseOrObservable<
     TIsPromise,
-    TOptions extends { returnDocuments: false; returnFirst: false }
-      ? MultipleMutationResult
-      : TOptions extends { returnFirst: false }
-      ? Extract<TDocument, { _type: Doc["_type"] }>[]
-      : TOptions extends { returnDocuments: false }
-      ? SingleMutationResult
-      : Extract<TDocument, { _type: Doc["_type"] }>
+    MutationResult<Extract<TDocument, { _type: Doc["_type"] }>, TOptions>
   >;
-  delete: <
-    const TOptions extends
-      | (BaseMutationOptions & {
-          returnDocuments?: boolean;
-          returnFirst?: boolean;
-        })
-      | undefined = undefined
-  >(
+  delete: <const TOptions extends MutationOptions | undefined = undefined>(
     idOrSelection: MutationSelection | string,
     options?: TOptions
   ) => PromiseOrObservable<
     TIsPromise,
-    TOptions extends { returnDocuments: false; returnFirst: false }
-      ? MultipleMutationResult
-      : TOptions extends { returnFirst: false }
-      ? (SanityAssetDocument | TDocument)[]
-      : TOptions extends { returnDocuments: false }
-      ? SingleMutationResult
-      : SanityAssetDocument | TDocument
+    MutationResult<SanityAssetDocument | TDocument, TOptions>
   >;
   fetch: <
     const TQuery extends string,
@@ -385,13 +373,29 @@ type OverrideSanityClient<
             : never
         >
   >;
+  mutate: <
+    const Doc extends AnySanityDocument,
+    const TOptions extends MutationOptions | undefined = undefined
+  >(
+    operations:
+      | Mutation<Doc>[]
+      | PatchType<Doc, AnySanityDocument, TIsPromise, false>
+      | Transaction,
+    options?: TOptions
+  ) => PromiseOrObservable<
+    TIsPromise,
+    MutationResult<
+      Extract<TDocument, Partial<Omit<Doc, keyof AnySanityDocument>>>,
+      TOptions
+    >
+  >;
   observable: // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
   ObservableSanityClient<TClientConfig, TDocument>;
   patch: (
     idOrSelection: PatchSelection,
     // TODO PatchOperations should filter like Patch fns do
     options?: PatchOperations
-  ) => Patch<TDocument, TDocument, TIsPromise>;
+  ) => PatchType<TDocument, TDocument, TIsPromise, true>;
   withConfig: <const NewConfig extends Partial<ClientConfig>>(
     newConfig?: NewConfig
   ) => OverrideSanityClient<

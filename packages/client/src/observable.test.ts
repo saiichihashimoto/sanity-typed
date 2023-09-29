@@ -11,7 +11,7 @@ import type { SetOptional } from "type-fest";
 import { expectType } from "@sanity-typed/test-utils";
 import type { SanityDocument } from "@sanity-typed/types";
 
-import { createClient } from ".";
+import { Patch, createClient } from ".";
 import type {
   ListenEvent,
   MutationEvent,
@@ -109,18 +109,15 @@ describe("createClient", () => {
           projectId: "newProjectId",
         }).observable;
 
-      const execWithConfig = () => {
-        const client = createClient<{
+      const execWithConfig = () =>
+        createClient<{
           foo: AnySanityDocument & { _type: "foo" };
         }>()({
           dataset: "dataset",
           projectId: "projectId",
-        }).observable;
-
-        return client.config({
+        }).observable.config({
           projectId: "newProjectId",
         });
-      };
 
       expectType<ReturnType<typeof execWithConfig>>().toEqual<
         ReturnType<typeof exec>
@@ -144,7 +141,7 @@ describe("createClient", () => {
         }>()({
           dataset: "dataset",
           projectId: "projectId",
-        }).observable.config({
+        }).observable.withConfig({
           projectId: "newProjectId",
         });
 
@@ -213,7 +210,7 @@ describe("createClient", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo" };
-        }>()({}).listen("*");
+        }>()({}).observable.listen("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<MutationEvent<AnySanityDocument & { _type: "foo" }>>
@@ -224,7 +221,7 @@ describe("createClient", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo" };
-        }>()({}).listen("*", {}, {});
+        }>()({}).observable.listen("*", {}, {});
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<ListenEvent<AnySanityDocument & { _type: "foo" }>>
@@ -236,7 +233,6 @@ describe("createClient", () => {
     it("returns a union of the documents or undefined", () => {
       const exec = () =>
         createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo" };
           qux: AnySanityDocument & { _type: "qux" };
         }>()({}).observable.getDocument("id");
@@ -261,7 +257,6 @@ describe("createClient", () => {
     it("returns a tuple of a union of the documents or null", () => {
       const exec = () =>
         createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo" };
           qux: AnySanityDocument & { _type: "qux" };
         }>()({}).observable.getDocuments(["id", "id2"]);
@@ -301,7 +296,6 @@ describe("createClient", () => {
     it("requires a document without _ fields (optional _id) and returns the document", () => {
       const exec = () => {
         const client = createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo" };
           qux: AnySanityDocument & { _type: "qux" };
         }>()({}).observable;
@@ -330,7 +324,6 @@ describe("createClient", () => {
     it("requires a document without _ fields (required _id) and returns the document", () => {
       const exec = () => {
         const client = createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo" };
           qux: AnySanityDocument & { _type: "qux" };
         }>()({}).observable;
@@ -356,7 +349,6 @@ describe("createClient", () => {
     it("requires a document without _ fields (required _id) and returns the document", () => {
       const exec = () => {
         const client = createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo" };
           qux: AnySanityDocument & { _type: "qux" };
         }>()({}).observable;
@@ -382,7 +374,6 @@ describe("createClient", () => {
     it("returns a union of the documents and an asset document", () => {
       const exec = () =>
         createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo" };
           qux: AnySanityDocument & { _type: "qux" };
         }>()({}).observable.delete("id");
@@ -411,7 +402,6 @@ describe("createClient", () => {
     it("returns a union of the documents", () => {
       const exec = () =>
         createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>()({})
@@ -429,7 +419,6 @@ describe("createClient", () => {
     it("filters the union to set attrs", () => {
       const exec = () =>
         createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>()({})
@@ -445,7 +434,6 @@ describe("createClient", () => {
     it("filters the union to setIfMissing attrs", () => {
       const exec = () =>
         createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>()({})
@@ -463,7 +451,6 @@ describe("createClient", () => {
     it("filters the union to unset keys", () => {
       const exec = () =>
         createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>()({})
@@ -479,7 +466,6 @@ describe("createClient", () => {
     it("filters the union to inc attrs", () => {
       const exec = () =>
         createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo"; foo: number };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>()({})
@@ -495,7 +481,6 @@ describe("createClient", () => {
     it("filters the union to dec attrs", () => {
       const exec = () =>
         createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo"; foo: number };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>()({})
@@ -519,7 +504,6 @@ describe("createClient", () => {
     it("returns original documents after reset", () => {
       const exec = () =>
         createClient<{
-          bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>()({})
@@ -536,6 +520,8 @@ describe("createClient", () => {
       >();
     });
 
+    it.todo("pre-applies PatchOperations");
+
     it.todo("try all of them with deep and JSON Paths");
   });
 
@@ -543,11 +529,40 @@ describe("createClient", () => {
     it.todo(
       "https://github.com/sanity-io/client#multiple-mutations-in-a-transaction"
     );
+
+    it.todo("each mutation");
   });
 
   describe("mutate", () => {
-    it.todo(
-      "https://github.com/sanity-io/client#clientless-patches--transactions"
-    );
+    it("returns a union of the documents", () => {
+      const exec = () =>
+        createClient<{
+          foo: AnySanityDocument & { _type: "foo"; foo: string };
+          qux: AnySanityDocument & { _type: "qux"; qux: number };
+        }>()({}).observable.mutate([{ delete: { id: "id" } }]);
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Observable<
+          | (AnySanityDocument & { _type: "foo"; foo: string })
+          | (AnySanityDocument & { _type: "qux"; qux: number })
+        >
+      >();
+    });
+
+    it.todo("filters to mutation results");
+
+    it("filters to Patch result", () => {
+      const exec = () =>
+        createClient<{
+          foo: AnySanityDocument & { _type: "foo"; foo: string };
+          qux: AnySanityDocument & { _type: "qux"; qux: number };
+        }>()({}).observable.mutate(new Patch("id").set({ foo: "foo" }));
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        Observable<AnySanityDocument & { _type: "foo"; foo: string }>
+      >();
+    });
+
+    it.todo("allows Transaction as arg");
   });
 });
