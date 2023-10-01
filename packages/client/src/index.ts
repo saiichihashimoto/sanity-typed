@@ -16,7 +16,7 @@ import type {
   MutationSelection,
   ObservableSanityClient as ObservableSanityClientNative,
   PatchMutationOperation,
-  PatchOperations,
+  PatchOperations as PatchOperationsNative,
   PatchSelection,
   QueryParams,
   RawQueryResponse as RawQueryResponseNative,
@@ -83,7 +83,7 @@ export type PatchType<
       ) => PromiseOrObservable<TIsPromise, MutationResult<TDocument, TOptions>>;
   dec: <
     TAttrs extends TIsScoped extends true
-      ? Partial<TDocument & { [key: string]: number }>
+      ? Partial<TDocument> & { [key: string]: number }
       : any
   >(
     attrs: TAttrs
@@ -97,7 +97,7 @@ export type PatchType<
   >;
   diffMatchPatch: <
     TAttrs extends TIsScoped extends true
-      ? Partial<TDocument & { [key: string]: string }>
+      ? Partial<TDocument> & { [key: string]: string }
       : any
   >(
     attrs: TAttrs
@@ -114,7 +114,7 @@ export type PatchType<
   ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
   inc: <
     TAttrs extends TIsScoped extends true
-      ? Partial<TDocument & { [key: string]: number }>
+      ? Partial<TDocument> & { [key: string]: number }
       : any
   >(
     attrs: TAttrs
@@ -163,30 +163,47 @@ export type PatchType<
   ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
   toJSON: () => PatchMutationOperation;
   unset: <
-    TAttrs extends TDocument extends never
+    TKeys extends TDocument extends never
       ? never
       : TIsScoped extends true
       ? (keyof TDocument)[]
       : string[]
   >(
-    attrs: TAttrs
+    keys: TKeys
   ) => PatchType<
     TIsScoped extends true
       ? TDocument extends never
         ? never
-        : TAttrs[number] extends keyof TDocument
+        : TKeys[number] extends keyof TDocument
         ? TDocument
         : never
-      : TDocument & { [key in TAttrs[number]]: any },
+      : TDocument & { [key in TKeys[number]]: any },
     TOriginalDocument,
     TIsPromise,
     TIsScoped
   >;
 };
 
-export const Patch = PatchNative as unknown as new (
-  ...args: ConstructorParameters<typeof PatchNative>
-) => PatchType<AnySanityDocument, AnySanityDocument, any, false>;
+export type PatchOperations<
+  TDocument extends AnySanityDocument,
+  TAttrs extends Partial<TDocument>,
+  TKeys extends TDocument extends never ? never : (keyof TDocument)[]
+> = Omit<PatchOperationsNative, "set"> & {
+  dec?: TAttrs & { [key: string]: number };
+  diffMatchPatch?: TAttrs & { [key: string]: string };
+  inc?: TAttrs & { [key: string]: number };
+  set?: TAttrs;
+  setIfMissing?: TAttrs;
+  unset?: TKeys;
+};
+
+export const Patch = PatchNative as unknown as new <
+  Doc extends AnySanityDocument
+>(
+  selection: PatchSelection,
+  operations?: PatchOperationsNative,
+  client?: SanityClient<any, Doc>
+) => PatchType<Doc, Doc, any, false>;
 
 export type TransactionType<
   TDocuments extends AnySanityDocument[],
@@ -286,7 +303,7 @@ export type TransactionType<
       | [
           documentId: string,
           patchOps?:
-            | PatchOperations
+            | PatchOperationsNative
             | ((
                 patch: PatchType<
                   TOriginalDocument,
@@ -531,11 +548,25 @@ type OverrideSanityClient<
   >;
   observable: // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
   ObservableSanityClient<TClientConfig, TDocument>;
-  patch: (
+  patch: <
+    TAttrs extends Partial<TDocument>,
+    TKeys extends TDocument extends never ? never : (keyof TDocument)[]
+  >(
     idOrSelection: PatchSelection,
-    // TODO PatchOperations should filter like Patch fns do
-    options?: PatchOperations
-  ) => PatchType<TDocument, TDocument, TIsPromise, true>;
+    operations?: PatchOperations<TDocument, TAttrs, TKeys>
+  ) => PatchType<
+    Extract<TDocument, Partial<TAttrs>> &
+      (TDocument extends never
+        ? never
+        : TKeys extends never
+        ? never
+        : TKeys[number] extends keyof TDocument
+        ? TDocument
+        : never),
+    TDocument,
+    TIsPromise,
+    true
+  >;
   transaction: (
     operations?: Mutation<any>[]
   ) => TransactionType<[], TDocument, TIsPromise, true>;
