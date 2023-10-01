@@ -11,8 +11,8 @@ import type {
   ListenEvent as ListenEventNative,
   ListenOptions,
   MultipleMutationResult,
-  Mutation,
   MutationEvent as MutationEventNative,
+  Mutation as MutationNative,
   MutationSelection,
   ObservableSanityClient as ObservableSanityClientNative,
   PatchMutationOperation,
@@ -325,6 +325,35 @@ export type TransactionType<
   ) => TransactionType<[], TOriginalDocument, TIsPromise, TIsScoped>;
 };
 
+export type Mutation<
+  TDocument extends AnySanityDocument,
+  Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+    _type: string;
+  }
+> =
+  | Exclude<
+      MutationNative,
+      { create: any } | { createIfNotExists: any } | { createOrReplace: any }
+    >
+  | { create: SetOptional<Doc & { _id: string }, "_id"> }
+  | { createIfNotExists: Doc & { _id: string } }
+  | { createOrReplace: Doc & { _id: string } };
+
+type MutationDoc<
+  TDocument extends AnySanityDocument,
+  TMutation extends Mutation<any, any>
+> = TMutation extends {
+  create: infer Doc;
+}
+  ? Extract<TDocument, Doc>
+  : TMutation extends { createOrReplace: infer Doc }
+  ? Extract<TDocument, Doc>
+  : TMutation extends { createIfNotExists: infer Doc }
+  ? Extract<TDocument, Doc>
+  : TMutation extends { delete: any }
+  ? SanityAssetDocument | TDocument
+  : never;
+
 export const Transaction = TransactionNative as unknown as new (
   ...args: ConstructorParameters<typeof TransactionNative>
 ) => TransactionType<[], AnySanityDocument, any, false>;
@@ -535,7 +564,7 @@ type OverrideSanityClient<
     const TOptions extends MutationOptions = BaseMutationOptions
   >(
     operations:
-      | Mutation<Doc>[]
+      | MutationNative<Doc>[]
       | PatchType<Doc, AnySanityDocument, TIsPromise, false>
       | TransactionType<[Doc, ...any[]], AnySanityDocument, TIsPromise, false>,
     options?: TOptions
@@ -567,9 +596,21 @@ type OverrideSanityClient<
     TIsPromise,
     true
   >;
-  transaction: (
-    operations?: Mutation<any>[]
-  ) => TransactionType<[], TDocument, TIsPromise, true>;
+  transaction: <
+    TMutations extends Mutation<
+      TDocument,
+      Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & { _type: string }
+    >[] = []
+  >(
+    operations?: TMutations
+  ) => TransactionType<
+    {
+      [index in keyof TMutations]: MutationDoc<TDocument, TMutations[index]>;
+    },
+    TDocument,
+    TIsPromise,
+    true
+  >;
   withConfig: <const NewConfig extends Partial<ClientConfig>>(
     newConfig?: NewConfig
   ) => OverrideSanityClient<
