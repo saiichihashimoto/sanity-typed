@@ -1,5 +1,6 @@
 import {
   Patch as PatchNative,
+  Transaction as TransactionNative,
   createClient as createClientNative,
 } from "@sanity/client";
 import type {
@@ -22,7 +23,6 @@ import type {
   SanityAssetDocument,
   SanityClient as SanityClientNative,
   SingleMutationResult,
-  Transaction,
   UnfilteredResponseQueryOptions,
 } from "@sanity/client";
 import type { Observable } from "rxjs";
@@ -33,7 +33,7 @@ import type { SanityDocument } from "@sanity-typed/types";
 
 declare const README: unique symbol;
 
-type AnySanityDocument = Omit<SanityDocument, "_type"> & { _type: string };
+type AnySanityDocument = Merge<SanityDocument, { _type: string }>;
 
 type PromiseOrObservable<
   TIsPromise extends boolean,
@@ -51,9 +51,13 @@ type MutationResult<
 > = TOptions extends { returnDocuments: false; returnFirst: false }
   ? MultipleMutationResult
   : TOptions extends { returnFirst: false }
-  ? Value[]
+  ? Value extends any[]
+    ? Value
+    : Value[]
   : TOptions extends { returnDocuments: false }
   ? SingleMutationResult
+  : Value extends any[]
+  ? Value[0]
   : Value;
 
 export type PatchType<
@@ -74,7 +78,7 @@ export type PatchType<
   ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
   commit: TIsScoped extends false
     ? never
-    : <const TOptions extends MutationOptions | undefined = undefined>(
+    : <const TOptions extends MutationOptions = BaseMutationOptions>(
         options?: TOptions
       ) => PromiseOrObservable<TIsPromise, MutationResult<TDocument, TOptions>>;
   dec: <
@@ -91,9 +95,20 @@ export type PatchType<
     TIsPromise,
     TIsScoped
   >;
-  diffMatchPatch: (
-    ...args: Parameters<PatchNative["diffMatchPatch"]>
-  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  diffMatchPatch: <
+    TAttrs extends TIsScoped extends true
+      ? Partial<TDocument & { [key: string]: string }>
+      : any
+  >(
+    attrs: TAttrs
+  ) => PatchType<
+    TIsScoped extends true
+      ? Extract<TDocument, Partial<TAttrs>>
+      : TAttrs & TDocument,
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
   ifRevisionId: (
     ...args: Parameters<PatchNative["ifRevisionId"]>
   ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
@@ -173,18 +188,142 @@ export const Patch = PatchNative as unknown as new (
   ...args: ConstructorParameters<typeof PatchNative>
 ) => PatchType<AnySanityDocument, AnySanityDocument, any, false>;
 
+export type TransactionType<
+  TDocuments extends AnySanityDocument[],
+  TOriginalDocument extends AnySanityDocument,
+  TIsPromise extends boolean,
+  /**
+   * If TIsScoped extends true, TDocument is a union of types that we're removing from
+   * If TIsScoped extends true, TDocument is AnySanityDocument that we're adding to
+   */
+  TIsScoped extends boolean
+> = Omit<
+  TransactionNative,
+  | "commit"
+  | "create"
+  | "createIfNotExists"
+  | "createOrReplace"
+  | "delete"
+  | "patch"
+  | "reset"
+> & {
+  commit: TIsScoped extends false
+    ? never
+    : <const TOptions extends MutationOptions = BaseMutationOptions>(
+        options?: TOptions
+      ) => PromiseOrObservable<
+        TIsPromise,
+        MutationResult<TDocuments, TOptions>
+      >;
+  create: <
+    Doc extends Omit<
+      SetOptional<TOriginalDocument, "_id">,
+      "_createdAt" | "_rev" | "_updatedAt"
+    > & { _type: string }
+  >(
+    document: Doc
+  ) => TransactionType<
+    [
+      ...TDocuments,
+      TIsScoped extends true
+        ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
+        : Doc & TOriginalDocument
+    ],
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  createIfNotExists: <
+    Doc extends Omit<
+      TOriginalDocument,
+      "_createdAt" | "_rev" | "_updatedAt"
+    > & {
+      _type: string;
+    }
+  >(
+    document: Doc
+  ) => TransactionType<
+    [
+      ...TDocuments,
+      TIsScoped extends true
+        ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
+        : Doc & TOriginalDocument
+    ],
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  createOrReplace: <
+    Doc extends Omit<
+      TOriginalDocument,
+      "_createdAt" | "_rev" | "_updatedAt"
+    > & {
+      _type: string;
+    }
+  >(
+    document: Doc
+  ) => TransactionType<
+    [
+      ...TDocuments,
+      TIsScoped extends true
+        ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
+        : Doc & TOriginalDocument
+    ],
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  delete: (
+    idOrSelection: MutationSelection | string
+  ) => TransactionType<
+    [...TDocuments, SanityAssetDocument | TOriginalDocument],
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  patch: <Doc extends TOriginalDocument>(
+    ...args:
+      | [
+          documentId: string,
+          patchOps?:
+            | PatchOperations
+            | ((
+                patch: PatchType<
+                  TOriginalDocument,
+                  TOriginalDocument,
+                  TIsPromise,
+                  TIsScoped
+                >
+              ) => PatchType<Doc, TOriginalDocument, TIsPromise, TIsScoped>)
+        ]
+      | [patch: PatchType<Doc, TOriginalDocument, TIsPromise, TIsScoped>]
+  ) => TransactionType<
+    [...TDocuments, Doc],
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  reset: (
+    ...args: Parameters<TransactionNative["reset"]>
+  ) => TransactionType<[], TOriginalDocument, TIsPromise, TIsScoped>;
+};
+
+export const Transaction = TransactionNative as unknown as new (
+  ...args: ConstructorParameters<typeof TransactionNative>
+) => TransactionType<[], AnySanityDocument, any, false>;
+
 export type InitializedClientConfig<TClientConfig extends ClientConfig> = Merge<
   InitializedClientConfigNative,
   TClientConfig
 >;
 
-export type MutationEvent<TDocument extends AnySanityDocument> = Omit<
+export type MutationEvent<TDocument extends AnySanityDocument> = Merge<
   MutationEventNative,
-  "previous" | "result"
-> & {
-  previous?: TDocument | null;
-  result?: TDocument;
-};
+  {
+    previous?: TDocument | null;
+    result?: TDocument;
+  }
+>;
 
 export type ListenEvent<TDocument extends AnySanityDocument> =
   | Exclude<ListenEventNative<any>, MutationEventNative<any>>
@@ -231,6 +370,7 @@ type OverrideSanityClient<
   | "mutate"
   | "observable"
   | "patch"
+  | "transaction"
   | "withConfig"
 > & {
   clone: () => OverrideSanityClient<
@@ -252,11 +392,11 @@ type OverrideSanityClient<
         TIsPromise
       >;
   create: <
-    const Doc extends Omit<
+    Doc extends Omit<
       SetOptional<TDocument, "_id">,
       "_createdAt" | "_rev" | "_updatedAt"
     > & { _type: string },
-    const TOptions extends MutationOptions | undefined = undefined
+    const TOptions extends MutationOptions = BaseMutationOptions
   >(
     document: Doc,
     options?: TOptions
@@ -265,10 +405,10 @@ type OverrideSanityClient<
     MutationResult<Extract<TDocument, { _type: Doc["_type"] }>, TOptions>
   >;
   createIfNotExists: <
-    const Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+    Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
       _type: string;
     },
-    const TOptions extends MutationOptions | undefined = undefined
+    const TOptions extends MutationOptions = BaseMutationOptions
   >(
     document: Doc,
     options?: TOptions
@@ -277,10 +417,10 @@ type OverrideSanityClient<
     MutationResult<Extract<TDocument, { _type: Doc["_type"] }>, TOptions>
   >;
   createOrReplace: <
-    const Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+    Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
       _type: string;
     },
-    const TOptions extends MutationOptions | undefined = undefined
+    const TOptions extends MutationOptions = BaseMutationOptions
   >(
     document: Doc,
     options?: TOptions
@@ -288,7 +428,7 @@ type OverrideSanityClient<
     TIsPromise,
     MutationResult<Extract<TDocument, { _type: Doc["_type"] }>, TOptions>
   >;
-  delete: <const TOptions extends MutationOptions | undefined = undefined>(
+  delete: <const TOptions extends MutationOptions = BaseMutationOptions>(
     idOrSelection: MutationSelection | string,
     options?: TOptions
   ) => PromiseOrObservable<
@@ -374,13 +514,13 @@ type OverrideSanityClient<
         >
   >;
   mutate: <
-    const Doc extends AnySanityDocument,
-    const TOptions extends MutationOptions | undefined = undefined
+    Doc extends AnySanityDocument,
+    const TOptions extends MutationOptions = BaseMutationOptions
   >(
     operations:
       | Mutation<Doc>[]
       | PatchType<Doc, AnySanityDocument, TIsPromise, false>
-      | Transaction,
+      | TransactionType<[Doc, ...any[]], AnySanityDocument, TIsPromise, false>,
     options?: TOptions
   ) => PromiseOrObservable<
     TIsPromise,
@@ -396,6 +536,9 @@ type OverrideSanityClient<
     // TODO PatchOperations should filter like Patch fns do
     options?: PatchOperations
   ) => PatchType<TDocument, TDocument, TIsPromise, true>;
+  transaction: (
+    operations?: Mutation<any>[]
+  ) => TransactionType<[], TDocument, TIsPromise, true>;
   withConfig: <const NewConfig extends Partial<ClientConfig>>(
     newConfig?: NewConfig
   ) => OverrideSanityClient<
