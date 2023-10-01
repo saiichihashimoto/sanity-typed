@@ -694,8 +694,7 @@ describe("observable", () => {
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
-          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+          Observable<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });
     });
@@ -740,8 +739,7 @@ describe("observable", () => {
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
-          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+          Observable<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });
     });
@@ -786,8 +784,7 @@ describe("observable", () => {
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
-          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+          Observable<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });
     });
@@ -822,8 +819,11 @@ describe("observable", () => {
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
-          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+          Observable<
+            | SanityAssetDocument
+            | (AnySanityDocument & { _type: "foo"; foo: string })
+            | (AnySanityDocument & { _type: "qux"; qux: number })
+          >
         >();
       });
     });
@@ -875,7 +875,7 @@ describe("observable", () => {
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
           // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
-          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+          Observable<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });
     });
