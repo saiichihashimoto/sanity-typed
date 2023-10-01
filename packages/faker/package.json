@@ -44,7 +44,7 @@
     "fast-json-stable-stringify": "2.1.0",
     "lodash": "4.17.21",
     "randexp": "0.5.3",
-    "type-fest": "4.3.2"
+    "type-fest": "4.3.3"
   },
   "devDependencies": {
     "@faker-js/faker": "8.1.0",
