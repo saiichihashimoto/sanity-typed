@@ -553,7 +553,6 @@ type OverrideSanityClient<
     TKeys extends TDocument extends never ? never : (keyof TDocument)[]
   >(
     idOrSelection: PatchSelection,
-    // TODO PatchOperations should filter like Patch fns do
     operations?: PatchOperations<TDocument, TAttrs, TKeys>
   ) => PatchType<
     Extract<TDocument, Partial<TAttrs>> &

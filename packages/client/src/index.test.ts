@@ -678,6 +678,21 @@ describe("createClient", () => {
           Promise<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });
+
+      it("via Mutation", () => {
+        const exec = () =>
+          createClient<{
+            foo: AnySanityDocument & { _type: "foo"; foo: string };
+            qux: AnySanityDocument & { _type: "qux"; qux: number };
+          }>()({})
+            .transaction([{ create: { _type: "foo", foo: "foo" } }])
+            .commit();
+
+        expectType<ReturnType<typeof exec>>().toStrictEqual<
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+        >();
+      });
     });
 
     describe("createOrReplace", () => {
@@ -704,6 +719,21 @@ describe("createClient", () => {
         };
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
+          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+        >();
+      });
+
+      it("via Mutation", () => {
+        const exec = () =>
+          createClient<{
+            foo: AnySanityDocument & { _type: "foo"; foo: string };
+            qux: AnySanityDocument & { _type: "qux"; qux: number };
+          }>()({})
+            .transaction([{ createOrReplace: { _type: "foo", _id: "id" } }])
+            .commit();
+
+        expectType<ReturnType<typeof exec>>().toStrictEqual<
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
           Promise<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });
@@ -736,6 +766,21 @@ describe("createClient", () => {
           Promise<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });
+
+      it("via Mutation", () => {
+        const exec = () =>
+          createClient<{
+            foo: AnySanityDocument & { _type: "foo"; foo: string };
+            qux: AnySanityDocument & { _type: "qux"; qux: number };
+          }>()({})
+            .transaction([{ createIfNotExists: { _type: "foo", _id: "id" } }])
+            .commit();
+
+        expectType<ReturnType<typeof exec>>().toStrictEqual<
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+        >();
+      });
     });
 
     describe("delete", () => {
@@ -758,7 +803,20 @@ describe("createClient", () => {
         >();
       });
 
-      it.todo("pre-applies Mutations");
+      it("via Mutation", () => {
+        const exec = () =>
+          createClient<{
+            foo: AnySanityDocument & { _type: "foo"; foo: string };
+            qux: AnySanityDocument & { _type: "qux"; qux: number };
+          }>()({})
+            .transaction([{ delete: { id: "id" } }])
+            .commit();
+
+        expectType<ReturnType<typeof exec>>().toStrictEqual<
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+        >();
+      });
     });
 
     describe("patch", () => {
@@ -794,6 +852,21 @@ describe("createClient", () => {
           Promise<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });
+
+      it("via Mutation", () => {
+        const exec = () =>
+          createClient<{
+            foo: AnySanityDocument & { _type: "foo"; foo: string };
+            qux: AnySanityDocument & { _type: "qux"; qux: number };
+          }>()({})
+            .transaction([{ patch: { id: "id", set: { foo: "foo" } } }])
+            .commit();
+
+        expectType<ReturnType<typeof exec>>().toStrictEqual<
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+        >();
+      });
     });
 
     it("returns undefined after reset", () => {
@@ -824,6 +897,27 @@ describe("createClient", () => {
           | (AnySanityDocument & { _type: "foo"; foo: string })
           | (AnySanityDocument & { _type: "qux"; qux: number })
         >
+      >();
+    });
+
+    it("filters to Mutation result", () => {
+      const exec = () =>
+        createClient<{
+          foo: AnySanityDocument & { _type: "foo"; foo: string };
+          qux: AnySanityDocument & { _type: "qux"; qux: number };
+        }>()({}).mutate([
+          {
+            create: {
+              _type: "foo",
+              // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+              foo: "foo",
+            },
+          },
+        ]);
+
+      expectType<ReturnType<typeof exec>>().toStrictEqual<
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+        Promise<AnySanityDocument & { _type: "foo"; foo: string }>
       >();
     });
 
