@@ -151,7 +151,6 @@ const data = await client.fetch('*[_type=="product"]{productName,tags}');
 
 The `createClient<SanityValues>()(config)` syntax is due to having to infer one generic (the config shape) while explicitly providing the Sanity Values' type, [which can't be done in the same generics](https://github.com/microsoft/TypeScript/issues/10571).
 
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE /Users/shayan/Workspace/docs/client-cast-to-typed.md -->
 ## Typing an untyped client (and vice versa)
 
 Sometimes, you'll have a preconfigured client from a separate library (notably, [`next-sanity`](https://github.com/sanity-io/next-sanity)) that you will still want typed results from. A `castToTyped` function is provided to do just that.
@@ -214,7 +213,6 @@ export default untypedClient;
 ```
 
 Neither of these functions (nor the `createClient` function) have any runtime implications; they pass through the initial client unaltered.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE /Users/shayan/Workspace/docs/client-cast-to-typed.md -->
 
 ## Considerations
 
