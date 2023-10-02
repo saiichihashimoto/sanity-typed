@@ -182,9 +182,4 @@ describe("geopoint", () => {
       >();
     });
   });
-
-  describe("validation", () => {
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("custom(fn)");
-  });
 });
