@@ -524,8 +524,5 @@ describe("string", () => {
         InferSchemaValues<typeof config>["foo"]
       >();
     });
-
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("custom(fn)");
   });
 });
