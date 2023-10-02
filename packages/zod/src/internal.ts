@@ -1,4 +1,5 @@
 import { flow, reduce } from "lodash/fp";
+import type { CustomValidator, CustomValidatorResult, Schema } from "sanity";
 import type { IsNumericLiteral, IsStringLiteral } from "type-fest";
 import { z } from "zod";
 
@@ -86,6 +87,8 @@ const reduceAcc =
   ) =>
   (accumulator: TResult) =>
     reduce(callback, accumulator, collection);
+
+const zodEnabled: unique symbol = Symbol("zodEnabled");
 
 const toZodType = <Output, Input>(
   zod: z.ZodType<Output, z.ZodTypeDef, Input>
@@ -344,76 +347,135 @@ const DUMMY_ORIGIN = "http://sanity";
 
 const urlZod = <TSchemaType extends SchemaTypeDefinition<"url", any, any>>(
   schemaType: TSchemaType
-) =>
-  reduceAcc(
-    traverseValidation(schemaType).uri ??
-      ([[{}]] as Parameters<GetOriginalRule<TSchemaType>["uri"]>[]),
-    (
-      zod: z.ZodType<string>,
-      [
-        {
-          allowRelative: allowRelativeRaw = false,
-          allowCredentials = false,
-          relativeOnly = false,
-          scheme: schemaRaw = ["http", "https"],
-        },
-      ]
-    ) => {
-      const allowRelative = allowRelativeRaw || relativeOnly;
-      const schemes = Array.isArray(schemaRaw) ? schemaRaw : [schemaRaw];
+) => {
+  const traversal = traverseValidation(schemaType);
 
-      // https://github.com/sanity-io/sanity/blob/6020a46588ffd324e233b45eaf526a58652c62f2/packages/sanity/src/core/validation/validators/stringValidator.ts#L37
-      return zod.superRefine((value, ctx) => {
-        /* eslint-disable fp/no-unused-expression -- zod.superRefine */
+  return flow(
+    (zod: z.ZodType<string>) => zod,
+    reduceAcc(
+      traversal.uri ??
+        ([[{}]] as Parameters<GetOriginalRule<TSchemaType>["uri"]>[]),
+      (
+        zod: z.ZodType<string>,
+        [
+          {
+            allowRelative: allowRelativeRaw = false,
+            allowCredentials = false,
+            relativeOnly = false,
+            scheme: schemaRaw = ["http", "https"],
+          },
+        ]
+      ) => {
+        const allowRelative = allowRelativeRaw || relativeOnly;
+        const schemes = Array.isArray(schemaRaw) ? schemaRaw : [schemaRaw];
 
-        // eslint-disable-next-line fp/no-let -- using new URL
-        let url: URL;
-        try {
-          // eslint-disable-next-line fp/no-mutation -- using new URL
-          url = allowRelative ? new URL(value, DUMMY_ORIGIN) : new URL(value);
-        } catch {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Not a valid URL",
-          });
+        // https://github.com/sanity-io/sanity/blob/6020a46588ffd324e233b45eaf526a58652c62f2/packages/sanity/src/core/validation/validators/stringValidator.ts#L37
+        return zod.superRefine((value, ctx) => {
+          /* eslint-disable fp/no-unused-expression -- zod.superRefine */
+
+          // eslint-disable-next-line fp/no-let -- using new URL
+          let url: URL;
+          try {
+            // eslint-disable-next-line fp/no-mutation -- using new URL
+            url = allowRelative ? new URL(value, DUMMY_ORIGIN) : new URL(value);
+          } catch {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Not a valid URL",
+            });
+
+            return z.NEVER;
+          }
+
+          if (relativeOnly && url.origin !== DUMMY_ORIGIN) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Only relative URLs are allowed",
+            });
+          }
+
+          if (!allowCredentials && (url.username || url.password)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Username/password not allowed",
+            });
+          }
+
+          const urlScheme = url.protocol.replace(/:$/, "");
+          if (
+            !schemes.some((scheme) =>
+              typeof scheme === "string"
+                ? urlScheme.startsWith(scheme)
+                : scheme.test(urlScheme)
+            )
+          ) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Does not match allowed protocols/schemes",
+            });
+          }
 
           return z.NEVER;
-        }
 
-        if (relativeOnly && url.origin !== DUMMY_ORIGIN) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Only relative URLs are allowed",
-          });
-        }
-
-        if (!allowCredentials && (url.username || url.password)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Username/password not allowed",
-          });
-        }
-
-        const urlScheme = url.protocol.replace(/:$/, "");
-        if (
-          !schemes.some((scheme) =>
-            typeof scheme === "string"
-              ? urlScheme.startsWith(scheme)
-              : scheme.test(urlScheme)
-          )
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Does not match allowed protocols/schemes",
-          });
-        }
-
-        return z.NEVER;
-
-        /* eslint-enable fp/no-unused-expression */
-      });
-    }
+          /* eslint-enable fp/no-unused-expression */
+        });
+      }
+    )
   )(z.string());
+};
+
+export const enableZod = <T>(customValidator: CustomValidator<T>) => {
+  // eslint-disable-next-line @typescript-eslint/promise-function-async -- Could be not a promise
+  const clonedValidator = ((...args: Parameters<CustomValidator<T>>) =>
+    customValidator(...args)) as CustomValidator<T> & { [zodEnabled]: true };
+
+  // eslint-disable-next-line fp/no-mutation -- Mutation
+  clonedValidator[zodEnabled] = true;
+
+  return clonedValidator;
+};
+
+const customValidationZod = <T>(
+  customTraversals: [CustomValidator<T | undefined>][] | undefined
+) =>
+  reduceAcc(customTraversals, (zod: z.ZodType<T>, [customValidator]) =>
+    !(zodEnabled in customValidator)
+      ? zod
+      : zod.superRefine(
+          // eslint-disable-next-line @typescript-eslint/promise-function-async -- Could be not a promise
+          (value, ctx) => {
+            const validation = customValidator(value, {
+              getClient: () => {
+                throw new Error("zod can't provide getClient");
+              },
+              getDocumentExists: () => {
+                throw new Error("zod can't provide getDocumentExists");
+              },
+              // TODO ctx.schema
+              schema: {} as unknown as Schema,
+              // TODO ctx.document
+              // TODO ctx.parent
+              // TODO ctx.path
+              // TODO ctx.type
+            });
+
+            const handleResult = (result: CustomValidatorResult) =>
+              result === true
+                ? undefined
+                : ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    ...(typeof result === "string"
+                      ? { message: result }
+                      : { message: result.message, paths: result.paths }),
+                  });
+
+            return validation instanceof Promise
+              ? // eslint-disable-next-line promise/prefer-await-to-then -- Could be not a promise
+                validation.then(handleResult)
+              : handleResult(validation);
+          }
+        )
+  );
 
 type ExtendViaIntersection<
   Zod extends z.ZodTypeAny,
@@ -556,14 +618,20 @@ const membersZods = <
   members: TMemberDefinitions,
   getZods: () => TAliasedZods
 ): MembersZods<TMemberDefinitions, TAliasedZods> =>
-  members.map((member) => {
+  members.map((member: TMemberDefinitions[number]) => {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
     const zod = schemaTypeToZod(member, getZods);
 
     return flow(
       (zod2: typeof zod) => zod2,
       addTypeFp(member.name),
-      addKey
+      addKey,
+      customValidationZod(
+        // TODO
+        traverseValidation(member).custom as unknown as [
+          CustomValidator<unknown>
+        ][]
+      )
     )(zod);
   }) as MembersZods<TMemberDefinitions, TAliasedZods>;
 
@@ -809,19 +877,21 @@ const fieldsZods = <
   Object.fromEntries(
     (
       fields as FieldDefinition<any, any, any, any, any, any, any, any, any>[]
-    ).map(
-      (field) =>
-        [
-          field.name,
-          traverseValidation(field).required
-            ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-              schemaTypeToZod(field, getZods)
-            : z.optional(
-                // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
-                schemaTypeToZod(field, getZods)
-              ),
-        ] as const
-    )
+    ).map((field) => {
+      const traversal = traverseValidation(field);
+      const fieldZod = customValidationZod(
+        // TODO
+        traversal.custom as unknown as [CustomValidator<unknown>][]
+      )(
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
+        schemaTypeToZod(field, getZods)
+      );
+
+      return [
+        field.name,
+        traversal.required ? fieldZod : z.optional(fieldZod),
+      ] as const;
+    })
   ) as FieldsZods<TSchemaType, TAliasedZods>;
 
 type ObjectZod<
@@ -1199,9 +1269,11 @@ export const sanityConfigToZodsTyped = <
     ? Object.fromEntries(
         types.map((type) => [
           type.name,
-          addType(
-            type.name,
-            schemaTypeToZod(type, () => ({ ...pluginsZods, ...zods }))
+          customValidationZod(traverseValidation(type).custom)(
+            addType(
+              type.name,
+              schemaTypeToZod(type, () => ({ ...pluginsZods, ...zods }))
+            )
           ),
         ])
       )

@@ -9,6 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
+import { enableZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";
 
 describe("number", () => {
@@ -372,7 +373,27 @@ describe("number", () => {
       expect(() => zods.foo.parse(0)).toThrow("Number must be less than 0");
     });
 
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("custom(fn)");
+    it("custom(fn)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "number",
+              validation: (Rule) =>
+                Rule.custom(() => "fail for no reason").custom(
+                  enableZod((value) => value !== 2 || "value can't be `2`")
+                ),
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() => zods.foo.parse(1)).not.toThrow();
+      expect(() => zods.foo.parse(2)).toThrow("value can't be `2`");
+    });
   });
 });

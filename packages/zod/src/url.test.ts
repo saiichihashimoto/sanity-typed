@@ -9,6 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
+import { enableZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";
 
 describe("url", () => {
@@ -239,7 +240,33 @@ describe("url", () => {
       expect(() => zods.foo.parse("tel:15555555555")).not.toThrow();
     });
 
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("custom(fn)");
+    it("custom(fn)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "url",
+              validation: (Rule) =>
+                Rule.custom(() => "fail for no reason").custom(
+                  enableZod(
+                    (value) =>
+                      value !== "https://yahoo.com" ||
+                      "value can't be `https://yahoo.com`"
+                  )
+                ),
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() => zods.foo.parse("https://google.com")).not.toThrow();
+      expect(() => zods.foo.parse("https://yahoo.com")).toThrow(
+        "value can't be `https://yahoo.com`"
+      );
+    });
   });
 });

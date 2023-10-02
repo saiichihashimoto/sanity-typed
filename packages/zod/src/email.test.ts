@@ -9,6 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
+import { enableZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";
 
 describe("email", () => {
@@ -127,7 +128,32 @@ describe("email", () => {
       expect(() => zods.foo.parse("foo")).toThrow("Invalid email");
     });
 
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("custom(fn)");
+    it("custom(fn)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "email",
+              validation: (Rule) =>
+                Rule.custom(() => "fail for no reason").custom(
+                  enableZod(
+                    (value) =>
+                      value !== "bar@bar.com" || "value can't be `bar@bar.com`"
+                  )
+                ),
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() => zods.foo.parse("foo@bar.com")).not.toThrow();
+      expect(() => zods.foo.parse("bar@bar.com")).toThrow(
+        "value can't be `bar@bar.com`"
+      );
+    });
   });
 });
