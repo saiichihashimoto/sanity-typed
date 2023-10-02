@@ -50,6 +50,6 @@ With the full suite, everything would be fully typed, runtime safe, and fully lo
 npm install sanity @sanity-typed/client @sanity-typed/types
 ```
 
-@[typescript](packages/types/docs/schemas/product.ts)
-@[typescript](packages/types/docs/sanity.config.ts)
-@[typescript](packages/client/docs/your-super-cool-application.ts)
+@[typescript](docs/schemas/product.ts)
+@[typescript](docs/sanity.config.ts)
+@[typescript](docs/your-super-cool-application.ts)

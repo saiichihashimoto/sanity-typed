@@ -24,18 +24,79 @@ npm install sanity @sanity-typed/client
 
 Use `createClient` exactly as you would from [`@sanity/client`](https://github.com/sanity-io/client) with a minor change for proper type inference.
 
-@[typescript](../types/docs/schemas/product.ts)
-@[typescript](../types/docs/sanity.config.ts)
-@[typescript](docs/your-super-cool-application.ts)
+@[typescript](../../docs/schemas/product.ts)
+@[typescript](../../docs/sanity.config.ts)
+@[typescript](../../docs/your-super-cool-application.ts)
 
 The `createClient<SanityValues>()(config)` syntax is due to having to infer one generic (the config shape) while explicitly providing the Sanity Values' type, [which can't be done in the same generics](https://github.com/microsoft/TypeScript/issues/10571).
 
-@[:markdown](docs/cast-to-typed.md)
+## Typing an untyped client (and vice versa)
+
+Sometimes, you'll have a preconfigured client from a separate library (notably, [`next-sanity`](https://github.com/sanity-io/next-sanity)) that you will still want typed results from. A `castToTyped` function is provided to do just that.
+
+```typescript
+import { createClient } from "next-sanity";
+
+import { castToTyped } from "@sanity-typed/client";
+
+import type { SanityValues } from "./sanity.schema";
+
+const client = createClient({
+  // ...
+});
+
+// Same function signature as the typed `createClient`
+const typedClient = castToTyped<SanityValues>()(client);
+
+// Also, if you need the config in the client (eg. for queries using $param),
+// you can provide the same config again to include it in the types.
+
+// const typedClient = castToTyped<SanityValues>()(client, {
+//   ...same contents from createClient
+// });
+
+const data = await typedClient.fetch("*");
+/**
+ *  typeof data === {
+ *    _createdAt: string;
+ *    _id: string;
+ *    _rev: string;
+ *    _type: "product";
+ *    _updatedAt: string;
+ *    productName?: string;
+ *    tags?: {
+ *      _key: string;
+ *      label?: string;
+ *      value?: string;
+ *    }[];
+ *  }[]
+ */
+```
+
+Similarly, if you have a typed client that you want to untype (presumably to export from a library for general consumption), the opposite exists as well:
+
+```typescript
+import { castFromTyped, createClient } from "@sanity-typed/client";
+
+import type { SanityValues } from "./sanity.schema";
+
+const client = createClient<SanityValues>()({
+  // ...
+});
+
+export const typedClient = client;
+
+export const untypedClient = castFromTyped(client);
+
+export default untypedClient;
+```
+
+Neither of these functions (nor the `createClient` function) have any runtime implications; they pass through the initial client unaltered.
 
 ## Considerations
 
-@[:markdown](../types/docs/considerations/types-vs-content-lake.md)
-@[:markdown](../groq-js/docs/considerations/evaluate-type-flakiness.md)
+@[:markdown](../../docs/considerations/types-vs-content-lake.md)
+@[:markdown](../../docs/considerations/evaluate-type-flakiness.md)
 
 ## Alternatives
 

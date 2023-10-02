@@ -22,57 +22,61 @@ npm install sanity zod @sanity-typed/zod
 
 ## Usage
 
-@[typescript](../types/docs/schemas/product.ts)
-@[typescript](../types/docs/sanity.config.ts)
-@[typescript](docs/your-zod-parsers.ts)
+@[typescript](../../docs/schemas/product.ts)
+@[typescript](../../docs/sanity.config.ts)
+@[typescript](../../docs/your-zod-parsers.ts)
 
 ## Validations
 
 All validations except for `custom` are included in the zod parsers. However, if there are custom validators you want to include, using `enableZod` on the validations includes it:
 
 ```typescript
+import { defineConfig, defineField, defineType } from "@sanity-typed/types";
+import { enableZod, sanityConfigToZods } from "@sanity-typed/zod";
+
+export const product = defineType({
+  name: "product",
+  type: "document",
+  title: "Product",
+  fields: [
+    defineField({
+      name: "productName",
+      type: "string",
+      title: "Product name",
+      validation: (Rule) =>
+        Rule.custom(
+          () => "fail for no reason, but only in sanity studio"
+        ).custom(
+          enableZod((value) => "fail for no reason, but also in zod parser")
+        ),
+    }),
+    // ...
+  ],
+});
+
+// Everything else the same as before...
 const config = defineConfig({
-  dataset: "dataset",
-  projectId: "projectId",
+  projectId: "your-project-id",
+  dataset: "your-dataset-name",
   schema: {
     types: [
-      defineType({
-        name: "foo",
-        type: "boolean",
-        validation: (Rule) =>
-          Rule
-            // Won't be in the zod parser
-            .custom(() => "fail for no reason")
-            // Will be in the zod parser
-            .custom(enableZod((value) => value || "value must be `true`")),
-      }),
+      product,
+      // ...
     ],
   },
 });
-const zods = sanityConfigToZodsTyped(config);
 
-expect(() => zods.foo.parse(true)).not.toThrow();
-expect(() => zods.foo.parse(false)).toThrow("value must be `true`");
+const zods = sanityConfigToZods(config);
+
+expect(() =>
+  zods.product.parse({
+    productName: "foo",
+    /* ... */
+  })
+).toThrow("fail for no reason, but also in zod parser");
 ```
 
 ## Considerations
 
-### Config in Runtime
-
-`@sanity-typed/*` generally has the goal of only having effect to types and no runtime effects. This package is an exception. This means that, to do `const zods = sanityConfigToZods(config)`, you will have to import your sanity config into the environment you're using the parsers. While sanity v3 is better than v2 at having a standard build environment, you will have to handle any nuances, including having a much larger build.
-
-If this is something you cannot have, there's still a (mostly) manual option:
-
-```typescript
-import { z } from "zod";
-
-import type { SanityValues } from "./sanity.schema";
-
-const productZod: z.Type<SanityValues["product"]> = z.object({
-  // All the zod fields
-});
-```
-
-It isn't perfect and is prone to errors, but it's a decent option if importing the config isn't viable.
-
-@[:markdown](../types/docs/considerations/types-vs-content-lake.md)
+@[:markdown](../../docs/considerations/config-in-runtime.md)
+@[:markdown](../../docs/considerations/types-vs-content-lake.md)

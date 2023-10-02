@@ -31,7 +31,7 @@ npm install groq-js @sanity-typed/groq-js
 
 Use `parse` and `evaluate` exactly as you would from [`groq-js`](https://github.com/sanity-io/groq-js). Then, use the results with the typescript types!
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/groq-js/docs/your-typed-groq-js.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/your-typed-groq-js.ts -->
 ```your-typed-groq-js.ts```:
 ```typescript
 // import { evaluate, parse } from "groq-js";
@@ -97,7 +97,7 @@ const result = await value.get();
  *  }]
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/groq-js/docs/your-typed-groq-js.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/your-typed-groq-js.ts -->
 
 ## Considerations
 
@@ -109,7 +109,7 @@ You can also use [your typed schema](../types) to keep parity with the types [yo
 npm install sanity groq-js @sanity-typed/types @sanity-typed/groq-js
 ```
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/schemas/product.ts -->
 ```product.ts```:
 ```typescript
 // import { defineArrayMember, defineField, defineType } from "sanity";
@@ -148,8 +148,8 @@ export const product = defineType({
   ],
 });
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
 // import { defineConfig } from "sanity";
@@ -193,8 +193,8 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *  }
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/groq-js/docs/your-typed-groq-js-with-sanity-types.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/sanity.config.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/your-typed-groq-js-with-sanity-types.ts -->
 ```your-typed-groq-js-with-sanity-types.ts```:
 ```typescript
 // import { evaluate, parse } from "groq-js";
@@ -237,16 +237,16 @@ const result = await value.get();
 // This resembles the types you'd receive from @sanity-typed/client,
 // which wouldn't be statically aware of `"Some Cool Product"` either.
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/groq-js/docs/your-typed-groq-js-with-sanity-types.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/your-typed-groq-js-with-sanity-types.ts -->
 
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE packages/groq/docs/groq/docs/considerations/parse-type-flakiness.md -->
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/parse-type-flakiness.md -->
 ### The parsed tree changes in seemingly breaking ways
 
 `@sanity-typed/groq` attempts to type its parsed types as close as possible to [`groq-js`](https://github.com/sanity-io/groq-js)'s `parse` function output. Any fixes to match it more correctly won't be considered a major change and, if `groq-js` changes it's output in a version update, we're likely to match it. If you're using the parsed tree's types directly, this might cause your code to break. We don't consider this a breaking change because the intent of these groq libraries is to match the types of a groq query as closely as possible.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/groq/docs/groq/docs/considerations/parse-type-flakiness.md -->
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE packages/groq-js/docs/considerations/docs/considerations/evaluate-type-flakiness.md -->
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/parse-type-flakiness.md -->
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/evaluate-type-flakiness.md -->
 ### GROQ Query results changes in seemingly breaking ways
 
 Similar to [parsing](#the-parsed-tree-changes-in-seemingly-breaking-ways), evaluating groq queries will attempt to match how sanity actually evaluates queries. Again, any fixes to match that or changes to groq evaluation will likely not be considered a major change but, rather, a bug fix.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/groq-js/docs/considerations/docs/considerations/evaluate-type-flakiness.md -->
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/evaluate-type-flakiness.md -->
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/groq-js/_README.md -->

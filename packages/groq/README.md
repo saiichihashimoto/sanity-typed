@@ -86,11 +86,11 @@ Chances are, you don't need this package directly.
 
 ## Considerations
 
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE packages/groq/docs/considerations/docs/considerations/parse-type-flakiness.md -->
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/parse-type-flakiness.md -->
 ### The parsed tree changes in seemingly breaking ways
 
 `@sanity-typed/groq` attempts to type its parsed types as close as possible to [`groq-js`](https://github.com/sanity-io/groq-js)'s `parse` function output. Any fixes to match it more correctly won't be considered a major change and, if `groq-js` changes it's output in a version update, we're likely to match it. If you're using the parsed tree's types directly, this might cause your code to break. We don't consider this a breaking change because the intent of these groq libraries is to match the types of a groq query as closely as possible.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/groq/docs/considerations/docs/considerations/parse-type-flakiness.md -->
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/parse-type-flakiness.md -->
 
 ## Alternatives
 

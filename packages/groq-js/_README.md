@@ -24,7 +24,7 @@ npm install groq-js @sanity-typed/groq-js
 
 Use `parse` and `evaluate` exactly as you would from [`groq-js`](https://github.com/sanity-io/groq-js). Then, use the results with the typescript types!
 
-@[typescript](docs/your-typed-groq-js.ts)
+@[typescript](../../docs/your-typed-groq-js.ts)
 
 ## Considerations
 
@@ -36,9 +36,9 @@ You can also use [your typed schema](../types) to keep parity with the types [yo
 npm install sanity groq-js @sanity-typed/types @sanity-typed/groq-js
 ```
 
-@[typescript](../types/docs/schemas/product.ts)
-@[typescript](../types/docs/sanity.config.ts)
-@[typescript](docs/your-typed-groq-js-with-sanity-types.ts)
+@[typescript](../../docs/schemas/product.ts)
+@[typescript](../../docs/sanity.config.ts)
+@[typescript](../../docs/your-typed-groq-js-with-sanity-types.ts)
 
-@[:markdown](../groq/docs/considerations/parse-type-flakiness.md)
-@[:markdown](docs/considerations/evaluate-type-flakiness.md)
+@[:markdown](../../docs/considerations/parse-type-flakiness.md)
+@[:markdown](../../docs/considerations/evaluate-type-flakiness.md)
