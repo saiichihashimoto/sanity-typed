@@ -155,8 +155,6 @@ const product = sanityZods.product.parse(getInputFromWherever);
 
 All validations except for `custom` are included in the zod parsers. However, if there are custom validators you want to include, using `enableZod` on the validations includes it:
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/schemas/enable-zod-custom-validator.ts -->
-```enable-zod-custom-validator.ts```:
 ```typescript
 import { defineConfig, defineField, defineType } from "@sanity-typed/types";
 import { enableZod, sanityConfigToZods } from "@sanity-typed/zod";
@@ -202,7 +200,6 @@ expect(() =>
   })
 ).toThrow("fail for no reason, but also in zod parser");
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/schemas/enable-zod-custom-validator.ts -->
 
 ## Considerations
 
