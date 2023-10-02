@@ -9,6 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues, SlugValue } from "@sanity-typed/types";
 
+import { enableZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";
 
 const fields: Omit<SlugValue, "_type"> = { current: "current" };
@@ -201,7 +202,34 @@ describe("slug", () => {
   });
 
   describe("validation", () => {
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("custom(fn)");
+    it("custom(fn)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "slug",
+              validation: (Rule) =>
+                Rule.custom(() => "fail for no reason").custom(
+                  enableZod(
+                    (value) =>
+                      value?.current !== "bar" || "value can't be `bar`"
+                  )
+                ),
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.foo.parse({ _type: "foo", current: "foo" })
+      ).not.toThrow();
+      expect(() => zods.foo.parse({ _type: "foo", current: "bar" })).toThrow(
+        "value can't be `bar`"
+      );
+    });
   });
 });

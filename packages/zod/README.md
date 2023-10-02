@@ -16,10 +16,10 @@ Generate [Zod](https://zod.dev) Schemas from Sanity Schemas
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
+- [Validations](#validations)
 - [Considerations](#considerations)
   - [Config in Runtime](#config-in-runtime)
   - [Types match config but not actual documents](#types-match-config-but-not-actual-documents)
-  - [Doesn't run `custom` validations](#doesnt-run-custom-validations)
 
 ## Install
 
@@ -151,6 +151,35 @@ const product = sanityZods.product.parse(getInputFromWherever);
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/zod/docs/your-zod-parsers.ts -->
 
+## Validations
+
+All validations except for `custom` are included in the zod parsers. However, if there are custom validators you want to include, using `enableZod` on the validations includes it:
+
+```typescript
+const config = defineConfig({
+  dataset: "dataset",
+  projectId: "projectId",
+  schema: {
+    types: [
+      defineType({
+        name: "foo",
+        type: "boolean",
+        validation: (Rule) =>
+          Rule
+            // Won't be in the zod parser
+            .custom(() => "fail for no reason")
+            // Will be in the zod parser
+            .custom(enableZod((value) => value || "value must be `true`")),
+      }),
+    ],
+  },
+});
+const zods = sanityConfigToZodsTyped(config);
+
+expect(() => zods.foo.parse(true)).not.toThrow();
+expect(() => zods.foo.parse(false)).toThrow("value must be `true`");
+```
+
 ## Considerations
 
 ### Config in Runtime
@@ -202,20 +231,4 @@ type SanityValues =
 
 This can get unweildy although, if you're deligent about data migrations of your old documents to your new types, you may be able to deprecate old configs and remove them from your codebase.
 <!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/types/docs/types/docs/considerations/types-vs-content-lake.md -->
-
-### Doesn't run `custom` validations
-
-Sanity validations are run while parsing (eg `zod.parse(...)` will run `Rule.regex(...)`) except for the `custom` validator. There are a few reasons. The first one being that we can't provide the proper context fields:
-
-- `document`: possible
-- `path`: possible
-- `type`: possible
-- `parent`: possible
-- `schema`: not possible
-- `getClient`: not possible
-- `getDocumentExists`: not possible
-
-Besides that, specific validations are inpractical (or undesirable) to run. You may want to run validations against a service in the sanity studio but not where the zods are used.
-
-Finally, deciding which validations to run with zod is awkward. Any API which requires changing the native schema changes this project's promise and any extra fields to the zod function would be confusing. We could use environment variables (sanity prefixes all environment variables with `SANITY_`) but that's confusing and a difficult "opt in" experience, which can lead to accidentally calling unintended services in production.
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/zod/_README.md -->

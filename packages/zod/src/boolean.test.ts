@@ -9,6 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
+import { enableZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";
 
 describe("boolean", () => {
@@ -109,7 +110,27 @@ describe("boolean", () => {
   });
 
   describe("validation", () => {
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("custom(fn)");
+    it("custom(fn)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "boolean",
+              validation: (Rule) =>
+                Rule.custom(() => "fail for no reason").custom(
+                  enableZod((value) => value || "value must be `true`")
+                ),
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() => zods.foo.parse(true)).not.toThrow();
+      expect(() => zods.foo.parse(false)).toThrow("value must be `true`");
+    });
   });
 });

@@ -9,6 +9,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
+import { enableZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";
 
 describe("array", () => {
@@ -375,7 +376,35 @@ describe("array", () => {
       );
     });
 
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("custom(fn)");
+    it("custom(fn)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              validation: (Rule) =>
+                Rule.custom(() => "fail for no reason").custom(
+                  enableZod(
+                    (value) =>
+                      !value?.length ||
+                      value[0] === true ||
+                      "first value must be `true`"
+                  )
+                ),
+              of: [defineArrayMember({ type: "boolean" })],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() => zods.foo.parse([true, false, true])).not.toThrow();
+      expect(() => zods.foo.parse([false, true])).toThrow(
+        "first value must be `true`"
+      );
+    });
   });
 });

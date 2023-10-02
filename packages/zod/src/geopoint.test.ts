@@ -10,6 +10,7 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
+import { enableZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";
 
 const fields: Omit<GeopointValue, "_type"> = {
@@ -206,7 +207,29 @@ describe("geopoint", () => {
   });
 
   describe("validation", () => {
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/285
-    it.todo("custom(fn)");
+    it("custom(fn)", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "geopoint",
+              validation: (Rule) =>
+                Rule.custom(() => "fail for no reason").custom(
+                  enableZod((value) => value?.alt !== 1 || "value can't be `1`")
+                ),
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() => zods.foo.parse({ ...fields, _type: "foo" })).not.toThrow();
+      expect(() => zods.foo.parse({ ...fields, _type: "foo", alt: 1 })).toThrow(
+        "value can't be `1`"
+      );
+    });
   });
 });
