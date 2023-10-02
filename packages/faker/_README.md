@@ -22,9 +22,9 @@ npm install sanity @faker-js/faker @sanity-typed/faker
 
 ## Usage
 
-@[typescript](../types/docs/schemas/product.ts)
-@[typescript](../types/docs/sanity.config.ts)
-@[typescript](./docs/mocks.ts)
+@[typescript](../../docs/schemas/product.ts)
+@[typescript](../../docs/sanity.config.ts)
+@[typescript](../../docs/mocks.ts)
 
 ### Features
 
@@ -33,3 +33,7 @@ npm install sanity @faker-js/faker @sanity-typed/faker
   - TLDR, mock 5 of every document, all their references will point to each other. If you want more or less, change `referencedChunkSize`.
 - Any field's mocked values should stay consistent, even as you change the other fields. If you're using `slug` for url paths, this will keep your emails consistent as schemas change.
   - Fakers are instantiated per schema type with a seed corresponding to the field's path. This will hopefully keep "mock flux" to a minimum, so only fields you change should generate new mock data. The [tests for this](./src/consistency.test.ts) are a good explanation.
+
+## Considerations
+
+@[:markdown](../../docs/considerations/config-in-runtime.md)

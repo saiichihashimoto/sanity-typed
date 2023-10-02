@@ -17,6 +17,8 @@ Generate Mock Data from Sanity Schemas
 - [Install](#install)
 - [Usage](#usage)
   - [Features](#features)
+- [Considerations](#considerations)
+  - [Config in Runtime](#config-in-runtime)
 
 ## Install
 
@@ -26,7 +28,7 @@ npm install sanity @faker-js/faker @sanity-typed/faker
 
 ## Usage
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/schemas/product.ts -->
 ```product.ts```:
 ```typescript
 // import { defineArrayMember, defineField, defineType } from "sanity";
@@ -65,8 +67,8 @@ export const product = defineType({
   ],
 });
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
 // import { defineConfig } from "sanity";
@@ -110,8 +112,8 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *  }
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/faker/docs/mocks.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/sanity.config.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/mocks.ts -->
 ```mocks.ts```:
 ```typescript
 import { base, en } from "@faker-js/faker";
@@ -161,7 +163,7 @@ const mock = sanityFaker.product();
  *  }
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/faker/docs/mocks.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/mocks.ts -->
 
 ### Features
 
@@ -170,4 +172,12 @@ const mock = sanityFaker.product();
   - TLDR, mock 5 of every document, all their references will point to each other. If you want more or less, change `referencedChunkSize`.
 - Any field's mocked values should stay consistent, even as you change the other fields. If you're using `slug` for url paths, this will keep your emails consistent as schemas change.
   - Fakers are instantiated per schema type with a seed corresponding to the field's path. This will hopefully keep "mock flux" to a minimum, so only fields you change should generate new mock data. The [tests for this](./src/consistency.test.ts) are a good explanation.
+
+## Considerations
+
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/config-in-runtime.md -->
+### Config in Runtime
+
+`@sanity-typed/*` generally has the goal of only having effect to types and no runtime effects. This package is an exception. This means that you will have to import your sanity config to use this. While sanity v3 is better than v2 at having a standard build environment, you will have to handle any nuances, including having a much larger build.
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/config-in-runtime.md -->
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/faker/_README.md -->

@@ -32,7 +32,7 @@ npm install sanity @sanity-typed/client
 
 Use `createClient` exactly as you would from [`@sanity/client`](https://github.com/sanity-io/client) with a minor change for proper type inference.
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/schemas/product.ts -->
 ```product.ts```:
 ```typescript
 // import { defineArrayMember, defineField, defineType } from "sanity";
@@ -71,8 +71,8 @@ export const product = defineType({
   ],
 });
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
 // import { defineConfig } from "sanity";
@@ -116,8 +116,8 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *  }
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/client/docs/your-super-cool-application.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/sanity.config.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/your-super-cool-application.ts -->
 ```your-super-cool-application.ts```:
 ```typescript
 // import { createClient } from "@sanity/client";
@@ -147,11 +147,11 @@ const data = await client.fetch('*[_type=="product"]{productName,tags}');
  *  }[]
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/client/docs/your-super-cool-application.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/your-super-cool-application.ts -->
 
 The `createClient<SanityValues>()(config)` syntax is due to having to infer one generic (the config shape) while explicitly providing the Sanity Values' type, [which can't be done in the same generics](https://github.com/microsoft/TypeScript/issues/10571).
 
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE packages/client/docs/docs/cast-to-typed.md -->
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE /Users/shayan/Workspace/docs/client-cast-to-typed.md -->
 ## Typing an untyped client (and vice versa)
 
 Sometimes, you'll have a preconfigured client from a separate library (notably, [`next-sanity`](https://github.com/sanity-io/next-sanity)) that you will still want typed results from. A `castToTyped` function is provided to do just that.
@@ -214,11 +214,11 @@ export default untypedClient;
 ```
 
 Neither of these functions (nor the `createClient` function) have any runtime implications; they pass through the initial client unaltered.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/client/docs/docs/cast-to-typed.md -->
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE /Users/shayan/Workspace/docs/client-cast-to-typed.md -->
 
 ## Considerations
 
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE packages/types/docs/types/docs/considerations/types-vs-content-lake.md -->
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/types-vs-content-lake.md -->
 ### Types match config but not actual documents
 
 As your sanity driven application grows over time, your config is likely to change. Keep in mind that you can only derive types of your current config, while documents in your Sanity Content Lake will have shapes from older configs. This can be a problem when adding new fields or changing the type of old fields, as the types won't can clash with the old documents.
@@ -248,12 +248,12 @@ type SanityValues =
 ```
 
 This can get unweildy although, if you're deligent about data migrations of your old documents to your new types, you may be able to deprecate old configs and remove them from your codebase.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/types/docs/types/docs/considerations/types-vs-content-lake.md -->
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE packages/groq-js/docs/groq-js/docs/considerations/evaluate-type-flakiness.md -->
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/types-vs-content-lake.md -->
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/evaluate-type-flakiness.md -->
 ### GROQ Query results changes in seemingly breaking ways
 
 Similar to [parsing](#the-parsed-tree-changes-in-seemingly-breaking-ways), evaluating groq queries will attempt to match how sanity actually evaluates queries. Again, any fixes to match that or changes to groq evaluation will likely not be considered a major change but, rather, a bug fix.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE packages/groq-js/docs/groq-js/docs/considerations/evaluate-type-flakiness.md -->
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/evaluate-type-flakiness.md -->
 
 ## Alternatives
 

@@ -24,8 +24,8 @@ npm install sanity @sanity-typed/types
 
 Use `defineConfig`, `defineType`, `defineField`, and `defineArrayMember` from this library exactly as you would from [`sanity`](https://www.sanity.io/docs/schema-field-types#e5642a3e8506). Then, use `InferSchemaValues` to get the typescript types!
 
-@[typescript](docs/schemas/product.ts)
-@[typescript](docs/sanity.config.ts)
+@[typescript](../../docs/schemas/product.ts)
+@[typescript](../../docs/sanity.config.ts)
 
 ## Plugins
 
@@ -151,7 +151,7 @@ const nav = defineType({
 
 ## Considerations
 
-@[:markdown](docs/considerations/types-vs-content-lake.md)
+@[:markdown](../../docs/considerations/types-vs-content-lake.md)
 
 ## Breaking Changes
 

@@ -54,7 +54,7 @@ With the full suite, everything would be fully typed, runtime safe, and fully lo
 npm install sanity @sanity-typed/client @sanity-typed/types
 ```
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/schemas/product.ts -->
 ```product.ts```:
 ```typescript
 // import { defineArrayMember, defineField, defineType } from "sanity";
@@ -93,8 +93,8 @@ export const product = defineType({
   ],
 });
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/schemas/product.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
 // import { defineConfig } from "sanity";
@@ -138,8 +138,8 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *  }
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/types/docs/sanity.config.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/client/docs/your-super-cool-application.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/sanity.config.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/your-super-cool-application.ts -->
 ```your-super-cool-application.ts```:
 ```typescript
 // import { createClient } from "@sanity/client";
@@ -169,5 +169,5 @@ const data = await client.fetch('*[_type=="product"]{productName,tags}');
  *  }[]
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/client/docs/your-super-cool-application.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/your-super-cool-application.ts -->
 <!-- <<<<<< END GENERATED FILE (include): SOURCE _README.md -->

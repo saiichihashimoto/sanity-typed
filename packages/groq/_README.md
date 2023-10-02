@@ -80,7 +80,7 @@ Chances are, you don't need this package directly.
 
 ## Considerations
 
-@[:markdown](docs/considerations/parse-type-flakiness.md)
+@[:markdown](../../docs/considerations/parse-type-flakiness.md)
 
 ## Alternatives
 
