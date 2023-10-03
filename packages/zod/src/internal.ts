@@ -89,8 +89,6 @@ const reduceAcc =
   (accumulator: TResult) =>
     reduce(callback, accumulator, collection);
 
-const zodEnabled: unique symbol = Symbol("zodEnabled");
-
 const toZodType = <Output, Input>(
   zod: z.ZodType<Output, z.ZodTypeDef, Input>
 ) => zod as z.ZodType<Output, z.ZodTypeDef, Input>;
@@ -424,6 +422,8 @@ const urlZod = <TSchemaType extends SchemaTypeDefinition<"url", any, any>>(
     )
   )(z.string());
 };
+
+const zodEnabled: unique symbol = Symbol("zodEnabled");
 
 export const enableZod = <T>(customValidator: CustomValidator<T>) => {
   // eslint-disable-next-line @typescript-eslint/promise-function-async -- Could be not a promise

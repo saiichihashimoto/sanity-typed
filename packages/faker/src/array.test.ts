@@ -11,6 +11,7 @@ import {
 import type { InferSchemaValues } from "@sanity-typed/types";
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
+import { customFaker } from ".";
 import { sanityConfigToFakerTyped } from "./internal";
 
 describe("array", () => {
@@ -391,6 +392,41 @@ describe("array", () => {
       expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
+    });
+  });
+
+  describe("customMock", () => {
+    it("overrides mock", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            customFaker(
+              defineType({
+                name: "foo",
+                type: "array",
+                of: [defineArrayMember({ type: "boolean" })],
+              }),
+              (faker, previous) => [true, false, ...previous]
+            ),
+          ],
+        },
+      });
+      const sanityFaker = sanityConfigToFakerTyped(config, {
+        faker: { locale: [en, base] },
+      });
+
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+      expect(fake).toHaveProperty("[0]", true);
+      expect(fake).toHaveProperty("[1]", false);
     });
   });
 });
