@@ -51,7 +51,7 @@ export default defineConfig(
     // HACK If the cli options are defined, tsup refuses to let me override them. So I'm using `--no-dts` so I can define `--watch`
     dts,
   }) => ({
-    entry: ["src/index.ts"],
+    entry: ["src/index.ts", "src/internal.ts"],
     dts: true,
     skipNodeModulesBundle: true,
     watch:
