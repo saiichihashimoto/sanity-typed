@@ -188,7 +188,10 @@ export type PatchOperations<
   TDocument extends AnySanityDocument,
   TAttrs extends Partial<TDocument>,
   TKeys extends TDocument extends never ? never : (keyof TDocument)[]
-> = Omit<PatchOperationsNative, "set"> & {
+> = Omit<
+  PatchOperationsNative,
+  "dec" | "diffMatchPatch" | "inc" | "set" | "setIfMissing" | "unset"
+> & {
   dec?: TAttrs & { [key: string]: number };
   diffMatchPatch?: TAttrs & { [key: string]: string };
   inc?: TAttrs & { [key: string]: number };

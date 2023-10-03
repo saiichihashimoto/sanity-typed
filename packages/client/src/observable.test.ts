@@ -396,16 +396,6 @@ describe("observable", () => {
         >
       >();
     });
-
-    it.todo("handle MutationSelection that selects multiple documents via ids");
-
-    it.todo(
-      "handle MutationSelection that selects a single document via query"
-    );
-
-    it.todo(
-      "handle MutationSelection that selects multiple documents via query"
-    );
   });
 
   describe("patch", () => {
