@@ -1,4 +1,4 @@
-import { flow, reduce } from "lodash/fp";
+import { flow, pick, reduce, values } from "lodash/fp";
 import type { CustomValidator, CustomValidatorResult, Schema } from "sanity";
 import type { IsNumericLiteral, IsStringLiteral } from "type-fest";
 import { z } from "zod";
@@ -9,6 +9,7 @@ import { referenced } from "@sanity-typed/types/src/internal";
 import type {
   ArrayMemberDefinition,
   ConfigBase,
+  DocumentValues,
   FieldDefinition,
   GetOriginalRule,
   MaybeTitledListValue,
@@ -1291,3 +1292,46 @@ export const sanityConfigToZods = <const TConfig extends ConfigBase<any, any>>(
       InferSchemaValues<TConfig>[TType]
     >;
   };
+
+export const sanityDocumentsZod = <const TConfig extends ConfigBase<any, any>>(
+  config: TConfig,
+  zods: ReturnType<typeof sanityConfigToZods<TConfig>>
+) => {
+  type TTypeDefinition = TConfig extends ConfigBase<
+    infer TTypeDefinition extends TypeDefinition<
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any
+    >,
+    any
+  >
+    ? TTypeDefinition
+    : never;
+
+  const documentTypes = (config.schema?.types ?? []) as NonNullable<
+    NonNullable<ConfigBase<TTypeDefinition, any>["schema"]>["types"]
+  >;
+
+  return zodUnion(
+    flow(
+      (zodsInner: typeof zods) => zodsInner,
+      pick(
+        Array.isArray(documentTypes)
+          ? documentTypes
+              .filter(({ type }) => type === "document")
+              .map(({ name }) => name)
+          : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
+            (undefined as never)
+      ),
+      values
+    )(zods) as (typeof zods)[DocumentValues<
+      InferSchemaValues<TConfig>
+    >["_type"] &
+      keyof typeof zods][]
+  );
+};

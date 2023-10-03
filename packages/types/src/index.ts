@@ -8,6 +8,7 @@ export type {
   DateDefinition,
   DatetimeDefinition,
   DocumentDefinition,
+  DocumentValues,
   EmailDefinition,
   FileDefinition,
   FileValue,

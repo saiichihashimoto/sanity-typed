@@ -29,7 +29,7 @@ import type { Observable } from "rxjs";
 import type { IsNever, Merge, SetOptional, WritableDeep } from "type-fest";
 
 import type { ExecuteQuery, RootScope } from "@sanity-typed/groq";
-import type { SanityDocument } from "@sanity-typed/types";
+import type { DocumentValues, SanityDocument } from "@sanity-typed/types";
 
 declare const README: unique symbol;
 
@@ -639,11 +639,10 @@ export type SanityClient<
 type SanityValuesToDocumentUnion<
   SanityValues extends { [type: string]: any },
   TClientConfig extends ClientConfig
-> = TClientConfig extends { perspective: "previewDrafts" }
-  ? Extract<SanityValues[keyof SanityValues], AnySanityDocument> & {
-      _originalId: string;
-    }
-  : Extract<SanityValues[keyof SanityValues], AnySanityDocument>;
+> = DocumentValues<SanityValues> &
+  (TClientConfig extends { perspective: "previewDrafts" }
+    ? { _originalId: string }
+    : unknown);
 
 /**
  * Unfortunately, this has to have a very weird function signature due to this typescript issue:

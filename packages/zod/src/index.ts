@@ -1,1 +1,1 @@
-export { sanityConfigToZods, enableZod } from "./internal";
+export { enableZod, sanityConfigToZods, sanityDocumentsZod } from "./internal";
