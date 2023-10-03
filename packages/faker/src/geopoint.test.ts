@@ -11,6 +11,7 @@ import {
 import type { InferSchemaValues } from "@sanity-typed/types";
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
+import { customFaker } from ".";
 import { sanityConfigToFakerTyped } from "./internal";
 
 describe("geopoint", () => {
@@ -180,6 +181,42 @@ describe("geopoint", () => {
       expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
+    });
+  });
+
+  describe("customMock", () => {
+    it("overrides mock", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            customFaker(
+              defineType({
+                name: "foo",
+                type: "geopoint",
+              }),
+              (faker, previous) => ({
+                ...previous,
+                alt: 0,
+              })
+            ),
+          ],
+        },
+      });
+      const sanityFaker = sanityConfigToFakerTyped(config, {
+        faker: { locale: [en, base] },
+      });
+
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+      expect(fake).toHaveProperty("alt", 0);
     });
   });
 });

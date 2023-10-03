@@ -11,6 +11,7 @@ import {
 import type { InferSchemaValues } from "@sanity-typed/types";
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
+import { customFaker } from ".";
 import { sanityConfigToFakerTyped } from "./internal";
 
 describe("date", () => {
@@ -195,6 +196,39 @@ describe("date", () => {
       expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
+    });
+  });
+
+  describe("customMock", () => {
+    it("overrides mock", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            customFaker(
+              defineType({
+                name: "foo",
+                type: "date",
+              }),
+              () => "2022-12-30"
+            ),
+          ],
+        },
+      });
+      const sanityFaker = sanityConfigToFakerTyped(config, {
+        faker: { locale: [en, base] },
+      });
+
+      const fake = sanityFaker.foo();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(() => zods.foo.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+      expect(fake).toBe("2022-12-30");
     });
   });
 });

@@ -1,6 +1,6 @@
 import { Faker } from "@faker-js/faker";
 import stringify from "fast-json-stable-stringify";
-import { flow } from "lodash/fp";
+import { flow, identity } from "lodash/fp";
 import RandExp from "randexp";
 import type { IsNumericLiteral, IsStringLiteral, Simplify } from "type-fest";
 
@@ -1155,6 +1155,23 @@ type SchemaTypeToFaker<
   >
 >;
 
+const customFakerFn: unique symbol = Symbol("customFakerFn");
+
+export const customFaker = <
+  TSchemaType extends SchemaTypeDefinition<any, any, any>
+>(
+  schemaType: TSchemaType,
+  fakerFn: (
+    faker: Faker,
+    previous: ReturnType<
+      SchemaTypeToFaker<TSchemaType, { [name: string]: (index: number) => any }>
+    >,
+    index: number
+  ) => ReturnType<
+    SchemaTypeToFaker<TSchemaType, { [name: string]: (index: number) => any }>
+  >
+): TSchemaType => ({ ...schemaType, [customFakerFn]: fakerFn });
+
 const schemaTypeToFaker = <
   TSchemaType extends SchemaTypeDefinition<any, any, any>,
   TAliasedFakers extends {
@@ -1170,7 +1187,7 @@ const schemaTypeToFaker = <
   const prefixedInstantiateFakerByPath = (path: string) =>
     instantiateFakerByPath(`.${schema.name ?? `<${schema.type}>`}${path}`);
 
-  return prefixedInstantiateFakerByPath("")(
+  const schemaTypeFaker =
     schema.type in constantFakers
       ? constantFakers[
           schema.type as TSchemaType["type"] & keyof typeof constantFakers
@@ -1288,8 +1305,20 @@ const schemaTypeToFaker = <
           documentIdFaker,
           referencedIdFaker
         )
-      : aliasFaker(schema, getFakers)
-  ) as SchemaTypeToFaker<TSchemaType, TAliasedFakers>;
+      : aliasFaker(schema, getFakers);
+
+  return flow(
+    (schemaTypeFakerInner: typeof schemaTypeFaker) => schemaTypeFakerInner,
+    customFakerFn in schema
+      ? (schemaTypeFaker) => (faker: Faker, index: number) =>
+          (
+            schema[customFakerFn] as Parameters<
+              typeof customFaker<TSchemaType>
+            >[1]
+          )(faker, schemaTypeFaker(faker, index), index)
+      : identity,
+    prefixedInstantiateFakerByPath("")
+  )(schemaTypeFaker) as SchemaTypeToFaker<TSchemaType, TAliasedFakers>;
 };
 
 type SanityConfigFakers<TConfig extends MaybeArray<ConfigBase<any, any>>> =
