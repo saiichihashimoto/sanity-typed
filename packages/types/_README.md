@@ -27,6 +27,28 @@ Use `defineConfig`, `defineType`, `defineField`, and `defineArrayMember` from th
 @[typescript](../../docs/schemas/product.ts)
 @[typescript](../../docs/sanity.config.ts)
 
+## `DocumentValues`
+
+While `InferSchemaValues` gives you all the types for a given config keyed by type, sometimes you just want a union of all the `SanityDocument`s. Drop it into `DocumentValues`:
+
+```typescript
+import type { DocumentValues, InferSchemaValues } from "@sanity-typed/types";
+
+const config = defineConfig({
+  /* ... */
+});
+
+type SanityValues = InferSchemaValues<typeof config>;
+/**
+ *  SanityValues === { [type: string]: TypeValueButSomeTypesArentDocuments}
+ */
+
+type SanityDocuments = DocumentValues<SanityValues>;
+/**
+ *  SanityDocuments === Each | Document | In | A | Union
+ */
+```
+
 ## Plugins
 
 ### Writing typed plugins

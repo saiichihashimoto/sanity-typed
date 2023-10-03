@@ -76,6 +76,7 @@ import type {
 import type {
   Except,
   IsStringLiteral,
+  Merge,
   OmitIndexSignature,
   SetRequired,
   Simplify,
@@ -1088,6 +1089,12 @@ export type InferSchemaValues<
       >;
     }
   : never;
+
+export type DocumentValues<SanityValues extends InferSchemaValues<any>> =
+  Extract<
+    SanityValues[keyof SanityValues],
+    Merge<SanityDocument, { _type: string }>
+  >;
 
 export const castToTyped = <Untyped>(untyped: Untyped) =>
   untyped as Untyped extends

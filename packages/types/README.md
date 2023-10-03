@@ -16,6 +16,7 @@ Infer Sanity Document Types from Sanity Schemas
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
+- [`DocumentValues`](#documentvalues)
 - [Plugins](#plugins)
   - [Writing typed plugins](#writing-typed-plugins)
   - [Using external untyped plugins](#using-external-untyped-plugins)
@@ -127,6 +128,28 @@ export type SanityValues = InferSchemaValues<typeof config>;
  */
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/sanity.config.ts -->
+
+## `DocumentValues`
+
+While `InferSchemaValues` gives you all the types for a given config keyed by type, sometimes you just want a union of all the `SanityDocument`s. Drop it into `DocumentValues`:
+
+```typescript
+import type { DocumentValues, InferSchemaValues } from "@sanity-typed/types";
+
+const config = defineConfig({
+  /* ... */
+});
+
+type SanityValues = InferSchemaValues<typeof config>;
+/**
+ *  SanityValues === { [type: string]: TypeValueButSomeTypesArentDocuments}
+ */
+
+type SanityDocuments = DocumentValues<SanityValues>;
+/**
+ *  SanityDocuments === Each | Document | In | A | Union
+ */
+```
 
 ## Plugins
 
