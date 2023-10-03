@@ -26,6 +26,28 @@ npm install sanity zod @sanity-typed/zod
 @[typescript](../../docs/sanity.config.ts)
 @[typescript](../../docs/your-zod-parsers.ts)
 
+## `sanityDocumentsZod`
+
+While `sanityConfigToZods` gives you all the types for a given config keyed by type, sometimes you just want a zod union of all the `SanityDocument`s. Drop it into `sanityDocumentsZod`:
+
+```typescript
+import type { sanityConfigToZods, sanityDocumentsZod } from "@sanity-typed/zod";
+
+const config = defineConfig({
+  /* ... */
+});
+
+const zods = sanityConfigToZods(config);
+/**
+ *  zods === { [type: string]: typeZodParserButSomeTypesArentDocuments }
+ */
+
+const documentsZod = sanityDocumentsZod(config, zods);
+/**
+ *  documentsZod === z.union([Each, Document, In, A, Union])
+ */
+```
+
 ## Validations
 
 All validations except for `custom` are included in the zod parsers. However, if there are custom validators you want to include, using `enableZod` on the validations includes it:

@@ -16,6 +16,7 @@ Generate [Zod](https://zod.dev) Schemas from Sanity Schemas
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
+- [`sanityDocumentsZod`](#sanitydocumentszod)
 - [Validations](#validations)
 - [Considerations](#considerations)
   - [Config in Runtime](#config-in-runtime)
@@ -150,6 +151,28 @@ const product = sanityZods.product.parse(getInputFromWherever);
  */
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/your-zod-parsers.ts -->
+
+## `sanityDocumentsZod`
+
+While `sanityConfigToZods` gives you all the types for a given config keyed by type, sometimes you just want a zod union of all the `SanityDocument`s. Drop it into `sanityDocumentsZod`:
+
+```typescript
+import type { sanityConfigToZods, sanityDocumentsZod } from "@sanity-typed/zod";
+
+const config = defineConfig({
+  /* ... */
+});
+
+const zods = sanityConfigToZods(config);
+/**
+ *  zods === { [type: string]: typeZodParserButSomeTypesArentDocuments }
+ */
+
+const documentsZod = sanityDocumentsZod(config, zods);
+/**
+ *  documentsZod === z.union([Each, Document, In, A, Union])
+ */
+```
 
 ## Validations
 

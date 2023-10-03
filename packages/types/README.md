@@ -142,7 +142,7 @@ const config = defineConfig({
 
 type SanityValues = InferSchemaValues<typeof config>;
 /**
- *  SanityValues === { [type: string]: TypeValueButSomeTypesArentDocuments}
+ *  SanityValues === { [type: string]: TypeValueButSomeTypesArentDocuments }
  */
 
 type SanityDocuments = DocumentValues<SanityValues>;
