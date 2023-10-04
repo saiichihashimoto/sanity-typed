@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@sanity-typed/client-mock",
+  "version": "0.0.0-development",
+  "description": "FIXME",
+  "keywords": [
+    "sanity",
+    "sanity-io",
+    "types",
+    "typescript",
+    "cms",
+    "headless",
+    "realtime",
+    "content"
+  ],
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/client-mock",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
+  "repository": "github:saiichihashimoto/sanity-typed",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/saiichihashimoto"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "npm run build -- --no-dts"
+  },
+  "devDependencies": {
+    "@jest/globals": "29.7.0",
+    "@sanity-typed/test-utils": "0.0.0-development",
+    "@sanity-typed/tsconfig": "0.0.0-development",
+    "typescript": "5.2.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.4"
+  }
+}
