@@ -41,22 +41,32 @@ jobs:
 
       - run: |
           DRY_RUN=$(npx turbo run build --dry=json)
+          HASH_CLIENT_MOCK=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/client-mock#build\")) | .hash")
           HASH_CLIENT=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/client#build\")) | .hash")
+          HASH_FAKER=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/faker#build\")) | .hash")
           HASH_GROQ_JS=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/groq-js#build\")) | .hash")
           HASH_GROQ=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/groq#build\")) | .hash")
-          HASH_TEST_UTILS=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/test-utils#build\")) | .hash")
           HASH_TYPES=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/types#build\")) | .hash")
           HASH_ZOD=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/zod#build\")) | .hash")
+          echo "HASH_CLIENT_MOCK=$HASH_CLIENT_MOCK" >> $GITHUB_ENV
           echo "HASH_CLIENT=$HASH_CLIENT" >> $GITHUB_ENV
+          echo "HASH_FAKER=$HASH_FAKER" >> $GITHUB_ENV
           echo "HASH_GROQ_JS=$HASH_GROQ_JS" >> $GITHUB_ENV
           echo "HASH_GROQ=$HASH_GROQ" >> $GITHUB_ENV
-          echo "HASH_TEST_UTILS=$HASH_TEST_UTILS" >> $GITHUB_ENV
           echo "HASH_TYPES=$HASH_TYPES" >> $GITHUB_ENV
           echo "HASH_ZOD=$HASH_ZOD" >> $GITHUB_ENV
       - uses: actions/cache@v3
         with:
+          path: node_modules/.cache/turbo/${{ env.HASH_CLIENT_MOCK }}*
+          key: turbo-cache-${{ env.HASH_CLIENT_MOCK }}
+      - uses: actions/cache@v3
+        with:
           path: node_modules/.cache/turbo/${{ env.HASH_CLIENT }}*
           key: turbo-cache-${{ env.HASH_CLIENT }}
+      - uses: actions/cache@v3
+        with:
+          path: node_modules/.cache/turbo/${{ env.HASH_FAKER }}*
+          key: turbo-cache-${{ env.HASH_FAKER }}
       - uses: actions/cache@v3
         with:
           path: node_modules/.cache/turbo/${{ env.HASH_GROQ_JS }}*
@@ -65,10 +75,6 @@ jobs:
         with:
           path: node_modules/.cache/turbo/${{ env.HASH_GROQ }}*
           key: turbo-cache-${{ env.HASH_GROQ }}
-      - uses: actions/cache@v3
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_TEST_UTILS }}*
-          key: turbo-cache-${{ env.HASH_TEST_UTILS }}
       - uses: actions/cache@v3
         with:
           path: node_modules/.cache/turbo/${{ env.HASH_TYPES }}*
@@ -135,7 +141,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package: [client, faker, groq, groq-js, test-utils, types, zod]
+        package:
+          [client, client-mock, faker, groq, groq-js, test-utils, types, zod]
     steps:
       - uses: actions/checkout@v4
         with:
