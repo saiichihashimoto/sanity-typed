@@ -8,24 +8,25 @@ import type {
 import type { Observable } from "rxjs";
 import type { SetOptional } from "type-fest";
 
-import { expectType } from "@sanity-typed/test-utils";
-import type { SanityDocument } from "@sanity-typed/types";
-
-import { Patch, Transaction, createClient } from ".";
+import { Patch, Transaction } from "@sanity-typed/client";
 import type {
   ListenEvent,
   MutationEvent,
   RawQueryResponse,
   SanityClient,
-} from ".";
+} from "@sanity-typed/client";
+import { expectType } from "@sanity-typed/test-utils";
+import type { SanityDocument } from "@sanity-typed/types";
+
+import { createClient } from ".";
 
 type AnySanityDocument = Omit<SanityDocument, "_type">;
 
 describe("createClient", () => {
   it("returns a SanityClient", () => {
-    const exec = () => createClient()({});
+    const client = createClient()({});
 
-    expectType<ReturnType<typeof exec>>().toEqual<
+    expectType<typeof client>().toEqual<
       SanityClient<{ [key: string]: never }, any>
     >();
   });
