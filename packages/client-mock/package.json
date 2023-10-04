@@ -28,7 +28,11 @@
     "dev": "npm run build -- --no-dts"
   },
   "dependencies": {
-    "@sanity-typed/client": "0.0.0-development"
+    "@faker-js/faker": "8.1.0",
+    "@sanity-typed/client": "0.0.0-development",
+    "@sanity-typed/groq-js": "0.0.0-development",
+    "@sanity-typed/types": "0.0.0-development",
+    "type-fest": "4.3.3"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",

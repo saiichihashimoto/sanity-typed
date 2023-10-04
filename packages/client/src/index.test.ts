@@ -23,10 +23,16 @@ type AnySanityDocument = Omit<SanityDocument, "_type">;
 
 describe("createClient", () => {
   it("returns a SanityClient", () => {
-    const exec = () => createClient()({});
+    const exec = () =>
+      createClient<{
+        foo: AnySanityDocument & { _type: "foo"; foo: string };
+      }>()({});
 
     expectType<ReturnType<typeof exec>>().toEqual<
-      SanityClient<{ [key: string]: never }, any>
+      SanityClient<
+        { [key: string]: never },
+        AnySanityDocument & { _type: "foo"; foo: string }
+      >
     >();
   });
 
@@ -316,14 +322,20 @@ describe("createClient", () => {
         }>()({});
 
         expectType<Parameters<typeof client.create>[0]>().toEqual<
-          Omit<
-            SetOptional<
-              | (AnySanityDocument & { _type: "foo"; foo: string })
-              | (AnySanityDocument & { _type: "qux"; qux: number }),
-              "_id"
-            >,
-            "_createdAt" | "_rev" | "_updatedAt"
-          >
+          | Omit<
+              SetOptional<
+                AnySanityDocument & { _type: "foo"; foo: string },
+                "_id"
+              >,
+              "_createdAt" | "_rev" | "_updatedAt"
+            >
+          | Omit<
+              SetOptional<
+                AnySanityDocument & { _type: "qux"; qux: number },
+                "_id"
+              >,
+              "_createdAt" | "_rev" | "_updatedAt"
+            >
         >();
 
         return client.create({ _type: "foo", foo: "foo" });
@@ -344,14 +356,17 @@ describe("createClient", () => {
         }>()({});
 
         expectType<Parameters<typeof client.createOrReplace>[0]>().toEqual<
-          Omit<
-            | (AnySanityDocument & { _type: "foo"; foo: string })
-            | (AnySanityDocument & { _type: "qux"; qux: number }),
-            "_createdAt" | "_rev" | "_updatedAt"
-          >
+          | Omit<
+              AnySanityDocument & { _type: "foo"; foo: string },
+              "_createdAt" | "_rev" | "_updatedAt"
+            >
+          | Omit<
+              AnySanityDocument & { _type: "qux"; qux: number },
+              "_createdAt" | "_rev" | "_updatedAt"
+            >
         >();
 
-        return client.createOrReplace({ _type: "foo", _id: "id" });
+        return client.createOrReplace({ _type: "foo", _id: "id", foo: "foo" });
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -369,14 +384,21 @@ describe("createClient", () => {
         }>()({});
 
         expectType<Parameters<typeof client.createIfNotExists>[0]>().toEqual<
-          Omit<
-            | (AnySanityDocument & { _type: "foo"; foo: string })
-            | (AnySanityDocument & { _type: "qux"; qux: number }),
-            "_createdAt" | "_rev" | "_updatedAt"
-          >
+          | Omit<
+              AnySanityDocument & { _type: "foo"; foo: string },
+              "_createdAt" | "_rev" | "_updatedAt"
+            >
+          | Omit<
+              AnySanityDocument & { _type: "qux"; qux: number },
+              "_createdAt" | "_rev" | "_updatedAt"
+            >
         >();
 
-        return client.createIfNotExists({ _type: "foo", _id: "id" });
+        return client.createIfNotExists({
+          _type: "foo",
+          _id: "id",
+          foo: "foo",
+        });
       };
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<

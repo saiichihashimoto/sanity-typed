@@ -40,7 +40,7 @@ type PromiseOrObservable<
   T
 > = TIsPromise extends true ? Promise<T> : Observable<T>;
 
-type MutationOptions = BaseMutationOptions & {
+export type MutationOptions = BaseMutationOptions & {
   returnDocuments?: boolean;
   returnFirst?: boolean;
 };
@@ -388,10 +388,7 @@ export type RawQueryResponse<Result, Query extends string = string> = Merge<
 type MaybeRawQueryResponse<
   Result,
   Query extends string,
-  Options extends
-    | FilteredResponseQueryOptions
-    | UnfilteredResponseQueryOptions
-    | undefined
+  Options extends FilteredResponseQueryOptions | UnfilteredResponseQueryOptions
 > = Options extends UnfilteredResponseQueryOptions
   ? RawQueryResponse<Result, Query>
   : Result;
@@ -441,10 +438,12 @@ type OverrideSanityClient<
         TIsPromise
       >;
   create: <
-    Doc extends Omit<
-      SetOptional<TDocument, "_id">,
-      "_createdAt" | "_rev" | "_updatedAt"
-    > & { _type: string },
+    Doc extends TDocument extends never
+      ? never
+      : Omit<
+          SetOptional<TDocument, "_id">,
+          "_createdAt" | "_rev" | "_updatedAt"
+        >,
     const TOptions extends MutationOptions = BaseMutationOptions
   >(
     document: Doc,
@@ -454,9 +453,9 @@ type OverrideSanityClient<
     MutationResult<Extract<TDocument, { _type: Doc["_type"] }>, TOptions>
   >;
   createIfNotExists: <
-    Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
-      _type: string;
-    },
+    Doc extends TDocument extends never
+      ? never
+      : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt">,
     const TOptions extends MutationOptions = BaseMutationOptions
   >(
     document: Doc,
@@ -466,9 +465,9 @@ type OverrideSanityClient<
     MutationResult<Extract<TDocument, { _type: Doc["_type"] }>, TOptions>
   >;
   createOrReplace: <
-    Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
-      _type: string;
-    },
+    Doc extends TDocument extends never
+      ? never
+      : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt">,
     const TOptions extends MutationOptions = BaseMutationOptions
   >(
     document: Doc,
@@ -486,11 +485,10 @@ type OverrideSanityClient<
   >;
   fetch: <
     const TQuery extends string,
-    const TQueryParams = QueryParams,
+    const TQueryParams,
     const TOptions extends
       | FilteredResponseQueryOptions
-      | UnfilteredResponseQueryOptions
-      | undefined = undefined
+      | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions
   >(
     query: TQuery,
     params?: TQueryParams,
