@@ -22,14 +22,13 @@ type AnySanityDocument = Merge<SanityDocument, { _type: string }>;
  * Unfortunately, this has to have a very weird function signature due to this typescript issue:
  * https://github.com/microsoft/TypeScript/issues/10571
  */
-export const createClient = <SanityValues extends { [type: string]: any }>(
-  options: {
-    dataset?: DocumentValues<SanityValues>[];
-  } = {}
-) => {
-  const { dataset = [] } = options;
-
-  return <const TClientConfig extends ClientConfig>(
+export const createClient =
+  <SanityValues extends { [type: string]: any }>(
+    options: {
+      dataset?: DocumentValues<SanityValues>[];
+    } = {}
+  ) =>
+  <const TClientConfig extends ClientConfig>(
     config: TClientConfig
   ): SanityClient<
     TClientConfig,
@@ -39,7 +38,8 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
       SanityValuesToDocumentUnion<SanityValues, TClientConfig>;
 
     const datasetById = new Map<string, TDocument>(
-      dataset.map((doc) => [doc._id, doc] as [string, TDocument])
+      options?.dataset?.map((doc) => [doc._id, doc] as [string, TDocument]) ??
+        []
     );
 
     return {
@@ -183,7 +183,7 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
             parse(query),
             {
               params,
-              dataset: Array.from(datasetById.values()),
+              dataset: [...datasetById.values()],
               // @ts-expect-error -- FIXME
               sanity: config,
             }
@@ -209,4 +209,3 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
       SanityValuesToDocumentUnion<SanityValues, TClientConfig>
     >;
   };
-};
