@@ -15,6 +15,7 @@ export {
   castToTyped,
   createClient,
   ObservablePatch,
+  ObservableTransaction,
   Patch,
   Transaction,
 } from "./internal";

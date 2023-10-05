@@ -11,7 +11,7 @@ import type { SetOptional } from "type-fest";
 import { expectType } from "@sanity-typed/test-utils";
 import type { SanityDocument } from "@sanity-typed/types";
 
-import { ObservablePatch, Transaction, createClient } from ".";
+import { ObservablePatch, ObservableTransaction, createClient } from ".";
 import type {
   ListenEvent,
   MutationEvent,
@@ -674,14 +674,20 @@ describe("observable", () => {
           }>()({}).observable.transaction();
 
           expectType<Parameters<typeof transaction.create>[0]>().toEqual<
-            Omit<
-              SetOptional<
-                | (AnySanityDocument & { _type: "foo"; foo: string })
-                | (AnySanityDocument & { _type: "qux"; qux: number }),
-                "_id"
-              >,
-              "_createdAt" | "_rev" | "_updatedAt"
-            >
+            | Omit<
+                SetOptional<
+                  AnySanityDocument & { _type: "foo"; foo: string },
+                  "_id"
+                >,
+                "_createdAt" | "_rev" | "_updatedAt"
+              >
+            | Omit<
+                SetOptional<
+                  AnySanityDocument & { _type: "qux"; qux: number },
+                  "_id"
+                >,
+                "_createdAt" | "_rev" | "_updatedAt"
+              >
           >();
 
           return transaction.create({ _type: "foo", foo: "foo" }).commit();
@@ -718,15 +724,18 @@ describe("observable", () => {
           expectType<
             Parameters<typeof transaction.createOrReplace>[0]
           >().toEqual<
-            Omit<
-              | (AnySanityDocument & { _type: "foo"; foo: string })
-              | (AnySanityDocument & { _type: "qux"; qux: number }),
-              "_createdAt" | "_rev" | "_updatedAt"
-            >
+            | Omit<
+                AnySanityDocument & { _type: "foo"; foo: string },
+                "_createdAt" | "_rev" | "_updatedAt"
+              >
+            | Omit<
+                AnySanityDocument & { _type: "qux"; qux: number },
+                "_createdAt" | "_rev" | "_updatedAt"
+              >
           >();
 
           return transaction
-            .createOrReplace({ _type: "foo", _id: "id" })
+            .createOrReplace({ _type: "foo", _id: "id", foo: "foo" })
             .commit();
         };
 
@@ -742,7 +751,7 @@ describe("observable", () => {
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .observable.transaction([
-              { createOrReplace: { _type: "foo", _id: "id" } },
+              { createOrReplace: { _type: "foo", _id: "id", foo: "foo" } },
             ])
             .commit();
 
@@ -763,15 +772,18 @@ describe("observable", () => {
           expectType<
             Parameters<typeof transaction.createIfNotExists>[0]
           >().toEqual<
-            Omit<
-              | (AnySanityDocument & { _type: "foo"; foo: string })
-              | (AnySanityDocument & { _type: "qux"; qux: number }),
-              "_createdAt" | "_rev" | "_updatedAt"
-            >
+            | Omit<
+                AnySanityDocument & { _type: "foo"; foo: string },
+                "_createdAt" | "_rev" | "_updatedAt"
+              >
+            | Omit<
+                AnySanityDocument & { _type: "qux"; qux: number },
+                "_createdAt" | "_rev" | "_updatedAt"
+              >
           >();
 
           return transaction
-            .createIfNotExists({ _type: "foo", _id: "id" })
+            .createIfNotExists({ _type: "foo", _id: "id", foo: "foo" })
             .commit();
         };
 
@@ -787,7 +799,7 @@ describe("observable", () => {
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .observable.transaction([
-              { createIfNotExists: { _type: "foo", _id: "id" } },
+              { createIfNotExists: { _type: "foo", _id: "id", foo: "foo" } },
             ])
             .commit();
 
@@ -935,13 +947,13 @@ describe("observable", () => {
       >();
     });
 
-    it("filters to Transaction result", () => {
+    it("filters to ObservableTransaction result", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>()({}).observable.mutate(
-          new Transaction().create({ _type: "foo", foo: "foo" })
+          new ObservableTransaction().create({ _type: "foo", foo: "foo" })
         );
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<

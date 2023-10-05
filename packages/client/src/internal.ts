@@ -1,5 +1,6 @@
 import {
   ObservablePatch as ObservablePatchNative,
+  ObservableTransaction as ObservableTransactionNative,
   Patch as PatchNative,
   Transaction as TransactionNative,
   createClient as createClientNative,
@@ -100,10 +101,6 @@ export type PatchType<
   TDocument extends AnySanityDocument,
   TOriginalDocument extends AnySanityDocument,
   TIsPromise extends boolean,
-  /**
-   * If TIsScoped extends true, TDocument is a union of types that we're removing from
-   * If TIsScoped extends true, TDocument is AnySanityDocument that we're adding to
-   */
   TIsScoped extends boolean
 > = MergeOld<
   BasePatch,
@@ -282,10 +279,6 @@ export type TransactionType<
   TDocuments extends AnySanityDocument[],
   TOriginalDocument extends AnySanityDocument,
   TIsPromise extends boolean,
-  /**
-   * If TIsScoped extends true, TDocument is a union of types that we're removing from
-   * If TIsScoped extends true, TDocument is AnySanityDocument that we're adding to
-   */
   TIsScoped extends boolean
 > = MergeOld<
   TransactionNative,
@@ -299,10 +292,12 @@ export type TransactionType<
           MutationResult<TDocuments, TOptions>
         >;
     create: <
-      Doc extends Omit<
-        SetOptional<TOriginalDocument, "_id">,
-        "_createdAt" | "_rev" | "_updatedAt"
-      > & { _type: string }
+      Doc extends TOriginalDocument extends never
+        ? never
+        : Omit<
+            SetOptional<TOriginalDocument, "_id">,
+            "_createdAt" | "_rev" | "_updatedAt"
+          > & { _type: string }
     >(
       document: Doc
     ) => TransactionType<
@@ -317,12 +312,11 @@ export type TransactionType<
       TIsScoped
     >;
     createIfNotExists: <
-      Doc extends Omit<
-        TOriginalDocument,
-        "_createdAt" | "_rev" | "_updatedAt"
-      > & {
-        _type: string;
-      }
+      Doc extends TOriginalDocument extends never
+        ? never
+        : Omit<TOriginalDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+            _type: string;
+          }
     >(
       document: Doc
     ) => TransactionType<
@@ -337,12 +331,11 @@ export type TransactionType<
       TIsScoped
     >;
     createOrReplace: <
-      Doc extends Omit<
-        TOriginalDocument,
-        "_createdAt" | "_rev" | "_updatedAt"
-      > & {
-        _type: string;
-      }
+      Doc extends TOriginalDocument extends never
+        ? never
+        : Omit<TOriginalDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+            _type: string;
+          }
     >(
       document: Doc
     ) => TransactionType<
@@ -416,7 +409,7 @@ export type Mutation<
   | { createIfNotExists: Doc & { _id: string } }
   | { createOrReplace: Doc & { _id: string } };
 
-type MutationDoc<
+export type MutationDoc<
   TDocument extends AnySanityDocument,
   TMutation extends Mutation<any, any>
 > = TMutation extends {
@@ -431,9 +424,34 @@ type MutationDoc<
   ? SanityAssetDocument | TDocument
   : never;
 
-export const Transaction = TransactionNative as unknown as new (
-  ...args: ConstructorParameters<typeof TransactionNative>
-) => TransactionType<[], AnySanityDocument, any, false>;
+export const Transaction = TransactionNative as unknown as new <
+  TDocument extends AnySanityDocument,
+  TClient extends SanityClient<any, TDocument> | undefined = undefined
+>(
+  operations?: Mutation<TDocument, any>[],
+  client?: TClient,
+  transactionId?: string
+) => TransactionType<
+  [],
+  AnySanityDocument,
+  true,
+  undefined extends TClient ? false : true
+>;
+
+export const ObservableTransaction =
+  ObservableTransactionNative as unknown as new <
+    TDocument extends AnySanityDocument,
+    TClient extends SanityClient<any, TDocument> | undefined = undefined
+  >(
+    operations?: Mutation<TDocument, any>[],
+    client?: TClient,
+    transactionId?: string
+  ) => TransactionType<
+    [],
+    AnySanityDocument,
+    false,
+    undefined extends TClient ? false : true
+  >;
 
 export type InitializedClientConfig<TClientConfig extends ClientConfig> = Merge<
   InitializedClientConfigNative,
@@ -682,9 +700,11 @@ type OverrideSanityClient<
     transaction: <
       TMutations extends Mutation<
         TDocument,
-        Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
-          _type: string;
-        }
+        TDocument extends never
+          ? never
+          : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+              _type: string;
+            }
       >[] = []
     >(
       operations?: TMutations
