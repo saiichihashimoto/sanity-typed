@@ -46,7 +46,7 @@
     "@types/lodash": "4.14.199",
     "sanity": "3.16.7",
     "typescript": "5.2.2",
-    "zod": "3.22.3"
+    "zod": "3.22.4"
   },
   "peerDependencies": {
     "sanity": "^3.12.0",
