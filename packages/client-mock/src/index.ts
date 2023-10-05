@@ -4,12 +4,20 @@ import type {
   ClientConfig,
   FilteredResponseQueryOptions,
   MutationSelection,
+  PatchOperations as PatchOperationsNative,
+  PatchSelection,
   UnfilteredResponseQueryOptions,
 } from "@sanity/client";
+import { applyPatches, parsePatch } from "@sanity/diff-match-patch";
+import { flow, identity, omit, reduce } from "lodash/fp";
 import type { Merge, SetOptional, WritableDeep } from "type-fest";
 
+import { Patch } from "@sanity-typed/client";
 import type {
   InitializedClientConfig,
+  Mutation,
+  PatchOperations,
+  PatchType,
   SanityClient,
 } from "@sanity-typed/client";
 import type {
@@ -22,6 +30,15 @@ import type { DocumentValues, SanityDocument } from "@sanity-typed/types";
 
 type AnySanityDocument = Merge<SanityDocument, { _type: string }>;
 
+const reduceAcc =
+  <T, TResult>(
+    collection: T[] | null | undefined,
+    // eslint-disable-next-line promise/prefer-await-to-callbacks -- lodash/fp reorder
+    callback: (prev: TResult, current: T) => TResult
+  ) =>
+  (accumulator: TResult) =>
+    reduce(callback, accumulator, collection);
+
 /**
  * Unfortunately, this has to have a very weird function signature due to this typescript issue:
  * https://github.com/microsoft/TypeScript/issues/10571
@@ -32,12 +49,7 @@ export const createClient =
       dataset?: DocumentValues<SanityValues>[];
     } = {}
   ) =>
-  <const TClientConfig extends ClientConfig>(
-    config: TClientConfig
-  ): SanityClient<
-    TClientConfig,
-    SanityValuesToDocumentUnion<SanityValues, TClientConfig>
-  > => {
+  <const TClientConfig extends ClientConfig>(config: TClientConfig) => {
     type TDocument = AnySanityDocument &
       SanityValuesToDocumentUnion<SanityValues, TClientConfig>;
 
@@ -47,7 +59,10 @@ export const createClient =
     );
 
     // @ts-expect-error -- FIXME
-    return {
+    const client: SanityClient<
+      TClientConfig,
+      SanityValuesToDocumentUnion<SanityValues, TClientConfig>
+    > = {
       ...({} as unknown as Pick<
         SanityClient<
           TClientConfig,
@@ -240,15 +255,121 @@ export const createClient =
 
         return doc;
       },
-      patch: {} as unknown as SanityClient<
-        TClientConfig,
-        SanityValuesToDocumentUnion<SanityValues, TClientConfig>
-      >["patch"],
+      patch: <
+        TAttrs extends Partial<TDocument>,
+        TKeys extends TDocument extends never ? never : (keyof TDocument)[]
+      >(
+        idOrSelection: PatchSelection,
+        operations?: PatchOperations<TDocument, TAttrs, TKeys>
+      ) =>
+        new Patch(idOrSelection, operations, client as any) as PatchType<
+          Extract<TDocument, Partial<TAttrs>> &
+            (TDocument extends never
+              ? never
+              : TKeys extends never
+              ? never
+              : TKeys[number] extends keyof TDocument
+              ? TDocument
+              : never),
+          TDocument,
+          true,
+          true
+        >,
       transaction: {} as unknown as SanityClient<
         TClientConfig,
         SanityValuesToDocumentUnion<SanityValues, TClientConfig>
       >["transaction"],
-      mutate: {} as unknown as SanityClient<
+      mutate: (<
+        Doc extends AnySanityDocument,
+        const TOptions extends MutationOptions = BaseMutationOptions
+      >(
+        operations:
+          | Mutation<
+              TDocument,
+              Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+                _type: string;
+              }
+            >
+          | PatchType<Doc, AnySanityDocument, true, false>,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars -- FIXME
+        options?: TOptions
+      ) => {
+        const patchOperation =
+          operations instanceof Patch
+            ? (
+                operations as PatchType<Doc, AnySanityDocument, true, false>
+              ).serialize()
+            : "patch" in operations
+            ? operations.patch
+            : undefined;
+
+        if (patchOperation) {
+          const previousDoc = datasetById.get(
+            // @ts-expect-error -- FIXME
+            patchOperation.id as string
+          )!;
+
+          const newDoc = flow(
+            flow(
+              (doc: TDocument) => doc,
+              !Object.keys(patchOperation.setIfMissing ?? {}).length
+                ? identity<TDocument>
+                : (doc) =>
+                    ({
+                      ...patchOperation.setIfMissing,
+                      ...doc,
+                    } as TDocument),
+              !Object.keys(patchOperation.set ?? {}).length
+                ? identity<TDocument>
+                : (doc) =>
+                    ({
+                      ...doc,
+                      ...patchOperation.set,
+                    } as TDocument),
+              reduceAcc(Object.keys(patchOperation.inc ?? {}), (doc, key) => ({
+                ...doc,
+                [key]: (doc[key] ?? 0) + (patchOperation.inc![key] as number),
+              })),
+              reduceAcc(Object.keys(patchOperation.dec ?? {}), (doc, key) => ({
+                ...doc,
+                [key]: (doc[key] ?? 0) - (patchOperation.dec![key] as number),
+              })),
+              reduceAcc(
+                Object.keys(patchOperation.diffMatchPatch ?? {}),
+                (doc, key) => ({
+                  ...doc,
+                  [key]: applyPatches(
+                    parsePatch(patchOperation.diffMatchPatch![key] as string),
+                    doc[key]
+                  )[0],
+                })
+              ),
+              !patchOperation.unset?.length
+                ? identity<TDocument>
+                : (doc) => omit(patchOperation.unset ?? [], doc) as TDocument
+            ),
+            (doc) =>
+              doc === previousDoc
+                ? doc
+                : {
+                    ...doc,
+                    _rev: faker.string.alphanumeric(22),
+                    _updatedAt: new Date().toISOString(),
+                  }
+          )(previousDoc);
+
+          if (previousDoc === newDoc) {
+            return previousDoc;
+          }
+
+          // eslint-disable-next-line fp/no-unused-expression -- Map
+          datasetById.set(newDoc._id, newDoc);
+
+          return newDoc;
+        }
+
+        return operations;
+      }) as unknown as SanityClient<
         TClientConfig,
         SanityValuesToDocumentUnion<SanityValues, TClientConfig>
       >["mutate"],
@@ -257,4 +378,6 @@ export const createClient =
         SanityValuesToDocumentUnion<SanityValues, TClientConfig>
       >["observable"],
     };
+
+    return client;
   };

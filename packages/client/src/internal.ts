@@ -1,10 +1,12 @@
 import {
+  ObservablePatch as ObservablePatchNative,
   Patch as PatchNative,
   Transaction as TransactionNative,
   createClient as createClientNative,
 } from "@sanity/client";
 import type {
   BaseMutationOptions,
+  BasePatch,
   ClientConfig,
   FilteredResponseQueryOptions,
   InitializedClientConfig as InitializedClientConfigNative,
@@ -15,7 +17,6 @@ import type {
   Mutation as MutationNative,
   MutationSelection,
   ObservableSanityClient as ObservableSanityClientNative,
-  PatchMutationOperation,
   PatchOperations as PatchOperationsNative,
   PatchSelection,
   QueryParams,
@@ -73,6 +74,28 @@ type MutationResult<
   ? Value[0]
   : Value;
 
+export type PatchOperations<
+  TDocument extends AnySanityDocument,
+  TAttrs extends Partial<TDocument>,
+  TKeys extends TDocument extends never ? never : (keyof TDocument)[]
+> = MergeOld<
+  PatchOperationsNative,
+  {
+    dec?: TAttrs & { [key: string]: number };
+    diffMatchPatch?: TAttrs & { [key: string]: string };
+    inc?: TAttrs & { [key: string]: number };
+    set?: TAttrs;
+    setIfMissing?: TAttrs;
+    unset?: TKeys;
+  }
+>;
+
+export type PatchMutationOperation<
+  TDocument extends AnySanityDocument,
+  TAttrs extends Partial<TDocument>,
+  TKeys extends TDocument extends never ? never : (keyof TDocument)[]
+> = MutationSelection & PatchOperations<TDocument, TAttrs, TKeys>;
+
 export type PatchType<
   TDocument extends AnySanityDocument,
   TOriginalDocument extends AnySanityDocument,
@@ -83,14 +106,12 @@ export type PatchType<
    */
   TIsScoped extends boolean
 > = MergeOld<
-  PatchNative,
+  BasePatch,
   {
     append: (
-      ...args: Parameters<PatchNative["append"]>
+      ...args: Parameters<BasePatch["append"]>
     ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
-    clone: (
-      ...args: Parameters<PatchNative["clone"]>
-    ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+    clone: () => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
     commit: TIsScoped extends false
       ? never
       : <const TOptions extends MutationOptions = BaseMutationOptions>(
@@ -128,7 +149,7 @@ export type PatchType<
       TIsScoped
     >;
     ifRevisionId: (
-      ...args: Parameters<PatchNative["ifRevisionId"]>
+      ...args: Parameters<BasePatch["ifRevisionId"]>
     ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
     inc: <
       TAttrs extends TIsScoped extends true
@@ -145,15 +166,19 @@ export type PatchType<
       TIsScoped
     >;
     insert: (
-      ...args: Parameters<PatchNative["insert"]>
+      ...args: Parameters<BasePatch["insert"]>
     ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
     prepend: (
-      ...args: Parameters<PatchNative["prepend"]>
+      ...args: Parameters<BasePatch["prepend"]>
     ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
     reset: (
-      ...args: Parameters<PatchNative["reset"]>
+      ...args: Parameters<BasePatch["reset"]>
     ) => PatchType<TOriginalDocument, TOriginalDocument, TIsPromise, TIsScoped>;
-    serialize: () => PatchMutationOperation;
+    serialize: () => PatchMutationOperation<
+      TDocument,
+      Partial<TDocument>,
+      TDocument extends never ? never : (keyof TDocument)[]
+    >;
     set: <TAttrs extends TIsScoped extends true ? Partial<TDocument> : any>(
       attrs: TAttrs
     ) => PatchType<
@@ -177,9 +202,13 @@ export type PatchType<
       TIsScoped
     >;
     splice: (
-      ...args: Parameters<PatchNative["splice"]>
+      ...args: Parameters<BasePatch["splice"]>
     ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
-    toJSON: () => PatchMutationOperation;
+    toJSON: () => PatchMutationOperation<
+      TDocument,
+      Partial<TDocument>,
+      TDocument extends never ? never : (keyof TDocument)[]
+    >;
     unset: <
       TKeys extends TDocument extends never
         ? never
@@ -203,29 +232,51 @@ export type PatchType<
   }
 >;
 
-export type PatchOperations<
+export const Patch = PatchNative as unknown as new <
   TDocument extends AnySanityDocument,
   TAttrs extends Partial<TDocument>,
-  TKeys extends TDocument extends never ? never : (keyof TDocument)[]
-> = MergeOld<
-  PatchOperationsNative,
-  {
-    dec?: TAttrs & { [key: string]: number };
-    diffMatchPatch?: TAttrs & { [key: string]: string };
-    inc?: TAttrs & { [key: string]: number };
-    set?: TAttrs;
-    setIfMissing?: TAttrs;
-    unset?: TKeys;
-  }
+  TKeys extends TDocument extends never ? never : (keyof TDocument)[],
+  TClient extends SanityClient<any, TDocument> | undefined = undefined
+>(
+  idOrSelection: PatchSelection,
+  operations?: PatchOperations<TDocument, TAttrs, TKeys>,
+  client?: TClient
+) => PatchType<
+  Extract<TDocument, Partial<TAttrs>> &
+    (TDocument extends never
+      ? never
+      : TKeys extends never
+      ? never
+      : TKeys[number] extends keyof TDocument
+      ? TDocument
+      : never),
+  TDocument,
+  true,
+  undefined extends TClient ? false : true
 >;
 
-export const Patch = PatchNative as unknown as new <
-  Doc extends AnySanityDocument
+export const ObservablePatch = ObservablePatchNative as unknown as new <
+  TDocument extends AnySanityDocument,
+  TAttrs extends Partial<TDocument>,
+  TKeys extends TDocument extends never ? never : (keyof TDocument)[],
+  TClient extends SanityClient<any, TDocument> | undefined = undefined
 >(
-  selection: PatchSelection,
-  operations?: PatchOperationsNative,
-  client?: SanityClient<any, Doc>
-) => PatchType<Doc, Doc, any, false>;
+  idOrSelection: PatchSelection,
+  operations?: PatchOperations<TDocument, TAttrs, TKeys>,
+  client?: TClient
+) => PatchType<
+  Extract<TDocument, Partial<TAttrs>> &
+    (TDocument extends never
+      ? never
+      : TKeys extends never
+      ? never
+      : TKeys[number] extends keyof TDocument
+      ? TDocument
+      : never),
+  TDocument,
+  false,
+  undefined extends TClient ? false : true
+>;
 
 export type TransactionType<
   TDocuments extends AnySanityDocument[],
@@ -349,8 +400,18 @@ export type Mutation<
 > =
   | Exclude<
       MutationNative,
-      { create: any } | { createIfNotExists: any } | { createOrReplace: any }
+      | { create: any }
+      | { createIfNotExists: any }
+      | { createOrReplace: any }
+      | { patch: any }
     >
+  | {
+      patch: PatchMutationOperation<
+        TDocument,
+        Partial<TDocument>,
+        TDocument extends never ? never : (keyof TDocument)[]
+      >;
+    }
   | { create: SetOptional<Doc & { _id: string }, "_id"> }
   | { createIfNotExists: Doc & { _id: string } }
   | { createOrReplace: Doc & { _id: string } };
@@ -570,7 +631,18 @@ type OverrideSanityClient<
       const TOptions extends MutationOptions = BaseMutationOptions
     >(
       operations:
-        | MutationNative<Doc>[]
+        | Mutation<
+            TDocument,
+            Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+              _type: string;
+            }
+          >
+        | Mutation<
+            TDocument,
+            Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+              _type: string;
+            }
+          >[]
         | PatchType<Doc, AnySanityDocument, TIsPromise, false>
         | TransactionType<
             [Doc, ...any[]],
@@ -691,6 +763,9 @@ export const castToTyped =
       SanityValuesToDocumentUnion<SanityValues, TClientConfig>
     >;
 
-export const castFromTyped = <TSanityClient extends SanityClient<any, any>>(
-  typed: TSanityClient
+export const castFromTyped = <
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+>(
+  typed: SanityClient<TClientConfig, TDocument>
 ) => typed as unknown as SanityClientNative;

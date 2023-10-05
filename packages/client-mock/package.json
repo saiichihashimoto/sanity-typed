@@ -32,6 +32,8 @@
     "@sanity-typed/client": "0.0.0-development",
     "@sanity-typed/groq-js": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
+    "@sanity/diff-match-patch": "3.1.1",
+    "lodash": "4.17.21",
     "type-fest": "4.3.3"
   },
   "devDependencies": {
@@ -39,6 +41,7 @@
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity/client": "6.4.12",
+    "@types/lodash": "4.14.199",
     "typescript": "5.2.2"
   },
   "peerDependencies": {

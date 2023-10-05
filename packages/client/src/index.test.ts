@@ -451,7 +451,7 @@ describe("createClient", () => {
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .patch("id")
-            .set({ foo: "foo" })
+            .set({ foo: "bar" })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -465,7 +465,7 @@ describe("createClient", () => {
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
-            .patch("id", { set: { foo: "foo" } })
+            .patch("id", { set: { foo: "bar" } })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -482,7 +482,7 @@ describe("createClient", () => {
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .patch("id")
-            .setIfMissing({ foo: "foo" })
+            .setIfMissing({ foo: "bar" })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -496,7 +496,7 @@ describe("createClient", () => {
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
-            .patch("id", { setIfMissing: { foo: "foo" } })
+            .patch("id", { setIfMissing: { foo: "bar" } })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -513,7 +513,7 @@ describe("createClient", () => {
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .patch("id")
-            .diffMatchPatch({ foo: "foo" })
+            .diffMatchPatch({ foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -527,7 +527,9 @@ describe("createClient", () => {
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
-            .patch("id", { diffMatchPatch: { foo: "foo" } })
+            .patch("id", {
+              diffMatchPatch: { foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" },
+            })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -540,7 +542,7 @@ describe("createClient", () => {
       it("filters the union to keys", () => {
         const exec = () =>
           createClient<{
-            foo: AnySanityDocument & { _type: "foo"; foo: string };
+            foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .patch("id")
@@ -548,21 +550,21 @@ describe("createClient", () => {
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+          Promise<AnySanityDocument & { _type: "foo"; foo?: string }>
         >();
       });
 
       it("via PatchOperations", () => {
         const exec = () =>
           createClient<{
-            foo: AnySanityDocument & { _type: "foo"; foo: string };
+            foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .patch("id", { unset: ["foo"] })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          Promise<AnySanityDocument & { _type: "foo"; foo: string }>
+          Promise<AnySanityDocument & { _type: "foo"; foo?: string }>
         >();
       });
     });
@@ -644,7 +646,7 @@ describe("createClient", () => {
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>()({})
           .patch("id")
-          .set({ foo: "foo" })
+          .set({ foo: "bar" })
           .reset()
           .commit();
 
@@ -946,7 +948,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).mutate(new Patch("id").set({ foo: "foo" }));
+        }>()({}).mutate(new Patch("id").set({ foo: "bar" }));
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<AnySanityDocument & { _type: "foo"; foo: string }>

@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { describe, it } from "@jest/globals";
 import type {
   ClientConfig,
@@ -22,6 +23,10 @@ import { createClient } from ".";
 type AnySanityDocument = Omit<SanityDocument, "_type">;
 
 describe("createClient", () => {
+  beforeEach(() => {
+    faker.seed(0);
+  });
+
   it("returns a SanityClient", () => {
     const client = createClient<{
       foo: AnySanityDocument & { _type: "foo"; foo: string };
@@ -250,7 +255,7 @@ describe("createClient", () => {
 
       expectType<typeof result>().toStrictEqual<RawQueryResponse<5, "5">>();
       expect(result).toStrictEqual({
-        ms: expect.any(Number),
+        ms: 0,
         result: 5,
         query: "5",
       });
@@ -421,11 +426,11 @@ describe("createClient", () => {
         AnySanityDocument & { _type: "foo"; foo: string }
       >();
       expect(result).toStrictEqual({
-        _createdAt: expect.any(String),
-        _id: expect.any(String),
-        _rev: expect.any(String),
+        _createdAt: "2023-10-05T06:14:01.293Z",
+        _id: "89bd9d8d-69a6-474e-80f4-67cc8796ed15",
+        _rev: "E1mPXM8RRYtNNswMG7IDA8",
         _type: "foo",
-        _updatedAt: expect.any(String),
+        _updatedAt: "2023-10-05T06:14:01.293Z",
         foo: "foo",
       });
     });
@@ -453,11 +458,11 @@ describe("createClient", () => {
         AnySanityDocument & { _type: "foo"; foo: string }
       >();
       expect(result).toStrictEqual({
-        _createdAt: expect.any(String),
+        _createdAt: "2023-10-05T06:14:01.293Z",
         _id: "id",
-        _rev: expect.any(String),
+        _rev: "yAIQBRxQqCEnriT3XgntNO",
         _type: "foo",
-        _updatedAt: expect.any(String),
+        _updatedAt: "2023-10-05T06:14:01.293Z",
         foo: "foo",
       });
     });
@@ -534,11 +539,30 @@ describe("createClient", () => {
   });
 
   describe("patch", () => {
-    it.failing("returns a union of the documents", async () => {
+    it("returns a union of the documents", async () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({})
+      }>({
+        dataset: [
+          {
+            _createdAt: "_createdAt",
+            _id: "id",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo",
+          },
+          {
+            _createdAt: "_createdAt",
+            _id: "id2",
+            _rev: "_rev",
+            _type: "qux",
+            _updatedAt: "_updatedAt",
+            qux: 1,
+          },
+        ],
+      })({})
         .patch("id")
         .commit();
 
@@ -546,130 +570,373 @@ describe("createClient", () => {
         | (AnySanityDocument & { _type: "foo"; foo: string })
         | (AnySanityDocument & { _type: "qux"; qux: number })
       >();
+      expect(result).toStrictEqual({
+        _createdAt: "_createdAt",
+        _id: "id",
+        _rev: "_rev",
+        _type: "foo",
+        _updatedAt: "_updatedAt",
+        foo: "foo",
+      });
     });
 
     describe("set", () => {
-      it.failing("filters the union to attrs", async () => {
+      it("filters the union to attrs", async () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: "foo",
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
           .patch("id")
-          .set({ foo: "foo" })
+          .set({ foo: "bar" })
           .commit();
 
         expectType<typeof result>().toStrictEqual<
           AnySanityDocument & { _type: "foo"; foo: string }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+          foo: "bar",
+        });
       });
 
-      it.failing("via PatchOperations", async () => {
+      it("via PatchOperations", async () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
-          .patch("id", { set: { foo: "foo" } })
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: "foo",
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
+          .patch("id", { set: { foo: "bar" } })
           .commit();
 
         expectType<typeof result>().toStrictEqual<
           AnySanityDocument & { _type: "foo"; foo: string }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+          foo: "bar",
+        });
       });
     });
 
     describe("setIfMissing", () => {
-      it.failing("filters the union to attrs", async () => {
+      it("filters the union to attrs", async () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: "foo",
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
           .patch("id")
-          .setIfMissing({ foo: "foo" })
+          .setIfMissing({ foo: "bar" })
           .commit();
 
         expectType<typeof result>().toStrictEqual<
           AnySanityDocument & { _type: "foo"; foo: string }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+          foo: "foo",
+        });
       });
 
-      it.failing("via PatchOperations", async () => {
+      it("via PatchOperations", async () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
-          .patch("id", { setIfMissing: { foo: "foo" } })
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: "foo",
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
+          .patch("id", { setIfMissing: { foo: "bar" } })
           .commit();
 
         expectType<typeof result>().toStrictEqual<
           AnySanityDocument & { _type: "foo"; foo: string }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+          foo: "foo",
+        });
       });
     });
 
     describe("diffMatchPatch", () => {
-      it.failing("filters the union to attrs", async () => {
+      it("filters the union to attrs", async () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: "foo",
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
           .patch("id")
-          .diffMatchPatch({ foo: "foo" })
+          .diffMatchPatch({ foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" })
           .commit();
 
         expectType<typeof result>().toStrictEqual<
           AnySanityDocument & { _type: "foo"; foo: string }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+          foo: "bar",
+        });
       });
 
-      it.failing("via PatchOperations", async () => {
+      it("via PatchOperations", async () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
-          .patch("id", { diffMatchPatch: { foo: "foo" } })
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: "foo",
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
+          .patch("id", {
+            diffMatchPatch: { foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" },
+          })
           .commit();
 
         expectType<typeof result>().toStrictEqual<
           AnySanityDocument & { _type: "foo"; foo: string }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+          foo: "bar",
+        });
       });
     });
 
     describe("unset", () => {
-      it.failing("filters the union to keys", async () => {
+      it("filters the union to keys", async () => {
         const result = await createClient<{
-          foo: AnySanityDocument & { _type: "foo"; foo: string };
+          foo: AnySanityDocument & { _type: "foo"; foo?: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: "foo",
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
           .patch("id")
           .unset(["foo"])
           .commit();
 
         expectType<typeof result>().toStrictEqual<
-          AnySanityDocument & { _type: "foo"; foo: string }
+          AnySanityDocument & { _type: "foo"; foo?: string }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+        });
       });
 
-      it.failing("via PatchOperations", async () => {
+      it("via PatchOperations", async () => {
         const result = await createClient<{
-          foo: AnySanityDocument & { _type: "foo"; foo: string };
+          foo: AnySanityDocument & { _type: "foo"; foo?: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: "foo",
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
           .patch("id", { unset: ["foo"] })
           .commit();
 
         expectType<typeof result>().toStrictEqual<
-          AnySanityDocument & { _type: "foo"; foo: string }
+          AnySanityDocument & { _type: "foo"; foo?: string }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+        });
       });
     });
 
     describe("inc", () => {
-      it.failing("filters the union to attrs", async () => {
+      it("filters the union to attrs", async () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: number };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: 3,
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
           .patch("id")
           .inc({ foo: 1 })
           .commit();
@@ -677,28 +944,82 @@ describe("createClient", () => {
         expectType<typeof result>().toStrictEqual<
           AnySanityDocument & { _type: "foo"; foo: number }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+          foo: 4,
+        });
       });
 
-      it.failing("via PatchOperations", async () => {
+      it("via PatchOperations", async () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: number };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: 3,
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
           .patch("id", { inc: { foo: 1 } })
           .commit();
 
         expectType<typeof result>().toStrictEqual<
           AnySanityDocument & { _type: "foo"; foo: number }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+          foo: 4,
+        });
       });
     });
 
     describe("dec", () => {
-      it.failing("filters the union to attrs", async () => {
+      it("filters the union to attrs", async () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: number };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: 3,
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
           .patch("id")
           .dec({ foo: 1 })
           .commit();
@@ -706,19 +1027,54 @@ describe("createClient", () => {
         expectType<typeof result>().toStrictEqual<
           AnySanityDocument & { _type: "foo"; foo: number }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+          foo: 2,
+        });
       });
 
-      it.failing("via PatchOperations", async () => {
+      it("via PatchOperations", async () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: number };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({
+          dataset: [
+            {
+              _createdAt: "_createdAt",
+              _id: "id",
+              _rev: "_rev",
+              _type: "foo",
+              _updatedAt: "_updatedAt",
+              foo: 3,
+            },
+            {
+              _createdAt: "_createdAt",
+              _id: "id2",
+              _rev: "_rev",
+              _type: "qux",
+              _updatedAt: "_updatedAt",
+              qux: 1,
+            },
+          ],
+        })({})
           .patch("id", { dec: { foo: 1 } })
           .commit();
 
         expectType<typeof result>().toStrictEqual<
           AnySanityDocument & { _type: "foo"; foo: number }
         >();
+        expect(result).toStrictEqual({
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "yAIQBRxQqCEnriT3XgntNO",
+          _type: "foo",
+          _updatedAt: "2023-10-05T06:14:01.293Z",
+          foo: 2,
+        });
       });
     });
 
@@ -730,13 +1086,32 @@ describe("createClient", () => {
 
     it.todo("splice, it does JSON paths");
 
-    it.failing("returns original documents after reset", async () => {
+    it("returns original documents after reset", async () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({})
+      }>({
+        dataset: [
+          {
+            _createdAt: "_createdAt",
+            _id: "id",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo",
+          },
+          {
+            _createdAt: "_createdAt",
+            _id: "id2",
+            _rev: "_rev",
+            _type: "qux",
+            _updatedAt: "_updatedAt",
+            qux: 1,
+          },
+        ],
+      })({})
         .patch("id")
-        .set({ foo: "foo" })
+        .set({ foo: "bar" })
         .reset()
         .commit();
 
@@ -744,6 +1119,14 @@ describe("createClient", () => {
         | (AnySanityDocument & { _type: "foo"; foo: string })
         | (AnySanityDocument & { _type: "qux"; qux: number })
       >();
+      expect(result).toStrictEqual({
+        _createdAt: "_createdAt",
+        _id: "id",
+        _rev: "_rev",
+        _type: "foo",
+        _updatedAt: "_updatedAt",
+        foo: "foo",
+      });
     });
 
     it.todo("try all of them with deep and JSON Paths");
@@ -986,15 +1369,42 @@ describe("createClient", () => {
       >();
     });
 
-    it.failing("filters to Patch result", async () => {
+    it("filters to Patch result", async () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({}).mutate(new Patch("id").set({ foo: "foo" }));
+      }>({
+        dataset: [
+          {
+            _createdAt: "_createdAt",
+            _id: "id",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo",
+          },
+          {
+            _createdAt: "_createdAt",
+            _id: "id2",
+            _rev: "_rev",
+            _type: "qux",
+            _updatedAt: "_updatedAt",
+            qux: 1,
+          },
+        ],
+      })({}).mutate(new Patch("id").set({ foo: "bar" }));
 
       expectType<typeof result>().toStrictEqual<
         AnySanityDocument & { _type: "foo"; foo: string }
       >();
+      expect(result).toStrictEqual({
+        _createdAt: "_createdAt",
+        _id: "id",
+        _rev: "yAIQBRxQqCEnriT3XgntNO",
+        _type: "foo",
+        _updatedAt: "2023-10-05T06:14:01.293Z",
+        foo: "bar",
+      });
     });
 
     it.failing("filters to Transaction result", async () => {

@@ -11,7 +11,7 @@ import type { SetOptional } from "type-fest";
 import { expectType } from "@sanity-typed/test-utils";
 import type { SanityDocument } from "@sanity-typed/types";
 
-import { Patch, Transaction, createClient } from ".";
+import { ObservablePatch, Transaction, createClient } from ".";
 import type {
   ListenEvent,
   MutationEvent,
@@ -440,7 +440,7 @@ describe("observable", () => {
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .observable.patch("id")
-            .set({ foo: "foo" })
+            .set({ foo: "bar" })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -454,7 +454,7 @@ describe("observable", () => {
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
-            .observable.patch("id", { set: { foo: "foo" } })
+            .observable.patch("id", { set: { foo: "bar" } })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -471,7 +471,7 @@ describe("observable", () => {
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .observable.patch("id")
-            .setIfMissing({ foo: "foo" })
+            .setIfMissing({ foo: "bar" })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -485,7 +485,7 @@ describe("observable", () => {
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
-            .observable.patch("id", { setIfMissing: { foo: "foo" } })
+            .observable.patch("id", { setIfMissing: { foo: "bar" } })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -502,7 +502,7 @@ describe("observable", () => {
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .observable.patch("id")
-            .diffMatchPatch({ foo: "foo" })
+            .diffMatchPatch({ foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -516,7 +516,9 @@ describe("observable", () => {
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
-            .observable.patch("id", { diffMatchPatch: { foo: "foo" } })
+            .observable.patch("id", {
+              diffMatchPatch: { foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" },
+            })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
@@ -529,7 +531,7 @@ describe("observable", () => {
       it("filters the union to keys", () => {
         const exec = () =>
           createClient<{
-            foo: AnySanityDocument & { _type: "foo"; foo: string };
+            foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .observable.patch("id")
@@ -537,21 +539,21 @@ describe("observable", () => {
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          Observable<AnySanityDocument & { _type: "foo"; foo: string }>
+          Observable<AnySanityDocument & { _type: "foo"; foo?: string }>
         >();
       });
 
       it("via PatchOperations", () => {
         const exec = () =>
           createClient<{
-            foo: AnySanityDocument & { _type: "foo"; foo: string };
+            foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
           }>()({})
             .observable.patch("id", { unset: ["foo"] })
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          Observable<AnySanityDocument & { _type: "foo"; foo: string }>
+          Observable<AnySanityDocument & { _type: "foo"; foo?: string }>
         >();
       });
     });
@@ -633,7 +635,7 @@ describe("observable", () => {
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>()({})
           .observable.patch("id")
-          .set({ foo: "foo" })
+          .set({ foo: "bar" })
           .reset()
           .commit();
 
@@ -919,12 +921,14 @@ describe("observable", () => {
       >();
     });
 
-    it("filters to Patch result", () => {
+    it("filters to ObservablePatch result", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.mutate(new Patch("id").set({ foo: "foo" }));
+        }>()({}).observable.mutate(
+          new ObservablePatch("id").set({ foo: "bar" })
+        );
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<AnySanityDocument & { _type: "foo"; foo: string }>
