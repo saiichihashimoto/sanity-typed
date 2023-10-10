@@ -24,7 +24,7 @@
   "dependencies": {
     "@jest/types": "29.6.3",
     "@manypkg/cli": "0.21.0",
-    "@standard-configs/prettier-plugin": "1.0.11",
+    "@standard-configs/prettier-plugin": "1.0.12",
     "@total-typescript/ts-reset": "0.5.1",
     "@trivago/prettier-plugin-sort-imports": "4.2.0",
     "@types/jest": "29.5.5",
