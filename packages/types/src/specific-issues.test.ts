@@ -111,4 +111,52 @@ describe("specific issues", () => {
       title?: string;
     }>();
   });
+
+  it("#415 object -> array -> block", () => {
+    // https://github.com/saiichihashimoto/sanity-typed/issues/415
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            type: "object",
+            name: "foo",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "array",
+                of: [
+                  defineArrayMember({
+                    type: "block",
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+      _type: "foo";
+      bar?: {
+        _key: string;
+        _type: "block";
+        children: {
+          _key: string;
+          _type: "span";
+          marks?: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }[];
+    }>();
+  });
 });
