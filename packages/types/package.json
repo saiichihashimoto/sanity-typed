@@ -36,7 +36,7 @@
     "@sanity-typed/test-utils": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
-    "sanity": "3.16.7",
+    "sanity": "3.17.0",
     "typescript": "5.2.2"
   },
   "peerDependencies": {
