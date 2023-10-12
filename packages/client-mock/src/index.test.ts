@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { describe, it } from "@jest/globals";
+import { expectType } from "@saiichihashimoto/test-utils";
 import type {
   ClientConfig,
   ClientPerspective,
@@ -15,7 +16,6 @@ import type {
   RawQueryResponse,
   SanityClient,
 } from "@sanity-typed/client";
-import { expectType } from "@sanity-typed/test-utils";
 import type { SanityDocument } from "@sanity-typed/types";
 
 import { createClient } from ".";
