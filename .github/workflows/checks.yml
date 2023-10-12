@@ -141,8 +141,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package:
-          [client, client-mock, faker, groq, groq-js, test-utils, types, zod]
+        package: [client, client-mock, faker, groq, groq-js, types, zod]
     steps:
       - uses: actions/checkout@v4
         with:

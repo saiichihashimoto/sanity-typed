@@ -1,6 +1,5 @@
 import { describe, it } from "@jest/globals";
-
-import { expectType } from "@sanity-typed/test-utils";
+import { expectType } from "@saiichihashimoto/test-utils";
 
 import { defineConfig, defineField, defineType } from ".";
 import type { DocumentValues, InferSchemaValues } from ".";

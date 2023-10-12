@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
-    "@sanity-typed/test-utils": "0.0.0-development",
+    "@saiichihashimoto/test-utils": "1.0.1",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity/client": "6.4.12",
     "typescript": "5.2.2"

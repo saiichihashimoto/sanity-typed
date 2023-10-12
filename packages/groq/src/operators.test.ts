@@ -1,9 +1,8 @@
 import { describe, expect, it } from "@jest/globals";
+import { expectType } from "@saiichihashimoto/test-utils";
 import { DateTime, evaluate, parse } from "groq-js";
 import type { GroqFunction } from "groq-js";
 import type { WritableDeep } from "type-fest";
-
-import { expectType } from "@sanity-typed/test-utils";
 
 import type { ExecuteQuery, Parse } from ".";
 import type { ScopeFromPartialContext } from "./internal";

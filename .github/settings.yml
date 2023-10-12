@@ -22,6 +22,5 @@ branches:
           - Test (faker)
           - Test (groq)
           - Test (groq-js)
-          - Test (test-utils)
           - Test (types)
           - Test (zod)

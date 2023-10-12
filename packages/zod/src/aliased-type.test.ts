@@ -1,6 +1,6 @@
 import { describe, it } from "@jest/globals";
+import { expectType } from "@saiichihashimoto/test-utils";
 
-import { expectType } from "@sanity-typed/test-utils";
 import {
   defineConfig,
   defineField,
