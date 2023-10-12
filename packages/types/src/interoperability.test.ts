@@ -1,4 +1,5 @@
 import { describe, it } from "@jest/globals";
+import { expectType } from "@saiichihashimoto/test-utils";
 import {
   defineArrayMember as defineArrayMemberNative,
   defineConfig as defineConfigNative,
@@ -6,8 +7,6 @@ import {
   definePlugin as definePluginNative,
   defineType as defineTypeNative,
 } from "sanity";
-
-import { expectType } from "@sanity-typed/test-utils";
 
 import {
   castFromTyped,

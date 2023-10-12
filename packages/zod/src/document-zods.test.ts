@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
+import { expectType } from "@saiichihashimoto/test-utils";
 import type { z } from "zod";
 
-import { expectType } from "@sanity-typed/test-utils";
 import { defineConfig, defineField, defineType } from "@sanity-typed/types";
 import type { DocumentValues, InferSchemaValues } from "@sanity-typed/types";
 

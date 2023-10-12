@@ -1,7 +1,6 @@
 import { describe, it } from "@jest/globals";
+import { expectType } from "@saiichihashimoto/test-utils";
 import type { GeopointValue } from "sanity";
-
-import { expectType } from "@sanity-typed/test-utils";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
 import type { InferSchemaValues, SlugValue } from ".";

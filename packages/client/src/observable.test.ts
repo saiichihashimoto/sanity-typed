@@ -1,4 +1,5 @@
 import { describe, it } from "@jest/globals";
+import { expectType } from "@saiichihashimoto/test-utils";
 import type {
   ClientConfig,
   ClientPerspective,
@@ -8,7 +9,6 @@ import type {
 import type { Observable } from "rxjs";
 import type { SetOptional } from "type-fest";
 
-import { expectType } from "@sanity-typed/test-utils";
 import type { SanityDocument } from "@sanity-typed/types";
 
 import { Patch, Transaction, createClient } from ".";

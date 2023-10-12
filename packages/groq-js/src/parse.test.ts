@@ -1,8 +1,8 @@
 import { describe, expect, it } from "@jest/globals";
+import { expectType } from "@saiichihashimoto/test-utils";
 import { parse as parseNative } from "groq-js";
 
 import type { Parse } from "@sanity-typed/groq";
-import { expectType } from "@sanity-typed/test-utils";
 
 import { parse } from ".";
 
