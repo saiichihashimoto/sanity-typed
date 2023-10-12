@@ -1,7 +1,7 @@
 import { base, en } from "@faker-js/faker";
 import { describe, expect, it } from "@jest/globals";
+import { expectType } from "@saiichihashimoto/test-utils";
 
-import { expectType } from "@sanity-typed/test-utils";
 import {
   defineArrayMember,
   defineConfig,

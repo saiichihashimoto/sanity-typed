@@ -1,9 +1,9 @@
 import { describe, expect, it } from "@jest/globals";
+import { expectType } from "@saiichihashimoto/test-utils";
 import { evaluate as evaluateNative, parse as parseNative } from "groq-js";
 import type { WritableDeep } from "type-fest";
 
 import type { ExecuteQuery } from "@sanity-typed/groq";
-import { expectType } from "@sanity-typed/test-utils";
 
 import { evaluate, parse } from ".";
 
