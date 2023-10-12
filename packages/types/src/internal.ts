@@ -216,6 +216,21 @@ export type NumberDefinition<
   }
 >;
 
+/**
+ * **WARNING!!!**
+ *
+ * This is *not* used during runtime by any \@sanity-typed/* packages.
+ *
+ * ReferenceValue will not actually have a a key of this symbol.
+ *
+ * This is only used to help with type inference.
+ *
+ * \@sanity-typed/types does not change the runtime output of any define* schema, so this is not something that will ever be actually included.
+ *
+ * This is also true for @sanity-typed/faker and @sanity-typed/zod. Although they both import this symbol, it's only to assume the same type inferrence.
+ *
+ * DO NOT rely on or use this symbol in runtime in any way. Typescript won't complain but it won't actually be there. We cannot change the output of sanity's content lake to include anything, especially this symbol.
+ */
 export const referenced: unique symbol = Symbol("referenced");
 
 export type ReferenceValue<TReferenced extends string> = MergeOld<
