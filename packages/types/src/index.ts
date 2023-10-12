@@ -44,4 +44,5 @@ export {
   defineField,
   definePlugin,
   defineType,
+  referenced,
 } from "./internal";

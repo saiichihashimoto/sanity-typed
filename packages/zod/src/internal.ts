@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { traverseValidation } from "@sanity-typed/traverse-validation";
 import type { InferSchemaValues } from "@sanity-typed/types";
-import { referenced } from "@sanity-typed/types/src/internal";
+import { referenced } from "@sanity-typed/types";
 import type {
   ArrayMemberDefinition,
   ConfigBase,
