@@ -33,7 +33,7 @@
   "dependencies": {
     "@sanity-typed/groq": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
-    "type-fest": "4.3.3"
+    "type-fest": "4.4.0"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
