@@ -322,7 +322,7 @@
       }
     },
     {
-      "files": ["**/*.spec.*", "**/*.test.*", "**/test-utils.ts"],
+      "files": ["**/*.spec.*", "**/*.test.*"],
       "extends": ["plugin:jest/recommended"],
       "env": {
         "jest": true

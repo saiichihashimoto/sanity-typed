@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
+import { expectType } from "@saiichihashimoto/test-utils";
 import type { GeopointValue } from "sanity";
 
-import { expectType } from "@sanity-typed/test-utils";
 import {
   defineArrayMember,
   defineConfig,
