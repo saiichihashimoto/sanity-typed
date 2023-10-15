@@ -58,8 +58,7 @@ import type {
   UnionToIntersection,
 } from "type-fest";
 
-import type { ReferenceValue } from "@sanity-typed/types";
-import type { referenced } from "@sanity-typed/types/src/internal";
+import type { ReferenceValue, referenced } from "@sanity-typed/types";
 import type { IsPlainObject, TupleOfLength } from "@sanity-typed/utils";
 
 type Simplify<AnyType> = SimplifyNative<AnyType> extends AnyType
