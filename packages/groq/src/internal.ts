@@ -58,8 +58,7 @@ import type {
   UnionToIntersection,
 } from "type-fest";
 
-import type { ReferenceValue } from "@sanity-typed/types";
-import type { referenced } from "@sanity-typed/types/src/internal";
+import type { ReferenceValue, referenced } from "@sanity-typed/types";
 import type { IsPlainObject, TupleOfLength } from "@sanity-typed/utils";
 
 type Simplify<AnyType> = SimplifyNative<AnyType> extends AnyType
@@ -1833,14 +1832,21 @@ type EvaluateObjectAttribute<
 type EvaluateObjectAttributes<
   TAttributes extends ObjectAttributeNode[],
   TScope extends Scope<Context<any[], any>>
-> = UnionToIntersection<
-  {
-    [Index in keyof TAttributes]-?: EvaluateObjectAttribute<
-      TAttributes[Index],
-      TScope
+> = {
+  [Index in keyof TAttributes]-?: EvaluateObjectAttribute<
+    TAttributes[Index],
+    TScope
+  >;
+}[number] extends never
+  ? NonNullable<unknown>
+  : UnionToIntersection<
+      {
+        [Index in keyof TAttributes]-?: EvaluateObjectAttribute<
+          TAttributes[Index],
+          TScope
+        >;
+      }[number]
     >;
-  }[number]
->;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateObject()
