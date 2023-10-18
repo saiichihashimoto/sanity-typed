@@ -44,7 +44,7 @@
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
     "@types/lodash": "4.14.199",
-    "sanity": "3.17.0",
+    "sanity": "3.18.0",
     "typescript": "5.2.2",
     "zod": "3.22.4"
   },

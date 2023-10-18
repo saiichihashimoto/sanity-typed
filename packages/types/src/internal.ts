@@ -110,9 +110,13 @@ type WithRequired<
   },
   {
     optional: () => WithRequired<false, Rule>;
-    required: () => WithRequired<true, Rule>;
+    required: (
+      ...args: Parameters<Rule["required"]>
+    ) => WithRequired<true, Rule>;
     [required]: TRequired;
-    warning: () => WithRequired<false, Rule>;
+    warning: (
+      ...args: Parameters<Rule["warning"]>
+    ) => WithRequired<false, Rule>;
   }
 >;
 
