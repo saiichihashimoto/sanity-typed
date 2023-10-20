@@ -82,7 +82,7 @@ export const createClient =
         []
     );
 
-    // @ts-expect-error -- FIXME
+    // @ts-expect-error -- TODO
     const client: SanityClient<
       TClientConfig,
       SanityValuesToDocumentUnion<SanityValues, TClientConfig>
@@ -102,7 +102,7 @@ export const createClient =
         | "users"
       >),
       clone: () => createClient<SanityValues>(options)(config),
-      // @ts-expect-error -- FIXME
+      // @ts-expect-error -- TODO
       config: <
         const NewConfig extends Partial<ClientConfig> | undefined = undefined
       >(
@@ -126,7 +126,7 @@ export const createClient =
             })) as NewConfig extends undefined
           ? InitializedClientConfig<WritableDeep<TClientConfig>>
           : SanityClient<Merge<TClientConfig, NewConfig>, TDocument>,
-      // @ts-expect-error -- FIXME
+      // @ts-expect-error -- TODO
       withConfig: <const NewConfig extends Partial<ClientConfig>>(
         newConfig?: NewConfig
       ) =>
@@ -146,15 +146,15 @@ export const createClient =
         options?: TOptions
       ) => {
         const start = performance.now();
-        // @ts-expect-error -- FIXME
+        // @ts-expect-error -- TODO
         const result = await (
           await evaluate(
-            // @ts-expect-error -- FIXME
+            // @ts-expect-error -- TODO
             parse(query),
             {
               params,
               dataset: [...datasetById.values()],
-              // @ts-expect-error -- FIXME
+              // @ts-expect-error -- TODO
               sanity: config,
             }
           )
@@ -164,7 +164,7 @@ export const createClient =
         const { filterResponse = true } = options ?? {};
 
         return !filterResponse
-          ? // @ts-expect-error -- FIXME
+          ? // @ts-expect-error -- TODO
             { result, query, ms: end - start }
           : result;
       },
@@ -174,13 +174,13 @@ export const createClient =
       >["listen"],
       getDocument: async <const TId extends string>(id: TId) =>
         datasetById.get(id),
-      // @ts-expect-error -- FIXME
+      // @ts-expect-error -- TODO
       getDocuments: async <const TIds extends readonly string[]>(ids: TIds) =>
         ids.map((id) => datasetById.get(id) ?? null) as GetDocuments<
           TDocument,
           WritableDeep<TIds>
         >,
-      // @ts-expect-error -- FIXME
+      // @ts-expect-error -- TODO
       create: async <
         Doc extends TDocument extends never
           ? never
@@ -268,7 +268,7 @@ export const createClient =
           true,
           true
         >,
-      mutate: (<
+      mutate: (async <
         Doc extends AnySanityDocument,
         const TOptions extends MutationOptions = BaseMutationOptions
       >(
@@ -290,7 +290,7 @@ export const createClient =
         options?: TOptions
       ) => {
         if (Array.isArray(operations)) {
-          return operations.map((operation) =>
+          return operations.map(async (operation) =>
             client.mutate(operation, options)
           )[0];
         }
@@ -376,7 +376,7 @@ export const createClient =
           "patch" in operations ? operations.patch : operations.serialize();
 
         const previousDoc = datasetById.get(
-          // @ts-expect-error -- FIXME
+          // @ts-expect-error -- TODO
           patchOperation.id as string
         )!;
 

@@ -1142,7 +1142,7 @@ describe("createClient", () => {
         .commit();
 
       expectType<typeof result>().toStrictEqual<undefined>();
-      expect(result).toStrictEqual(undefined);
+      expect(result).toBeUndefined();
     });
 
     describe("create", () => {
@@ -1537,7 +1537,7 @@ describe("createClient", () => {
         .commit();
 
       expectType<typeof result>().toStrictEqual<undefined>();
-      expect(result).toStrictEqual(undefined);
+      expect(result).toBeUndefined();
     });
   });
 
@@ -1548,9 +1548,9 @@ describe("createClient", () => {
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>()({}).mutate([]);
 
-      expectType<typeof result>().toStrictEqual<// @ts-expect-error -- FIXME
+      expectType<typeof result>().toStrictEqual<// @ts-expect-error -- TODO
       undefined>();
-      expect(result).toStrictEqual(undefined);
+      expect(result).toBeUndefined();
     });
 
     it("filters to Mutation result", async () => {

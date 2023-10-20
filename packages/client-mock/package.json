@@ -28,19 +28,19 @@
     "dev": "npm run build -- --no-dts"
   },
   "dependencies": {
-    "@faker-js/faker": "8.1.0",
+    "@faker-js/faker": "8.2.0",
     "@sanity-typed/client": "0.0.0-development",
     "@sanity-typed/groq-js": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
     "@sanity/diff-match-patch": "3.1.1",
     "lodash": "4.17.21",
-    "type-fest": "4.3.3"
+    "type-fest": "4.5.0"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.1",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@sanity/client": "6.4.12",
+    "@sanity/client": "6.6.0",
     "@types/lodash": "4.14.199",
     "typescript": "5.2.2"
   },
