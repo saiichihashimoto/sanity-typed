@@ -102,6 +102,7 @@ export const createClient =
         | "users"
       >),
       clone: () => createClient<SanityValues>(options)(config),
+      // @ts-expect-error -- FIXME
       config: <
         const NewConfig extends Partial<ClientConfig> | undefined = undefined
       >(
@@ -125,6 +126,7 @@ export const createClient =
             })) as NewConfig extends undefined
           ? InitializedClientConfig<WritableDeep<TClientConfig>>
           : SanityClient<Merge<TClientConfig, NewConfig>, TDocument>,
+      // @ts-expect-error -- FIXME
       withConfig: <const NewConfig extends Partial<ClientConfig>>(
         newConfig?: NewConfig
       ) =>
@@ -172,11 +174,13 @@ export const createClient =
       >["listen"],
       getDocument: async <const TId extends string>(id: TId) =>
         datasetById.get(id),
+      // @ts-expect-error -- FIXME
       getDocuments: async <const TIds extends readonly string[]>(ids: TIds) =>
         ids.map((id) => datasetById.get(id) ?? null) as GetDocuments<
           TDocument,
           WritableDeep<TIds>
         >,
+      // @ts-expect-error -- FIXME
       create: async <
         Doc extends TDocument extends never
           ? never
