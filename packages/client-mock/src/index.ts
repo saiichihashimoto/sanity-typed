@@ -82,7 +82,6 @@ export const createClient =
         []
     );
 
-    // @ts-expect-error -- TODO
     const client: SanityClient<
       TClientConfig,
       SanityValuesToDocumentUnion<SanityValues, TClientConfig>
@@ -102,7 +101,6 @@ export const createClient =
         | "users"
       >),
       clone: () => createClient<SanityValues>(options)(config),
-      // @ts-expect-error -- TODO
       config: <
         const NewConfig extends Partial<ClientConfig> | undefined = undefined
       >(
@@ -126,7 +124,6 @@ export const createClient =
             })) as NewConfig extends undefined
           ? InitializedClientConfig<WritableDeep<TClientConfig>>
           : SanityClient<Merge<TClientConfig, NewConfig>, TDocument>,
-      // @ts-expect-error -- TODO
       withConfig: <const NewConfig extends Partial<ClientConfig>>(
         newConfig?: NewConfig
       ) =>
@@ -174,13 +171,11 @@ export const createClient =
       >["listen"],
       getDocument: async <const TId extends string>(id: TId) =>
         datasetById.get(id),
-      // @ts-expect-error -- TODO
       getDocuments: async <const TIds extends readonly string[]>(ids: TIds) =>
         ids.map((id) => datasetById.get(id) ?? null) as GetDocuments<
           TDocument,
           WritableDeep<TIds>
         >,
-      // @ts-expect-error -- TODO
       create: async <
         Doc extends TDocument extends never
           ? never
@@ -445,7 +440,10 @@ export const createClient =
         TClientConfig,
         SanityValuesToDocumentUnion<SanityValues, TClientConfig>
       >["observable"],
-    };
+    } as SanityClient<
+      TClientConfig,
+      SanityValuesToDocumentUnion<SanityValues, TClientConfig>
+    >;
 
     return client;
   };
