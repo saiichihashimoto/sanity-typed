@@ -18,6 +18,7 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
 - [`@sanity-typed/client`](packages/client): [@sanity/client](https://github.com/sanity-io/client) with typed GROQ Results
 - [`@sanity-typed/zod`](packages/zod): Generate [Zod](https://zod.dev) Schemas from Sanity Schemas
 - [`@sanity-typed/faker`](packages/faker): Generate Mock Data from Sanity Schemas
+- [`@sanity-typed/client-mock`](packages/client-mock): Mock @sanity-typed/client for local development and testing
 - [`@sanity-typed/groq`](packages/groq): Infer [GROQ](https://github.com/sanity-io/groq) Result Types from GROQ strings
 - [`@sanity-typed/groq-js`](packages/groq-js): [groq-js](https://github.com/sanity-io/groq-js) with typed GROQ Results
 
@@ -34,8 +35,8 @@ This project aims to complete sanity's developer experience with (almost) comple
 2. Fully local development environment
 
 - [x] [Mocked Sanity Documents](packages/faker)
-- [x] [Local GROQ execution](https://github.com/sanity-io/groq-js)
-- [ ] [Mocked Sanity Client](https://github.com/saiichihashimoto/sanity-typed/issues/320)
+- [x] [Local GROQ execution](packages/groq-js)
+- [x] [Mocked Sanity Client](packages/client-mock)
 
 3. Runtime safety for all Sanity results
 

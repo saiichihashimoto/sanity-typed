@@ -1,4 +1,7 @@
 {
+  "search.exclude": {
+    "**/README.md": true
+  },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.tsserver.enableTracing": false,
   "typescript.tsserver.maxTsServerMemory": 8192,

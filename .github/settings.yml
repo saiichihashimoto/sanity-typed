@@ -18,6 +18,7 @@ branches:
           - Build
           - Lint
           - Test (client)
+          - Test (client-mock)
           - Test (faker)
           - Test (groq)
           - Test (groq-js)
