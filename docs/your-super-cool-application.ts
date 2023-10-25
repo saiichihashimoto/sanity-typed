@@ -1,7 +1,7 @@
 // import { createClient } from "@sanity/client";
 import { createClient } from "@sanity-typed/client";
 
-import type { SanityValues } from "./sanity.schema";
+import type { SanityValues } from "./sanity.config";
 
 /** Small change using createClient */
 // const client = createClient({

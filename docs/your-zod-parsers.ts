@@ -1,7 +1,7 @@
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
-import config from "./sanity.schema";
-import type { SanityValues } from "./sanity.schema";
+import config from "./sanity.config";
+import type { SanityValues } from "./sanity.config";
 
 /** Zod Parsers for all your types! */
 export const sanityZods = sanityConfigToZods(config);
