@@ -68,18 +68,15 @@ const reduceAcc =
  * https://github.com/microsoft/TypeScript/issues/10571
  */
 export const createClient =
-  <SanityValues extends { [type: string]: any }>(
-    options: {
-      dataset?: DocumentValues<SanityValues>[];
-    } = {}
-  ) =>
+  <SanityValues extends { [type: string]: any }>(options: {
+    dataset: DocumentValues<SanityValues>[];
+  }) =>
   <const TClientConfig extends ClientConfig>(config: TClientConfig) => {
     type TDocument = AnySanityDocument &
       SanityValuesToDocumentUnion<SanityValues, TClientConfig>;
 
     const datasetById = new Map<string, TDocument>(
-      options?.dataset?.map((doc) => [doc._id, doc] as [string, TDocument]) ??
-        []
+      options.dataset.map((doc) => [doc._id, doc] as [string, TDocument])
     );
 
     const client: SanityClient<

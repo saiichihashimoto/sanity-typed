@@ -30,7 +30,9 @@ describe("createClient", () => {
   it("returns a SanityClient", () => {
     const client = createClient<{
       foo: AnySanityDocument & { _type: "foo"; foo: string };
-    }>()({});
+    }>({
+      dataset: [],
+    })({});
 
     expectType<typeof client>().toEqual<
       SanityClient<
@@ -44,7 +46,9 @@ describe("createClient", () => {
     const client = createClient<{
       foo: AnySanityDocument & { _type: "foo"; foo: string };
       qux: AnySanityDocument & { _type: "qux"; qux: number };
-    }>()({
+    }>({
+      dataset: [],
+    })({
       perspective: "previewDrafts",
     });
 
@@ -69,11 +73,15 @@ describe("createClient", () => {
     it("returns the same type", () => {
       const client = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>()({});
+      }>({
+        dataset: [],
+      })({});
 
       const clientClone = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>()({}).clone();
+      }>({
+        dataset: [],
+      })({}).clone();
 
       expectType<typeof clientClone>().toEqual<typeof client>();
     });
@@ -81,7 +89,9 @@ describe("createClient", () => {
 
   describe("config", () => {
     it("returns the config with more", () => {
-      const config = createClient()({
+      const config = createClient({
+        dataset: [],
+      })({
         dataset: "dataset",
         projectId: "projectId",
       }).config();
@@ -126,14 +136,18 @@ describe("createClient", () => {
     it("returns the altered type", () => {
       const client = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>()({
+      }>({
+        dataset: [],
+      })({
         dataset: "dataset",
         projectId: "newProjectId",
       });
 
       const clientWithConfig = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>()({
+      }>({
+        dataset: [],
+      })({
         dataset: "dataset",
         projectId: "projectId",
       }).config({
@@ -149,14 +163,18 @@ describe("createClient", () => {
     it("returns the altered type", () => {
       const client = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>()({
+      }>({
+        dataset: [],
+      })({
         dataset: "dataset",
         projectId: "newProjectId",
       });
 
       const clientWithConfig = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>()({
+      }>({
+        dataset: [],
+      })({
         dataset: "dataset",
         projectId: "projectId",
       }).withConfig({
@@ -233,7 +251,9 @@ describe("createClient", () => {
     });
 
     it("uses the client in queries", async () => {
-      const result = await createClient()({
+      const result = await createClient({
+        dataset: [],
+      })({
         projectId: "projectId",
       }).fetch("sanity::projectId()");
 
@@ -242,14 +262,18 @@ describe("createClient", () => {
     });
 
     it("uses the params in queries", async () => {
-      const result = await createClient()({}).fetch("$param", { param: "foo" });
+      const result = await createClient({
+        dataset: [],
+      })({}).fetch("$param", { param: "foo" });
 
       expectType<typeof result>().toStrictEqual<"foo">();
       expect(result).toBe("foo");
     });
 
     it("returns RawQueryResponse", async () => {
-      const result = await createClient()({}).fetch("5", undefined, {
+      const result = await createClient({
+        dataset: [],
+      })({}).fetch("5", undefined, {
         filterResponse: false,
       });
 
@@ -266,7 +290,9 @@ describe("createClient", () => {
     it.failing("observes the groq query result", () => {
       const result = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>()({}).listen("*");
+      }>({
+        dataset: [],
+      })({}).listen("*");
 
       expectType<typeof result>().toStrictEqual<
         Observable<
@@ -278,7 +304,9 @@ describe("createClient", () => {
     it.failing("returns ListenEvent with options", () => {
       const result = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>()({}).listen("*", {}, {});
+      }>({
+        dataset: [],
+      })({}).listen("*", {}, {});
 
       expectType<typeof result>().toStrictEqual<
         Observable<
@@ -420,7 +448,9 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({}).create({ _type: "foo", foo: "foo" });
+      }>({
+        dataset: [],
+      })({}).create({ _type: "foo", foo: "foo" });
 
       expectType<typeof result>().toStrictEqual<
         AnySanityDocument & { _type: "foo"; foo: string }
@@ -1137,7 +1167,9 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({})
+      }>({
+        dataset: [],
+      })({})
         .transaction()
         .commit();
 
@@ -1150,7 +1182,9 @@ describe("createClient", () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({
+          dataset: [],
+        })({})
           .transaction()
           .create({ _type: "foo", foo: "foo" })
           .commit();
@@ -1172,7 +1206,9 @@ describe("createClient", () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({
+          dataset: [],
+        })({})
           .transaction([{ create: { _type: "foo", foo: "foo" } }])
           .commit();
 
@@ -1530,7 +1566,9 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({})
+      }>({
+        dataset: [],
+      })({})
         .transaction()
         .create({ _type: "foo", foo: "foo" })
         .reset()
@@ -1546,7 +1584,9 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({}).mutate([]);
+      }>({
+        dataset: [],
+      })({}).mutate([]);
 
       expectType<typeof result>().toStrictEqual<// @ts-expect-error -- TODO
       undefined>();
@@ -1557,7 +1597,9 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({}).mutate([
+      }>({
+        dataset: [],
+      })({}).mutate([
         {
           create: {
             _type: "foo",
@@ -1623,7 +1665,9 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({}).mutate(new Transaction().create({ _type: "foo", foo: "foo" }));
+      }>({
+        dataset: [],
+      })({}).mutate(new Transaction().create({ _type: "foo", foo: "foo" }));
 
       expectType<typeof result>().toStrictEqual<
         AnySanityDocument & { _type: "foo"; foo: string }

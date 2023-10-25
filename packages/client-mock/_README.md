@@ -32,6 +32,10 @@ Depending on your tree-shaking setup, you'll want to swap between the real clien
 
 @[typescript](../../docs/your-super-cool-fully-mocked-application.ts)
 
+## Considerations
+
+@[:markdown](../../docs/considerations/config-in-runtime.md)
+
 ## Alternatives
 
 - [`fake-sanity-client`](https://www.npmjs.com/package/fake-sanity-client)
