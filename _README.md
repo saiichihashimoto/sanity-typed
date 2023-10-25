@@ -18,7 +18,7 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
 - [`@sanity-typed/client`](packages/client): [@sanity/client](https://github.com/sanity-io/client) with typed GROQ Results
 - [`@sanity-typed/zod`](packages/zod): Generate [Zod](https://zod.dev) Schemas from Sanity Schemas
 - [`@sanity-typed/faker`](packages/faker): Generate Mock Data from Sanity Schemas
-- [`@sanity-typed/client-mock`](packages/client-mock): FIXME
+- [`@sanity-typed/client-mock`](packages/client-mock): Mock @sanity-typed/client for local development and testing
 - [`@sanity-typed/groq`](packages/groq): Infer [GROQ](https://github.com/sanity-io/groq) Result Types from GROQ strings
 - [`@sanity-typed/groq-js`](packages/groq-js): [groq-js](https://github.com/sanity-io/groq-js) with typed GROQ Results
 

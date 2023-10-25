@@ -123,7 +123,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
 // import { createClient } from "@sanity/client";
 import { createClient } from "@sanity-typed/client";
 
-import type { SanityValues } from "./sanity.schema";
+import type { SanityValues } from "./sanity.config";
 
 /** Small change using createClient */
 // const client = createClient({
@@ -160,7 +160,7 @@ import { createClient } from "next-sanity";
 
 import { castToTyped } from "@sanity-typed/client";
 
-import type { SanityValues } from "./sanity.schema";
+import type { SanityValues } from "./sanity.config";
 
 const client = createClient({
   // ...
@@ -199,7 +199,7 @@ Similarly, if you have a typed client that you want to untype (presumably to exp
 ```typescript
 import { castFromTyped, createClient } from "@sanity-typed/client";
 
-import type { SanityValues } from "./sanity.schema";
+import type { SanityValues } from "./sanity.config";
 
 const client = createClient<SanityValues>()({
   // ...

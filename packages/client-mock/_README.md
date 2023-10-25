@@ -10,17 +10,27 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
 
-FIXME
+Mock [@sanity-typed/client](../client) for local development and testing
 
 @[:page_toc](## Page Contents)
 
 ## Install
 
-FIXME
+```bash
+npm install sanity @sanity-typed/client-mock
+```
 
 ## Usage
 
-FIXME
+Use `createClient` instead of the `createClient` from [`@sanity-typed/client`](../client) and include initial documents.
+
+@[typescript](../../docs/schemas/product.ts)
+@[typescript](../../docs/sanity.config.ts)
+@[typescript](../../docs/your-super-cool-mocked-application.ts)
+
+Depending on your tree-shaking setup, you'll want to swap between the real client and the mock client. Additionally, using [`@sanity-typed/faker`](../faker) along with the mock client can be a great way to generate fake data.
+
+@[typescript](../../docs/your-super-cool-fully-mocked-application.ts)
 
 ## Alternatives
 

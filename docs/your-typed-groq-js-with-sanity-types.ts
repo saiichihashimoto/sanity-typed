@@ -2,7 +2,7 @@
 import { evaluate, parse } from "@sanity-typed/groq-js";
 import type { SanityDocument } from "@sanity-typed/types";
 
-import type { SanityValues } from "./sanity.schema";
+import type { SanityValues } from "./sanity.config";
 
 const input = '*[_type == "product"]{productName}';
 

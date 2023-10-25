@@ -122,7 +122,7 @@ import { base, en } from "@faker-js/faker";
 
 import { sanityConfigToFaker } from "@sanity-typed/faker";
 
-import { config } from "./sanity.schema";
+import { config } from "./sanity.config";
 
 const sanityFaker = sanityConfigToFaker(config, {
   faker: { locale: [en, base] },
