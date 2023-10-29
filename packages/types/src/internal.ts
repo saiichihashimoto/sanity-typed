@@ -1,5 +1,4 @@
 import type {
-  PortableTextBlock as PortableTextBlockNative,
   PortableTextMarkDefinition as PortableTextMarkDefinitionNative,
   PortableTextSpan as PortableTextSpanNative,
   TypedObject,
@@ -371,7 +370,16 @@ export type PortableTextBlock<
   C extends TypedObject = PortableTextSpan,
   S extends string = string,
   L extends string = string
-> = Omit<PortableTextBlockNative<M, C, S, L> & { _type: "block" }, "_key">;
+> = {
+  _type: "block";
+  children: C[];
+  level?: number;
+  listItem?: L;
+  markDefs?: M[];
+  style?: S;
+};
+// TODO PortableTextBlock is too complex for some reason https://github.com/saiichihashimoto/sanity-typed/issues/415
+// > = Omit<PortableTextBlockNative<M, C, S, L> & { _type: "block" }, "_key">;
 
 export type BlockDefinition<
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },

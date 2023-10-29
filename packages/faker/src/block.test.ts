@@ -37,7 +37,6 @@ describe("block", () => {
         faker: { locale: [en, base] },
       });
 
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const fake = sanityFaker.foo();
 
       const zods = sanityConfigToZods(config);
@@ -71,13 +70,12 @@ describe("block", () => {
         faker: { locale: [en, base] },
       });
 
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const fake = sanityFaker.foo();
 
       const zods = sanityConfigToZods(config);
 
       expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<(typeof fake)[number]>().toStrictEqual<
+      expectType<(typeof fake)[number]>().toEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
