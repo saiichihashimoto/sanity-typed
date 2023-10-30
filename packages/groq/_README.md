@@ -25,15 +25,17 @@ npm install @sanity-typed/groq
 Typically, this isn't used directly, but via [`@sanity-typed/client`'s](../client) and [`@sanity-typed/groq-js`'s](../groq-js) methods that use groq strings. But it can be done directly:
 
 ```typescript
-import { ExecuteQuery } from "@sanity-typed/groq";
+import { ExecuteQuery, RootScope } from "@sanity-typed/groq";
 
 type Foo = ExecuteQuery<
   '*[_type=="foo"]',
-  {
-    dataset: ({ _type: "bar" } | { _type: "foo" })[];
+  RootScope<
     // If you have SanityValues from @sanity-typed/types, use those types:
-    // dataset: Extract<SanityValues[keyof SanityValues], Omit<SanityDocument, "_type">>[]
-  }
+    // import { DocumentValues } from "@sanity-typed/types";
+    // DocumentValues<SanityValues>
+    ({ _type: "bar" } | { _type: "foo" })[],
+    { _type: "bar" } | { _type: "foo" }
+  >
 >;
 /**
  *  Foo === {
@@ -45,7 +47,7 @@ type Foo = ExecuteQuery<
 There is also a `Parse` and `Evaluate` if you need the AST:
 
 ```typescript
-import { Evaluate, Parse } from "@sanity-typed/groq";
+import { Evaluate, Parse, RootScope } from "@sanity-typed/groq";
 
 type Tree = Parse<'*[_type=="foo"]'>;
 /**
@@ -63,17 +65,48 @@ type Tree = Parse<'*[_type=="foo"]'>;
 
 type Foo = Evaluate<
   Tree,
-  {
-    dataset: ({ _type: "bar" } | { _type: "foo" })[];
+  RootScope<
     // If you have SanityValues from @sanity-typed/types, use those types:
-    // dataset: Extract<SanityValues[keyof SanityValues], Omit<SanityDocument, "_type">>[]
-  }
+    // import { DocumentValues } from "@sanity-typed/types";
+    // DocumentValues<SanityValues>
+    ({ _type: "bar" } | { _type: "foo" })[],
+    { _type: "bar" } | { _type: "foo" }
+  >
 >;
 /**
  *  Foo === {
  *    _type: "foo";
  *  }[]
  */
+```
+
+For either, you can pass in a full scope:
+
+```typescript
+import { ExecuteQuery } from "@sanity-typed/groq";
+
+type Foo = ExecuteQuery<
+  '*[_type=="foo"]',
+  {
+    context: {
+      client: ClientConfig;
+      dataset: ({ _type: "bar" } | { _type: "foo" })[];
+      delta:
+        | {
+            after: { _type: "bar" } | null;
+            before: { _type: "bar" } | null;
+          }
+        | {
+            after: { _type: "foo" } | null;
+            before: { _type: "foo" } | null;
+          };
+      identity: string;
+      parameters: { [param: string]: any };
+    };
+    parent: null;
+    this: null;
+  }
+>;
 ```
 
 Chances are, you don't need this package directly.
