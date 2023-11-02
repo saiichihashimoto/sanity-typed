@@ -36,8 +36,8 @@ You can also use [your typed schema](../types) to keep parity with the types [yo
 npm install sanity groq-js @sanity-typed/types @sanity-typed/groq-js
 ```
 
-@[typescript](../../docs/schemas/product.ts)
-@[typescript](../../docs/sanity.config.ts)
+@[typescript](../example-studio/schemas/product.ts)
+@[typescript](../example-studio/sanity.config.ts)
 @[typescript](../../docs/your-typed-groq-js-with-sanity-types.ts)
 
 @[:markdown](../../docs/considerations/parse-type-flakiness.md)

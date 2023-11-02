@@ -22,8 +22,8 @@ npm install sanity @faker-js/faker @sanity-typed/faker
 
 ## Usage
 
-@[typescript](../../docs/schemas/product.ts)
-@[typescript](../../docs/sanity.config.ts)
+@[typescript](../example-studio/schemas/product.ts)
+@[typescript](../example-studio/sanity.config.ts)
 @[typescript](../../docs/mocks.ts)
 
 ## Reference Validity

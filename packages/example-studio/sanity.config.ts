@@ -1,3 +1,6 @@
+import { visionTool } from "@sanity/vision";
+import { deskTool } from "sanity/desk";
+
 // import { defineConfig } from "sanity";
 import { defineConfig } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
@@ -6,8 +9,9 @@ import { product } from "./schemas/product";
 
 /** No changes using defineConfig */
 const config = defineConfig({
-  projectId: "your-project-id",
-  dataset: "your-dataset-name",
+  projectId: "59t1ed5o",
+  dataset: "production",
+  plugins: [deskTool(), visionTool()],
   schema: {
     types: [
       product,
@@ -31,6 +35,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *      productName?: string;
  *      tags?: {
  *        _key: string;
+ *        _type: "tag";
  *        label?: string;
  *        value?: string;
  *      }[];
