@@ -28,7 +28,7 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "npm run build -- --no-dts"
+    "dev": "npm run build -- --clean"
   },
   "dependencies": {
     "@faker-js/faker": "8.2.0",

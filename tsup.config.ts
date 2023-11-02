@@ -48,15 +48,15 @@ const getLocalDeps = async (
 
 export default defineConfig(
   async ({
-    // HACK If the cli options are defined, tsup refuses to let me override them. So I'm using `--no-dts` so I can define `--watch`
-    dts,
+    // HACK If the cli options are defined, tsup refuses to let me override them. So I'm using `--clean` so I can define `--watch`
+    clean,
+    watch,
   }) => ({
     entry: ["src/index.ts", "src/internal.ts"],
-    dts: true,
     skipNodeModulesBundle: true,
     watch:
-      dts === false
+      clean === true
         ? [".", ...(await getLocalDeps(resolve(process.cwd(), "package.json")))]
-        : false,
+        : watch,
   })
 );
