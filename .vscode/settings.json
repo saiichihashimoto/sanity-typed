@@ -1,6 +1,7 @@
 {
   "search.exclude": {
-    "**/README.md": true
+    "**/README.md": true,
+    "package-lock.json": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.tsserver.enableTracing": false,

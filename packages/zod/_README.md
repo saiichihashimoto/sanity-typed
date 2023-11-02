@@ -22,8 +22,8 @@ npm install sanity zod @sanity-typed/zod
 
 ## Usage
 
-@[typescript](../../docs/schemas/product.ts)
-@[typescript](../../docs/sanity.config.ts)
+@[typescript](../example-studio/schemas/product.ts)
+@[typescript](../example-studio/sanity.config.ts)
 @[typescript](../../docs/your-zod-parsers.ts)
 
 ## `sanityDocumentsZod`

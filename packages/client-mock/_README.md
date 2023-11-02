@@ -24,8 +24,8 @@ npm install sanity @sanity-typed/client-mock
 
 Use `createClient` instead of the `createClient` from [`@sanity-typed/client`](../client) and include initial documents.
 
-@[typescript](../../docs/schemas/product.ts)
-@[typescript](../../docs/sanity.config.ts)
+@[typescript](../example-studio/schemas/product.ts)
+@[typescript](../example-studio/sanity.config.ts)
 @[typescript](../../docs/your-super-cool-mocked-application.ts)
 
 Depending on your tree-shaking setup, you'll want to swap between the real client and the mock client. Additionally, using [`@sanity-typed/faker`](../faker) along with the mock client can be a great way to generate fake data.

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@sanity-typed/example-studio",
+  "version": "0.0.0-development",
+  "private": true,
+  "main": "package.json",
+  "scripts": {
+    "build": "sanity build --yes",
+    "dev": "sanity dev"
+  },
+  "dependencies": {
+    "@sanity-typed/types": ">1.0.0",
+    "@sanity/vision": "3.12.1",
+    "sanity": "3.18.1",
+    "styled-components": "5.3.9"
+  },
+  "devDependencies": {
+    "@sanity-typed/tsconfig": "0.0.0-development",
+    "typescript": "5.2.2"
+  }
+}

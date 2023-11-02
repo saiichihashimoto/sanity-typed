@@ -15,11 +15,6 @@ const config = {
   "*": [prettierCmd],
   "{.eslint*,package.json}": () => [`${eslintCmd} .`, "git add ."],
   "{.prettier*,package.json}": () => [`${prettierCmd} .`, "git add ."],
-  "package.json": () => [
-    "manypkg fix",
-    "manypkg check",
-    "git add **/package.json",
-  ],
   "_README.md": (filenames) =>
     filenames.flatMap((filename) => [
       `bundle exec markdown_helper include ${filename} ${path.resolve(

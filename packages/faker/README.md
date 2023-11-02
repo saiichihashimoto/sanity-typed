@@ -30,7 +30,7 @@ npm install sanity @faker-js/faker @sanity-typed/faker
 
 ## Usage
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
 ```product.ts```:
 ```typescript
 // import { defineArrayMember, defineField, defineType } from "sanity";
@@ -69,10 +69,13 @@ export const product = defineType({
   ],
 });
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/schemas/product.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/sanity.config.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
+import { visionTool } from "@sanity/vision";
+import { deskTool } from "sanity/desk";
+
 // import { defineConfig } from "sanity";
 import { defineConfig } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
@@ -81,8 +84,9 @@ import { product } from "./schemas/product";
 
 /** No changes using defineConfig */
 const config = defineConfig({
-  projectId: "your-project-id",
-  dataset: "your-dataset-name",
+  projectId: "59t1ed5o",
+  dataset: "production",
+  plugins: [deskTool(), visionTool()],
   schema: {
     types: [
       product,
@@ -106,6 +110,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *      productName?: string;
  *      tags?: {
  *        _key: string;
+ *        _type: "tag";
  *        label?: string;
  *        value?: string;
  *      }[];
@@ -114,7 +119,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *  }
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/sanity.config.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/mocks.ts -->
 ```mocks.ts```:
 ```typescript
