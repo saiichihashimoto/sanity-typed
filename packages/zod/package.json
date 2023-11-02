@@ -30,7 +30,7 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "npm run build -- --no-dts"
+    "dev": "npm run build -- --clean"
   },
   "dependencies": {
     "@sanity-typed/types": "0.0.0-development",

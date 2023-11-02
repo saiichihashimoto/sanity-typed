@@ -10,6 +10,7 @@ export type {
   SanityClient,
   TransactionType,
 } from "./internal";
+
 export {
   castFromTyped,
   castToTyped,
