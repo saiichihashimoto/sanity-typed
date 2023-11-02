@@ -52,6 +52,7 @@ export default defineConfig(
     clean,
     watch,
   }) => ({
+    dts: true,
     entry: ["src/index.ts", "src/internal.ts"],
     skipNodeModulesBundle: true,
     watch:
