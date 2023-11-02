@@ -3,13 +3,26 @@
   "name": "@sanity-typed/example-studio",
   "version": "0.0.0-development",
   "private": true,
-  "main": "package.json",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/example-studio",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
+  "repository": "github:saiichihashimoto/sanity-typed",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/saiichihashimoto"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
   "scripts": {
-    "build": "sanity build --yes",
-    "dev": "sanity dev"
+    "build": "npm run build:sanity && npm run build:tsup",
+    "build:sanity": "sanity build --yes",
+    "build:tsup": "tsup",
+    "dev": "concurrently --prefix-colors \"auto\" npm:dev:*",
+    "dev:sanity": "sanity dev",
+    "dev:tsup": "npm run build:tsup -- --clean"
   },
   "dependencies": {
-    "@sanity-typed/types": ">1.0.0",
+    "@sanity-typed/types": "0.0.0-development",
     "@sanity/vision": "3.12.1",
     "sanity": "3.18.1",
     "styled-components": "5.3.9"
