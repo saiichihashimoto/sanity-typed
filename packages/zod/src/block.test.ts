@@ -188,6 +188,71 @@ describe("block", () => {
         InferSchemaValues<typeof config>["foo"][number]["children"]
       >();
     });
+    it("builds parser for custom markDefs", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  marks: {
+                    annotations: [
+                      {
+                        title: "URL",
+                        name: "link",
+                        type: "object",
+                        fields: [
+                          {
+                            title: "URL",
+                            name: "href",
+                            type: "url",
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = [
+        {
+          ...fields,
+          markDefs: [
+            {
+              _type: "link",
+              _key: "markKey",
+              href: "https://www.sanity.io",
+            },
+          ],
+          _key: "key",
+          _type: "block",
+          children: [
+            {
+              _key: "key",
+              _type: "span",
+              marks: ["markKey"],
+              text: "text",
+            },
+          ],
+        },
+      ];
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<(typeof parsed)[number]["children"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]["children"]
+      >();
+    });
   });
 
   describe("defineType", () => {
@@ -325,6 +390,64 @@ describe("block", () => {
           { _key: "key", _type: "span", marks: ["mark"], text: "text" },
           { _key: "key", _type: "slug", current: "foo" },
           { _key: "key", _type: "geopoint", lat: 0, lng: 0 },
+        ],
+      };
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<(typeof parsed)["children"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]["children"]
+      >();
+    });
+    it("builds parser for custom markDefs", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              marks: {
+                annotations: [
+                  {
+                    title: "URL",
+                    name: "link",
+                    type: "object",
+                    fields: [
+                      {
+                        title: "URL",
+                        name: "href",
+                        type: "url",
+                      },
+                    ],
+                  },
+                ],
+              },
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = {
+        ...fields,
+        markDefs: [
+          {
+            _type: "link",
+            _key: "markKey",
+            href: "https://www.sanity.io",
+          },
+        ],
+        _type: "foo",
+        children: [
+          {
+            _key: "key",
+            _type: "span",
+            marks: ["markKey"],
+            text: "text",
+          },
         ],
       };
 

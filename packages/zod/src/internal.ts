@@ -759,10 +759,12 @@ const blockFieldsZods = {
   style: z.optional(z.string()),
   markDefs: z.optional(
     z.array(
-      z.object({
-        _key: z.string(),
-        _type: z.string(),
-      })
+      z
+        .object({
+          _key: z.string(),
+          _type: z.string(),
+        })
+        .passthrough()
     )
   ),
 };
