@@ -8,6 +8,8 @@
         "**",
         "!.turbo/**",
         "!/**/*.md",
+        "!.next/**",
+        "!.sanity/**",
         "!dist/**",
         "!node_modules/**",
         "!src/**/*.test.*"

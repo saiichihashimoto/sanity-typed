@@ -53,4 +53,4 @@ npm install sanity @sanity-typed/client @sanity-typed/types
 
 @[typescript](packages/example-studio/schemas/product.ts)
 @[typescript](packages/example-studio/sanity.config.ts)
-@[typescript](docs/your-super-cool-application.ts)
+@[typescript](packages/example-app/src/sanity/client.ts)

@@ -1,5 +1,6 @@
 *.ico -diff
 *.svg -diff
 *.ttf -diff
+README.md -diff
 package-lock.json -diff
 yarn.lock -diff
