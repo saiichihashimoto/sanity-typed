@@ -26,7 +26,7 @@ Use `createClient` exactly as you would from [`@sanity/client`](https://github.c
 
 @[typescript](../example-studio/schemas/product.ts)
 @[typescript](../example-studio/sanity.config.ts)
-@[typescript](../../docs/your-super-cool-application.ts)
+@[typescript](../example-app/src/sanity/client.ts)
 
 The `createClient<SanityValues>()(config)` syntax is due to having to infer one generic (the config shape) while explicitly providing the Sanity Values' type, [which can't be done in the same generics](https://github.com/microsoft/TypeScript/issues/10571).
 

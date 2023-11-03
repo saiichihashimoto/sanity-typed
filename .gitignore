@@ -1,6 +1,7 @@
 .DS_Store
 .bundle
 .eslintcache
+.next
 .sanity
 .turbo
 Brewfile.lock.json
