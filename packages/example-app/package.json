@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@sanity-typed/example-app",
+  "version": "0.0.0-development",
+  "private": true,
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/example-app",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
+  "repository": "github:saiichihashimoto/sanity-typed",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/saiichihashimoto"
+  },
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev"
+  },
+  "dependencies": {
+    "@sanity-typed/client": "0.0.0-development",
+    "@sanity-typed/example-studio": "0.0.0-development",
+    "next": "14.0.1"
+  },
+  "devDependencies": {
+    "@sanity-typed/tsconfig": "0.0.0-development",
+    "@sanity/client": "6.6.0",
+    "typescript": "5.2.2"
+  },
+  "engines": {
+    "node": "^18.17.0"
+  }
+}

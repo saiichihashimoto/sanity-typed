@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@sanity-typed/tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "sanity.config": ["../example-studio/sanity.config.ts"]
+    },
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "../../@types/**/*.d.ts",
+    "next-env.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}

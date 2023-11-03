@@ -122,37 +122,39 @@ export type SanityValues = InferSchemaValues<typeof config>;
  */
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/your-super-cool-application.ts -->
-```your-super-cool-application.ts```:
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/client.ts -->
+```client.ts```:
 ```typescript
+import type { SanityValues } from "sanity.config";
+
 // import { createClient } from "@sanity/client";
 import { createClient } from "@sanity-typed/client";
 
-import type { SanityValues } from "./sanity.config";
-
 /** Small change using createClient */
-// const client = createClient({
-const client = createClient<SanityValues>()({
-  projectId: "your-project-id",
-  dataset: "your-dataset-name",
+// export const client = createClient({
+export const client = createClient<SanityValues>()({
+  projectId: "59t1ed5o",
+  dataset: "production",
   useCdn: true,
   apiVersion: "2023-05-23",
 });
 
-/** Typescript type from GROQ queries! */
-const data = await client.fetch('*[_type=="product"]{productName,tags}');
+export const makeTypedQuery = async () =>
+  client.fetch('*[_type=="product"]{_id,productName,tags}');
 /**
- *  typeof data === {
+ *  typeof makeTypedQuery === () => Promise<{
+ *    _id: string;
  *    productName: string | null;
  *    tags: {
  *      _key: string;
+ *      _type: "tag";
  *      label?: string;
  *      value?: string;
  *    }[] | null;
- *  }[]
+ *  }[]>
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/your-super-cool-application.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/client.ts -->
 
 The `createClient<SanityValues>()(config)` syntax is due to having to infer one generic (the config shape) while explicitly providing the Sanity Values' type, [which can't be done in the same generics](https://github.com/microsoft/TypeScript/issues/10571).
 
