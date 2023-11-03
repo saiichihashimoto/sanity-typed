@@ -3,9 +3,8 @@
   "extends": "@sanity-typed/tsconfig/tsconfig.json",
   "compilerOptions": {
     "incremental": true,
-    "baseUrl": ".",
     "paths": {
-      "sanity.config": ["../example-studio/sanity.config.ts"]
+      "sanity.config": ["../../example-studio/sanity.config.ts"]
     },
     "noEmit": true,
     "skipLibCheck": true
