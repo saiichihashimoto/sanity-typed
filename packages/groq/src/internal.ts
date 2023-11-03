@@ -1091,19 +1091,17 @@ type EvaluateAccessAttribute<
   TNode extends ExprNode,
   TScope extends Scope<Context<any[], any>>
 > = TNode extends AccessAttributeNode
-  ?
-      | (EvaluateBaseOrThis<TNode, TScope> extends null ? null : never)
-      | (EvaluateBaseOrThis<TNode, TScope> extends object
-          ? EvaluateBaseOrThis<TNode, TScope> extends {
-              [name in TNode["name"]]: infer TValue;
-            }
-            ? TValue
-            : EvaluateBaseOrThis<TNode, TScope> extends {
-                [name in TNode["name"]]?: infer TValue;
-              }
-            ? TValue | null
-            : null
-          : null)
+  ? EvaluateBaseOrThis<TNode, TScope> extends object
+    ? EvaluateBaseOrThis<TNode, TScope> extends {
+        [name in TNode["name"]]: infer TValue;
+      }
+      ? TValue
+      : EvaluateBaseOrThis<TNode, TScope> extends {
+          [name in TNode["name"]]?: infer TValue;
+        }
+      ? TValue | undefined
+      : null
+    : null
   : never;
 
 /**
