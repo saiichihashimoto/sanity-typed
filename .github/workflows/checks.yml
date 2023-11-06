@@ -133,7 +133,7 @@ jobs:
       - run: npm run lint
       - run: |
           if [[ $(git status --porcelain) != "" ]]; then
-            git --no-pager diff --text HEAD
+            git --no-pager diff --color --text HEAD
             exit 1
           fi
   test:
