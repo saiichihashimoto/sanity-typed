@@ -188,7 +188,8 @@ describe("block", () => {
         InferSchemaValues<typeof config>["foo"][number]["children"]
       >();
     });
-    it("builds parser for custom markDefs", () => {
+
+    it("allows custom markDefs", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -400,7 +401,8 @@ describe("block", () => {
         InferSchemaValues<typeof config>["foo"]["children"]
       >();
     });
-    it("builds parser for custom markDefs", () => {
+
+    it("allows custom markDefs", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
