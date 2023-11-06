@@ -329,7 +329,10 @@
     },
     {
       "files": ["**/*.spec.*", "**/*.test.*"],
-      "extends": ["plugin:jest/recommended"],
+      "extends": [
+        "plugin:jest-formatting/recommended",
+        "plugin:jest/recommended"
+      ],
       "env": {
         "jest": true
       },
