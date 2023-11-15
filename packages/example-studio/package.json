@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@sanity-typed/types": "0.0.0-development",
-    "@sanity/vision": "3.12.1",
+    "@sanity/vision": "3.19.3",
     "sanity": "3.18.1",
     "styled-components": "5.3.9"
   },
