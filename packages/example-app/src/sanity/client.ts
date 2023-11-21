@@ -17,7 +17,7 @@ export const makeTypedQuery = async () =>
 /**
  *  typeof makeTypedQuery === () => Promise<{
  *    _id: string;
- *    productName: string | null;
+ *    productName: string;
  *    tags: {
  *      _key: string;
  *      _type: "tag";

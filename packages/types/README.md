@@ -63,6 +63,7 @@ export const product = defineType({
       name: "productName",
       type: "string",
       title: "Product name",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "tags",
@@ -120,7 +121,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *      _rev: string;
  *      _type: "product";
  *      _updatedAt: string;
- *      productName?: string;
+ *      productName: string;
  *      tags?: {
  *        _key: string;
  *        _type: "tag";
