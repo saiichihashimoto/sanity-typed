@@ -15,6 +15,7 @@ export const product = defineType({
       name: "productName",
       type: "string",
       title: "Product name",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "tags",
