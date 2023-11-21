@@ -13,6 +13,8 @@
 
 Infer Sanity Document Types from Sanity Schemas
 
+https://github.com/saiichihashimoto/sanity-typed/assets/2819256/13c28e6a-74a7-4b3c-8162-61fae921323b
+
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)

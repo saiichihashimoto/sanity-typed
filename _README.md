@@ -10,6 +10,8 @@
 
 Completing [sanity](https://www.sanity.io/)'s developer experience with typescript (and more)!
 
+https://github.com/saiichihashimoto/sanity-typed/assets/2819256/13c28e6a-74a7-4b3c-8162-61fae921323b
+
 @[:page_toc](## Page Contents)
 
 ## Packages
@@ -45,7 +47,7 @@ This project aims to complete sanity's developer experience with (almost) comple
 
 With the full suite, everything would be fully typed, runtime safe, and fully local. The drop-in nature means that working these solutions into native sanity is a possibility and keeps new documentation and learning curve to a minimum.
 
-## Quick Start
+## Usage
 
 ```bash
 npm install sanity @sanity-typed/client @sanity-typed/types
