@@ -1,8 +1,7 @@
 /**
  * DONT COPY THIS FILE
  *
- * This is because we're using path aliases in the monorepo's tsconfig and is
- * not required for @sanity-typed/*.
+ * This is because we're using path aliases in the monorepo's tsconfig and is not required for @sanity-typed/*.
  * https://github.com/sanity-io/sanity/issues/5115
  */
 import { dirname, resolve } from "path";
