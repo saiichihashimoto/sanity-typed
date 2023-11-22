@@ -10,16 +10,9 @@
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": ["dist"],
   "scripts": {
-    "build": "npm run build:sanity && npm run build:tsup",
-    "build:sanity": "sanity build --yes",
-    "build:tsup": "tsup",
-    "dev": "concurrently --prefix-colors \"auto\" npm:dev:*",
-    "dev:sanity": "sanity dev",
-    "dev:tsup": "npm run build:tsup -- --clean"
+    "build": "sanity build --yes",
+    "dev": "sanity dev"
   },
   "dependencies": {
     "@sanity-typed/types": "0.0.0-development",
@@ -29,8 +22,6 @@
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "concurrently": "8.2.2",
-    "tsup": "7.2.0",
     "typescript": "5.2.2"
   }
 }
