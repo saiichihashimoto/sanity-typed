@@ -699,7 +699,8 @@ const blockFaker = <
         ...Array.from({ length: numSpans }).map(() => spanFaker(faker)),
         ...(numSpans === length
           ? []
-          : membersFaker(
+          : // TODO https://github.com/saiichihashimoto/sanity-typed/issues/479
+            membersFaker(
               members,
               getFakers,
               instantiateFakerByPath,
@@ -836,29 +837,27 @@ const objectFaker = <
     referencedIdFaker
   ) as ObjectFaker<TSchemaType, TAliasedFakers>;
 
-const documentFieldsFaker = (
-  faker: Faker,
-  index: number,
-  documentIdFaker: (index: number) => string
-) => {
-  const createdAt = faker.date.between({
-    from: "2015-01-01T00:00:00.000Z",
-    to: "2023-01-01T00:00:00.000Z",
-  });
+const documentFieldsFaker =
+  (documentIdFaker: (index: number) => string) =>
+  (faker: Faker, index: number) => {
+    const createdAt = faker.date.between({
+      from: "2015-01-01T00:00:00.000Z",
+      to: "2023-01-01T00:00:00.000Z",
+    });
 
-  return {
-    _createdAt: createdAt.toISOString(),
-    _id: documentIdFaker(index),
-    _rev: faker.string.alphanumeric(22),
-    _type: "document" as const,
-    _updatedAt: faker.date
-      .between({
-        from: createdAt,
-        to: "2023-01-01T00:00:00.000Z",
-      })
-      .toISOString(),
+    return {
+      _createdAt: createdAt.toISOString(),
+      _id: documentIdFaker(index),
+      _rev: faker.string.alphanumeric(22),
+      _type: "document" as const,
+      _updatedAt: faker.date
+        .between({
+          from: createdAt,
+          to: "2023-01-01T00:00:00.000Z",
+        })
+        .toISOString(),
+    };
   };
-};
 
 type DocumentFaker<
   TSchemaType extends SchemaTypeDefinition<"document", any, any>,
@@ -869,8 +868,8 @@ type DocumentFaker<
   faker: Faker,
   index: number
 ) => Simplify<
-  ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>> &
-    ReturnType<typeof documentFieldsFaker>
+  ReturnType<ReturnType<typeof documentFieldsFaker>> &
+    ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>>
 >;
 
 const documentFaker = <
@@ -884,17 +883,23 @@ const documentFaker = <
   instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (type: string | undefined) => (index: number) => string,
   referencedIdFaker: (type: string) => (faker: Faker, index: number) => string
-): DocumentFaker<TSchemaType, TAliasedFakers> =>
-  ((faker: Faker, index: number) => ({
-    ...documentFieldsFaker(faker, index, documentIdFaker(schema.name)),
-    ...fieldsFaker(
-      schema,
-      getFakers,
-      instantiateFakerByPath,
-      documentIdFaker,
-      referencedIdFaker
-    )(faker, index),
+): DocumentFaker<TSchemaType, TAliasedFakers> => {
+  const documentFieldsFakerInstantiated = documentFieldsFaker(
+    documentIdFaker(schema.name)
+  );
+  const fieldsFakerInstantiated = fieldsFaker(
+    schema,
+    getFakers,
+    instantiateFakerByPath,
+    documentIdFaker,
+    referencedIdFaker
+  );
+
+  return ((faker: Faker, index: number) => ({
+    ...documentFieldsFakerInstantiated(faker, index),
+    ...fieldsFakerInstantiated(faker, index),
   })) as DocumentFaker<TSchemaType, TAliasedFakers>;
+};
 
 const assetFaker = (faker: Faker) => ({
   _ref: faker.string.uuid(),
@@ -949,17 +954,20 @@ const fileFaker = <
   instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (type: string | undefined) => (index: number) => string,
   referencedIdFaker: (type: string) => (faker: Faker, index: number) => string
-): FileFaker<TSchemaType, TAliasedFakers> =>
-  ((faker: Faker, index: number) => ({
+): FileFaker<TSchemaType, TAliasedFakers> => {
+  const fieldsFakerInstantiated = fieldsFaker(
+    schema,
+    getFakers,
+    instantiateFakerByPath,
+    documentIdFaker,
+    referencedIdFaker
+  );
+
+  return ((faker: Faker, index: number) => ({
     ...fileFieldsFaker(faker),
-    ...fieldsFaker(
-      schema,
-      getFakers,
-      instantiateFakerByPath,
-      documentIdFaker,
-      referencedIdFaker
-    )(faker, index),
+    ...fieldsFakerInstantiated(faker, index),
   })) as FileFaker<TSchemaType, TAliasedFakers>;
+};
 
 const imageFieldsFaker = (faker: Faker) => ({
   _type: "image" as const,
@@ -1012,8 +1020,16 @@ const imageFaker = <
   instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (type: string | undefined) => (index: number) => string,
   referencedIdFaker: (type: string) => (faker: Faker, index: number) => string
-): ImageFaker<TSchemaType, TAliasedFakers> =>
-  ((faker: Faker, index: number) => ({
+): ImageFaker<TSchemaType, TAliasedFakers> => {
+  const fieldsFakerInstantiated = fieldsFaker(
+    schema,
+    getFakers,
+    instantiateFakerByPath,
+    documentIdFaker,
+    referencedIdFaker
+  );
+
+  return ((faker: Faker, index: number) => ({
     ...imageFieldsFaker(faker),
     ...typedTernary(
       !schema.options?.hotspot as Negate<
@@ -1024,14 +1040,9 @@ const imageFaker = <
       () => ({}),
       () => imageHotspotFaker(faker)
     ),
-    ...fieldsFaker(
-      schema,
-      getFakers,
-      instantiateFakerByPath,
-      documentIdFaker,
-      referencedIdFaker
-    )(faker, index),
+    ...fieldsFakerInstantiated(faker, index),
   })) as unknown as ImageFaker<TSchemaType, TAliasedFakers>;
+};
 
 type AliasFaker<
   TSchemaType extends SchemaTypeDefinition<any, any, any>,
