@@ -121,27 +121,37 @@ export type SanityValues = InferSchemaValues<typeof config>;
  */
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/your-zod-parsers.ts -->
-```your-zod-parsers.ts```:
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/client-with-zod.ts -->
+```client-with-zod.ts```:
 ```typescript
+import config from "sanity.config";
+import type { SanityValues } from "sanity.config";
+
+import { createClient } from "@sanity-typed/client";
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
-import config from "./sanity.config";
-import type { SanityValues } from "./sanity.config";
+export const client = createClient<SanityValues>()({
+  projectId: "59t1ed5o",
+  dataset: "production",
+  useCdn: true,
+  apiVersion: "2023-05-23",
+});
 
 /** Zod Parsers for all your types! */
-export const sanityZods = sanityConfigToZods(config);
+const sanityZods = sanityConfigToZods(config);
 /**
  * typeof sanityZods === {
- *   product: ZodType<...>;
- *    // ... parsers for all your types!
+ *   [type in keyof SanityValues]: ZodType<SanityValues[type]>;
  * }
  */
 
-/** Parsed Document! */
-const product = sanityZods.product.parse(getInputFromWherever);
+export const makeTypedQuery = async () => {
+  const results = await client.fetch('*[_type=="product"]');
+
+  return results.map((result) => sanityZods.product.parse(result));
+};
 /**
- *  typeof product === SanityValues['product'] === {
+ *  typeof makeTypedQuery === () => Promise<{
  *    _createdAt: string;
  *    _id: string;
  *    _rev: string;
@@ -153,10 +163,10 @@ const product = sanityZods.product.parse(getInputFromWherever);
  *      label?: string;
  *      value?: string;
  *    }[];
- *  }
+ *  }[]>
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/your-zod-parsers.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/client-with-zod.ts -->
 
 ## `sanityDocumentsZod`
 
