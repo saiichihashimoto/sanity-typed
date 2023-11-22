@@ -4,6 +4,7 @@ import { makeTypedQuery } from "../sanity/client";
 
 // import { makeTypedQuery } from "../sanity/mocked-client";
 // import { makeTypedQuery } from "../sanity/swapping-client";
+// import { makeTypedQuery } from "../sanity/client-with-zod";
 
 export const getStaticProps = async () => ({
   props: {
