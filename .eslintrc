@@ -34,7 +34,13 @@
       "node": {
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
       },
-      "typescript": true
+      "typescript": {
+        "project": [
+          "./tsconfig.json",
+          "./@types/tsconfig.json",
+          "./packages/*/tsconfig.json"
+        ]
+      }
     },
     "react": {
       "version": "detect"
