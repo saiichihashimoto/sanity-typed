@@ -26,11 +26,12 @@ Use `createClient` instead of the `createClient` from [`@sanity-typed/client`](.
 
 @[typescript](../example-studio/schemas/product.ts)
 @[typescript](../example-studio/sanity.config.ts)
-@[typescript](../../docs/your-super-cool-mocked-application.ts)
+@[typescript](../example-app/src/sanity/mocked-client.ts)
 
 Depending on your tree-shaking setup, you'll want to swap between the real client and the mock client. Additionally, using [`@sanity-typed/faker`](../faker) along with the mock client can be a great way to generate fake data.
 
-@[typescript](../../docs/your-super-cool-fully-mocked-application.ts)
+@[typescript](../example-app/src/sanity/mocks.ts)
+@[typescript](../example-app/src/sanity/swapping-client.ts)
 
 ## Considerations
 

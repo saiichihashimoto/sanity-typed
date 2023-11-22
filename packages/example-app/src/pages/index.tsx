@@ -2,6 +2,9 @@ import type { InferGetStaticPropsType } from "next";
 
 import { makeTypedQuery } from "../sanity/client";
 
+// import { makeTypedQuery } from "../sanity/mocked-client";
+// import { makeTypedQuery } from "../sanity/swapping-client";
+
 export const getStaticProps = async () => ({
   props: {
     products: await makeTypedQuery(),

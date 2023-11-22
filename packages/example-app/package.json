@@ -15,8 +15,11 @@
     "dev": "next dev"
   },
   "dependencies": {
+    "@faker-js/faker": "8.2.0",
     "@sanity-typed/client": "0.0.0-development",
+    "@sanity-typed/client-mock": "0.0.0-development",
     "@sanity-typed/example-studio": "0.0.0-development",
+    "@sanity-typed/faker": "0.0.0-development",
     "@sanity/client": "6.6.0",
     "next": "14.0.1"
   },
