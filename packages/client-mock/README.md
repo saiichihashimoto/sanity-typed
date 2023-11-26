@@ -13,6 +13,8 @@
 
 Mock [@sanity-typed/client](../client) for local development and testing
 
+[![Watch How to Offline Your Sanity Client and Generate Mock Data](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/fc2be145-d504-46e3-9e77-6090c3024885)](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/fed71d58-6b08-467a-a325-b197f563a328)
+
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
