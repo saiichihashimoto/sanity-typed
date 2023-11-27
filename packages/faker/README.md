@@ -13,6 +13,8 @@
 
 Generate Mock Data from Sanity Schemas
 
+[![Watch How to Offline Your Sanity Client and Generate Mock Data](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/fc2be145-d504-46e3-9e77-6090c3024885)](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/fed71d58-6b08-467a-a325-b197f563a328)
+
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
@@ -50,6 +52,7 @@ export const product = defineType({
       name: "productName",
       type: "string",
       title: "Product name",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "tags",
@@ -107,7 +110,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *      _rev: string;
  *      _type: "product";
  *      _updatedAt: string;
- *      productName?: string;
+ *      productName: string;
  *      tags?: {
  *        _key: string;
  *        _type: "tag";
@@ -120,57 +123,34 @@ export type SanityValues = InferSchemaValues<typeof config>;
  */
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/mocks.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/mocks.ts -->
 ```mocks.ts```:
 ```typescript
 import { base, en } from "@faker-js/faker";
+import config from "sanity.config";
 
 import { sanityConfigToFaker } from "@sanity-typed/faker";
 
-import { config } from "./sanity.config";
+export const getMockDataset = () => {
+  const sanityFaker = sanityConfigToFaker(config, {
+    faker: { locale: [en, base] },
+  });
+  /**
+   *  typeof sanityFaker === {
+   *    [type in keyof SanityValues]: () => SanityValues[type];
+   *  }
+   */
 
-const sanityFaker = sanityConfigToFaker(config, {
-  faker: { locale: [en, base] },
-});
-
-const mock = sanityFaker.product();
-/**
- *  mock === {
- *    _createdAt: "2011-12-15T03:57:59.213Z",
- *    _id: "9bd9d8d6-9a67-44e0-af46-7cc8796ed151",
- *    _rev: "1mPXM8RRYtNNswMG7IDA8x",
- *    _type: "product",
- *    _updatedAt: "2029-01-01T06:23:59.079Z",
- *    productName: "Deduco tyrannus v",
- *    tags: [
- *      {
- *        _key: "4d8edf97d9df21feee3472a6",
- *        _type: "tag",
- *        label: "Cuppedi",
- *        value: "Defleo bis min"
- *      },
- *      {
- *        _key: "fec59aa5d372ee63b4e8ec02",
- *        _type: "tag",
- *        label: "Communis molestiae a",
- *        value: "Solitud"
- *      },
- *      {
- *        _key: "a0096f276a2f6d9e14fccd5b",
- *        _type: "tag",
- *        label: "Speculum alo v"
- *      },
- *      {
- *        _key: "c803ec5fa6f95ac8ddce4dee",
- *        _type: "tag",
- *        label: "Aliquid",
- *        value: "Turba c"
- *      }
- *    ]
- *  }
- */
+  return [
+    sanityFaker.product(),
+    sanityFaker.product(),
+    sanityFaker.product(),
+    sanityFaker.product(),
+    sanityFaker.product(),
+  ];
+};
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/mocks.ts -->
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/mocks.ts -->
 
 ## Reference Validity
 

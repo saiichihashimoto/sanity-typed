@@ -13,6 +13,8 @@
 
 [@sanity/client](https://github.com/sanity-io/client) with typed GROQ Results
 
+[![Watch How to Type Your Sanity Document and Client](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/886bd64a-00fb-473c-a60a-205a8a6767ad)](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/13c28e6a-74a7-4b3c-8162-61fae921323b)
+
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
@@ -52,6 +54,7 @@ export const product = defineType({
       name: "productName",
       type: "string",
       title: "Product name",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "tags",
@@ -109,7 +112,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *      _rev: string;
  *      _type: "product";
  *      _updatedAt: string;
- *      productName?: string;
+ *      productName: string;
  *      tags?: {
  *        _key: string;
  *        _type: "tag";
@@ -144,7 +147,7 @@ export const makeTypedQuery = async () =>
 /**
  *  typeof makeTypedQuery === () => Promise<{
  *    _id: string;
- *    productName: string | null;
+ *    productName: string;
  *    tags: {
  *      _key: string;
  *      _type: "tag";

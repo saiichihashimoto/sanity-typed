@@ -1,6 +1,6 @@
 // import { evaluate, parse } from "groq-js";
 import { evaluate, parse } from "@sanity-typed/groq-js";
-import type { SanityDocument } from "@sanity-typed/types";
+import type { DocumentValues } from "@sanity-typed/types";
 
 import type { SanityValues } from "./sanity.config";
 
@@ -20,10 +20,7 @@ const value = await evaluate(tree, {
       otherField: "foo",
       // ...
     },
-  ] satisfies Extract<
-    SanityValues[keyof SanityValues],
-    Omit<SanityDocument, "_type">
-  >[],
+  ] satisfies DocumentValues<SanityValues>[],
 });
 
 const result = await value.get();

@@ -31,6 +31,8 @@ npm install groq-js @sanity-typed/groq-js
 
 Use `parse` and `evaluate` exactly as you would from [`groq-js`](https://github.com/sanity-io/groq-js). Then, use the results with the typescript types!
 
+Typically, this isn't used directly, but via [`@sanity-typed/client-mock`'s](../client-mock) methods that produce groq results. But it can be done directly:
+
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/your-typed-groq-js.ts -->
 ```your-typed-groq-js.ts```:
 ```typescript
@@ -129,6 +131,7 @@ export const product = defineType({
       name: "productName",
       type: "string",
       title: "Product name",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "tags",
@@ -186,7 +189,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *      _rev: string;
  *      _type: "product";
  *      _updatedAt: string;
- *      productName?: string;
+ *      productName: string;
  *      tags?: {
  *        _key: string;
  *        _type: "tag";
@@ -204,7 +207,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
 ```typescript
 // import { evaluate, parse } from "groq-js";
 import { evaluate, parse } from "@sanity-typed/groq-js";
-import type { SanityDocument } from "@sanity-typed/types";
+import type { DocumentValues } from "@sanity-typed/types";
 
 import type { SanityValues } from "./sanity.config";
 
@@ -224,10 +227,7 @@ const value = await evaluate(tree, {
       otherField: "foo",
       // ...
     },
-  ] satisfies Extract<
-    SanityValues[keyof SanityValues],
-    Omit<SanityDocument, "_type">
-  >[],
+  ] satisfies DocumentValues<SanityValues>[],
 });
 
 const result = await value.get();

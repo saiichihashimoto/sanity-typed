@@ -24,6 +24,8 @@ npm install groq-js @sanity-typed/groq-js
 
 Use `parse` and `evaluate` exactly as you would from [`groq-js`](https://github.com/sanity-io/groq-js). Then, use the results with the typescript types!
 
+Typically, this isn't used directly, but via [`@sanity-typed/client-mock`'s](../client-mock) methods that produce groq results. But it can be done directly:
+
 @[typescript](../../docs/your-typed-groq-js.ts)
 
 ## Considerations

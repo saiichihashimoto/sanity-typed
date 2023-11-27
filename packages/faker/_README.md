@@ -12,6 +12,8 @@
 
 Generate Mock Data from Sanity Schemas
 
+[![Watch How to Offline Your Sanity Client and Generate Mock Data](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/fc2be145-d504-46e3-9e77-6090c3024885)](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/fed71d58-6b08-467a-a325-b197f563a328)
+
 @[:page_toc](## Page Contents)
 
 ## Install
@@ -24,7 +26,7 @@ npm install sanity @faker-js/faker @sanity-typed/faker
 
 @[typescript](../example-studio/schemas/product.ts)
 @[typescript](../example-studio/sanity.config.ts)
-@[typescript](../../docs/mocks.ts)
+@[typescript](../example-app/src/sanity/mocks.ts)
 
 ## Reference Validity
 
