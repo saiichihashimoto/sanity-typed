@@ -28,7 +28,7 @@
     "dev": "npm run build -- --clean"
   },
   "dependencies": {
-    "type-fest": "4.6.0"
+    "type-fest": "4.8.2"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
