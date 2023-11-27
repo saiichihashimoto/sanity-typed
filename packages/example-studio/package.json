@@ -16,12 +16,12 @@
   },
   "dependencies": {
     "@sanity-typed/types": "0.0.0-development",
-    "@sanity/vision": "3.19.3",
-    "sanity": "3.18.1",
-    "styled-components": "5.3.9"
+    "@sanity/vision": "3.20.1",
+    "sanity": "3.20.1",
+    "styled-components": "6.1.1"
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "typescript": "5.2.2"
+    "typescript": "5.3.2"
   }
 }
