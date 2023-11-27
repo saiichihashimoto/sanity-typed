@@ -31,7 +31,7 @@
     "dev": "npm run build -- --clean"
   },
   "dependencies": {
-    "@faker-js/faker": "8.2.0",
+    "@faker-js/faker": "8.3.1",
     "@sanity-typed/client": "0.0.0-development",
     "@sanity-typed/groq-js": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
