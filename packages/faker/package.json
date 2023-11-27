@@ -47,7 +47,7 @@
     "type-fest": "4.6.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "8.2.0",
+    "@faker-js/faker": "8.3.1",
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.1",
     "@sanity-typed/traverse-validation": "0.0.0-development",
@@ -58,7 +58,7 @@
     "typescript": "5.2.2"
   },
   "peerDependencies": {
-    "@faker-js/faker": "^8.1.0",
+    "@faker-js/faker": "^8.3.0",
     "typescript": "5.2.2"
   },
   "engines": {
