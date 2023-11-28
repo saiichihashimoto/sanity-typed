@@ -11,7 +11,7 @@ import type {
   Position,
 } from "geojson";
 import { DateTime, evaluate, parse } from "groq-js";
-import type { GroqFunction } from "groq-js";
+import type { GroqFunction, Path } from "groq-js";
 import type { WritableDeep } from "type-fest";
 
 import type { ExecuteQuery, Geo, Parse } from ".";
@@ -19,6 +19,10 @@ import type {
   ScopeFromPartialContext,
   ScopeFromPartialScope,
 } from "./internal";
+
+// TODO https://github.com/sanity-io/groq-js/pull/159
+const newPath = async (pattern: string): Promise<Path> =>
+  (await evaluate(parse(`path("${pattern}")`))).get();
 
 describe("functions", () => {
   describe("global", () => {
@@ -1723,6 +1727,99 @@ describe("functions", () => {
           }>
         >
       >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+    });
+
+    it("path('a')", async () => {
+      const query = "path('a')";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        args: [{ type: "Value", value: "a" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "path",
+        namespace: "global",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...expectedTree,
+        func: expect.any(Function),
+      });
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = await newPath("a");
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        typeof expectedResult
+      >();
+    });
+
+    it("path('a.*')", async () => {
+      const query = "path('a.*')";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        args: [{ type: "Value", value: "a.*" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "path",
+        namespace: "global",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...expectedTree,
+        func: expect.any(Function),
+      });
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = await newPath("a.*");
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        typeof expectedResult
+      >();
+    });
+
+    it("path('a.**')", async () => {
+      const query = "path('a.**')";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        args: [{ type: "Value", value: "a.**" }],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "path",
+        namespace: "global",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...expectedTree,
+        func: expect.any(Function),
+      });
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = await newPath("a.**");
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        typeof expectedResult
+      >();
     });
   });
 
