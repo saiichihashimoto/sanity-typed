@@ -40,6 +40,7 @@ import type {
   OrNode,
   ParameterNode,
   ParentNode,
+  Path,
   PipeFuncCallNode,
   PosNode,
   ProjectionNode,
@@ -1526,6 +1527,15 @@ type Functions<
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_now()
      */
     now: TArgs extends [] ? string : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-path-
+     * @link https://www.sanity.io/docs/groq-functions#0ecd1b7eac78
+     */
+    path: TArgs extends (infer TBase)[]
+      ? TBase extends string
+        ? Path
+        : null
+      : never;
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
      */
