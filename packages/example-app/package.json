@@ -15,14 +15,14 @@
     "dev": "next dev"
   },
   "dependencies": {
-    "@faker-js/faker": "8.2.0",
+    "@faker-js/faker": "8.3.1",
     "@sanity-typed/client": "0.0.0-development",
     "@sanity-typed/client-mock": "0.0.0-development",
     "@sanity-typed/example-studio": "0.0.0-development",
     "@sanity-typed/faker": "0.0.0-development",
     "@sanity-typed/zod": "0.0.0-development",
-    "@sanity/client": "6.6.0",
-    "next": "14.0.1"
+    "@sanity/client": "6.8.6",
+    "next": "14.0.3"
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development",

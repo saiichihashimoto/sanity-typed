@@ -44,21 +44,21 @@
     "fast-json-stable-stringify": "2.1.0",
     "lodash": "4.17.21",
     "randexp": "0.5.3",
-    "type-fest": "4.6.0"
+    "type-fest": "4.8.2"
   },
   "devDependencies": {
-    "@faker-js/faker": "8.2.0",
+    "@faker-js/faker": "8.3.1",
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.1",
     "@sanity-typed/traverse-validation": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
     "@sanity-typed/zod": "0.0.0-development",
-    "@types/lodash": "4.14.200",
+    "@types/lodash": "4.14.202",
     "typescript": "5.2.2"
   },
   "peerDependencies": {
-    "@faker-js/faker": "^8.1.0",
+    "@faker-js/faker": "^8.3.0",
     "typescript": "5.2.2"
   },
   "engines": {

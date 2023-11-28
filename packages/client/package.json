@@ -33,13 +33,13 @@
   "dependencies": {
     "@sanity-typed/groq": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
-    "type-fest": "4.6.0"
+    "type-fest": "4.8.2"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.1",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@sanity/client": "6.6.0",
+    "@sanity/client": "6.8.6",
     "typescript": "5.2.2"
   },
   "peerDependencies": {

@@ -38,6 +38,7 @@ jobs:
           key: node-modules-${{ hashFiles('package-lock.json') }}
       - if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
+      - run: npm ls --package-lock-only
 
       - run: |
           DRY_RUN=$(npx turbo run build --dry=json)
@@ -113,16 +114,11 @@ jobs:
           key: node-modules-${{ hashFiles('package-lock.json') }}
       - if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
+      - run: npm ls --package-lock-only
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
 
-      - uses: actions/cache@v3
-        with:
-          path: .eslintcache
-          key: eslint-${{ github.run_id }}
-          restore-keys: |
-            eslint-
       - uses: actions/cache@v3
         with:
           path: node_modules/.cache/prettier/.prettier-cache
@@ -159,6 +155,7 @@ jobs:
           key: node-modules-${{ hashFiles('package-lock.json') }}
       - if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
+      - run: npm ls --package-lock-only
 
       - id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v2
