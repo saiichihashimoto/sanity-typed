@@ -121,12 +121,6 @@ jobs:
 
       - uses: actions/cache@v3
         with:
-          path: .eslintcache
-          key: eslint-${{ github.run_id }}
-          restore-keys: |
-            eslint-
-      - uses: actions/cache@v3
-        with:
           path: node_modules/.cache/prettier/.prettier-cache
           key: prettier-${{ github.run_id }}
           restore-keys: |
