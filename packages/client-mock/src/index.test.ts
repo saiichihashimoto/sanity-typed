@@ -111,7 +111,7 @@ describe("createClient", () => {
         proxy?: string;
         requestTagPrefix?: string;
         requester?: Required<ClientConfig>["requester"];
-        resultSourceMap?: boolean;
+        resultSourceMap?: boolean | "withKeyArraySelector";
         retryDelay?: (attemptNumber: number) => number;
         timeout?: number;
         token?: string;
