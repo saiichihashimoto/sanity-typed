@@ -55,11 +55,11 @@
     "@sanity-typed/utils": "0.0.0-development",
     "@sanity-typed/zod": "0.0.0-development",
     "@types/lodash": "4.14.202",
-    "typescript": "5.2.2"
+    "typescript": "5.3.2"
   },
   "peerDependencies": {
     "@faker-js/faker": "^8.3.0",
-    "typescript": "5.2.2"
+    "typescript": "5.3.2"
   },
   "engines": {
     "node": "^18.17.0"
