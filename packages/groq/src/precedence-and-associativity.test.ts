@@ -127,6 +127,7 @@ describe("precendence and associativity", () => {
   });
 
   describe("level 4", () => {
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
     it.todo("asc & desc");
 
     it("true==false==true", async () => {
@@ -195,8 +196,16 @@ describe("precendence and associativity", () => {
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
     });
 
-    // https://github.com/saiichihashimoto/sanity-typed/issues/214
-    it.todo("something in something in something");
+    it("true in [true,false] in [true,false]", async () => {
+      const query = "true in [true,false] in [true,false]";
+
+      expect(() => parse(query)).toThrow(
+        "Syntax error in GROQ query at position 20"
+      );
+      expectType<Parse<typeof query>>().toStrictEqual<never>();
+
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
+    });
 
     // https://github.com/saiichihashimoto/sanity-typed/issues/215
     it.todo("something match something match something");

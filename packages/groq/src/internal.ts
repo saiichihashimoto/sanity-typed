@@ -625,7 +625,7 @@ type Level4 =
   | AscNode
   | DescNode
   | Level3
-  | (OpCallNode & { op: "!=" | "<" | "<=" | "==" | ">" | ">=" });
+  | (OpCallNode & { op: "!=" | "<" | "<=" | "==" | ">" | ">=" | "in" });
 
 type Level5 = // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
   Level4;
@@ -1071,9 +1071,9 @@ type InOperator<
   _Prefix extends string = ""
 > = TExpression extends `${infer TLeft} in ${infer TRight}`
   ? // | InOperator<TRight, `${_Prefix}${TLeft} in `>
-    ParseInner<`${_Prefix}${TLeft}`> extends never
+    Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4> extends never
     ? never
-    : ParseInner<TRight> extends never
+    : Exclude<ParseInner<TRight>, Level4> extends never
     ? // TODO https://github.com/sanity-io/GROQ/issues/116
       {
         [TOp in
@@ -1084,7 +1084,7 @@ type InOperator<
             : ConstantEvaluate<ParseInner<TEnd>> extends never
             ? never
             : {
-                base: ParseInner<`${_Prefix}${TLeft}`>;
+                base: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
                 isInclusive: false;
                 left: ParseInner<TStart>;
                 right: ParseInner<TEnd>;
@@ -1093,9 +1093,9 @@ type InOperator<
           : never;
       }["..." | ".."]
     : {
-        left: ParseInner<`${_Prefix}${TLeft}`>;
+        left: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
         op: "in";
-        right: ParseInner<TRight>;
+        right: Exclude<ParseInner<TRight>, Level4>;
         type: "OpCall";
       }
   : never;
