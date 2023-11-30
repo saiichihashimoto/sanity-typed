@@ -1018,7 +1018,6 @@ type Operators = {
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Equality
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Comparison
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#In
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Match
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Plus
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Minus
@@ -1061,10 +1060,33 @@ type OpCall<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#In
+ */
+
+type InOperator<
+  TExpression extends string,
+  _Prefix extends string = ""
+> = TExpression extends `${infer TLeft} in ${infer TRight}`
+  ?
+      | InOperator<TRight, `${_Prefix}${TLeft} in `>
+      | (Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level1> extends never
+          ? never
+          : Exclude<ParseInner<TRight>, Level1> extends never
+          ? never
+          : {
+              left: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level1>;
+              op: "in";
+              right: Exclude<ParseInner<TRight>, Level1>;
+              type: "OpCall";
+            })
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#OperatorCall
  */
 type OperatorCall<TExpression extends string> =
   | BooleanOperator<TExpression>
+  | InOperator<TExpression>
   | OpCall<TExpression>
   | PrefixOperator<TExpression>;
 
@@ -1691,6 +1713,27 @@ type EvaluateFuncCall<
     : never
   : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateIn()
+ */
+type EvaluateIn<
+  TNode extends ExprNode,
+  TScope extends Scope<Context<any[], any>>
+> = TNode extends OpCallNode & { op: "in" }
+  ? Evaluate<TNode["right"], TScope> extends any[]
+    ? Evaluate<TNode["left"], TScope> extends Evaluate<
+        TNode["right"],
+        TScope
+      >[number]
+      ? true
+      : false
+    : Evaluate<TNode["right"], TScope> extends Path
+    ? Evaluate<TNode["left"], TScope> extends string
+      ? boolean
+      : null
+    : never
+  : never;
+
 type EmptyObject = { [key: string]: never };
 
 type EvaluateMapElements<
@@ -2031,6 +2074,7 @@ type EvaluateExpression<
   | EvaluateEverything<TNode, TScope>
   | EvaluateFilter<TNode, TScope>
   | EvaluateFuncCall<TNode, TScope>
+  | EvaluateIn<TNode, TScope>
   | EvaluateMap<TNode, TScope>
   | EvaluateMath<TNode, TScope>
   | EvaluateNeg<TNode, TScope>
