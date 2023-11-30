@@ -80,37 +80,31 @@ const dateAndDatetimeFaker = <
 ) => {
   const traversal = traverseValidation(schemaType);
 
-  return (faker: Faker) =>
-    faker.date
-      .between({
-        from: new Date(
-          Math.max(
-            ...(
-              emptyArrayToUndefined(
-                traversal.min
-                  ?.map(([minDate]) => minDate)
-                  .filter(
-                    (minDate): minDate is string => typeof minDate === "string"
-                  )
-              ) ?? ["2015-01-01T00:00:00.000Z"]
-            ).map((minDate) => new Date(minDate).valueOf())
-          )
-        ),
-        to: new Date(
-          Math.min(
-            ...(
-              emptyArrayToUndefined(
-                traversal.max
-                  ?.map(([maxDate]) => maxDate)
-                  .filter(
-                    (maxDate): maxDate is string => typeof maxDate === "string"
-                  )
-              ) ?? ["2023-01-01T00:00:00.000Z"]
-            ).map((maxDate) => new Date(maxDate).valueOf())
-          )
-        ),
-      })
-      .toISOString();
+  const from = new Date(
+    Math.max(
+      ...(
+        emptyArrayToUndefined(
+          traversal.min
+            ?.map(([minDate]) => minDate)
+            .filter((minDate): minDate is string => typeof minDate === "string")
+        ) ?? ["2015-01-01T00:00:00.000Z"]
+      ).map((minDate) => new Date(minDate).valueOf())
+    )
+  );
+
+  const to = new Date(
+    Math.min(
+      ...(
+        emptyArrayToUndefined(
+          traversal.max
+            ?.map(([maxDate]) => maxDate)
+            .filter((maxDate): maxDate is string => typeof maxDate === "string")
+        ) ?? ["2023-01-01T00:00:00.000Z"]
+      ).map((maxDate) => new Date(maxDate).valueOf())
+    )
+  );
+
+  return (faker: Faker) => faker.date.between({ from, to }).toISOString();
 };
 
 const dateFaker = <
