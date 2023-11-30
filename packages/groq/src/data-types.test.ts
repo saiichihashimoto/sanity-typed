@@ -120,6 +120,17 @@ describe("data types", () => {
     >();
   });
 
+  it(".6", async () => {
+    const query = ".6";
+
+    expect(() => parse(query)).toThrow(
+      "Syntax error in GROQ query at position 0"
+    );
+    expectType<Parse<typeof query>>().toStrictEqual<never>();
+
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
+  });
+
   it('"double quoted string"', async () => {
     const query = '"double quoted string"';
 

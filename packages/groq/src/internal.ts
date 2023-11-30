@@ -29,6 +29,7 @@ import type {
   GroqFunction,
   GroqPipeFunction,
   GroupNode,
+  InRangeNode,
   MapNode,
   NegNode,
   NotNode,
@@ -182,6 +183,8 @@ export type Evaluate<
 type Primitives<TExpression extends string> = TExpression extends `+${number}`
   ? never
   : TExpression extends `-${number}`
+  ? never
+  : TExpression extends `.${string}`
   ? never
   : TExpression extends `${infer TValue extends boolean | number | null}`
   ? {
@@ -1067,18 +1070,34 @@ type InOperator<
   TExpression extends string,
   _Prefix extends string = ""
 > = TExpression extends `${infer TLeft} in ${infer TRight}`
-  ?
-      | InOperator<TRight, `${_Prefix}${TLeft} in `>
-      | (Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level1> extends never
-          ? never
-          : Exclude<ParseInner<TRight>, Level1> extends never
-          ? never
-          : {
-              left: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level1>;
-              op: "in";
-              right: Exclude<ParseInner<TRight>, Level1>;
-              type: "OpCall";
-            })
+  ? // | InOperator<TRight, `${_Prefix}${TLeft} in `>
+    ParseInner<`${_Prefix}${TLeft}`> extends never
+    ? never
+    : ParseInner<TRight> extends never
+    ? // TODO https://github.com/sanity-io/GROQ/issues/116
+      {
+        [TOp in
+          | "..."
+          | ".."]: TRight extends `${infer TStart}${TOp}${infer TEnd}`
+          ? ConstantEvaluate<ParseInner<TStart>> extends never
+            ? never
+            : ConstantEvaluate<ParseInner<TEnd>> extends never
+            ? never
+            : {
+                base: ParseInner<`${_Prefix}${TLeft}`>;
+                isInclusive: false;
+                left: ParseInner<TStart>;
+                right: ParseInner<TEnd>;
+                type: "InRange";
+              }
+          : never;
+      }["..." | ".."]
+    : {
+        left: ParseInner<`${_Prefix}${TLeft}`>;
+        op: "in";
+        right: ParseInner<TRight>;
+        type: "OpCall";
+      }
   : never;
 
 /**
@@ -1734,6 +1753,13 @@ type EvaluateIn<
     : never
   : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateIn()
+ */
+type EvaluateInRange<TNode extends ExprNode> = TNode extends InRangeNode
+  ? boolean
+  : never;
+
 type EmptyObject = { [key: string]: never };
 
 type EvaluateMapElements<
@@ -2075,6 +2101,7 @@ type EvaluateExpression<
   | EvaluateFilter<TNode, TScope>
   | EvaluateFuncCall<TNode, TScope>
   | EvaluateIn<TNode, TScope>
+  | EvaluateInRange<TNode>
   | EvaluateMap<TNode, TScope>
   | EvaluateMath<TNode, TScope>
   | EvaluateNeg<TNode, TScope>

@@ -883,7 +883,6 @@ describe("operators", () => {
 
       expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/214
         WritableDeep<typeof expectedTree>
       >();
 
@@ -893,7 +892,6 @@ describe("operators", () => {
 
       expect(result).toStrictEqual(expectedResult);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/214
         WritableDeep<typeof expectedResult>
       >();
     });
@@ -913,7 +911,6 @@ describe("operators", () => {
 
       expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/214
         WritableDeep<typeof expectedTree>
       >();
 
@@ -923,7 +920,6 @@ describe("operators", () => {
 
       expect(result).toStrictEqual(expectedResult);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/214
         WritableDeep<typeof expectedResult>
       >();
     });
@@ -943,7 +939,6 @@ describe("operators", () => {
 
       expect(tree).toStrictEqual(expectedTree);
       expectType<Parse<typeof query>>().toStrictEqual<
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/214
         WritableDeep<typeof expectedTree>
       >();
 
