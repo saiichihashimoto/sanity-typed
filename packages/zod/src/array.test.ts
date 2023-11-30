@@ -329,6 +329,45 @@ describe("array", () => {
       );
     });
 
+    it("min(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "array",
+                  validation: (Rule) =>
+                    Rule.required().min(Rule.valueOfField("baz")),
+                  of: [defineArrayMember({ type: "boolean" })],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.bar.parse({
+          _type: "bar",
+          baz: 4,
+          foo: [],
+        })
+      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .not.toThrow();
+    });
+
     it("max(maxLength)", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -349,6 +388,45 @@ describe("array", () => {
       expect(() => zods.foo.parse([true, false])).toThrow(
         "Array must contain at most 1 element(s)"
       );
+    });
+
+    it("max(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "array",
+                  validation: (Rule) =>
+                    Rule.required().max(Rule.valueOfField("baz")),
+                  of: [defineArrayMember({ type: "boolean" })],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.bar.parse({
+          _type: "bar",
+          baz: 1,
+          foo: [true, false],
+        })
+      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .not.toThrow();
     });
 
     it("length(exactLength)", () => {
@@ -374,6 +452,45 @@ describe("array", () => {
       expect(() => zods.foo.parse([true, false])).toThrow(
         "Array must contain exactly 1 element(s)"
       );
+    });
+
+    it("length(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "array",
+                  validation: (Rule) =>
+                    Rule.required().length(Rule.valueOfField("baz")),
+                  of: [defineArrayMember({ type: "boolean" })],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.bar.parse({
+          _type: "bar",
+          baz: 1,
+          foo: [],
+        })
+      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .not.toThrow();
     });
 
     it("custom(fn)", () => {
