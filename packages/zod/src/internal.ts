@@ -11,7 +11,6 @@ import type {
   ConfigBase,
   DocumentValues,
   FieldDefinition,
-  GetOriginalRule,
   MaybeTitledListValue,
   TypeDefinition,
 } from "@sanity-typed/types/src/internal";
@@ -103,14 +102,18 @@ const dateZod = <TSchemaType extends SchemaTypeDefinition<"date", string, any>>(
       zod.regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Invalid date" }),
     toZodType,
     reduceAcc(traversal.min, (zod, [minDate]) =>
-      zod.refine((value) => new Date(value) >= new Date(minDate as string), {
-        message: `Date must be greater than or equal to ${minDate as string}`,
-      })
+      typeof minDate !== "string"
+        ? zod
+        : zod.refine((value) => new Date(value) >= new Date(minDate), {
+            message: `Date must be greater than or equal to ${minDate}`,
+          })
     ),
     reduceAcc(traversal.max, (zod, [maxDate]) =>
-      zod.refine((value) => new Date(value) <= new Date(maxDate as string), {
-        message: `Date must be less than or equal to ${maxDate as string}`,
-      })
+      typeof maxDate !== "string"
+        ? zod
+        : zod.refine((value) => new Date(value) <= new Date(maxDate), {
+            message: `Date must be less than or equal to ${maxDate}`,
+          })
     )
   )(z.string());
 };
@@ -126,16 +129,18 @@ const datetimeZod = <
     (zod: z.ZodString) => zod.datetime(),
     toZodType,
     reduceAcc(traversal.min, (zod, [minDate]) =>
-      zod.refine((value) => new Date(value) >= new Date(minDate as string), {
-        message: `Datetime must be greater than or equal to ${
-          minDate as string
-        }`,
-      })
+      typeof minDate !== "string"
+        ? zod
+        : zod.refine((value) => new Date(value) >= new Date(minDate), {
+            message: `Datetime must be greater than or equal to ${minDate}`,
+          })
     ),
     reduceAcc(traversal.max, (zod, [maxDate]) =>
-      zod.refine((value) => new Date(value) <= new Date(maxDate as string), {
-        message: `Datetime must be less than or equal to ${maxDate as string}`,
-      })
+      typeof maxDate !== "string"
+        ? zod
+        : zod.refine((value) => new Date(value) <= new Date(maxDate), {
+            message: `Datetime must be less than or equal to ${maxDate}`,
+          })
     )
   )(z.string());
 };
@@ -176,20 +181,20 @@ const numberZod = <
         flow(
           (zod: z.ZodNumber) => zod,
           reduceAcc(traversal.min, (zod, [minNumber]) =>
-            zod.min(minNumber as number)
+            typeof minNumber !== "number" ? zod : zod.min(minNumber)
           ),
           reduceAcc(traversal.max, (zod, [maxNumber]) =>
-            zod.max(maxNumber as number)
+            typeof maxNumber !== "number" ? zod : zod.max(maxNumber)
           ),
           reduceAcc(traversal.lessThan, (zod, [limit]) =>
-            zod.lt(limit as number)
+            typeof limit !== "number" ? zod : zod.lt(limit)
           ),
           reduceAcc(traversal.greaterThan, (zod, [limit]) =>
-            zod.gt(limit as number)
+            typeof limit !== "number" ? zod : zod.gt(limit)
           ),
           (zod) => (!traversal.integer ? zod : zod.int()),
           reduceAcc(traversal.precision, (zod, [limit]) =>
-            zod.multipleOf(1 / 10 ** (limit as number))
+            typeof limit !== "number" ? zod : zod.multipleOf(1 / 10 ** limit)
           )
         ),
         (zod) => (!traversal.positive ? zod : zod.nonnegative()),
@@ -240,13 +245,13 @@ const stringAndTextZod = <
     flow(
       (zod: z.ZodString) => zod,
       reduceAcc(traversal.min, (zod, [minLength]) =>
-        zod.min(minLength as number)
+        typeof minLength !== "number" ? zod : zod.min(minLength)
       ),
       reduceAcc(traversal.max, (zod, [maxLength]) =>
-        zod.max(maxLength as number)
+        typeof maxLength !== "number" ? zod : zod.max(maxLength)
       ),
       reduceAcc(traversal.length, (zod, [exactLength]) =>
-        zod.length(exactLength as number)
+        typeof exactLength !== "number" ? zod : zod.length(exactLength)
       ),
       (zod) =>
         !traversal.email
@@ -349,11 +354,12 @@ const urlZod = <TSchemaType extends SchemaTypeDefinition<"url", any, any>>(
 ) => {
   const traversal = traverseValidation(schemaType);
 
+  type UriType = NonNullable<typeof traversal.uri>;
+
   return flow(
     (zod: z.ZodType<string>) => zod,
     reduceAcc(
-      traversal.uri ??
-        ([[{}]] as Parameters<GetOriginalRule<TSchemaType>["uri"]>[]),
+      traversal.uri ?? ([[{}]] as UriType),
       (
         zod: z.ZodType<string>,
         [
@@ -719,13 +725,13 @@ const arrayZod = <
   return flow(
     (zod: typeof arrayZodInner) => zod,
     reduceAcc(traversal.min, (zod, [minLength]) =>
-      zod.min(minLength as number)
+      typeof minLength !== "number" ? zod : zod.min(minLength)
     ),
     reduceAcc(traversal.max, (zod, [maxLength]) =>
-      zod.max(maxLength as number)
+      typeof maxLength !== "number" ? zod : zod.max(maxLength)
     ),
     reduceAcc(traversal.length, (zod, [exactLength]) =>
-      zod.length(exactLength as number)
+      typeof exactLength !== "number" ? zod : zod.length(exactLength)
     ),
     toZodType,
     (zod) =>
