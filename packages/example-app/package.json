@@ -10,6 +10,7 @@
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
   },
+  "license": "MIT",
   "scripts": {
     "build": "next build",
     "dev": "next dev"

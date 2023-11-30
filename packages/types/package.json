@@ -20,6 +20,7 @@
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
   },
+  "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],

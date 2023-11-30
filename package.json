@@ -9,6 +9,7 @@
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
   },
+  "license": "MIT",
   "workspaces": ["@types/*", "packages/*"],
   "scripts": {
     "build": "turbo run build --color",
