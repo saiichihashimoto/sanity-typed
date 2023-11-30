@@ -29,6 +29,7 @@ import type {
   GroqFunction,
   GroqPipeFunction,
   GroupNode,
+  InRangeNode,
   MapNode,
   NegNode,
   NotNode,
@@ -182,6 +183,8 @@ export type Evaluate<
 type Primitives<TExpression extends string> = TExpression extends `+${number}`
   ? never
   : TExpression extends `-${number}`
+  ? never
+  : TExpression extends `.${string}`
   ? never
   : TExpression extends `${infer TValue extends boolean | number | null}`
   ? {
@@ -622,7 +625,7 @@ type Level4 =
   | AscNode
   | DescNode
   | Level3
-  | (OpCallNode & { op: "!=" | "<" | "<=" | "==" | ">" | ">=" });
+  | (OpCallNode & { op: "!=" | "<" | "<=" | "==" | ">" | ">=" | "in" });
 
 type Level5 = // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
   Level4;
@@ -1018,7 +1021,6 @@ type Operators = {
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Equality
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Comparison
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#In
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Match
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Plus
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Minus
@@ -1061,10 +1063,49 @@ type OpCall<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#In
+ */
+
+type InOperator<
+  TExpression extends string,
+  _Prefix extends string = ""
+> = TExpression extends `${infer TLeft} in ${infer TRight}`
+  ? // | InOperator<TRight, `${_Prefix}${TLeft} in `>
+    Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4> extends never
+    ? never
+    : Exclude<ParseInner<TRight>, Level4> extends never
+    ? // TODO https://github.com/sanity-io/GROQ/issues/116
+      {
+        [TOp in
+          | "..."
+          | ".."]: TRight extends `${infer TStart}${TOp}${infer TEnd}`
+          ? ConstantEvaluate<ParseInner<TStart>> extends never
+            ? never
+            : ConstantEvaluate<ParseInner<TEnd>> extends never
+            ? never
+            : {
+                base: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
+                isInclusive: false;
+                left: ParseInner<TStart>;
+                right: ParseInner<TEnd>;
+                type: "InRange";
+              }
+          : never;
+      }["..." | ".."]
+    : {
+        left: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
+        op: "in";
+        right: Exclude<ParseInner<TRight>, Level4>;
+        type: "OpCall";
+      }
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#OperatorCall
  */
 type OperatorCall<TExpression extends string> =
   | BooleanOperator<TExpression>
+  | InOperator<TExpression>
   | OpCall<TExpression>
   | PrefixOperator<TExpression>;
 
@@ -1691,6 +1732,34 @@ type EvaluateFuncCall<
     : never
   : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateIn()
+ */
+type EvaluateIn<
+  TNode extends ExprNode,
+  TScope extends Scope<Context<any[], any>>
+> = TNode extends OpCallNode & { op: "in" }
+  ? Evaluate<TNode["right"], TScope> extends any[]
+    ? Evaluate<TNode["left"], TScope> extends Evaluate<
+        TNode["right"],
+        TScope
+      >[number]
+      ? true
+      : false
+    : Evaluate<TNode["right"], TScope> extends Path
+    ? Evaluate<TNode["left"], TScope> extends string
+      ? boolean
+      : null
+    : never
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateIn()
+ */
+type EvaluateInRange<TNode extends ExprNode> = TNode extends InRangeNode
+  ? boolean
+  : never;
+
 type EmptyObject = { [key: string]: never };
 
 type EvaluateMapElements<
@@ -2031,6 +2100,8 @@ type EvaluateExpression<
   | EvaluateEverything<TNode, TScope>
   | EvaluateFilter<TNode, TScope>
   | EvaluateFuncCall<TNode, TScope>
+  | EvaluateIn<TNode, TScope>
+  | EvaluateInRange<TNode>
   | EvaluateMap<TNode, TScope>
   | EvaluateMath<TNode, TScope>
   | EvaluateNeg<TNode, TScope>

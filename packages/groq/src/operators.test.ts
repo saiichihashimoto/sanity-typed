@@ -785,6 +785,302 @@ describe("operators", () => {
     });
   });
 
+  describe("in", () => {
+    it('"string" in ["string","another string"]', async () => {
+      const query = '"string" in ["string","another string"]';
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { type: "Value", value: "string" },
+        op: "in",
+        right: {
+          elements: [
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "string" },
+            },
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "another string" },
+            },
+          ],
+          type: "Array",
+        },
+        type: "OpCall",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = true;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it('"not string" in ["string","another string"]', async () => {
+      const query = '"not string" in ["string","another string"]';
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { type: "Value", value: "not string" },
+        op: "in",
+        right: {
+          elements: [
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "string" },
+            },
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "another string" },
+            },
+          ],
+          type: "Array",
+        },
+        type: "OpCall",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = false;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it("0 in 0...1", async () => {
+      const query = "0 in 0...1";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        base: { type: "Value", value: 0 },
+        isInclusive: false,
+        left: { type: "Value", value: 0 },
+        right: { type: "Value", value: 1 },
+        type: "InRange",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = true as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it("5 in 0...1", async () => {
+      const query = "5 in 0...1";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        base: { type: "Value", value: 5 },
+        isInclusive: false,
+        left: { type: "Value", value: 0 },
+        right: { type: "Value", value: 1 },
+        type: "InRange",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = false as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it('"string" in 0...1', async () => {
+      const query = '"string" in 0...1';
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        base: { type: "Value", value: "string" },
+        isInclusive: false,
+        left: { type: "Value", value: 0 },
+        right: { type: "Value", value: 1 },
+        type: "InRange",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = null;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/509
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it('"a.b" in path("a.*")', async () => {
+      const query = '"a.b" in path("a.*")';
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { type: "Value", value: "a.b" },
+        op: "in",
+        right: {
+          args: [
+            {
+              type: "Value",
+              value: "a.*",
+            },
+          ],
+          func: (() => {}) as unknown as GroqFunction,
+          name: "path",
+          namespace: "global",
+          type: "FuncCall",
+        },
+        type: "OpCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...expectedTree,
+        right: {
+          ...expectedTree.right,
+          func: expect.any(Function),
+        },
+      });
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = true as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it('"a.b" in path("b.*")', async () => {
+      const query = '"a.b" in path("b.*")';
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { type: "Value", value: "a.b" },
+        op: "in",
+        right: {
+          args: [
+            {
+              type: "Value",
+              value: "b.*",
+            },
+          ],
+          func: (() => {}) as unknown as GroqFunction,
+          name: "path",
+          namespace: "global",
+          type: "FuncCall",
+        },
+        type: "OpCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...expectedTree,
+        right: {
+          ...expectedTree.right,
+          func: expect.any(Function),
+        },
+      });
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = false as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it('5 in path("a.*")', async () => {
+      const query = '5 in path("a.*")';
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { type: "Value", value: 5 },
+        op: "in",
+        right: {
+          args: [{ type: "Value", value: "a.*" }],
+          func: (() => {}) as unknown as GroqFunction,
+          name: "path",
+          namespace: "global",
+          type: "FuncCall",
+        },
+        type: "OpCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...expectedTree,
+        right: {
+          ...expectedTree.right,
+          func: expect.any(Function),
+        },
+      });
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = null;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+  });
+
   describe("+ (prefix)", () => {
     it("+5", async () => {
       const query = "+5";
