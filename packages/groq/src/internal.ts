@@ -627,8 +627,7 @@ type Level4 =
   | Level3
   | (OpCallNode & { op: "!=" | "<" | "<=" | "==" | ">" | ">=" | "in" });
 
-type Level5 = // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-  Level4;
+type Level5 = Level4;
 
 type Level6 = Level5 | (OpCallNode & { op: "-" | "+" });
 
@@ -645,7 +644,9 @@ type Level10 = Level9 | NotNode | PosNode;
  */
 type Parenthesis<TExpression extends string> =
   TExpression extends `(${infer TInnerExpression})`
-    ? { base: ParseInner<TInnerExpression>; type: "Group" }
+    ? ParseInner<TInnerExpression> extends never
+      ? never
+      : { base: ParseInner<TInnerExpression>; type: "Group" }
     : never;
 
 /**
@@ -696,6 +697,26 @@ type MaybeMap<
   : TNode;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Range
+ */
+type Range<TExpression extends string> = {
+  [TOp in
+    | "..."
+    | ".."]: TExpression extends `${infer TStart}${TOp}${infer TEnd}`
+    ? ParseInner<TStart> extends never
+      ? never
+      : ParseInner<TEnd> extends never
+      ? never
+      : {
+          isInclusive: TOp extends ".." ? true : false;
+          left: ParseInner<TStart>;
+          right: ParseInner<TEnd>;
+          type: "Range";
+        }
+    : never;
+}["..." | ".."];
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SquareBracketTraversal
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#AttributeAccess
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ElementAccess
@@ -710,30 +731,6 @@ type SquareBracketTraversal<
       | (Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10> extends never
           ? never
           :
-              | {
-                  [TOp in
-                    | "..."
-                    | ".."]: TBracketExpression extends `${infer TStart}${TOp}${infer TEnd}`
-                    ? ConstantEvaluate<ParseInner<TStart>> extends never
-                      ? never
-                      : ConstantEvaluate<ParseInner<TEnd>> extends never
-                      ? never
-                      : ConstantEvaluate<ParseInner<TStart>> extends number
-                      ? ConstantEvaluate<ParseInner<TEnd>> extends number
-                        ? {
-                            base: Exclude<
-                              ParseInner<`${_Prefix}${TBase}`>,
-                              Level10
-                            >;
-                            isInclusive: TOp extends ".." ? true : false;
-                            left: ConstantEvaluate<ParseInner<TStart>>;
-                            right: ConstantEvaluate<ParseInner<TEnd>>;
-                            type: "Slice";
-                          }
-                        : never
-                      : never
-                    : never;
-                }["..." | ".."]
               | (ConstantEvaluate<ParseInner<TBracketExpression>> extends never
                   ? never
                   : ConstantEvaluate<
@@ -762,7 +759,31 @@ type SquareBracketTraversal<
                       base: Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>;
                       expr: ParseInner<TBracketExpression>;
                       type: "Filter";
-                    }))
+                    })
+              | (Range<TBracketExpression> extends never
+                  ? never
+                  : ConstantEvaluate<
+                      Range<TBracketExpression>["left"]
+                    > extends number
+                  ? ConstantEvaluate<
+                      Range<TBracketExpression>["right"]
+                    > extends number
+                    ? {
+                        base: Exclude<
+                          ParseInner<`${_Prefix}${TBase}`>,
+                          Level10
+                        >;
+                        isInclusive: Range<TBracketExpression>["isInclusive"];
+                        left: ConstantEvaluate<
+                          Range<TBracketExpression>["left"]
+                        >;
+                        right: ConstantEvaluate<
+                          Range<TBracketExpression>["right"]
+                        >;
+                        type: "Slice";
+                      }
+                    : never
+                  : never))
   : never;
 
 /**
@@ -1075,23 +1096,15 @@ type InOperator<
     ? never
     : Exclude<ParseInner<TRight>, Level4> extends never
     ? // TODO https://github.com/sanity-io/GROQ/issues/116
-      {
-        [TOp in
-          | "..."
-          | ".."]: TRight extends `${infer TStart}${TOp}${infer TEnd}`
-          ? ConstantEvaluate<ParseInner<TStart>> extends never
-            ? never
-            : ConstantEvaluate<ParseInner<TEnd>> extends never
-            ? never
-            : {
-                base: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
-                isInclusive: false;
-                left: ParseInner<TStart>;
-                right: ParseInner<TEnd>;
-                type: "InRange";
-              }
-          : never;
-      }["..." | ".."]
+      Range<TRight> extends never
+      ? never
+      : {
+          base: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
+          isInclusive: Range<TRight>["isInclusive"];
+          left: Range<TRight>["left"];
+          right: Range<TRight>["right"];
+          type: "InRange";
+        }
     : {
         left: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
         op: "in";

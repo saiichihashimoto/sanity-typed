@@ -365,32 +365,6 @@ describe("precendence and associativity", () => {
     });
   });
 
-  describe("level 5", () => {
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-    it.todo("1..3..5");
-
-    describe("& level 1", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
-    });
-
-    describe("& level 2", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
-    });
-
-    describe("& level 3", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
-    });
-
-    describe("& level 4", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
-    });
-  });
-
   describe("level 6", () => {
     it("1+2+3", async () => {
       const query = "1+2+3";
@@ -719,11 +693,6 @@ describe("precendence and associativity", () => {
 
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
       });
-    });
-
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
     });
   });
 
@@ -1089,11 +1058,6 @@ describe("precendence and associativity", () => {
       });
     });
 
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
-    });
-
     describe("& level 6", () => {
       it("1*2+3*4", async () => {
         const query = "1*2+3*4";
@@ -1285,11 +1249,6 @@ describe("precendence and associativity", () => {
           WritableDeep<typeof expectedResult>
         >();
       });
-    });
-
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
     });
 
     describe("& level 6", () => {
@@ -1583,11 +1542,6 @@ describe("precendence and associativity", () => {
 
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
       });
-    });
-
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
     });
 
     describe("& level 6", () => {
@@ -1964,11 +1918,6 @@ describe("precendence and associativity", () => {
           WritableDeep<typeof expectedResult>
         >();
       });
-    });
-
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
     });
 
     describe("& level 6", () => {
@@ -2510,11 +2459,6 @@ describe("precendence and associativity", () => {
 
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
       });
-    });
-
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
     });
 
     describe("& level 6", () => {
