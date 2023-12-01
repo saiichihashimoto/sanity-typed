@@ -1244,6 +1244,209 @@ describe("functions", () => {
       >();
     });
 
+    it("select()", async () => {
+      const query = "select()";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        alternatives: [],
+        type: "Select",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = null;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it("select(1)", async () => {
+      const query = "select(1)";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        alternatives: [],
+        fallback: { type: "Value", value: 1 },
+        type: "Select",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 1;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it("select(true=>1,2)", async () => {
+      const query = "select(true=>1,2)";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        alternatives: [
+          {
+            condition: { type: "Value", value: true },
+            type: "SelectAlternative",
+            value: { type: "Value", value: 1 },
+          },
+        ],
+        fallback: { type: "Value", value: 2 },
+        type: "Select",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 1;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it("select(false=>1,2)", async () => {
+      const query = "select(false=>1,2)";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        alternatives: [
+          {
+            condition: { type: "Value", value: false },
+            type: "SelectAlternative",
+            value: { type: "Value", value: 1 },
+          },
+        ],
+        fallback: { type: "Value", value: 2 },
+        type: "Select",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = 2;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it("select($param=>1,2)", async () => {
+      const query = "select($param=>1,2)";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        alternatives: [
+          {
+            condition: { name: "param", type: "Parameter" },
+            type: "SelectAlternative",
+            value: { type: "Value", value: 1 },
+          },
+        ],
+        fallback: { type: "Value", value: 2 },
+        type: "Select",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param: false };
+
+      const result = await (await evaluate(tree, { params })).get();
+
+      const expectedResult = 2 as 1 | 2;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+    });
+
+    it("select($param1=>1,$param2=>2,$param3=>3,4)", async () => {
+      const query = "select($param1=>1,$param2=>2,$param3=>3,4)";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        alternatives: [
+          {
+            condition: { name: "param1", type: "Parameter" },
+            type: "SelectAlternative",
+            value: { type: "Value", value: 1 },
+          },
+          {
+            condition: { name: "param2", type: "Parameter" },
+            type: "SelectAlternative",
+            value: { type: "Value", value: 2 },
+          },
+          {
+            condition: { name: "param3", type: "Parameter" },
+            type: "SelectAlternative",
+            value: { type: "Value", value: 3 },
+          },
+        ],
+        fallback: { type: "Value", value: 4 },
+        type: "Select",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param1: false, param2: false, param3: false };
+
+      const result = await (await evaluate(tree, { params })).get();
+
+      const expectedResult = 4 as 1 | 2 | 3 | 4;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+    });
+
     it("round(3.14)", async () => {
       const query = "round(3.14)";
 
