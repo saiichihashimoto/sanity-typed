@@ -1008,7 +1008,9 @@ type Level4 =
   | AscNode
   | DescNode
   | Level3
-  | (OpCallNode & { op: "!=" | "<" | "<=" | "==" | ">" | ">=" | "in" });
+  | (OpCallNode & {
+      op: "!=" | "<" | "<=" | "==" | ">" | ">=" | "in" | "match";
+    });
 
 type Level5 = Level4;
 
@@ -1420,6 +1422,7 @@ type Operators = {
   "==": { leftLevel: Level4; rightLevel: Level4 };
   ">": { leftLevel: Level4; rightLevel: Level4 };
   ">=": { leftLevel: Level4; rightLevel: Level4 };
+  "match": { leftLevel: Level4; rightLevel: Level4; withSpaces: true };
 };
 
 /**
@@ -1439,9 +1442,21 @@ type OpCall<
   _Prefix extends string = ""
 > = TOp extends null
   ? { [TOp in keyof Operators]: OpCall<TExpression, TOp> }[keyof Operators]
-  : TExpression extends `${infer TLeft}${TOp}${infer TRight}`
+  : TExpression extends `${infer TLeft}${Operators[NonNullable<TOp>] extends {
+      withSpaces: true;
+    }
+      ? ` ${TOp} `
+      : TOp}${infer TRight}`
   ?
-      | OpCall<TRight, TOp, `${_Prefix}${TLeft}${TOp}`>
+      | OpCall<
+          TRight,
+          TOp,
+          `${_Prefix}${TLeft}${Operators[NonNullable<TOp>] extends {
+            withSpaces: true;
+          }
+            ? ` ${TOp} `
+            : TOp}`
+        >
       | (Exclude<
           ParseInner<`${_Prefix}${TLeft}`>,
           Operators[NonNullable<TOp>]["leftLevel"]
@@ -1842,6 +1857,20 @@ type EvaluateMap<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateMatch()
+ */
+type EvaluateMatch<
+  TNode extends ExprNode,
+  TScope extends Scope<Context<any[], any>>
+> = TNode extends OpCallNode & { op: "match" }
+  ? Evaluate<TNode["left"], TScope> extends string[] | string
+    ? Evaluate<TNode["right"], TScope> extends string[] | string
+      ? boolean
+      : never
+    : never
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePlus()
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateMinus()
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateStar()
@@ -2205,6 +2234,7 @@ type EvaluateExpression<
   | EvaluateIn<TNode, TScope>
   | EvaluateInRange<TNode>
   | EvaluateMap<TNode, TScope>
+  | EvaluateMatch<TNode, TScope>
   | EvaluateMath<TNode, TScope>
   | EvaluateNeg<TNode, TScope>
   | EvaluateNot<TNode, TScope>

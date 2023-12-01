@@ -1081,6 +1081,172 @@ describe("operators", () => {
     });
   });
 
+  describe("match", () => {
+    it('"foobar" match "foo*"', async () => {
+      const query = '"foobar" match "foo*"';
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { type: "Value", value: "foobar" },
+        op: "match",
+        right: { type: "Value", value: "foo*" },
+        type: "OpCall",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = true as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it('"foobar" match ["foo*","*bar"]', async () => {
+      const query = '"foobar" match ["foo*","*bar"]';
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { type: "Value", value: "foobar" },
+        op: "match",
+        right: {
+          elements: [
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "foo*" },
+            },
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "*bar" },
+            },
+          ],
+          type: "Array",
+        },
+        type: "OpCall",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = true as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it('["foobar","baz"] match "foo*"', async () => {
+      const query = '["foobar","baz"] match "foo*"';
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: {
+          elements: [
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "foobar" },
+            },
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "baz" },
+            },
+          ],
+          type: "Array",
+        },
+        op: "match",
+        right: { type: "Value", value: "foo*" },
+        type: "OpCall",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = true as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+
+    it('["foobar","baz"] match ["foo*","*bar"]', async () => {
+      const query = '["foobar","baz"] match ["foo*","*bar"]';
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: {
+          elements: [
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "foobar" },
+            },
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "baz" },
+            },
+          ],
+          type: "Array",
+        },
+        op: "match",
+        right: {
+          elements: [
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "foo*" },
+            },
+            {
+              isSplat: false,
+              type: "ArrayElement",
+              value: { type: "Value", value: "*bar" },
+            },
+          ],
+          type: "Array",
+        },
+        type: "OpCall",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = true as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    });
+  });
+
   describe("+ (prefix)", () => {
     it("+5", async () => {
       const query = "+5";
