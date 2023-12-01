@@ -282,8 +282,16 @@ describe("precendence and associativity", () => {
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
     });
 
-    // https://github.com/saiichihashimoto/sanity-typed/issues/215
-    it.todo("something match something match something");
+    it('"something" match "something" match "something"', async () => {
+      const query = '"something" match "something" match "something"';
+
+      expect(() => parse(query)).toThrow(
+        "Syntax error in GROQ query at position 29"
+      );
+      expectType<Parse<typeof query>>().toStrictEqual<never>();
+
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
+    });
 
     describe("& level 1", () => {
       it("select(true==false=>false==true)", async () => {
