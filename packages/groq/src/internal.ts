@@ -46,6 +46,7 @@ import type {
   PosNode,
   ProjectionNode,
   SelectAlternativeNode,
+  SelectNode,
   SliceNode,
   ThisNode,
   ValueNode,
@@ -497,6 +498,351 @@ type Parent<
   ? Parent<TParents, [null, ...Levels]>
   : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-geo-type
+ */
+export type Geo =
+  | GeometryCollection
+  | LineString
+  | MultiLineString
+  | MultiPoint
+  | MultiPolygon
+  | Point
+  | Polygon
+  | Position;
+
+type Functions<
+  TArgs extends any[],
+  TScope extends Scope<Context<any[], any>>
+> = {
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Array-namespace
+   */
+  array: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_compact()
+     */
+    compact: TArgs extends [infer TArr]
+      ? TArr extends any[]
+        ? TArr extends null[] | []
+          ? []
+          : TArr extends [infer THead, ...infer TTail]
+          ? THead extends null
+            ? Functions<[TTail], TScope>["array"]["compact"]
+            : [THead, ...Functions<[TTail], TScope>["array"]["compact"]]
+          : TArr extends (infer TElement)[]
+          ? NonNullable<TElement>[]
+          : never
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_join()
+     */
+    join: TArgs extends [infer TArr, infer TSep]
+      ? TArr extends any[]
+        ? TSep extends string
+          ? Functions<[TArr[number]], TScope>["global"]["string"] extends string
+            ? Join<TArr, TSep>
+            : null
+          : null
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_unique()
+     */
+    unique: TArgs extends [infer TArr]
+      ? TArr extends any[]
+        ? TArr extends null[] | []
+          ? []
+          : TArr extends [...infer TInitial, infer TLast]
+          ? TLast extends boolean | number | string
+            ? TLast extends Functions<
+                [TInitial],
+                TScope
+              >["array"]["unique"][number]
+              ? Functions<[TInitial], TScope>["array"]["unique"]
+              : [...Functions<[TInitial], TScope>["array"]["unique"], TLast]
+            : [...Functions<[TInitial], TScope>["array"]["unique"], TLast]
+          : TArr
+        : null
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Date-time-namespace
+   */
+  dateTime: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#dateTime_now()
+     */
+    now: TArgs extends [] ? DateTime : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Delta-namespace
+   */
+  delta: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_operation()
+     */
+    operation: TArgs extends []
+      ? TScope extends {
+          context: { delta: { after: infer TAfter; before: infer TBefore } };
+        }
+        ? TBefore extends null
+          ? TAfter extends null
+            ? null
+            : "create"
+          : TAfter extends null
+          ? "delete"
+          : "update"
+        : never
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Geography-Extension
+   */
+  geo: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_contains()
+     */
+    contains: TArgs extends [infer TFirst, infer TSecond]
+      ? TFirst extends Geo
+        ? TSecond extends Geo
+          ? boolean
+          : null
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_distance()
+     */
+    distance: TArgs extends [infer TFirst, infer TSecond]
+      ? TFirst extends Point
+        ? TSecond extends Point
+          ? number
+          : null
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_intersects()
+     */
+    intersects: TArgs extends [infer TFirst, infer TSecond]
+      ? TFirst extends Geo
+        ? TSecond extends Geo
+          ? boolean
+          : null
+        : null
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
+   */
+  global: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#boost()
+     */
+    boost: never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_coalesce()
+     */
+    coalesce: TArgs extends []
+      ? null
+      : TArgs extends [infer THead, ...infer TTail]
+      ? null extends THead
+        ? Functions<TTail, TScope>["global"]["coalesce"] | NonNullable<THead>
+        : THead
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_count()
+     */
+    count: TArgs extends [infer TBase]
+      ? TBase extends any[]
+        ? TBase["length"]
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_dateTime()
+     */
+    dateTime: TArgs extends [infer TBase]
+      ? TBase extends DateTime | string
+        ? DateTime
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_defined()
+     */
+    defined: TArgs extends [infer TBase]
+      ? TBase extends null
+        ? false
+        : true
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_geo()
+     */
+    geo: TArgs extends [infer TBase]
+      ? TBase extends Geo
+        ? TBase
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-identity-
+     */
+    identity: TArgs extends []
+      ? TScope extends { context: { identity: infer TIdentity } }
+        ? TIdentity
+        : never
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_length()
+     */
+    length: TArgs extends [infer TBase]
+      ? TBase extends any[] | string
+        ? TBase["length"]
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_lower()
+     */
+    lower: TArgs extends [infer TValue]
+      ? TValue extends string
+        ? Lowercase<TValue>
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_now()
+     */
+    now: TArgs extends [] ? string : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-path-
+     * @link https://www.sanity.io/docs/groq-functions#0ecd1b7eac78
+     */
+    path: TArgs extends (infer TBase)[]
+      ? TBase extends string
+        ? Path
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
+     */
+    pt: TArgs extends (infer TBase)[]
+      ? TBase extends PortableTextBlock | PortableTextBlock[]
+        ? TBase
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_references()
+     */
+    references: TArgs extends (infer TElement)[]
+      ? Extract<Exclude<TElement, []>, string[] | string> extends never
+        ? false
+        : boolean
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_round()
+     */
+    round: TArgs extends [infer TNum, infer TPrec] | [infer TNum]
+      ? TNum extends number
+        ? IsUnknown<TPrec> extends true
+          ? number
+          : TPrec extends number
+          ? number
+          : null
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_string()
+     */
+    string: TArgs extends [infer TVal]
+      ? TVal extends boolean | number | string
+        ? `${TVal}`
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_upper()
+     */
+    upper: TArgs extends [infer TValue]
+      ? TValue extends string
+        ? Uppercase<TValue>
+        : null
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Math-namespace
+   */
+  math: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_avg()
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_max()
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_min()
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_sum()
+     */
+    [mathFn in "avg" | "max" | "min" | "sum"]: TArgs extends [infer TArr]
+      ? TArr extends null[] | []
+        ? mathFn extends "sum"
+          ? 0
+          : null
+        : TArr extends (number | null)[]
+        ? mathFn extends "max" | "min"
+          ? Exclude<TArr[number], null>
+          : number
+        : null
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Portable-Text-Extension
+   */
+  pt: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#pt_text()
+     */
+    text: TArgs extends (infer TBase)[]
+      ? TBase extends PortableTextBlock | PortableTextBlock[]
+        ? string
+        : null
+      : never;
+  };
+  /**
+   * @link https://www.sanity.io/docs/groq-functions#61e2649fc0d8
+   */
+  sanity: {
+    /**
+     * @link https://www.sanity.io/docs/groq-functions#48b1e793d6b9
+     */
+    dataset: TArgs extends [] ? TScope["context"]["client"]["dataset"] : never;
+    /**
+     * @link https://www.sanity.io/docs/groq-functions#b89053823742
+     */
+    projectId: TArgs extends []
+      ? TScope["context"]["client"]["projectId"]
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-String-namespace
+   */
+  string: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_split()
+     */
+    split: TArgs extends [infer TStr, infer TSep]
+      ? TStr extends string
+        ? TSep extends string
+          ? Split<TStr, TSep>
+          : null
+        : null
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_startsWith()
+     */
+    startsWith: TArgs extends [infer TStr, infer TPrefix]
+      ? TStr extends string
+        ? TPrefix extends string
+          ? TStr extends `${TPrefix}${string}`
+            ? true
+            : false
+          : null
+        : null
+      : never;
+  };
+};
+
 type Asc<TExpression extends string> = TExpression extends `${infer TBase} asc`
   ? ParseInner<TBase> extends never
     ? never
@@ -516,15 +862,29 @@ type Desc<TExpression extends string> =
         }
     : never;
 
+type Pair<TExpression extends string> =
+  TExpression extends `${infer TCondition}=>${infer TValue}`
+    ? ParseInner<TCondition> extends never
+      ? never
+      : ParseInner<TValue> extends never
+      ? never
+      : {
+          condition: ParseInner<TCondition>;
+          type: "SelectAlternative";
+          value: ParseInner<TValue>;
+        }
+    : never;
+
 type FuncArgParse<TExpression extends string, TFuncFullName extends string> =
   | ParseInner<TExpression>
   | (TFuncFullName extends "order"
       ? Asc<TExpression> | Desc<TExpression>
-      : never);
+      : never)
+  | (TFuncFullName extends "select" ? Pair<TExpression> : never);
 
 type FuncArgs<
   TArgs extends string,
-  TFuncFullName extends string = never,
+  TFuncFullName extends string,
   _Prefix extends string = ""
 > = `${_Prefix}${TArgs}` extends ""
   ? []
@@ -550,43 +910,68 @@ type FuncArgs<
 
 // https://github.com/sanity-io/groq-js/blob/28dee3d75e9e32722dfb2291e1f58e1418e11bb8/src/parser.ts#L382
 // before() and after() return ContextNodes instead
-type FuncCallToContext<TFuncCall extends FuncCallNode> = TFuncCall extends {
-  name: infer TKey extends "after" | "before";
-}
+type FunctionsToOtherNodes<
+  TFuncName extends string,
+  TFuncArgs extends any[]
+> = TFuncName extends "after" | "before"
   ? {
-      key: TKey;
+      key: TFuncName;
       type: "Context";
     }
-  : TFuncCall;
+  : TFuncName extends "select"
+  ? TFuncArgs extends [
+      ...infer TAlternatives extends SelectAlternativeNode[],
+      infer TFallback extends ExprNode
+    ]
+    ? {
+        alternatives: TAlternatives;
+        fallback: TFallback;
+        type: "Select";
+      }
+    : TFuncArgs extends infer TAlternatives extends SelectAlternativeNode[]
+    ? {
+        alternatives: TAlternatives;
+        type: "Select";
+      }
+    : never
+  : never;
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#FuncCall
  */
 type FuncCall<TExpression extends string> =
   TExpression extends `${infer TFuncFullName}(${infer TFuncCallArgs})`
-    ? FuncArgs<TFuncCallArgs> extends never
+    ? TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncName}`
+      ? TFuncNamespace extends keyof Functions<any, any>
+        ? FuncArgs<TFuncCallArgs, TFuncNamespace> extends never
+          ? never
+          : TFuncName extends keyof Functions<any, any>[TFuncNamespace]
+          ? {
+              args: Simplify<FuncArgs<TFuncCallArgs, TFuncNamespace>>;
+              func: GroqFunction;
+              name: TFuncName;
+              namespace: TFuncNamespace;
+              type: "FuncCall";
+            }
+          : FunctionsToOtherNodes<
+              TFuncName,
+              Simplify<FuncArgs<TFuncCallArgs, TFuncNamespace>>
+            >
+        : never
+      : FuncArgs<TFuncCallArgs, TFuncFullName> extends never
       ? never
-      : TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncName}`
-      ? Identifier<TFuncNamespace> extends never
-        ? never
-        : Identifier<TFuncName> extends never
-        ? never
-        : FuncCallToContext<{
-            args: Simplify<FuncArgs<TFuncCallArgs>>;
-            func: GroqFunction;
-            name: TFuncName;
-            namespace: TFuncNamespace;
-            type: "FuncCall";
-          }>
-      : Identifier<TFuncFullName> extends never
-      ? never
-      : FuncCallToContext<{
-          args: Simplify<FuncArgs<TFuncCallArgs>>;
+      : TFuncFullName extends keyof Functions<any, any>["global"]
+      ? {
+          args: Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>;
           func: GroqFunction;
           name: TFuncFullName;
           namespace: "global";
           type: "FuncCall";
-        }>
+        }
+      : FunctionsToOtherNodes<
+          TFuncFullName,
+          Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>
+        >
     : never;
 
 /**
@@ -613,9 +998,7 @@ type SimpleExpression<TExpression extends string> =
   | This<TExpression>
   | ThisAttribute<TExpression>;
 
-type Level1 =
-  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-  SelectAlternativeNode;
+type Level1 = SelectAlternativeNode;
 
 type Level2 = Level1 | OrNode;
 
@@ -1373,347 +1756,6 @@ type EvaluateFilter<
     : Evaluate<TNode["base"], TScope>
   : never;
 
-/**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-geo-type
- */
-export type Geo =
-  | GeometryCollection
-  | LineString
-  | MultiLineString
-  | MultiPoint
-  | MultiPolygon
-  | Point
-  | Polygon
-  | Position;
-
-type Functions<
-  TArgs extends any[],
-  TScope extends Scope<Context<any[], any>>
-> = {
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Array-namespace
-   */
-  array: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_compact()
-     */
-    compact: TArgs extends [infer TArr]
-      ? TArr extends any[]
-        ? TArr extends null[] | []
-          ? []
-          : TArr extends [infer THead, ...infer TTail]
-          ? THead extends null
-            ? Functions<[TTail], TScope>["array"]["compact"]
-            : [THead, ...Functions<[TTail], TScope>["array"]["compact"]]
-          : TArr extends (infer TElement)[]
-          ? NonNullable<TElement>[]
-          : never
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_join()
-     */
-    join: TArgs extends [infer TArr, infer TSep]
-      ? TArr extends any[]
-        ? TSep extends string
-          ? Functions<[TArr[number]], TScope>["global"]["string"] extends string
-            ? Join<TArr, TSep>
-            : null
-          : null
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_unique()
-     */
-    unique: TArgs extends [infer TArr]
-      ? TArr extends any[]
-        ? TArr extends null[] | []
-          ? []
-          : TArr extends [...infer TInitial, infer TLast]
-          ? TLast extends boolean | number | string
-            ? TLast extends Functions<
-                [TInitial],
-                TScope
-              >["array"]["unique"][number]
-              ? Functions<[TInitial], TScope>["array"]["unique"]
-              : [...Functions<[TInitial], TScope>["array"]["unique"], TLast]
-            : [...Functions<[TInitial], TScope>["array"]["unique"], TLast]
-          : TArr
-        : null
-      : never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Date-time-namespace
-   */
-  dateTime: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#dateTime_now()
-     */
-    now: TArgs extends [] ? DateTime : never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Delta-namespace
-   */
-  delta: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_operation()
-     */
-    operation: TArgs extends []
-      ? TScope extends {
-          context: { delta: { after: infer TAfter; before: infer TBefore } };
-        }
-        ? TBefore extends null
-          ? TAfter extends null
-            ? null
-            : "create"
-          : TAfter extends null
-          ? "delete"
-          : "update"
-        : never
-      : never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Geography-Extension
-   */
-  geo: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_contains()
-     */
-    contains: TArgs extends [infer TFirst, infer TSecond]
-      ? TFirst extends Geo
-        ? TSecond extends Geo
-          ? boolean
-          : null
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_distance()
-     */
-    distance: TArgs extends [infer TFirst, infer TSecond]
-      ? TFirst extends Point
-        ? TSecond extends Point
-          ? number
-          : null
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_intersects()
-     */
-    intersects: TArgs extends [infer TFirst, infer TSecond]
-      ? TFirst extends Geo
-        ? TSecond extends Geo
-          ? boolean
-          : null
-        : null
-      : never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
-   */
-  global: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_coalesce()
-     */
-    coalesce: TArgs extends []
-      ? null
-      : TArgs extends [infer THead, ...infer TTail]
-      ? null extends THead
-        ? Functions<TTail, TScope>["global"]["coalesce"] | NonNullable<THead>
-        : THead
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_count()
-     */
-    count: TArgs extends [infer TBase]
-      ? TBase extends any[]
-        ? TBase["length"]
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_dateTime()
-     */
-    dateTime: TArgs extends [infer TBase]
-      ? TBase extends DateTime | string
-        ? DateTime
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_defined()
-     */
-    defined: TArgs extends [infer TBase]
-      ? TBase extends null
-        ? false
-        : true
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_geo()
-     */
-    geo: TArgs extends [infer TBase]
-      ? TBase extends Geo
-        ? TBase
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-identity-
-     */
-    identity: TArgs extends []
-      ? TScope extends { context: { identity: infer TIdentity } }
-        ? TIdentity
-        : never
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_length()
-     */
-    length: TArgs extends [infer TBase]
-      ? TBase extends any[] | string
-        ? TBase["length"]
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_lower()
-     */
-    lower: TArgs extends [infer TValue]
-      ? TValue extends string
-        ? Lowercase<TValue>
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_now()
-     */
-    now: TArgs extends [] ? string : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-path-
-     * @link https://www.sanity.io/docs/groq-functions#0ecd1b7eac78
-     */
-    path: TArgs extends (infer TBase)[]
-      ? TBase extends string
-        ? Path
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
-     */
-    pt: TArgs extends (infer TBase)[]
-      ? TBase extends PortableTextBlock | PortableTextBlock[]
-        ? TBase
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_references()
-     */
-    references: TArgs extends (infer TElement)[]
-      ? Extract<Exclude<TElement, []>, string[] | string> extends never
-        ? false
-        : boolean
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_round()
-     */
-    round: TArgs extends [infer TNum, infer TPrec] | [infer TNum]
-      ? TNum extends number
-        ? IsUnknown<TPrec> extends true
-          ? number
-          : TPrec extends number
-          ? number
-          : null
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_string()
-     */
-    string: TArgs extends [infer TVal]
-      ? TVal extends boolean | number | string
-        ? `${TVal}`
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_upper()
-     */
-    upper: TArgs extends [infer TValue]
-      ? TValue extends string
-        ? Uppercase<TValue>
-        : null
-      : never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Math-namespace
-   */
-  math: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_avg()
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_max()
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_min()
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_sum()
-     */
-    [mathFn in "avg" | "max" | "min" | "sum"]: TArgs extends [infer TArr]
-      ? TArr extends null[] | []
-        ? mathFn extends "sum"
-          ? 0
-          : null
-        : TArr extends (number | null)[]
-        ? mathFn extends "max" | "min"
-          ? Exclude<TArr[number], null>
-          : number
-        : null
-      : never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Portable-Text-Extension
-   */
-  pt: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#pt_text()
-     */
-    text: TArgs extends (infer TBase)[]
-      ? TBase extends PortableTextBlock | PortableTextBlock[]
-        ? string
-        : null
-      : never;
-  };
-  /**
-   * @link https://www.sanity.io/docs/groq-functions#61e2649fc0d8
-   */
-  sanity: {
-    /**
-     * @link https://www.sanity.io/docs/groq-functions#48b1e793d6b9
-     */
-    dataset: TArgs extends [] ? TScope["context"]["client"]["dataset"] : never;
-    /**
-     * @link https://www.sanity.io/docs/groq-functions#b89053823742
-     */
-    projectId: TArgs extends []
-      ? TScope["context"]["client"]["projectId"]
-      : never;
-  };
-  /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-String-namespace
-   */
-  string: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_split()
-     */
-    split: TArgs extends [infer TStr, infer TSep]
-      ? TStr extends string
-        ? TSep extends string
-          ? Split<TStr, TSep>
-          : null
-        : null
-      : never;
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_startsWith()
-     */
-    startsWith: TArgs extends [infer TStr, infer TPrefix]
-      ? TStr extends string
-        ? TPrefix extends string
-          ? TStr extends `${TPrefix}${string}`
-            ? true
-            : false
-          : null
-        : null
-      : never;
-  };
-};
-
 type EvaluateFuncArgs<
   TArgs extends ExprNode[],
   TScope extends Scope<Context<any[], any>>
@@ -1839,7 +1881,8 @@ type EvaluateMath<
               : null
             : Evaluate<TNode["left"], TScope> extends string
             ? Evaluate<TNode["right"], TScope> extends string
-              ? `${Evaluate<TNode["left"], TScope>}${Evaluate<
+              ? // @ts-expect-error -- Type instantiation is excessively deep and possibly infinite.
+                `${Evaluate<TNode["left"], TScope>}${Evaluate<
                   TNode["right"],
                   TScope
                 >}`
@@ -2074,6 +2117,52 @@ type EvaluateProjection<
     >
   : never;
 
+type EvaluateSelectAlternatives<
+  TAlternatives extends SelectAlternativeNode[],
+  TFallback extends ExprNode,
+  TScope extends Scope<Context<any[], any>>
+> = TAlternatives extends []
+  ? Evaluate<TFallback, TScope>
+  : TAlternatives extends [
+      infer TFirstAlternative extends SelectAlternativeNode,
+      ...infer TRemainingAlternatives extends SelectAlternativeNode[]
+    ]
+  ?
+      | (Evaluate<TFirstAlternative["condition"], TScope> extends true
+          ? never
+          : EvaluateSelectAlternatives<
+              TRemainingAlternatives,
+              TFallback,
+              TScope
+            >)
+      | (true extends Evaluate<TFirstAlternative["condition"], TScope>
+          ? Evaluate<TFirstAlternative["value"], TScope>
+          : never)
+  : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_select()
+ */
+type EvaluateSelect<
+  TNode extends ExprNode,
+  TScope extends Scope<Context<any[], any>>
+> = TNode extends SelectNode
+  ? TNode extends {
+      alternatives: infer TAlternatives extends SelectAlternativeNode[];
+      fallback: infer TFallback extends ExprNode;
+    }
+    ? EvaluateSelectAlternatives<TAlternatives, TFallback, TScope>
+    : TNode extends {
+        alternatives: infer TAlternatives extends SelectAlternativeNode[];
+      }
+    ? EvaluateSelectAlternatives<
+        TAlternatives,
+        { type: "Value"; value: null },
+        TScope
+      >
+    : null
+  : never;
+
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateSlice()
  */
@@ -2126,6 +2215,7 @@ type EvaluateExpression<
   | EvaluatePipeFuncCall<TNode, TScope>
   | EvaluatePos<TNode, TScope>
   | EvaluateProjection<TNode, TScope>
+  | EvaluateSelect<TNode, TScope>
   | EvaluateSlice<TNode, TScope>
   | EvaluateThis<TNode, TScope>
   | EvaluateValue<TNode>;
