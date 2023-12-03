@@ -43,12 +43,14 @@ import { castToTyped } from "@sanity-typed/client";
 
 import type { SanityValues } from "./sanity.config";
 
+import type { SanityClient } from "sanity";
+
 const client = createClient({
   // ...
 });
 
 // Same function signature as the typed `createClient`
-const typedClient = castToTyped<SanityValues>()(client);
+const typedClient = castToTyped<SanityValues>()(client as SanityClient);
 
 // Also, if you need the config in the client (eg. for queries using $param),
 // you can provide the same config again to include it in the types.
