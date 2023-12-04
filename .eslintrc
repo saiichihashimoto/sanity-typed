@@ -14,6 +14,7 @@
   ],
   "extends": [
     "eslint:recommended",
+    "plugin:@cspell/recommended",
     "plugin:eslint-comments/recommended",
     "plugin:fp/recommended",
     "plugin:import/recommended",
@@ -114,6 +115,25 @@
     "require-atomic-updates": "error",
     "spaced-comment": "error",
     "yoda": "error",
+    "@cspell/spellchecker": [
+      "error",
+      {
+        "autoFix": false,
+        "cspell": {
+          "ignoreRegExpList": ["_rev: \".*\""],
+          "words": [
+            "datetime",
+            "geopoint",
+            "groq",
+            "hotspot",
+            "randexp",
+            "tsup",
+            "unstash",
+            "zods"
+          ]
+        }
+      }
+    ],
     "eslint-comments/disable-enable-pair": [
       "error",
       {

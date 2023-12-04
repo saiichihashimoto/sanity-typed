@@ -290,19 +290,16 @@ type ArrayElements<
       | (ArrayElement<`${_Prefix}${TArrayElements}`> extends never
           ? never
           : [ArrayElement<`${_Prefix}${TArrayElements}`>])
-      | (TArrayElements extends `${infer TArrayElement},${infer TRemaininingElements}`
+      | (TArrayElements extends `${infer TArrayElement},${infer TRemainingElements}`
           ?
-              | ArrayElements<
-                  TRemaininingElements,
-                  `${_Prefix}${TArrayElement},`
-                >
+              | ArrayElements<TRemainingElements, `${_Prefix}${TArrayElement},`>
               | (ArrayElement<`${_Prefix}${TArrayElement}`> extends never
                   ? never
-                  : ArrayElements<TRemaininingElements> extends never
+                  : ArrayElements<TRemainingElements> extends never
                   ? never
                   : [
                       ArrayElement<`${_Prefix}${TArrayElement}`>,
-                      ...ArrayElements<TRemaininingElements>
+                      ...ArrayElements<TRemainingElements>
                     ])
           : never);
 
@@ -377,19 +374,19 @@ type ObjectAttributes<
       | (ObjectAttribute<`${_Prefix}${TObjectAttributes}`> extends never
           ? never
           : [ObjectAttribute<`${_Prefix}${TObjectAttributes}`>])
-      | (TObjectAttributes extends `${infer TObjectAttribute},${infer TRemaininingAttributes}`
+      | (TObjectAttributes extends `${infer TObjectAttribute},${infer TRemainingAttributes}`
           ?
               | ObjectAttributes<
-                  TRemaininingAttributes,
+                  TRemainingAttributes,
                   `${_Prefix}${TObjectAttribute},`
                 >
               | (ObjectAttribute<`${_Prefix}${TObjectAttribute}`> extends never
                   ? never
-                  : ObjectAttributes<TRemaininingAttributes> extends never
+                  : ObjectAttributes<TRemainingAttributes> extends never
                   ? never
                   : [
                       ObjectAttribute<`${_Prefix}${TObjectAttribute}`>,
-                      ...ObjectAttributes<TRemaininingAttributes>
+                      ...ObjectAttributes<TRemainingAttributes>
                     ])
           : never);
 
@@ -450,20 +447,20 @@ type AlphaUpper = Uppercase<AlphaLower>;
 type Alpha = AlphaLower | AlphaUpper;
 type Numeric = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
-type IdentifierRest<TIdentiferRest extends string> = TIdentiferRest extends ""
+type IdentifierRest<TIdentifierRest extends string> = TIdentifierRest extends ""
   ? true
-  : TIdentiferRest extends `${
+  : TIdentifierRest extends `${
       | Alpha
       | Numeric
       | "_"}${infer TIdentifierRestInner}`
   ? IdentifierRest<TIdentifierRestInner>
   : false;
 
-type Identifier<TIdentifer extends string> = TIdentifer extends `${
+type Identifier<TIdentifier extends string> = TIdentifier extends `${
   | Alpha
   | "_"}${infer TIdentifierRest}`
   ? IdentifierRest<TIdentifierRest> extends true
-    ? TIdentifer
+    ? TIdentifier
     : never
   : never;
 
@@ -738,11 +735,11 @@ type Functions<
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_round()
      */
-    round: TArgs extends [infer TNum, infer TPrec] | [infer TNum]
+    round: TArgs extends [infer TNum, infer TPrecision] | [infer TNum]
       ? TNum extends number
-        ? IsUnknown<TPrec> extends true
+        ? IsUnknown<TPrecision> extends true
           ? number
-          : TPrec extends number
+          : TPrecision extends number
           ? number
           : null
         : null
@@ -2062,7 +2059,7 @@ type EvaluateParenthesis<
 /**
  * Whenever a tuple is reordered, we can't be certain what the types are.
  * So each member is a union of all members.
- * We also map instead of TArray[number][] to ensure the length of the tuple is perserved.
+ * We also map instead of TArray[number][] to ensure the length of the tuple is preserved.
  */
 type TupleToUnionArray<TArray extends any[]> = {
   [Index in keyof TArray]: TArray[number];
