@@ -2,6 +2,7 @@ const path = require("path");
 
 const eslintCmd = `cross-env TIMING=1 eslint --quiet --ext .js,.jsx,.ts,.tsx --fix`;
 const prettierCmd = `prettier --ignore-unknown --write --cache`;
+const cspellCmd = `cspell --dot --show-context --show-suggestions --color`;
 
 // TODO globally run commands should `git add .` BEFORE command brings back stash https://github.com/okonet/lint-staged/issues/1253
 // Until that issue is resolved, we'll always --no-stash and just stash/unstash and add everything on our own
@@ -12,7 +13,8 @@ const prettierCmd = `prettier --ignore-unknown --write --cache`;
 const config = {
   "*.{gif,jpeg,jpg,png,svg}": ["imagemin-lint-staged"],
   "*.{js,jsx,ts,tsx}": [eslintCmd],
-  "*": [prettierCmd],
+  "*": [prettierCmd, cspellCmd],
+  "{cspell.json,package.json}": () => [`${cspellCmd} .`, "git add ."],
   "{.eslint*,package.json}": () => [`${eslintCmd} .`, "git add ."],
   "{.prettier*,package.json}": () => [`${prettierCmd} .`, "git add ."],
   "_README.md": (filenames) =>

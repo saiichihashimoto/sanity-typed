@@ -1,0 +1,42 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "ignorePaths": [
+    ".git/**",
+    ".gitignore",
+    ".husky/_/**",
+    ".prettierrc",
+    ".vscode/extensions.json",
+    "**/.next/**",
+    "**/.turbo/**",
+    "**/dist/**",
+    "**/LICENSE",
+    "**/README.md"
+  ],
+  "ignoreRegExpList": [
+    "_rev: \".*\"",
+    "} from \".*\";",
+    "\".*\": \".*\"",
+    "import .* from \".*\";",
+    "uses: .*"
+  ],
+  "words": [
+    "arent",
+    "automerge",
+    "codegen",
+    "datetime",
+    "dont",
+    "fakerjs",
+    "geopoint",
+    "groq",
+    "hotspot",
+    "preconfigured",
+    "randexp",
+    "saiichihashimoto",
+    "tsup",
+    "typeof",
+    "unstash",
+    "untype",
+    "zods"
+  ]
+}
