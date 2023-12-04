@@ -21,6 +21,7 @@
     "test": "jest --color --cache"
   },
   "dependencies": {
+    "@cspell/eslint-plugin": "8.1.2",
     "@jest/types": "29.6.3",
     "@standard-configs/prettier-plugin": "1.0.12",
     "@total-typescript/ts-reset": "0.5.1",
@@ -30,7 +31,6 @@
     "@typescript-eslint/eslint-plugin": "6.13.1",
     "concurrently": "8.2.2",
     "cross-env": "7.0.3",
-    "cspell": "8.1.2",
     "eslint": "8.54.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "9.0.0",
