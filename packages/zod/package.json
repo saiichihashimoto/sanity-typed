@@ -36,7 +36,7 @@
   "dependencies": {
     "@sanity-typed/types": "0.0.0-development",
     "lodash": "4.17.21",
-    "type-fest": "4.8.2"
+    "type-fest": "4.8.3"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
