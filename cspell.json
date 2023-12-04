@@ -6,6 +6,7 @@
     ".gitignore",
     ".husky/_/**",
     ".prettierrc",
+    ".vendor/**",
     ".vscode/extensions.json",
     "**/.next/**",
     "**/.turbo/**",
