@@ -9,6 +9,7 @@
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
   },
+  "license": "MIT",
   "workspaces": ["@types/*", "packages/*"],
   "scripts": {
     "build": "turbo run build --color",
@@ -26,7 +27,7 @@
     "@trivago/prettier-plugin-sort-imports": "4.3.0",
     "@types/jest": "29.5.10",
     "@types/lint-staged": "13.2.2",
-    "@typescript-eslint/eslint-plugin": "6.13.0",
+    "@typescript-eslint/eslint-plugin": "6.13.1",
     "concurrently": "8.2.2",
     "cross-env": "7.0.3",
     "eslint": "8.54.0",
@@ -50,7 +51,7 @@
     "imagemin-lint-staged": "0.5.1",
     "is-ci": "3.0.1",
     "jest": "29.7.0",
-    "lint-staged": "15.1.0",
+    "lint-staged": "15.2.0",
     "multi-semantic-release": "3.0.2",
     "prettier": "2.8.8",
     "prettier-plugin-sh": "0.12.8",

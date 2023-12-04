@@ -230,6 +230,44 @@ describe("number", () => {
       );
     });
 
+    it("min(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "number",
+                  validation: (Rule) =>
+                    Rule.required().min(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.bar.parse({
+          _type: "bar",
+          baz: 1,
+          foo: 0,
+        })
+      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .not.toThrow();
+    });
+
     it("max(maxNumber)", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -251,6 +289,44 @@ describe("number", () => {
       );
     });
 
+    it("max(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "number",
+                  validation: (Rule) =>
+                    Rule.required().max(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.bar.parse({
+          _type: "bar",
+          baz: 1,
+          foo: 2,
+        })
+      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .not.toThrow();
+    });
+
     it("lessThan(limit)", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -270,6 +346,44 @@ describe("number", () => {
       expect(() => zods.foo.parse(1)).toThrow("Number must be less than 1");
     });
 
+    it("lessThan(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "number",
+                  validation: (Rule) =>
+                    Rule.required().lessThan(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.bar.parse({
+          _type: "bar",
+          baz: 1,
+          foo: 1,
+        })
+      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .not.toThrow();
+    });
+
     it("greaterThan(limit)", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -287,6 +401,44 @@ describe("number", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse(1)).toThrow("Number must be greater than 1");
+    });
+
+    it("greaterThan(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "number",
+                  validation: (Rule) =>
+                    Rule.required().greaterThan(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.bar.parse({
+          _type: "bar",
+          baz: 1,
+          foo: 1,
+        })
+      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .not.toThrow();
     });
 
     it("integer()", () => {
@@ -329,6 +481,44 @@ describe("number", () => {
       expect(() => zods.foo.parse(1.56)).toThrow(
         "Number must be a multiple of 0.1"
       );
+    });
+
+    it("precision(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "number",
+                  validation: (Rule) =>
+                    Rule.required().precision(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.bar.parse({
+          _type: "bar",
+          baz: 1,
+          foo: 1.56,
+        })
+      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .not.toThrow();
     });
 
     it("positive()", () => {

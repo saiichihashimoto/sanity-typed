@@ -18,8 +18,6 @@ Mock [@sanity-typed/client](../client) for local development and testing
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
-- [Considerations](#considerations)
-  - [Config in Runtime](#config-in-runtime)
 - [Alternatives](#alternatives)
 
 ## Install
@@ -235,14 +233,6 @@ export const makeTypedQuery = async () =>
   client.fetch('*[_type=="product"]{_id,productName,tags}');
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/swapping-client.ts -->
-
-## Considerations
-
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/config-in-runtime.md -->
-### Config in Runtime
-
-`@sanity-typed/*` generally has the goal of only having effect to types and no runtime effects. This package is an exception. This means that you will have to import your sanity config to use this. While sanity v3 is better than v2 at having a standard build environment, you will have to handle any nuances, including having a much larger build.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/config-in-runtime.md -->
 
 ## Alternatives
 

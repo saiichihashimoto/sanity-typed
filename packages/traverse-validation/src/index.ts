@@ -70,7 +70,6 @@ export const traverseValidation = <
       uri: (...args: any[]) =>
         Rule({ ...value, uri: [...(value.uri ?? []), args] }),
       valueOfField: () => ({
-        // TODO https://github.com/saiichihashimoto/sanity-typed/issues/336
         path: "",
         type: Symbol("TODO"),
       }),

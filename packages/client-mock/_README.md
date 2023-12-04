@@ -35,10 +35,6 @@ Depending on your tree-shaking setup, you'll want to swap between the real clien
 @[typescript](../example-app/src/sanity/mocks.ts)
 @[typescript](../example-app/src/sanity/swapping-client.ts)
 
-## Considerations
-
-@[:markdown](../../docs/considerations/config-in-runtime.md)
-
 ## Alternatives
 
 - [`fake-sanity-client`](https://www.npmjs.com/package/fake-sanity-client)

@@ -245,6 +245,47 @@ describe("number", () => {
       >();
     });
 
+    it("min(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "number",
+                  validation: (Rule) =>
+                    Rule.required().min(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const sanityFaker = sanityConfigToFakerTyped(config, {
+        faker: { locale: [en, base] },
+      });
+
+      const fake = sanityFaker.bar();
+
+      const zods = sanityConfigToZods(config);
+
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/517
+      expect(() => zods.bar.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"]
+      >();
+    });
+
     it("max(maxNumber)", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -270,6 +311,47 @@ describe("number", () => {
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
+      >();
+    });
+
+    it("max(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "number",
+                  validation: (Rule) =>
+                    Rule.required().max(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const sanityFaker = sanityConfigToFakerTyped(config, {
+        faker: { locale: [en, base] },
+      });
+
+      const fake = sanityFaker.bar();
+
+      const zods = sanityConfigToZods(config);
+
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/517
+      expect(() => zods.bar.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"]
       >();
     });
 
@@ -301,6 +383,47 @@ describe("number", () => {
       >();
     });
 
+    it("lessThan(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "number",
+                  validation: (Rule) =>
+                    Rule.required().lessThan(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const sanityFaker = sanityConfigToFakerTyped(config, {
+        faker: { locale: [en, base] },
+      });
+
+      const fake = sanityFaker.bar();
+
+      const zods = sanityConfigToZods(config);
+
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/517
+      expect(() => zods.bar.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"]
+      >();
+    });
+
     it("greaterThan(limit)", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -326,6 +449,47 @@ describe("number", () => {
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
+      >();
+    });
+
+    it("greaterThan(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "number",
+                  validation: (Rule) =>
+                    Rule.required().greaterThan(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const sanityFaker = sanityConfigToFakerTyped(config, {
+        faker: { locale: [en, base] },
+      });
+
+      const fake = sanityFaker.bar();
+
+      const zods = sanityConfigToZods(config);
+
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/517
+      expect(() => zods.bar.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"]
       >();
     });
 
@@ -382,6 +546,47 @@ describe("number", () => {
       expect(() => zods.foo.parse(fake)).not.toThrow();
       expectType<typeof fake>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]
+      >();
+    });
+
+    it("precision(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "number",
+                  validation: (Rule) =>
+                    Rule.required().precision(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const sanityFaker = sanityConfigToFakerTyped(config, {
+        faker: { locale: [en, base] },
+      });
+
+      const fake = sanityFaker.bar();
+
+      const zods = sanityConfigToZods(config);
+
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/517
+      expect(() => zods.bar.parse(fake)).not.toThrow();
+      expectType<typeof fake>().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"]
       >();
     });
 

@@ -119,7 +119,7 @@ describe("text", () => {
             defineType({
               name: "foo",
               type: "text",
-              validation: (Rule) => Rule.min(1),
+              validation: (Rule) => Rule.min(4),
             }),
           ],
         },
@@ -127,8 +127,46 @@ describe("text", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("")).toThrow(
-        "String must contain at least 1 character(s)"
+        "String must contain at least 4 character(s)"
       );
+    });
+
+    it("min(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "text",
+                  validation: (Rule) =>
+                    Rule.required().min(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.bar.parse({
+          _type: "bar",
+          baz: 4,
+          foo: "",
+        })
+      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .not.toThrow();
     });
 
     it("max(maxLength)", () => {
@@ -150,6 +188,44 @@ describe("text", () => {
       expect(() => zods.foo.parse("fo")).toThrow(
         "String must contain at most 1 character(s)"
       );
+    });
+
+    it("max(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "text",
+                  validation: (Rule) =>
+                    Rule.required().max(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.bar.parse({
+          _type: "bar",
+          baz: 1,
+          foo: "fo",
+        })
+      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .not.toThrow();
     });
 
     it("length(exactLength)", () => {
@@ -174,6 +250,44 @@ describe("text", () => {
       expect(() => zods.foo.parse("fo")).toThrow(
         "String must contain exactly 1 character(s)"
       );
+    });
+
+    it("length(valueOfField())", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "bar",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "baz",
+                  type: "number",
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: "foo",
+                  type: "text",
+                  validation: (Rule) =>
+                    Rule.required().length(Rule.valueOfField("baz")),
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      expect(() =>
+        zods.bar.parse({
+          _type: "bar",
+          baz: 1,
+          foo: "",
+        })
+      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .not.toThrow();
     });
 
     it("uppercase()", () => {
@@ -349,7 +463,7 @@ describe("text", () => {
           types: [
             defineType({
               name: "foo",
-              type: "string",
+              type: "text",
               validation: (Rule) =>
                 Rule.custom(() => "fail for no reason").custom(
                   enableZod(

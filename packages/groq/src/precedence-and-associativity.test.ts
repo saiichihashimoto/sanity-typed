@@ -12,8 +12,14 @@ import type {
 
 describe("precendence and associativity", () => {
   describe("level 1", () => {
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-    it.todo("true=>true=>true");
+    it("select(true=>true=>true)", async () => {
+      const query = "select(true=>true=>true)";
+
+      expect(() => parse(query)).toThrow("unexpected =>");
+      expectType<Parse<typeof query>>().toStrictEqual<never>();
+
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
+    });
   });
 
   describe("level 2", () => {
@@ -48,8 +54,44 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 1", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      it.todo("true||false=>false||true");
+      it("select(true||false=>false||true)", async () => {
+        const query = "select(true||false=>false||true)";
+
+        const tree = parse(query);
+
+        const expectedTree = {
+          alternatives: [
+            {
+              condition: {
+                left: { type: "Value", value: true },
+                right: { type: "Value", value: false },
+                type: "Or",
+              },
+              type: "SelectAlternative",
+              value: {
+                left: { type: "Value", value: false },
+                right: { type: "Value", value: true },
+                type: "Or",
+              },
+            },
+          ],
+          type: "Select",
+        } as const;
+
+        expect(tree).toStrictEqual(expectedTree);
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedTree>
+        >();
+
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = true;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
+      });
     });
   });
 
@@ -85,8 +127,44 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 1", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      it.todo("false&&true=>true&&false");
+      it("select(true&&false=>false&&true)", async () => {
+        const query = "select(true&&false=>false&&true)";
+
+        const tree = parse(query);
+
+        const expectedTree = {
+          alternatives: [
+            {
+              condition: {
+                left: { type: "Value", value: true },
+                right: { type: "Value", value: false },
+                type: "And",
+              },
+              type: "SelectAlternative",
+              value: {
+                left: { type: "Value", value: false },
+                right: { type: "Value", value: true },
+                type: "And",
+              },
+            },
+          ],
+          type: "Select",
+        } as const;
+
+        expect(tree).toStrictEqual(expectedTree);
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedTree>
+        >();
+
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
+      });
     });
 
     describe("& level 2", () => {
@@ -127,8 +205,6 @@ describe("precendence and associativity", () => {
   });
 
   describe("level 4", () => {
-    it.todo("asc & desc");
-
     it("true==false==true", async () => {
       const query = "true==false==true";
 
@@ -195,18 +271,69 @@ describe("precendence and associativity", () => {
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
     });
 
-    // https://github.com/saiichihashimoto/sanity-typed/issues/214
-    it.todo("something in something in something");
+    it("true in [true,false] in [true,false]", async () => {
+      const query = "true in [true,false] in [true,false]";
 
-    // https://github.com/saiichihashimoto/sanity-typed/issues/215
-    it.todo("something match something match something");
+      expect(() => parse(query)).toThrow(
+        "Syntax error in GROQ query at position 20"
+      );
+      expectType<Parse<typeof query>>().toStrictEqual<never>();
+
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
+    });
+
+    it('"something" match "something" match "something"', async () => {
+      const query = '"something" match "something" match "something"';
+
+      expect(() => parse(query)).toThrow(
+        "Syntax error in GROQ query at position 29"
+      );
+      expectType<Parse<typeof query>>().toStrictEqual<never>();
+
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
+    });
 
     describe("& level 1", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      it.todo("asc & desc");
+      it("select(true==false=>false==true)", async () => {
+        const query = "select(true==false=>false==true)";
 
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      it.todo("true==false=>false==true");
+        const tree = parse(query);
+
+        const expectedTree = {
+          alternatives: [
+            {
+              condition: {
+                left: { type: "Value", value: true },
+                op: "==",
+                right: { type: "Value", value: false },
+                type: "OpCall",
+              },
+              type: "SelectAlternative",
+              value: {
+                left: { type: "Value", value: false },
+                op: "==",
+                right: { type: "Value", value: true },
+                type: "OpCall",
+              },
+            },
+          ],
+          type: "Select",
+        } as const;
+
+        expect(tree).toStrictEqual(expectedTree);
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedTree>
+        >();
+
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
+      });
     });
 
     describe("& level 2", () => {
@@ -356,32 +483,6 @@ describe("precendence and associativity", () => {
     });
   });
 
-  describe("level 5", () => {
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-    it.todo("1..3..5");
-
-    describe("& level 1", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
-    });
-
-    describe("& level 2", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
-    });
-
-    describe("& level 3", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
-    });
-
-    describe("& level 4", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
-    });
-  });
-
   describe("level 6", () => {
     it("1+2+3", async () => {
       const query = "1+2+3";
@@ -512,8 +613,46 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 1", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      it.todo("todo");
+      it("select(1+2=>3+4)", async () => {
+        const query = "select(1+2=>3+4)";
+
+        const tree = parse(query);
+
+        const expectedTree = {
+          alternatives: [
+            {
+              condition: {
+                left: { type: "Value", value: 1 },
+                op: "+",
+                right: { type: "Value", value: 2 },
+                type: "OpCall",
+              },
+              type: "SelectAlternative",
+              value: {
+                left: { type: "Value", value: 3 },
+                op: "+",
+                right: { type: "Value", value: 4 },
+                type: "OpCall",
+              },
+            },
+          ],
+          type: "Select",
+        } as const;
+
+        expect(tree).toStrictEqual(expectedTree);
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedTree>
+        >();
+
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
+      });
     });
 
     describe("& level 2", () => {
@@ -711,11 +850,6 @@ describe("precendence and associativity", () => {
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
       });
     });
-
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
-    });
   });
 
   describe("level 7", () => {
@@ -880,8 +1014,46 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 1", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      it.todo("todo");
+      it("select(1*2=>3*4)", async () => {
+        const query = "select(1*2=>3*4)";
+
+        const tree = parse(query);
+
+        const expectedTree = {
+          alternatives: [
+            {
+              condition: {
+                left: { type: "Value", value: 1 },
+                op: "*",
+                right: { type: "Value", value: 2 },
+                type: "OpCall",
+              },
+              type: "SelectAlternative",
+              value: {
+                left: { type: "Value", value: 3 },
+                op: "*",
+                right: { type: "Value", value: 4 },
+                type: "OpCall",
+              },
+            },
+          ],
+          type: "Select",
+        } as const;
+
+        expect(tree).toStrictEqual(expectedTree);
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedTree>
+        >();
+
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
+      });
     });
 
     describe("& level 2", () => {
@@ -1080,11 +1252,6 @@ describe("precendence and associativity", () => {
       });
     });
 
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
-    });
-
     describe("& level 6", () => {
       it("1*2+3*4", async () => {
         const query = "1*2+3*4";
@@ -1189,8 +1356,36 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 1", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      it.todo("todo");
+      it("select(-2=>-3)", async () => {
+        const query = "select(-2=>-3)";
+
+        const tree = parse(query);
+
+        const expectedTree = {
+          alternatives: [
+            {
+              condition: { base: { type: "Value", value: 2 }, type: "Neg" },
+              type: "SelectAlternative",
+              value: { base: { type: "Value", value: 3 }, type: "Neg" },
+            },
+          ],
+          type: "Select",
+        } as const;
+
+        expect(tree).toStrictEqual(expectedTree);
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedTree>
+        >();
+
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
+      });
     });
 
     describe("& level 2", () => {
@@ -1276,11 +1471,6 @@ describe("precendence and associativity", () => {
           WritableDeep<typeof expectedResult>
         >();
       });
-    });
-
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
     });
 
     describe("& level 6", () => {
@@ -1376,8 +1566,46 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 1", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      it.todo("todo");
+      it("select(1**2=>3**4)", async () => {
+        const query = "select(1**2=>3**4)";
+
+        const tree = parse(query);
+
+        const expectedTree = {
+          alternatives: [
+            {
+              condition: {
+                left: { type: "Value", value: 1 },
+                op: "**",
+                right: { type: "Value", value: 2 },
+                type: "OpCall",
+              },
+              type: "SelectAlternative",
+              value: {
+                left: { type: "Value", value: 3 },
+                op: "**",
+                right: { type: "Value", value: 4 },
+                type: "OpCall",
+              },
+            },
+          ],
+          type: "Select",
+        } as const;
+
+        expect(tree).toStrictEqual(expectedTree);
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedTree>
+        >();
+
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
+      });
     });
 
     describe("& level 2", () => {
@@ -1574,11 +1802,6 @@ describe("precendence and associativity", () => {
 
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
       });
-    });
-
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
     });
 
     describe("& level 6", () => {
@@ -1868,8 +2091,36 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 1", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      it.todo("todo");
+      it("select(+2=>+3)", async () => {
+        const query = "select(+2=>+3)";
+
+        const tree = parse(query);
+
+        const expectedTree = {
+          alternatives: [
+            {
+              condition: { base: { type: "Value", value: 2 }, type: "Pos" },
+              type: "SelectAlternative",
+              value: { base: { type: "Value", value: 3 }, type: "Pos" },
+            },
+          ],
+          type: "Select",
+        } as const;
+
+        expect(tree).toStrictEqual(expectedTree);
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedTree>
+        >();
+
+        const result = await (await evaluate(tree)).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedResult>
+        >();
+      });
     });
 
     describe("& level 2", () => {
@@ -1955,11 +2206,6 @@ describe("precendence and associativity", () => {
           WritableDeep<typeof expectedResult>
         >();
       });
-    });
-
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
     });
 
     describe("& level 6", () => {
@@ -2276,8 +2522,51 @@ describe("precendence and associativity", () => {
     });
 
     describe("& level 1", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/197
-      it.todo("todo");
+      it("select(foo.value=>bar.value)", async () => {
+        const query = "select(foo.value=>bar.value)";
+
+        const tree = parse(query);
+
+        const expectedTree = {
+          alternatives: [
+            {
+              condition: {
+                base: { name: "foo", type: "AccessAttribute" },
+                name: "value",
+                type: "AccessAttribute",
+              },
+              type: "SelectAlternative",
+              value: {
+                base: { name: "bar", type: "AccessAttribute" },
+                name: "value",
+                type: "AccessAttribute",
+              },
+            },
+          ],
+          type: "Select",
+        } as const;
+
+        expect(tree).toStrictEqual(expectedTree);
+        expectType<Parse<typeof query>>().toStrictEqual<
+          WritableDeep<typeof expectedTree>
+        >();
+
+        const root = { bar: { value: true }, foo: { value: false } } as const;
+
+        const result = await (await evaluate(tree, { root })).get();
+
+        const expectedResult = null;
+
+        expect(result).toStrictEqual(expectedResult);
+        expectType<
+          ExecuteQuery<
+            typeof query,
+            ScopeFromPartialScope<{
+              this: WritableDeep<typeof root>;
+            }>
+          >
+        >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+      });
     });
 
     describe("& level 2", () => {
@@ -2501,11 +2790,6 @@ describe("precendence and associativity", () => {
 
         expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
       });
-    });
-
-    describe("& level 5", () => {
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/332
-      it.todo("todo");
     });
 
     describe("& level 6", () => {

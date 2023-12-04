@@ -10,6 +10,7 @@
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
   },
+  "license": "MIT",
   "scripts": {
     "build": "next build",
     "dev": "next dev"
@@ -21,7 +22,7 @@
     "@sanity-typed/example-studio": "0.0.0-development",
     "@sanity-typed/faker": "0.0.0-development",
     "@sanity-typed/zod": "0.0.0-development",
-    "@sanity/client": "6.8.6",
+    "@sanity/client": "6.9.1",
     "next": "14.0.3"
   },
   "devDependencies": {

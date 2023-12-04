@@ -10,14 +10,15 @@
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
   },
+  "license": "MIT",
   "scripts": {
     "build": "sanity build --yes",
     "dev": "sanity dev"
   },
   "dependencies": {
     "@sanity-typed/types": "0.0.0-development",
-    "@sanity/vision": "3.20.1",
-    "sanity": "3.20.1",
+    "@sanity/vision": "3.20.2",
+    "sanity": "3.20.2",
     "styled-components": "6.1.1"
   },
   "devDependencies": {

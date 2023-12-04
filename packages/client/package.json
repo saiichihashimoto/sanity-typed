@@ -23,6 +23,7 @@
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
   },
+  "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],
@@ -39,7 +40,7 @@
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.1",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@sanity/client": "6.8.6",
+    "@sanity/client": "6.9.1",
     "typescript": "5.2.2"
   },
   "peerDependencies": {

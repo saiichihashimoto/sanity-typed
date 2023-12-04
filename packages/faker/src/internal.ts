@@ -70,6 +70,9 @@ const constantFakers = {
   }),
 };
 
+const emptyArrayToUndefined = <T>(arr: T[] | undefined) =>
+  !arr?.length ? undefined : arr;
+
 const dateAndDatetimeFaker = <
   TSchemaType extends SchemaTypeDefinition<"date" | "datetime", string, any>
 >(
@@ -77,25 +80,31 @@ const dateAndDatetimeFaker = <
 ) => {
   const traversal = traverseValidation(schemaType);
 
-  return (faker: Faker) =>
-    faker.date
-      .between({
-        from: new Date(
-          Math.max(
-            ...(traversal.min ?? [["2015-01-01T00:00:00.000Z"]]).map(
-              ([minDate]) => new Date(minDate as string).valueOf()
-            )
-          )
-        ),
-        to: new Date(
-          Math.min(
-            ...(traversal.max ?? [["2023-01-01T00:00:00.000Z"]]).map(
-              ([maxDate]) => new Date(maxDate as string).valueOf()
-            )
-          )
-        ),
-      })
-      .toISOString();
+  const from = new Date(
+    Math.max(
+      ...(
+        emptyArrayToUndefined(
+          traversal.min
+            ?.map(([minDate]) => minDate)
+            .filter((minDate): minDate is string => typeof minDate === "string")
+        ) ?? ["2015-01-01T00:00:00.000Z"]
+      ).map((minDate) => new Date(minDate).valueOf())
+    )
+  );
+
+  const to = new Date(
+    Math.min(
+      ...(
+        emptyArrayToUndefined(
+          traversal.max
+            ?.map(([maxDate]) => maxDate)
+            .filter((maxDate): maxDate is string => typeof maxDate === "string")
+        ) ?? ["2023-01-01T00:00:00.000Z"]
+      ).map((maxDate) => new Date(maxDate).valueOf())
+    )
+  );
+
+  return (faker: Faker) => faker.date.between({ from, to }).toISOString();
 };
 
 const dateFaker = <
@@ -125,18 +134,37 @@ const numberFaker = <
 
   const min = Math.max(
     Number.MIN_SAFE_INTEGER,
-    ...(traversal.min ?? []).map(([minNumber]) => minNumber as number),
-    ...(traversal.greaterThan ?? []).map(
-      ([limit]) => (limit as number) - epsilon
-    ),
+    ...(traversal.min ?? [])
+      .map(([minNumber]) => minNumber)
+      .filter(
+        (minNumber): minNumber is number => typeof minNumber === "number"
+      ),
+    ...(traversal.greaterThan ?? [])
+      .map(([limit]) => limit)
+      .filter((limit): limit is number => typeof limit === "number")
+      .map((limit) => limit - epsilon),
     ...(!traversal.positive ? [] : [0])
   );
   const max = Math.min(
     Number.MAX_SAFE_INTEGER,
-    ...(traversal.max ?? []).map(([maxNumber]) => maxNumber as number),
-    ...(traversal.lessThan ?? []).map(([limit]) => (limit as number) - epsilon),
+    ...(traversal.max ?? [])
+      .map(([maxNumber]) => maxNumber)
+      .filter(
+        (maxNumber): maxNumber is number => typeof maxNumber === "number"
+      ),
+    ...(traversal.lessThan ?? [])
+      .map(([limit]) => limit)
+      .filter((limit): limit is number => typeof limit === "number")
+      .map((limit) => limit - epsilon),
     ...(!traversal.negative?.length ? [] : [-epsilon])
   );
+
+  // TODO Handle multiple precisions, somehow
+  const precision = traversal.precision
+    ?.map(([limit]) => limit)
+    .filter((limit): limit is number => typeof limit === "number")
+    .map((limit) => limit)?.[0];
+
   type TOptionsHelper = TSchemaType extends SchemaTypeDefinition<
     "number",
     infer TOptionsHelper,
@@ -171,10 +199,7 @@ const numberFaker = <
             faker.number.float({
               min,
               max,
-              precision: !traversal.precision
-                ? undefined
-                : // TODO Handle multiple precisions, somehow
-                  10 ** -(traversal.precision[0]![0]! as number),
+              precision: precision === undefined ? undefined : 10 ** -precision,
             })
   );
 };
@@ -239,19 +264,31 @@ const stringAndTextFaker = <
   const traversal = traverseValidation(schemaType);
 
   // TODO Handle multiple length, somehow
-  const length = traversal.length?.[0]?.[0] as number | undefined;
+  const length = traversal.length
+    ?.map(([exactLength]) => exactLength)
+    .find(
+      (exactLength): exactLength is number => typeof exactLength === "number"
+    );
 
   const min =
     length ??
     Math.max(
       0,
-      ...(traversal.min ?? []).map(([minNumber]) => minNumber as number)
+      ...(traversal.min ?? [])
+        .map(([minLength]) => minLength)
+        .filter(
+          (minLength): minLength is number => typeof minLength === "number"
+        )
     );
   const max =
     length ??
     Math.min(
       Number.MAX_SAFE_INTEGER,
-      ...(traversal.max ?? []).map(([maxNumber]) => maxNumber as number)
+      ...(traversal.max ?? [])
+        .map(([minLength]) => minLength)
+        .filter(
+          (minLength): minLength is number => typeof minLength === "number"
+        )
     );
 
   return traversal.regex
@@ -564,20 +601,32 @@ const arrayFaker = <
   const traversal = traverseValidation(schemaType);
 
   // TODO Handle multiple length, somehow
-  const length = traversal.length?.[0]?.[0] as number | undefined;
+  const length = traversal.length
+    ?.map(([exactLength]) => exactLength)
+    .find(
+      (exactLength): exactLength is number => typeof exactLength === "number"
+    );
 
   const minChosen =
     length ??
     noInfinity(
       Math.max(
-        ...(traversal.min ?? []).map(([minLength]) => minLength as number)
+        ...(traversal.min ?? [])
+          .map(([minLength]) => minLength)
+          .filter(
+            (minLength): minLength is number => typeof minLength === "number"
+          )
       )
     );
   const maxChosen =
     length ??
     noInfinity(
       Math.min(
-        ...(traversal.max ?? []).map(([maxLength]) => maxLength as number)
+        ...(traversal.max ?? [])
+          .map(([maxLength]) => maxLength)
+          .filter(
+            (maxLength): maxLength is number => typeof maxLength === "number"
+          )
       )
     );
 
