@@ -12,7 +12,6 @@ const prettierCmd = `prettier --ignore-unknown --write --cache`;
 const config = {
   "*.{gif,jpeg,jpg,png,svg}": ["imagemin-lint-staged"],
   "*.{js,jsx,ts,tsx}": [eslintCmd],
-  "*": [prettierCmd],
   "{.eslint*,package.json}": () => [`${eslintCmd} .`, "git add ."],
   "{.prettier*,package.json}": () => [`${prettierCmd} .`, "git add ."],
   "_README.md": (filenames) =>

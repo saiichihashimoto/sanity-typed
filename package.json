@@ -21,6 +21,7 @@
     "test": "jest --color --cache"
   },
   "dependencies": {
+    "@cspell/eslint-plugin": "8.1.2",
     "@jest/types": "29.6.3",
     "@standard-configs/prettier-plugin": "1.0.12",
     "@total-typescript/ts-reset": "0.5.1",
@@ -30,7 +31,7 @@
     "@typescript-eslint/eslint-plugin": "6.13.1",
     "concurrently": "8.2.2",
     "cross-env": "7.0.3",
-    "eslint": "8.54.0",
+    "eslint": "8.55.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "9.0.0",
     "eslint-import-resolver-typescript": "3.6.1",
@@ -59,7 +60,7 @@
     "ts-node": "10.9.1",
     "tsup": "8.0.1",
     "turbo": "1.10.16",
-    "type-fest": "4.8.2",
+    "type-fest": "4.8.3",
     "typescript": "5.2.2"
   },
   "engines": {

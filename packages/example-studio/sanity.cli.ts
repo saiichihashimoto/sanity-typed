@@ -1,5 +1,5 @@
 /**
- * DONT COPY THIS FILE
+ * DO NOT COPY THIS FILE
  *
  * This is because we're using path aliases in the monorepo's tsconfig and is not required for @sanity-typed/*.
  * https://github.com/sanity-io/sanity/issues/5115

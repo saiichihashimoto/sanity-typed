@@ -10,7 +10,7 @@ import type {
   ScopeFromPartialScope,
 } from "./internal";
 
-describe("precendence and associativity", () => {
+describe("precedence and associativity", () => {
   describe("level 1", () => {
     it("select(true=>true=>true)", async () => {
       const query = "select(true=>true=>true)";

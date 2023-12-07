@@ -230,7 +230,7 @@ export type NumberDefinition<
  *
  * \@sanity-typed/types does not change the runtime output of any define* schema, so this is not something that will ever be actually included.
  *
- * This is also true for @sanity-typed/faker and @sanity-typed/zod. Although they both import this symbol, it's only to assume the same type inferrence.
+ * This is also true for @sanity-typed/faker and @sanity-typed/zod. Although they both import this symbol, it's only to assume the same type inference.
  *
  * DO NOT rely on or use this symbol in runtime in any way. Typescript won't complain but it won't actually be there. We cannot change the output of sanity's content lake to include anything, especially this symbol.
  */

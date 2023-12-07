@@ -26,4 +26,4 @@ type SanityValues =
   | InferSchemaValues<typeof oldConfig>;
 ```
 
-This can get unweildy although, if you're deligent about data migrations of your old documents to your new types, you may be able to deprecate old configs and remove them from your codebase.
+This can get unwieldy although, if you're diligent about data migrations of your old documents to your new types, you may be able to deprecate old configs and remove them from your codebase.

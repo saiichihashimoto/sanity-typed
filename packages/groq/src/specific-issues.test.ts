@@ -68,7 +68,7 @@ describe("specific issues", () => {
       {
         _type: "bar",
         slug: { _type: "slug", current: "bar" },
-        title: "nottitle",
+        title: "notTitle",
       },
       {
         _type: "foo",
