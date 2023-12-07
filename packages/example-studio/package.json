@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@sanity-typed/types": "0.0.0-development",
-    "@sanity/vision": "3.20.2",
+    "@sanity/vision": "3.21.1",
     "sanity": "3.20.2",
     "styled-components": "6.1.1"
   },
