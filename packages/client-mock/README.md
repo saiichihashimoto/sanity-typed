@@ -9,7 +9,7 @@
 [![Minified Size](https://img.shields.io/bundlephobia/min/@sanity-typed/client-mock?style=flat)](https://www.npmjs.com/package/@sanity-typed/client-mock?activeTab=code)
 [![License](https://img.shields.io/github/license/saiichihashimoto/sanity-typed?style=flat)](LICENSE)
 
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
 Mock [@sanity-typed/client](../client) for local development and testing
 
