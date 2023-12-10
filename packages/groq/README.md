@@ -9,7 +9,7 @@
 [![Minified Size](https://img.shields.io/bundlephobia/min/@sanity-typed/groq?style=flat)](https://www.npmjs.com/package/@sanity-typed/groq?activeTab=code)
 [![License](https://img.shields.io/github/license/saiichihashimoto/sanity-typed?style=flat)](LICENSE)
 
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
 Infer [GROQ](https://github.com/sanity-io/groq) Result Types from GROQ strings
 

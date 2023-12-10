@@ -6,10 +6,10 @@
       "dependsOn": ["^build"],
       "inputs": [
         "**",
-        "!.turbo/**",
-        "!/**/*.md",
         "!.next/**",
         "!.sanity/**",
+        "!.turbo/**",
+        "!**/*.md",
         "!dist/**",
         "!node_modules/**",
         "!src/**/*.test.*"

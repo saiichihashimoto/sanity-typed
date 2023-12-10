@@ -9,7 +9,7 @@
 [![Minified Size](https://img.shields.io/bundlephobia/min/@sanity-typed/zod?style=flat)](https://www.npmjs.com/package/@sanity-typed/zod?activeTab=code)
 [![License](https://img.shields.io/github/license/saiichihashimoto/sanity-typed?style=flat)](LICENSE)
 
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
 [![Watch How to Generate Zod Schemas for Sanity Documents](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/d46bc235-827e-4fa6-ac8b-d653505b2d61)](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/c014f8aa-a97a-4093-9924-94a2ecee4584)
 

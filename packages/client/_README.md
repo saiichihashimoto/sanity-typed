@@ -8,7 +8,7 @@
 [![Minified Size](https://img.shields.io/bundlephobia/min/@sanity-typed/client?style=flat)](https://www.npmjs.com/package/@sanity-typed/client?activeTab=code)
 [![License](https://img.shields.io/github/license/saiichihashimoto/sanity-typed?style=flat)](LICENSE)
 
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat)](https://github.com/sponsors/saiichihashimoto)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
 [@sanity/client](https://github.com/sanity-io/client) with typed GROQ Results
 
