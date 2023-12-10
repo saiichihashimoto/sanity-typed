@@ -923,7 +923,7 @@ const arrayZod = <
 const spanZod = z.object({
   _key: z.string(),
   _type: z.literal("span"),
-  // TODO Only allow marks that correspond to decorators or markDefs
+  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/537
   marks: z.array(z.string()),
   text: z.string(),
 });
@@ -973,9 +973,8 @@ const blockFieldsZods = <
 
   return {
     _type: z.literal("block"),
-    // TODO Only have level if we also have listItem
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
     level: z.optional(z.number()),
-    // TODO Only allow level & listItem together, never separate
     listItem: typedTernary(
       !lists?.length as Negate<IsStringLiteral<TBlockListItem>>,
       () => z.optional(z.union([z.literal("bullet"), z.literal("number")])),
@@ -1118,7 +1117,7 @@ const blockZod = <
             ),
           ])
     ),
-    // TODO Only allow markDefs who's _key associates with a span's marks[number]
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/537
     markDefs: z.array(
       !schemaType.marks?.annotations
         ? z.never()

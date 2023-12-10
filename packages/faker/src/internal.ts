@@ -231,7 +231,7 @@ const numberFaker = <
     ...(!traversal.negative?.length ? [] : [-epsilon])
   );
 
-  // TODO Handle multiple precisions, somehow
+  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/536
   const precision = traversal.precision
     ?.map(([limit]) => limit)
     .filter((limit): limit is number => typeof limit === "number")
@@ -319,7 +319,7 @@ const referenceFaker =
         ? TReferenced
         : never;
     }),
-    // TODO weak references and strengthenOnPublish
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/358
     ...(true ? {} : { _weak: false }),
     ...(true
       ? {}
@@ -368,7 +368,7 @@ const stringAndTextFaker = <
 ) => {
   const traversal = traverseValidation(schemaType);
 
-  // TODO Handle multiple length, somehow
+  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/536
   const length = traversal.length
     ?.map(([exactLength]) => exactLength)
     .find(
@@ -397,7 +397,7 @@ const stringAndTextFaker = <
     );
 
   return traversal.regex
-    ? // TODO Combine multiple regex, somehow
+    ? // TODO https://github.com/saiichihashimoto/sanity-typed/issues/536
       regexFaker(traversal.regex![0]![0])
     : traversal.email
     ? (faker: Faker) => faker.internet.email()
@@ -493,13 +493,10 @@ const urlFaker = <
   const traversal = traverseValidation(schemaType);
 
   const {
+    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/539
     allowRelative = false,
-    // TODO allowCredentials = false,
     relativeOnly = false,
-    // TODO scheme: schemaRaw = ["http", "https"],
   } = traversal.uri?.[0]?.[0] ?? {};
-
-  // const schemes = Array.isArray(schemaRaw) ? schemaRaw : [schemaRaw];
 
   return (faker: Faker) => {
     const relative =
@@ -780,7 +777,7 @@ const arrayFaker = <
 ): ArrayFaker<TSchemaType, TAliasedFakers> => {
   const traversal = traverseValidation(schemaType);
 
-  // TODO Handle multiple length, somehow
+  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/536
   const length = traversal.length
     ?.map(([exactLength]) => exactLength)
     .find(
@@ -849,7 +846,7 @@ const spanFaker =
     marks: faker.helpers
       .arrayElements(
         [
-          // TODO Only allow marks that correspond to decorators or markDefs
+          // TODO https://github.com/saiichihashimoto/sanity-typed/issues/537
           () => faker.database.mongodbObjectId(),
           ...(decorators?.map(
             ({ value }) =>
@@ -917,6 +914,7 @@ const blockFieldsFaker = <
     ...(faker.datatype.boolean()
       ? {}
       : {
+          // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
           level: 0,
           listItem: typedTernary(
             !lists?.length as Negate<IsStringLiteral<TBlockListItem>>,
@@ -1086,7 +1084,7 @@ const blockFaker = <
               { min: length - numSpans, max: length - numSpans }
             )(faker, index)),
       ]),
-      // TODO Only generate markDefs who's _key associates with a span's marks[number]
+      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/537
       markDefs: !schemaType.marks?.annotations
         ? []
         : // TODO https://github.com/saiichihashimoto/sanity-typed/issues/479
@@ -1390,7 +1388,7 @@ const documentFaker = <
 const assetFaker = (faker: Faker) => ({
   _ref: faker.string.uuid(),
   _type: "reference",
-  // TODO weak references and strengthenOnPublish
+  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/358
   ...(true ? {} : { _key: "key" }),
   ...(true ? {} : { _weak: false }),
   ...(true

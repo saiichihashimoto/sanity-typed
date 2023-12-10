@@ -381,6 +381,7 @@ export type PortableTextBlock<
 > = {
   _type: "block";
   children: C[];
+  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
   level?: number;
   listItem?: L;
   markDefs: M[];
