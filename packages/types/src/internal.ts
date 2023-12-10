@@ -1,5 +1,5 @@
 import type {
-  PortableTextMarkDefinition as PortableTextMarkDefinitionNative,
+  PortableTextMarkDefinition,
   PortableTextSpan as PortableTextSpanNative,
   TypedObject,
 } from "@portabletext/types";
@@ -15,6 +15,7 @@ import type {
   ArrayRule,
   BlockDefinition as BlockDefinitionNative,
   BlockListDefinition as BlockListDefinitionNative,
+  BlockMarksDefinition,
   BlockRule,
   BlockStyleDefinition as BlockStyleDefinitionNative,
   BooleanDefinition as BooleanDefinitionNative,
@@ -128,7 +129,7 @@ type ValidationBuilder<
   rule: WithRequired<false, Rule>
 ) => MaybeArray<WithRequired<TRequired | false, Rule>>;
 
-type DefinitionBase<
+export type DefinitionBase<
   TRequired extends boolean,
   Value,
   Rule extends RuleDef<Rule, Value>
@@ -367,25 +368,13 @@ export type ArrayDefinition<
   }
 >;
 
-type PortableTextStyleDefault =
-  | "blockquote"
-  | "h1"
-  | "h2"
-  | "h3"
-  | "h4"
-  | "h5"
-  | "h6"
-  | "normal";
-
-type PortableTextListItemDefault = "bullet" | "number";
-
-export type PortableTextMarkDefinition =
-  OmitIndexSignature<PortableTextMarkDefinitionNative>;
-
-export type PortableTextSpan = SetRequired<PortableTextSpanNative, "_key">;
+export type PortableTextSpan = SetRequired<
+  PortableTextSpanNative,
+  "_key" | "marks"
+>;
 
 export type PortableTextBlock<
-  M extends PortableTextMarkDefinitionNative = PortableTextMarkDefinition,
+  M extends PortableTextMarkDefinition = PortableTextMarkDefinition,
   C extends TypedObject = PortableTextSpan,
   S extends string = string,
   L extends string = string
@@ -417,6 +406,9 @@ export type BlockListDefinition<Value extends string> = MergeOld<
 export type BlockDefinition<
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TRequired extends boolean
 > = MergeOld<
@@ -424,27 +416,35 @@ export type BlockDefinition<
   DefinitionBase<
     TRequired,
     PortableTextBlock<
-      PortableTextMarkDefinition,
+      DefinitionBase<any, any, any> & {
+        name?: string;
+      } extends TBlockMarkAnnotation
+        ? never
+        : InferRawValue<TBlockMarkAnnotation> & { _key: string },
       | PortableTextSpan
       | (TMemberDefinition extends never
           ? never
           : InferRawValue<TMemberDefinition> & { _key: string }),
-      string extends TBlockStyle ? PortableTextStyleDefault : TBlockStyle,
-      string extends TBlockListItem
-        ? PortableTextListItemDefault
-        : TBlockListItem
+      string extends TBlockStyle
+        ? "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal"
+        : TBlockStyle,
+      string extends TBlockListItem ? "bullet" | "number" : TBlockListItem
     >,
     RewriteValue<
       PortableTextBlock<
-        PortableTextMarkDefinition,
+        DefinitionBase<any, any, any> & {
+          name?: string;
+        } extends TBlockMarkAnnotation
+          ? never
+          : InferRawValue<TBlockMarkAnnotation> & { _key: string },
         | PortableTextSpan
         | (TMemberDefinition extends never
             ? never
             : InferRawValue<TMemberDefinition> & { _key: string }),
-        string extends TBlockStyle ? PortableTextStyleDefault : TBlockStyle,
-        string extends TBlockListItem
-          ? PortableTextListItemDefault
-          : TBlockListItem
+        string extends TBlockStyle
+          ? "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal"
+          : TBlockStyle,
+        string extends TBlockListItem ? "bullet" | "number" : TBlockListItem
       >,
       BlockRule
     >
@@ -457,6 +457,12 @@ export type BlockDefinition<
             }
           : unknown)
     >[];
+    marks?: MergeOld<
+      BlockMarksDefinition,
+      {
+        annotations?: TBlockMarkAnnotation[];
+      }
+    >;
     of?: TupleOfLength<TMemberDefinition, 1>;
     styles?: BlockStyleDefinition<
       TBlockStyle &
@@ -624,6 +630,9 @@ type IntrinsicDefinitions<
   TReferenced extends string,
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
   THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -636,6 +645,7 @@ type IntrinsicDefinitions<
   block: BlockDefinition<
     TBlockStyle,
     TBlockListItem,
+    TBlockMarkAnnotation,
     TMemberDefinition,
     TRequired
   >;
@@ -658,7 +668,7 @@ type IntrinsicDefinitions<
 };
 
 export type IntrinsicTypeName = Simplify<
-  keyof IntrinsicDefinitions<any, any, any, any, any, any, any, any, any>
+  keyof IntrinsicDefinitions<any, any, any, any, any, any, any, any, any, any>
 >;
 
 declare const aliasedType: unique symbol;
@@ -675,6 +685,9 @@ export type TypeAliasDefinition<
   TReferenced extends string,
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
   THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -692,6 +705,7 @@ export type TypeAliasDefinition<
           TReferenced,
           TBlockStyle,
           TBlockListItem,
+          TBlockMarkAnnotation,
           THotspot,
           TFieldDefinition,
           TMemberDefinition,
@@ -713,6 +727,9 @@ export type ArrayMemberDefinition<
   TReferenced extends string,
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
   THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -736,6 +753,7 @@ export type ArrayMemberDefinition<
               TReferenced,
               TBlockStyle,
               TBlockListItem,
+              TBlockMarkAnnotation,
               THotspot,
               TFieldDefinition,
               TMemberDefinition,
@@ -748,6 +766,7 @@ export type ArrayMemberDefinition<
                     TReferenced,
                     TBlockStyle,
                     TBlockListItem,
+                    TBlockMarkAnnotation,
                     THotspot,
                     TFieldDefinition,
                     TMemberDefinition,
@@ -777,6 +796,7 @@ export type ArrayMemberDefinition<
                   TReferenced,
                   TBlockStyle,
                   TBlockListItem,
+                  TBlockMarkAnnotation,
                   THotspot,
                   TFieldDefinition,
                   TMemberDefinition,
@@ -797,6 +817,7 @@ export type ArrayMemberDefinition<
             TReferenced,
             TBlockStyle,
             TBlockListItem,
+            TBlockMarkAnnotation,
             THotspot,
             TFieldDefinition,
             TMemberDefinition,
@@ -838,6 +859,9 @@ export const makeDefineArrayMember =
     const TReferenced extends string,
     const TBlockStyle extends string,
     const TBlockListItem extends string,
+    const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+      name?: string;
+    },
     const THotspot extends boolean,
     TFieldDefinition extends DefinitionBase<any, any, any> & {
       name: string;
@@ -857,6 +881,7 @@ export const makeDefineArrayMember =
       TReferenced,
       TBlockStyle,
       TBlockListItem,
+      TBlockMarkAnnotation,
       THotspot,
       TFieldDefinition,
       TMemberDefinition,
@@ -881,6 +906,9 @@ export type FieldDefinition<
   TReferenced extends string,
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
   THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -905,6 +933,7 @@ export type FieldDefinition<
               TReferenced,
               TBlockStyle,
               TBlockListItem,
+              TBlockMarkAnnotation,
               THotspot,
               TFieldDefinition,
               TMemberDefinition,
@@ -923,6 +952,7 @@ export type FieldDefinition<
         TReferenced,
         TBlockStyle,
         TBlockListItem,
+        TBlockMarkAnnotation,
         THotspot,
         TFieldDefinition,
         TMemberDefinition,
@@ -944,6 +974,9 @@ export const defineField = <
   const TReferenced extends string,
   const TBlockStyle extends string,
   const TBlockListItem extends string,
+  const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
   const THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -964,6 +997,7 @@ export const defineField = <
     TReferenced,
     TBlockStyle,
     TBlockListItem,
+    TBlockMarkAnnotation,
     THotspot,
     TFieldDefinition,
     TMemberDefinition,
@@ -982,6 +1016,9 @@ export type TypeDefinition<
   TReferenced extends string,
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
   THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -1000,6 +1037,7 @@ export type TypeDefinition<
               TReferenced,
               TBlockStyle,
               TBlockListItem,
+              TBlockMarkAnnotation,
               THotspot,
               TFieldDefinition,
               TMemberDefinition,
@@ -1018,6 +1056,7 @@ export type TypeDefinition<
         TReferenced,
         TBlockStyle,
         TBlockListItem,
+        TBlockMarkAnnotation,
         THotspot,
         TFieldDefinition,
         TMemberDefinition,
@@ -1038,6 +1077,9 @@ export const defineType = <
   const TReferenced extends string,
   const TBlockStyle extends string,
   const TBlockListItem extends string,
+  const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
   const THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -1057,6 +1099,7 @@ export const defineType = <
     TReferenced,
     TBlockStyle,
     TBlockListItem,
+    TBlockMarkAnnotation,
     THotspot,
     TFieldDefinition,
     TMemberDefinition
@@ -1070,6 +1113,7 @@ export const defineType = <
 
 export type ConfigBase<
   TTypeDefinition extends TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -1116,6 +1160,7 @@ export type PluginOptions<
     any,
     any,
     any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>
@@ -1124,6 +1169,7 @@ export type PluginOptions<
 
 export const definePlugin = <
   TTypeDefinition extends TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -1161,6 +1207,7 @@ type WorkspaceOptions<
     any,
     any,
     any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>
@@ -1171,6 +1218,7 @@ type WorkspaceOptions<
 
 export type Config<
   TTypeDefinition extends TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -1197,6 +1245,7 @@ export type Config<
 
 export const defineConfig = <
   TTypeDefinition extends TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -1261,6 +1310,7 @@ export type InferSchemaValues<
         AliasValue<TName>,
         InferSchemaValues<TPluginOptions> & {
           [TDefinition in TypeDefinition<
+            any,
             any,
             any,
             any,
@@ -1343,6 +1393,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
                 any
               >
             : never)
@@ -1354,6 +1405,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 TName,
                 NonNullable<TAlias>,
                 TStrict,
+                any,
                 any,
                 any,
                 any,
@@ -1380,6 +1432,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
                 any
               >
             : never)
@@ -1397,6 +1450,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
     infer TName extends string,
     infer TAlias extends IntrinsicTypeName,
     infer TStrict extends StrictDefinition,
+    any,
     any,
     any,
     any,
@@ -1429,6 +1483,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         any,
         any,
         any,
+        any,
         any
       >
     ? ReturnType<
@@ -1446,6 +1501,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         infer TName extends string,
         infer TAlias extends IntrinsicTypeName,
         infer TStrict extends StrictDefinition,
+        any,
         any,
         any,
         any,

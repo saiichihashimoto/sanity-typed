@@ -24,6 +24,7 @@ type SchemaTypeDefinition<TType extends string> =
       any,
       any,
       any,
+      any,
       any
     >
   | FieldDefinition<
@@ -39,10 +40,12 @@ type SchemaTypeDefinition<TType extends string> =
       any,
       any,
       any,
+      any,
       any
     >
   | TypeDefinition<
       TType,
+      any,
       any,
       any,
       any,

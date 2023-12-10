@@ -4,6 +4,7 @@ import type { GeopointValue } from "sanity";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
 import type { InferSchemaValues, SlugValue } from ".";
+import type { referenced } from "./internal";
 
 describe("block", () => {
   describe("defineArrayMember", () => {
@@ -32,15 +33,12 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style:
           | "blockquote"
           | "h1"
@@ -105,17 +103,14 @@ describe("block", () => {
           | {
               _key: string;
               _type: "span";
-              marks?: string[];
+              marks: string[];
               text: string;
             }
           | (SlugValue & { _key: string })
         )[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style:
           | "blockquote"
           | "h1"
@@ -158,7 +153,7 @@ describe("block", () => {
           | {
               _key: string;
               _type: "span";
-              marks?: string[];
+              marks: string[];
               text: string;
             }
           | (GeopointValue & { _key: string })
@@ -166,10 +161,7 @@ describe("block", () => {
         )[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style:
           | "blockquote"
           | "h1"
@@ -211,15 +203,12 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style: "bar" | "foo";
       }>();
     });
@@ -253,15 +242,12 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;
         listItem?: "bar" | "foo";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style:
           | "blockquote"
           | "h1"
@@ -305,15 +291,12 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style:
           | "blockquote"
           | "h1"
@@ -326,7 +309,7 @@ describe("block", () => {
       }>();
     });
 
-    it("accepts annotations", async () => {
+    it("infers markDefs", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -340,19 +323,17 @@ describe("block", () => {
                   type: "block",
                   marks: {
                     annotations: [
-                      {
+                      defineArrayMember({
                         name: "internalLink",
                         type: "object",
-                        title: "Internal link",
                         fields: [
-                          {
+                          defineField({
                             name: "reference",
                             type: "reference",
-                            title: "Reference",
-                            to: [{ type: "post" }],
-                          },
+                            to: [{ type: "post" as const }],
+                          }),
                         ],
-                      },
+                      }),
                     ],
                   },
                 }),
@@ -368,14 +349,30 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;
         listItem?: "bullet" | "number";
         markDefs: {
           _key: string;
-          _type: string;
+          _type: "internalLink";
+          reference?: {
+            _ref: string;
+            _strengthenOnPublish?: {
+              template?: {
+                id: string;
+                params: {
+                  [key: string]: boolean | number | string;
+                };
+              };
+              type: string;
+              weak?: boolean;
+            };
+            _type: "reference";
+            _weak?: boolean;
+            [referenced]: "post";
+          };
         }[];
         style:
           | "blockquote"
@@ -438,15 +435,12 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style:
           | "blockquote"
           | "h1"
@@ -509,17 +503,14 @@ describe("block", () => {
           | {
               _key: string;
               _type: "span";
-              marks?: string[];
+              marks: string[];
               text: string;
             }
           | (SlugValue & { _key: string })
         )[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style:
           | "blockquote"
           | "h1"
@@ -556,7 +547,7 @@ describe("block", () => {
           | {
               _key: string;
               _type: "span";
-              marks?: string[];
+              marks: string[];
               text: string;
             }
           | (GeopointValue & { _key: string })
@@ -564,10 +555,7 @@ describe("block", () => {
         )[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style:
           | "blockquote"
           | "h1"
@@ -603,15 +591,12 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style: "bar" | "foo";
       }>();
     });
@@ -639,15 +624,12 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;
         listItem?: "bar" | "foo";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style:
           | "blockquote"
           | "h1"
@@ -685,15 +667,12 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style:
           | "blockquote"
           | "h1"
@@ -706,7 +685,7 @@ describe("block", () => {
       }>();
     });
 
-    it("accepts annotations", async () => {
+    it("infers markDefs", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -717,19 +696,17 @@ describe("block", () => {
               type: "block",
               marks: {
                 annotations: [
-                  {
+                  defineArrayMember({
                     name: "internalLink",
                     type: "object",
-                    title: "Internal link",
                     fields: [
-                      {
+                      defineField({
                         name: "reference",
                         type: "reference",
-                        title: "Reference",
-                        to: [{ type: "post" }],
-                      },
+                        to: [{ type: "post" as const }],
+                      }),
                     ],
-                  },
+                  }),
                 ],
               },
             }),
@@ -742,14 +719,30 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;
         listItem?: "bullet" | "number";
         markDefs: {
           _key: string;
-          _type: string;
+          _type: "internalLink";
+          reference?: {
+            _ref: string;
+            _strengthenOnPublish?: {
+              template?: {
+                id: string;
+                params: {
+                  [key: string]: boolean | number | string;
+                };
+              };
+              type: string;
+              weak?: boolean;
+            };
+            _type: "reference";
+            _weak?: boolean;
+            [referenced]: "post";
+          };
         }[];
         style:
           | "blockquote"

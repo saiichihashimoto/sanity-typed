@@ -4,6 +4,7 @@ import { expectType } from "@saiichihashimoto/test-utils";
 import {
   defineArrayMember,
   defineConfig,
+  defineField,
   defineType,
 } from "@sanity-typed/types";
 import type { InferSchemaValues, PortableTextBlock } from "@sanity-typed/types";
@@ -14,7 +15,7 @@ import { sanityConfigToZodsTyped } from "./internal";
 const fields: Omit<PortableTextBlock, "_type" | "children"> = {
   level: 1,
   listItem: "bullet",
-  markDefs: [{ _key: "key", _type: "type" }],
+  markDefs: [],
   style: "normal",
 };
 
@@ -322,7 +323,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts annotations", async () => {
+    it("builds parser for markDefs", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -336,19 +337,17 @@ describe("block", () => {
                   type: "block",
                   marks: {
                     annotations: [
-                      {
+                      defineArrayMember({
                         name: "internalLink",
                         type: "object",
-                        title: "Internal link",
                         fields: [
-                          {
+                          defineField({
                             name: "reference",
                             type: "reference",
-                            title: "Reference",
-                            to: [{ type: "post" }],
-                          },
+                            to: [{ type: "post" as const }],
+                          }),
                         ],
-                      },
+                      }),
                     ],
                   },
                 }),
@@ -366,6 +365,13 @@ describe("block", () => {
           _type: "block",
           children: [
             { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+          ],
+          markDefs: [
+            {
+              _key: "key",
+              _type: "internalLink",
+              reference: { _ref: "foo", _type: "reference" },
+            },
           ],
         },
       ];
@@ -447,10 +453,12 @@ describe("block", () => {
         },
       ];
 
+      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const parsed = zods.bar.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)[number]["_type"]>().toStrictEqual<
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         InferSchemaValues<typeof config>["bar"][number]["_type"]
       >();
     });
@@ -634,7 +642,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts annotations", async () => {
+    it("builds parser for markDefs", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -645,19 +653,17 @@ describe("block", () => {
               type: "block",
               marks: {
                 annotations: [
-                  {
+                  defineArrayMember({
                     name: "internalLink",
                     type: "object",
-                    title: "Internal link",
                     fields: [
-                      {
+                      defineField({
                         name: "reference",
                         type: "reference",
-                        title: "Reference",
-                        to: [{ type: "post" }],
-                      },
+                        to: [{ type: "post" as const }],
+                      }),
                     ],
-                  },
+                  }),
                 ],
               },
             }),
@@ -671,6 +677,13 @@ describe("block", () => {
         _type: "foo",
         children: [
           { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+        ],
+        markDefs: [
+          {
+            _key: "key",
+            _type: "internalLink",
+            reference: { _ref: "foo", _type: "reference" },
+          },
         ],
       };
 
@@ -711,14 +724,18 @@ describe("block", () => {
         zods.foo.parse({
           ...fields,
           _type: "foo",
-          children: [{ _key: "key", _type: "span", text: "foo" }],
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "foo" },
+          ],
         })
       ).not.toThrow();
       expect(() =>
         zods.foo.parse({
           ...fields,
           _type: "foo",
-          children: [{ _key: "key", _type: "span", text: "bar" }],
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "bar" },
+          ],
         })
       ).toThrow("value can't be `bar`");
     });

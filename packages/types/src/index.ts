@@ -23,7 +23,6 @@ export type {
   ObjectDefinition,
   PluginOptions,
   PortableTextBlock,
-  PortableTextMarkDefinition,
   PortableTextSpan,
   ReferenceDefinition,
   ReferenceValue,

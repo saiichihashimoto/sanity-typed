@@ -150,10 +150,7 @@ describe("specific issues", () => {
         }[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: string;
-        }[];
+        markDefs: never[];
         style:
           | "blockquote"
           | "h1"
