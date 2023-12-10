@@ -183,7 +183,7 @@ const nav = defineType({
 
 #### Block fields require `as const`
 
-Similar to references, to get the right types out of a block, we'll need a few `as const`
+Similar to references, to get the right types out of a block, we'll need `as const` with `styles[number].value` and `lists[number].value`. Also, `marks.annotations[number]` now requires typing like other array members, ie `defineArrayMember`:
 
 ```diff
 const foo = defineType({
@@ -198,6 +198,32 @@ const foo = defineType({
 -       { title: "Bar", value: "bar" },
 +       { title: "Bar", value: "bar" as const },
       ],
+      lists: [
+-       { title: "Foo", value: "foo" },
++       { title: "Foo", value: "foo" as const },
+-       { title: "Bar", value: "bar" },
++       { title: "Bar", value: "bar" as const },
+      ],
+      marks: {
+        annotations: [
+-         {
++         defineArrayMember({
+            name: "internalLink",
+            type: "object",
+            fields: [
+-             {
++             defineField({
+                name: "reference",
+                type: "reference",
+-               to: [{ type: "post" }],
++               to: [{ type: "post" as const }],
+-             },
++             }),
+            ],
+-         },
++         }),
+        ],
+      },
     }),
   ],
 });
