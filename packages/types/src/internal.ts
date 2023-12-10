@@ -538,7 +538,7 @@ export type ImageValue<
 >;
 
 export type ImageDefinition<
-  TOptionsHelper,
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -548,15 +548,9 @@ export type ImageDefinition<
   ImageDefinitionNative,
   DefinitionBase<
     TRequired,
-    ImageValue<
-      TOptionsHelper extends boolean ? TOptionsHelper : false,
-      TFieldDefinition
-    >,
+    ImageValue<boolean extends THotspot ? false : THotspot, TFieldDefinition>,
     RewriteValue<
-      ImageValue<
-        TOptionsHelper extends boolean ? TOptionsHelper : false,
-        TFieldDefinition
-      >,
+      ImageValue<boolean extends THotspot ? false : THotspot, TFieldDefinition>,
       ImageRule
     >
   > & {
@@ -564,17 +558,17 @@ export type ImageDefinition<
     options?: MergeOld<
       ImageOptions,
       {
-        hotspot?: TOptionsHelper;
+        hotspot?: THotspot;
       }
     >;
   }
 >;
 
 type IntrinsicDefinitions<
-  TOptionsHelper,
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -592,7 +586,7 @@ type IntrinsicDefinitions<
   email: EmailDefinition<TRequired>;
   file: FileDefinition<TFieldDefinition, TRequired>;
   geopoint: GeopointDefinition<TRequired>;
-  image: ImageDefinition<TOptionsHelper, TFieldDefinition, TRequired>;
+  image: ImageDefinition<THotspot, TFieldDefinition, TRequired>;
   number: NumberDefinition<TNumberValue, TRequired>;
   object: ObjectDefinition<TFieldDefinition, TRequired>;
   reference: ReferenceDefinition<TReferenced, TRequired>;
@@ -615,10 +609,10 @@ type AliasValue<TType extends string> = {
 export type TypeAliasDefinition<
   TType extends string,
   TAlias extends IntrinsicTypeName,
-  TOptionsHelper,
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -630,10 +624,10 @@ export type TypeAliasDefinition<
   DefinitionBase<TRequired, AliasValue<TType>, any> & {
     options?: TAlias extends IntrinsicTypeName
       ? IntrinsicDefinitions<
-          TOptionsHelper,
           TNumberValue,
           TStringValue,
           TReferenced,
+          THotspot,
           TFieldDefinition,
           TMemberDefinition,
           TRequired
@@ -649,10 +643,10 @@ export type ArrayMemberDefinition<
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  TOptionsHelper,
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -670,20 +664,20 @@ export type ArrayMemberDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TOptionsHelper,
               TNumberValue,
               TStringValue,
               TReferenced,
+              THotspot,
               TFieldDefinition,
               TMemberDefinition,
               any
             >[type] extends DefinitionBase<any, infer Value, infer Rule>
               ? MergeOld<
                   IntrinsicDefinitions<
-                    TOptionsHelper,
                     TNumberValue,
                     TStringValue,
                     TReferenced,
+                    THotspot,
                     TFieldDefinition,
                     TMemberDefinition,
                     any
@@ -707,10 +701,10 @@ export type ArrayMemberDefinition<
                   >
                 >
               : IntrinsicDefinitions<
-                  TOptionsHelper,
                   TNumberValue,
                   TStringValue,
                   TReferenced,
+                  THotspot,
                   TFieldDefinition,
                   TMemberDefinition,
                   any
@@ -725,10 +719,10 @@ export type ArrayMemberDefinition<
           TypeAliasDefinition<
             TType,
             TAlias,
-            TOptionsHelper,
             TNumberValue,
             TStringValue,
             TReferenced,
+            THotspot,
             TFieldDefinition,
             TMemberDefinition,
             any
@@ -766,8 +760,8 @@ export const makeDefineArrayMember =
     TStrict extends StrictDefinition,
     const TNumberValue extends number,
     const TStringValue extends string,
-    TReferenced extends string,
-    const TOptionsHelper,
+    const TReferenced extends string,
+    const THotspot extends boolean,
     TFieldDefinition extends DefinitionBase<any, any, any> & {
       name: string;
       [required]?: boolean;
@@ -781,10 +775,10 @@ export const makeDefineArrayMember =
       TName,
       TAlias,
       TStrict,
-      TOptionsHelper,
       TNumberValue,
       TStringValue,
       TReferenced,
+      THotspot,
       TFieldDefinition,
       TMemberDefinition,
       AllowArrays
@@ -803,10 +797,10 @@ export type FieldDefinition<
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  TOptionsHelper,
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -825,10 +819,10 @@ export type FieldDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TOptionsHelper,
               TNumberValue,
               TStringValue,
               TReferenced,
+              THotspot,
               TFieldDefinition,
               TMemberDefinition,
               TRequired
@@ -841,10 +835,10 @@ export type FieldDefinition<
     : TypeAliasDefinition<
         TType,
         TAlias,
-        TOptionsHelper,
         TNumberValue,
         TStringValue,
         TReferenced,
+        THotspot,
         TFieldDefinition,
         TMemberDefinition,
         TRequired
@@ -860,10 +854,10 @@ export const defineField = <
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  const TOptionsHelper,
   const TNumberValue extends number,
   const TStringValue extends string,
-  TReferenced extends string,
+  const TReferenced extends string,
+  const THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -878,10 +872,10 @@ export const defineField = <
     TName,
     TAlias,
     TStrict,
-    TOptionsHelper,
     TNumberValue,
     TStringValue,
     TReferenced,
+    THotspot,
     TFieldDefinition,
     TMemberDefinition,
     TRequired
@@ -894,10 +888,10 @@ export type TypeDefinition<
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  TOptionsHelper,
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -910,10 +904,10 @@ export type TypeDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TOptionsHelper,
               TNumberValue,
               TStringValue,
               TReferenced,
+              THotspot,
               TFieldDefinition,
               TMemberDefinition,
               any
@@ -926,10 +920,10 @@ export type TypeDefinition<
     : TypeAliasDefinition<
         TType,
         TAlias,
-        TOptionsHelper,
         TNumberValue,
         TStringValue,
         TReferenced,
+        THotspot,
         TFieldDefinition,
         TMemberDefinition,
         any
@@ -944,10 +938,10 @@ export const defineType = <
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  const TOptionsHelper,
   const TNumberValue extends number,
   const TStringValue extends string,
-  TReferenced extends string,
+  const TReferenced extends string,
+  const THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -961,10 +955,10 @@ export const defineType = <
     TName,
     TAlias,
     TStrict,
-    TOptionsHelper,
     TNumberValue,
     TStringValue,
     TReferenced,
+    THotspot,
     TFieldDefinition,
     TMemberDefinition
   >,
@@ -1039,16 +1033,14 @@ export const definePlugin = <
     any
   >,
   TPluginOptions extends PluginOptions<any, any>,
-  TOptionsHelper = void
+  TOptions = void
 >(
   arg:
     | PluginOptions<TTypeDefinition, TPluginOptions>
-    | ((
-        options: TOptionsHelper
-      ) => PluginOptions<TTypeDefinition, TPluginOptions>)
+    | ((options: TOptions) => PluginOptions<TTypeDefinition, TPluginOptions>)
 ) =>
   definePluginNative(arg as any) as (
-    options: TOptionsHelper
+    options: TOptions
   ) => PluginOptions<TTypeDefinition, TPluginOptions>;
 
 type WorkspaceOptions<

@@ -19,20 +19,20 @@ import type { IsPlainObject, MaybeArray, Negate } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<
   TType extends string,
-  TOptionsHelper,
   TNumberValue extends number,
   TStringValue extends string,
-  TReferenced extends string
+  TReferenced extends string,
+  THotspot extends boolean
 > =
   | ArrayMemberDefinition<
       TType,
       any,
       any,
       any,
-      TOptionsHelper,
       TNumberValue,
       TStringValue,
       TReferenced,
+      THotspot,
       any,
       any,
       any
@@ -42,10 +42,10 @@ type SchemaTypeDefinition<
       any,
       any,
       any,
-      TOptionsHelper,
       TNumberValue,
       TStringValue,
       TReferenced,
+      THotspot,
       any,
       any,
       any
@@ -55,10 +55,10 @@ type SchemaTypeDefinition<
       any,
       any,
       any,
-      TOptionsHelper,
       TNumberValue,
       TStringValue,
       TReferenced,
+      THotspot,
       any,
       any
     >;
@@ -190,8 +190,8 @@ const numberFaker = <
 
   type TNumberValue = TSchemaType extends SchemaTypeDefinition<
     "number",
-    any,
     infer TNumberValue,
+    any,
     any,
     any
   >
@@ -247,8 +247,8 @@ const referenceFaker =
         "reference",
         any,
         any,
-        any,
-        infer TReferenced
+        infer TReferenced,
+        any
       >
         ? TReferenced
         : never;
@@ -348,8 +348,8 @@ const stringFaker = <
   type TStringValue = TSchemaType extends SchemaTypeDefinition<
     "string",
     any,
-    any,
     infer TStringValue,
+    any,
     any
   >
     ? TStringValue
@@ -1136,10 +1136,10 @@ type ImageFaker<
     ReturnType<typeof imageFieldsFaker> &
     (TSchemaType extends SchemaTypeDefinition<
       "image",
-      infer THotspot,
       any,
       any,
-      any
+      any,
+      infer THotspot extends boolean
     >
       ? THotspot extends true
         ? ReturnType<typeof imageHotspotFaker>
@@ -1173,10 +1173,10 @@ const imageFaker = <
       !schema.options?.hotspot as Negate<
         TSchemaType extends SchemaTypeDefinition<
           "image",
-          infer THotspot,
           any,
           any,
-          any
+          any,
+          infer THotspot extends boolean
         >
           ? THotspot
           : never

@@ -19,20 +19,20 @@ import type { MaybeArray } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<
   TType extends string,
-  TOptionsHelper,
   TNumberValue extends number,
   TStringValue extends string,
-  TReferenced extends string
+  TReferenced extends string,
+  THotspot extends boolean
 > =
   | ArrayMemberDefinition<
       TType,
       any,
       any,
       any,
-      TOptionsHelper,
       TNumberValue,
       TStringValue,
       TReferenced,
+      THotspot,
       any,
       any,
       any
@@ -42,10 +42,10 @@ type SchemaTypeDefinition<
       any,
       any,
       any,
-      TOptionsHelper,
       TNumberValue,
       TStringValue,
       TReferenced,
+      THotspot,
       any,
       any,
       any
@@ -55,10 +55,10 @@ type SchemaTypeDefinition<
       any,
       any,
       any,
-      TOptionsHelper,
       TNumberValue,
       TStringValue,
       TReferenced,
+      THotspot,
       any,
       any
     >;
@@ -173,8 +173,8 @@ const numberZod = <
 
   type TNumberValue = TSchemaType extends SchemaTypeDefinition<
     "number",
-    any,
     infer TNumberValue,
+    any,
     any,
     any
   >
@@ -236,8 +236,8 @@ const referenceZod = <
           "reference",
           any,
           any,
-          any,
-          infer TReferenced
+          infer TReferenced,
+          any
         >
           ? TReferenced
           : never
@@ -349,8 +349,8 @@ const stringZod = <
   type TStringValue = TSchemaType extends SchemaTypeDefinition<
     "string",
     any,
-    any,
     infer TStringValue,
+    any,
     any
   >
     ? TStringValue
@@ -1075,17 +1075,17 @@ const imageHotspotFields = {
 };
 
 type ImageZod<
-  TSchemaType extends SchemaTypeDefinition<"image", boolean, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"image", any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = z.ZodObject<
   FieldsZods<TSchemaType, TAliasedZods> &
     typeof imageFieldsZods &
     (TSchemaType extends SchemaTypeDefinition<
       "image",
-      infer THotspot,
       any,
       any,
-      any
+      any,
+      infer THotspot extends boolean
     >
       ? THotspot extends true
         ? typeof imageHotspotFields
@@ -1094,7 +1094,7 @@ type ImageZod<
 >;
 
 const imageZod = <
-  TSchemaType extends SchemaTypeDefinition<"image", boolean, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"image", any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 >(
   schema: TSchemaType,
