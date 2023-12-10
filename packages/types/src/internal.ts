@@ -65,7 +65,6 @@ import type {
   StringRule,
   TextDefinition as TextDefinitionNative,
   TextRule,
-  TitledListValue,
   TypeAliasDefinition as TypeAliasDefinitionNative,
   TypeReference as TypeReferenceNative,
   UrlDefinition as UrlDefinitionNative,
@@ -198,22 +197,28 @@ export type GeopointDefinition<TRequired extends boolean> = MergeOld<
   DefinitionBase<TRequired, GeopointValue, GeopointRule>
 >;
 
+export type TitledListValue<T> = {
+  _key?: string;
+  title: string;
+  value: T;
+};
+
 export type MaybeTitledListValue<T> = T | TitledListValue<T>;
 
 export type NumberDefinition<
-  TOptionsHelper,
+  TNumberValue extends number,
   TRequired extends boolean
 > = MergeOld<
   NumberDefinitionNative,
   DefinitionBase<
     TRequired,
-    TOptionsHelper & number,
-    RewriteValue<TOptionsHelper & number, NumberRule>
+    TNumberValue,
+    RewriteValue<TNumberValue, NumberRule>
   > & {
     options?: MergeOld<
       NumberOptions,
       {
-        list?: MaybeTitledListValue<TOptionsHelper>[];
+        list?: MaybeTitledListValue<TNumberValue>[];
       }
     >;
   }
@@ -306,15 +311,15 @@ export type RegexRule<Rule extends RuleDef<Rule, any>> = MergeOld<
 >;
 
 export type StringDefinition<
-  TOptionsHelper,
+  TStringValue extends string,
   TRequired extends boolean
 > = MergeOld<
   StringDefinitionNative,
   DefinitionBase<
     TRequired,
-    TOptionsHelper & string,
+    TStringValue,
     RewriteValue<
-      TOptionsHelper & string,
+      TStringValue,
       // @ts-expect-error -- IDK
       RegexRule<StringRule>
     >
@@ -322,7 +327,7 @@ export type StringDefinition<
     options?: MergeOld<
       StringOptions,
       {
-        list?: MaybeTitledListValue<TOptionsHelper>[];
+        list?: MaybeTitledListValue<TStringValue>[];
       }
     >;
   }
@@ -565,8 +570,10 @@ export type ImageDefinition<
   }
 >;
 
-export type IntrinsicDefinitions<
+type IntrinsicDefinitions<
   TOptionsHelper,
+  TNumberValue extends number,
+  TStringValue extends string,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -586,17 +593,17 @@ export type IntrinsicDefinitions<
   file: FileDefinition<TFieldDefinition, TRequired>;
   geopoint: GeopointDefinition<TRequired>;
   image: ImageDefinition<TOptionsHelper, TFieldDefinition, TRequired>;
-  number: NumberDefinition<TOptionsHelper, TRequired>;
+  number: NumberDefinition<TNumberValue, TRequired>;
   object: ObjectDefinition<TFieldDefinition, TRequired>;
   reference: ReferenceDefinition<TReferenced, TRequired>;
   slug: SlugDefinition<TRequired>;
-  string: StringDefinition<TOptionsHelper, TRequired>;
+  string: StringDefinition<TStringValue, TRequired>;
   text: TextDefinition<TRequired>;
   url: UrlDefinition<TRequired>;
 };
 
 export type IntrinsicTypeName = Simplify<
-  keyof IntrinsicDefinitions<any, any, any, any, any>
+  keyof IntrinsicDefinitions<any, any, any, any, any, any, any>
 >;
 
 declare const aliasedType: unique symbol;
@@ -609,6 +616,8 @@ export type TypeAliasDefinition<
   TType extends string,
   TAlias extends IntrinsicTypeName,
   TOptionsHelper,
+  TNumberValue extends number,
+  TStringValue extends string,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -622,6 +631,8 @@ export type TypeAliasDefinition<
     options?: TAlias extends IntrinsicTypeName
       ? IntrinsicDefinitions<
           TOptionsHelper,
+          TNumberValue,
+          TStringValue,
           TReferenced,
           TFieldDefinition,
           TMemberDefinition,
@@ -639,6 +650,8 @@ export type ArrayMemberDefinition<
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
   TOptionsHelper,
+  TNumberValue extends number,
+  TStringValue extends string,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -658,6 +671,8 @@ export type ArrayMemberDefinition<
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
               TOptionsHelper,
+              TNumberValue,
+              TStringValue,
               TReferenced,
               TFieldDefinition,
               TMemberDefinition,
@@ -666,6 +681,8 @@ export type ArrayMemberDefinition<
               ? MergeOld<
                   IntrinsicDefinitions<
                     TOptionsHelper,
+                    TNumberValue,
+                    TStringValue,
                     TReferenced,
                     TFieldDefinition,
                     TMemberDefinition,
@@ -691,6 +708,8 @@ export type ArrayMemberDefinition<
                 >
               : IntrinsicDefinitions<
                   TOptionsHelper,
+                  TNumberValue,
+                  TStringValue,
                   TReferenced,
                   TFieldDefinition,
                   TMemberDefinition,
@@ -707,6 +726,8 @@ export type ArrayMemberDefinition<
             TType,
             TAlias,
             TOptionsHelper,
+            TNumberValue,
+            TStringValue,
             TReferenced,
             TFieldDefinition,
             TMemberDefinition,
@@ -743,6 +764,8 @@ export const makeDefineArrayMember =
     TName extends string,
     TAlias extends IntrinsicTypeName,
     TStrict extends StrictDefinition,
+    const TNumberValue extends number,
+    const TStringValue extends string,
     TReferenced extends string,
     const TOptionsHelper,
     TFieldDefinition extends DefinitionBase<any, any, any> & {
@@ -759,6 +782,8 @@ export const makeDefineArrayMember =
       TAlias,
       TStrict,
       TOptionsHelper,
+      TNumberValue,
+      TStringValue,
       TReferenced,
       TFieldDefinition,
       TMemberDefinition,
@@ -779,6 +804,8 @@ export type FieldDefinition<
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
   TOptionsHelper,
+  TNumberValue extends number,
+  TStringValue extends string,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -799,6 +826,8 @@ export type FieldDefinition<
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
               TOptionsHelper,
+              TNumberValue,
+              TStringValue,
               TReferenced,
               TFieldDefinition,
               TMemberDefinition,
@@ -813,6 +842,8 @@ export type FieldDefinition<
         TType,
         TAlias,
         TOptionsHelper,
+        TNumberValue,
+        TStringValue,
         TReferenced,
         TFieldDefinition,
         TMemberDefinition,
@@ -830,6 +861,8 @@ export const defineField = <
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
   const TOptionsHelper,
+  const TNumberValue extends number,
+  const TStringValue extends string,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -846,6 +879,8 @@ export const defineField = <
     TAlias,
     TStrict,
     TOptionsHelper,
+    TNumberValue,
+    TStringValue,
     TReferenced,
     TFieldDefinition,
     TMemberDefinition,
@@ -860,6 +895,8 @@ export type TypeDefinition<
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
   TOptionsHelper,
+  TNumberValue extends number,
+  TStringValue extends string,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -874,6 +911,8 @@ export type TypeDefinition<
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
               TOptionsHelper,
+              TNumberValue,
+              TStringValue,
               TReferenced,
               TFieldDefinition,
               TMemberDefinition,
@@ -888,6 +927,8 @@ export type TypeDefinition<
         TType,
         TAlias,
         TOptionsHelper,
+        TNumberValue,
+        TStringValue,
         TReferenced,
         TFieldDefinition,
         TMemberDefinition,
@@ -904,6 +945,8 @@ export const defineType = <
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
   const TOptionsHelper,
+  const TNumberValue extends number,
+  const TStringValue extends string,
   TReferenced extends string,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
@@ -919,6 +962,8 @@ export const defineType = <
     TAlias,
     TStrict,
     TOptionsHelper,
+    TNumberValue,
+    TStringValue,
     TReferenced,
     TFieldDefinition,
     TMemberDefinition
@@ -932,6 +977,8 @@ export const defineType = <
 
 export type ConfigBase<
   TTypeDefinition extends TypeDefinition<
+    any,
+    any,
     any,
     any,
     any,
@@ -970,6 +1017,8 @@ export type PluginOptions<
     any,
     any,
     any,
+    any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>
@@ -978,6 +1027,8 @@ export type PluginOptions<
 
 export const definePlugin = <
   TTypeDefinition extends TypeDefinition<
+    any,
+    any,
     any,
     any,
     any,
@@ -1009,6 +1060,8 @@ type WorkspaceOptions<
     any,
     any,
     any,
+    any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>
@@ -1019,6 +1072,8 @@ type WorkspaceOptions<
 
 export type Config<
   TTypeDefinition extends TypeDefinition<
+    any,
+    any,
     any,
     any,
     any,
@@ -1041,6 +1096,8 @@ export type Config<
 
 export const defineConfig = <
   TTypeDefinition extends TypeDefinition<
+    any,
+    any,
     any,
     any,
     any,
@@ -1101,6 +1158,8 @@ export type InferSchemaValues<
         AliasValue<TName>,
         InferSchemaValues<TPluginOptions> & {
           [TDefinition in TypeDefinition<
+            any,
+            any,
             any,
             any,
             any,
@@ -1175,6 +1234,8 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
+                any,
                 any
               >
             : never)
@@ -1190,6 +1251,8 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
+                any,
                 any
               >
             : never)
@@ -1201,6 +1264,8 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 TName,
                 NonNullable<TAlias>,
                 TStrict,
+                any,
+                any,
                 any,
                 any,
                 any,
@@ -1221,6 +1286,8 @@ export const castFromTyped = <Typed>(typed: Typed) =>
     infer TName extends string,
     infer TAlias extends IntrinsicTypeName,
     infer TStrict extends StrictDefinition,
+    any,
+    any,
     any,
     any,
     any,
@@ -1245,6 +1312,8 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         any,
         any,
         any,
+        any,
+        any,
         any
       >
     ? ReturnType<
@@ -1262,6 +1331,8 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         infer TName extends string,
         infer TAlias extends IntrinsicTypeName,
         infer TStrict extends StrictDefinition,
+        any,
+        any,
         any,
         any,
         any,

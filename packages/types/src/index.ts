@@ -16,7 +16,6 @@ export type {
   ImageDefinition,
   ImageValue,
   InferSchemaValues,
-  IntrinsicDefinitions,
   IntrinsicTypeName,
   NumberDefinition,
   ObjectDefinition,
@@ -32,6 +31,7 @@ export type {
   SlugValue,
   StringDefinition,
   TextDefinition,
+  TitledListValue,
   TypeAliasDefinition,
   UrlDefinition,
 } from "./internal";
