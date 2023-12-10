@@ -157,6 +157,189 @@ describe("block", () => {
         style?: string;
       }>();
     });
+
+    it("accepts styles", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  styles: [
+                    { title: "Foo", value: "foo" },
+                    { title: "Bar", value: "bar" },
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "block";
+        children: {
+          _key: string;
+          _type: "span";
+          marks?: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
+    });
+
+    it("accepts lists", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  lists: [
+                    { title: "Foo", value: "foo" },
+                    { title: "Bar", value: "bar" },
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "block";
+        children: {
+          _key: string;
+          _type: "span";
+          marks?: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
+    });
+
+    it("accepts decorators", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  marks: {
+                    decorators: [
+                      { title: "Foo", value: "foo" },
+                      { title: "Bar", value: "bar" },
+                    ],
+                  },
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "block";
+        children: {
+          _key: string;
+          _type: "span";
+          marks?: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
+    });
+
+    it("accepts annotations", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  marks: {
+                    annotations: [
+                      {
+                        name: "internalLink",
+                        type: "object",
+                        title: "Internal link",
+                        fields: [
+                          {
+                            name: "reference",
+                            type: "reference",
+                            title: "Reference",
+                            to: [{ type: "post" }],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "block";
+        children: {
+          _key: string;
+          _type: "span";
+          marks?: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
+    });
   });
 
   describe("defineField", () => {
@@ -315,6 +498,165 @@ describe("block", () => {
           | (GeopointValue & { _key: string })
           | (SlugValue & { _key: string })
         )[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
+    });
+
+    it("accepts styles", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              styles: [
+                { title: "Foo", value: "foo" },
+                { title: "Bar", value: "bar" },
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        children: {
+          _key: string;
+          _type: "span";
+          marks?: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
+    });
+
+    it("accepts lists", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              lists: [
+                { title: "Foo", value: "foo" },
+                { title: "Bar", value: "bar" },
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        children: {
+          _key: string;
+          _type: "span";
+          marks?: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
+    });
+
+    it("accepts decorators", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              marks: {
+                decorators: [
+                  { title: "Foo", value: "foo" },
+                  { title: "Bar", value: "bar" },
+                ],
+              },
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        children: {
+          _key: string;
+          _type: "span";
+          marks?: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: string;
+        markDefs?: {
+          _key: string;
+          _type: string;
+        }[];
+        style?: string;
+      }>();
+    });
+
+    it("accepts annotations", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              marks: {
+                annotations: [
+                  {
+                    name: "internalLink",
+                    type: "object",
+                    title: "Internal link",
+                    fields: [
+                      {
+                        name: "reference",
+                        type: "reference",
+                        title: "Reference",
+                        to: [{ type: "post" }],
+                      },
+                    ],
+                  },
+                ],
+              },
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        children: {
+          _key: string;
+          _type: "span";
+          marks?: string[];
+          text: string;
+        }[];
         level?: number;
         listItem?: string;
         markDefs?: {

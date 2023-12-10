@@ -188,6 +188,193 @@ describe("block", () => {
         InferSchemaValues<typeof config>["foo"][number]["children"]
       >();
     });
+
+    it("accepts styles", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  styles: [
+                    { title: "Foo", value: "foo" },
+                    { title: "Bar", value: "bar" },
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = [
+        {
+          ...fields,
+          _key: "key",
+          _type: "block",
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+          ],
+        },
+      ];
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
+    });
+
+    it("accepts lists", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  lists: [
+                    { title: "Foo", value: "foo" },
+                    { title: "Bar", value: "bar" },
+                  ],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = [
+        {
+          ...fields,
+          _key: "key",
+          _type: "block",
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+          ],
+        },
+      ];
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
+    });
+
+    it("accepts decorators", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  marks: {
+                    decorators: [
+                      { title: "Foo", value: "foo" },
+                      { title: "Bar", value: "bar" },
+                    ],
+                  },
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = [
+        {
+          ...fields,
+          _key: "key",
+          _type: "block",
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+          ],
+        },
+      ];
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
+    });
+
+    it("accepts annotations", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  marks: {
+                    annotations: [
+                      {
+                        name: "internalLink",
+                        type: "object",
+                        title: "Internal link",
+                        fields: [
+                          {
+                            name: "reference",
+                            type: "reference",
+                            title: "Reference",
+                            to: [{ type: "post" }],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = [
+        {
+          ...fields,
+          _key: "key",
+          _type: "block",
+          children: [
+            { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+          ],
+        },
+      ];
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<(typeof parsed)[number]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"][number]
+      >();
+    });
   });
 
   describe("defineType", () => {
@@ -333,6 +520,161 @@ describe("block", () => {
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)["children"]>().toStrictEqual<
         InferSchemaValues<typeof config>["foo"]["children"]
+      >();
+    });
+
+    it("accepts styles", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              styles: [
+                { title: "Foo", value: "foo" },
+                { title: "Bar", value: "bar" },
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = {
+        ...fields,
+        _type: "foo",
+        children: [
+          { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+        ],
+      };
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+    });
+
+    it("accepts lists", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              lists: [
+                { title: "Foo", value: "foo" },
+                { title: "Bar", value: "bar" },
+              ],
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = {
+        ...fields,
+        _type: "foo",
+        children: [
+          { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+        ],
+      };
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+    });
+
+    it("accepts decorators", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              marks: {
+                decorators: [
+                  { title: "Foo", value: "foo" },
+                  { title: "Bar", value: "bar" },
+                ],
+              },
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = {
+        ...fields,
+        _type: "foo",
+        children: [
+          { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+        ],
+      };
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
+      >();
+    });
+
+    it("accepts annotations", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              marks: {
+                annotations: [
+                  {
+                    name: "internalLink",
+                    type: "object",
+                    title: "Internal link",
+                    fields: [
+                      {
+                        name: "reference",
+                        type: "reference",
+                        title: "Reference",
+                        to: [{ type: "post" }],
+                      },
+                    ],
+                  },
+                ],
+              },
+            }),
+          ],
+        },
+      });
+      const zods = sanityConfigToZodsTyped(config);
+
+      const unparsed = {
+        ...fields,
+        _type: "foo",
+        children: [
+          { _key: "key", _type: "span", marks: ["mark"], text: "text" },
+        ],
+      };
+
+      const parsed = zods.foo.parse(unparsed);
+
+      expect(parsed).toStrictEqual(unparsed);
+      expectType<typeof parsed>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
     });
   });
