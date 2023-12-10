@@ -149,12 +149,20 @@ describe("specific issues", () => {
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }[];
     }>();
   });

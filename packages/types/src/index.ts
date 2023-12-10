@@ -1,6 +1,7 @@
 export type {
   ArrayDefinition,
   BlockDefinition,
+  BlockListDefinition,
   BlockStyleDefinition,
   BooleanDefinition,
   Config,

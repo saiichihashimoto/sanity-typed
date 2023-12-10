@@ -36,8 +36,8 @@ describe("block", () => {
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -111,8 +111,8 @@ describe("block", () => {
           | (SlugValue & { _key: string })
         )[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -165,8 +165,8 @@ describe("block", () => {
           | (SlugValue & { _key: string })
         )[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -182,7 +182,7 @@ describe("block", () => {
       }>();
     });
 
-    it("infers styles", async () => {
+    it("infers style", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -215,8 +215,8 @@ describe("block", () => {
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -224,7 +224,7 @@ describe("block", () => {
       }>();
     });
 
-    it("accepts lists", async () => {
+    it("infers listItem", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -237,8 +237,8 @@ describe("block", () => {
                 defineArrayMember({
                   type: "block",
                   lists: [
-                    { title: "Foo", value: "foo" },
-                    { title: "Bar", value: "bar" },
+                    { title: "Foo", value: "foo" as const },
+                    { title: "Bar", value: "bar" as const },
                   ],
                 }),
               ],
@@ -257,8 +257,8 @@ describe("block", () => {
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bar" | "foo";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -309,8 +309,8 @@ describe("block", () => {
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -372,8 +372,8 @@ describe("block", () => {
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -442,8 +442,8 @@ describe("block", () => {
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -515,8 +515,8 @@ describe("block", () => {
           | (SlugValue & { _key: string })
         )[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -563,8 +563,8 @@ describe("block", () => {
           | (SlugValue & { _key: string })
         )[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -580,7 +580,7 @@ describe("block", () => {
       }>();
     });
 
-    it("infers styles", async () => {
+    it("infers style", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -607,8 +607,8 @@ describe("block", () => {
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -616,7 +616,7 @@ describe("block", () => {
       }>();
     });
 
-    it("accepts lists", async () => {
+    it("infers listItem", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -626,8 +626,8 @@ describe("block", () => {
               name: "foo",
               type: "block",
               lists: [
-                { title: "Foo", value: "foo" },
-                { title: "Bar", value: "bar" },
+                { title: "Foo", value: "foo" as const },
+                { title: "Bar", value: "bar" as const },
               ],
             }),
           ],
@@ -643,8 +643,8 @@ describe("block", () => {
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bar" | "foo";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -689,8 +689,8 @@ describe("block", () => {
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];
@@ -746,8 +746,8 @@ describe("block", () => {
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
+        listItem?: "bullet" | "number";
+        markDefs: {
           _key: string;
           _type: string;
         }[];

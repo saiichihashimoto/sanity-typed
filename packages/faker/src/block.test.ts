@@ -151,7 +151,7 @@ describe("block", () => {
       >();
     });
 
-    it("mocks styles", async () => {
+    it("mocks style", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -187,7 +187,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts lists", async () => {
+    it("mocks listItem", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -200,8 +200,8 @@ describe("block", () => {
                 defineArrayMember({
                   type: "block",
                   lists: [
-                    { title: "Foo", value: "foo" },
-                    { title: "Bar", value: "bar" },
+                    { title: "Foo", value: "foo" as const },
+                    { title: "Bar", value: "bar" as const },
                   ],
                 }),
               ],
@@ -435,7 +435,7 @@ describe("block", () => {
       >();
     });
 
-    it("mocks styles", async () => {
+    it("mocks style", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -466,7 +466,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts lists", async () => {
+    it("mocks listItem", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -476,8 +476,8 @@ describe("block", () => {
               name: "foo",
               type: "block",
               lists: [
-                { title: "Foo", value: "foo" },
-                { title: "Bar", value: "bar" },
+                { title: "Foo", value: "foo" as const },
+                { title: "Bar", value: "bar" as const },
               ],
             }),
           ],

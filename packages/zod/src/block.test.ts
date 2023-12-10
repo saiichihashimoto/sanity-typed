@@ -13,7 +13,7 @@ import { sanityConfigToZodsTyped } from "./internal";
 
 const fields: Omit<PortableTextBlock, "_type" | "children"> = {
   level: 1,
-  listItem: "listItem",
+  listItem: "bullet",
   markDefs: [{ _key: "key", _type: "type" }],
   style: "normal",
 };
@@ -189,7 +189,7 @@ describe("block", () => {
       >();
     });
 
-    it("builds parser for styles", async () => {
+    it("builds parser for style", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -233,7 +233,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts lists", async () => {
+    it("builds parser for listItem", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -246,8 +246,8 @@ describe("block", () => {
                 defineArrayMember({
                   type: "block",
                   lists: [
-                    { title: "Foo", value: "foo" },
-                    { title: "Bar", value: "bar" },
+                    { title: "Foo", value: "foo" as const },
+                    { title: "Bar", value: "bar" as const },
                   ],
                 }),
               ],
@@ -262,6 +262,7 @@ describe("block", () => {
           ...fields,
           _key: "key",
           _type: "block",
+          listItem: "foo",
           children: [
             { _key: "key", _type: "span", marks: ["mark"], text: "text" },
           ],
@@ -524,7 +525,7 @@ describe("block", () => {
       >();
     });
 
-    it("builds parser for styles", async () => {
+    it("builds parser for style", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -560,7 +561,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts lists", async () => {
+    it("builds parser for listItem", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -570,8 +571,8 @@ describe("block", () => {
               name: "foo",
               type: "block",
               lists: [
-                { title: "Foo", value: "foo" },
-                { title: "Bar", value: "bar" },
+                { title: "Foo", value: "foo" as const },
+                { title: "Bar", value: "bar" as const },
               ],
             }),
           ],
@@ -582,6 +583,7 @@ describe("block", () => {
       const unparsed = {
         ...fields,
         _type: "foo",
+        listItem: "foo",
         children: [
           { _key: "key", _type: "span", marks: ["mark"], text: "text" },
         ],
