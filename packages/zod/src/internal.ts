@@ -4,7 +4,10 @@ import type { IsNumericLiteral, IsStringLiteral } from "type-fest";
 import { z } from "zod";
 
 import { traverseValidation } from "@sanity-typed/traverse-validation";
-import type { InferSchemaValues } from "@sanity-typed/types";
+import type {
+  BlockStyleDefinition,
+  InferSchemaValues,
+} from "@sanity-typed/types";
 import { referenced } from "@sanity-typed/types";
 import type {
   ArrayMemberDefinition,
@@ -15,13 +18,14 @@ import type {
   TypeDefinition,
 } from "@sanity-typed/types/src/internal";
 import { typedTernary } from "@sanity-typed/utils";
-import type { MaybeArray } from "@sanity-typed/utils";
+import type { MaybeArray, Negate } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<
   TType extends string,
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  TBlockStyle extends string,
   THotspot extends boolean
 > =
   | ArrayMemberDefinition<
@@ -32,6 +36,7 @@ type SchemaTypeDefinition<
       TNumberValue,
       TStringValue,
       TReferenced,
+      TBlockStyle,
       THotspot,
       any,
       any,
@@ -45,6 +50,7 @@ type SchemaTypeDefinition<
       TNumberValue,
       TStringValue,
       TReferenced,
+      TBlockStyle,
       THotspot,
       any,
       any,
@@ -58,6 +64,7 @@ type SchemaTypeDefinition<
       TNumberValue,
       TStringValue,
       TReferenced,
+      TBlockStyle,
       THotspot,
       any,
       any
@@ -110,7 +117,7 @@ const toZodType = <Output, Input>(
 ) => zod as z.ZodType<Output, z.ZodTypeDef, Input>;
 
 const dateZod = <
-  TSchemaType extends SchemaTypeDefinition<"date", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"date", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) => {
@@ -138,7 +145,7 @@ const dateZod = <
 };
 
 const datetimeZod = <
-  TSchemaType extends SchemaTypeDefinition<"datetime", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"datetime", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) => {
@@ -165,7 +172,7 @@ const datetimeZod = <
 };
 
 const numberZod = <
-  TSchemaType extends SchemaTypeDefinition<"number", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"number", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) => {
@@ -174,6 +181,7 @@ const numberZod = <
   type TNumberValue = TSchemaType extends SchemaTypeDefinition<
     "number",
     infer TNumberValue,
+    any,
     any,
     any,
     any
@@ -227,7 +235,7 @@ const numberZod = <
 };
 
 const referenceZod = <
-  TSchemaType extends SchemaTypeDefinition<"reference", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"reference", any, any, any, any, any>
 >() =>
   z.object({
     [referenced]:
@@ -237,6 +245,7 @@ const referenceZod = <
           any,
           any,
           infer TReferenced,
+          any,
           any
         >
           ? TReferenced
@@ -262,6 +271,7 @@ const referenceZod = <
 const stringAndTextZod = <
   TSchemaType extends SchemaTypeDefinition<
     "string" | "text",
+    any,
     any,
     any,
     any,
@@ -342,7 +352,7 @@ const stringAndTextZod = <
 };
 
 const stringZod = <
-  TSchemaType extends SchemaTypeDefinition<"string", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"string", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) => {
@@ -350,6 +360,7 @@ const stringZod = <
     "string",
     any,
     infer TStringValue,
+    any,
     any,
     any
   >
@@ -379,7 +390,7 @@ const stringZod = <
 };
 
 const textZod = <
-  TSchemaType extends SchemaTypeDefinition<"text", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"text", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) => stringAndTextZod(schemaType);
@@ -387,7 +398,7 @@ const textZod = <
 const DUMMY_ORIGIN = "http://sanity";
 
 const urlZod = <
-  TSchemaType extends SchemaTypeDefinition<"url", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"url", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) => {
@@ -624,10 +635,12 @@ type MembersZods<
     any,
     any,
     any,
+    any,
     any
   >[],
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = TMemberDefinitions extends (infer TMemberDefinition extends ArrayMemberDefinition<
+  any,
   any,
   any,
   any,
@@ -653,6 +666,7 @@ type MembersZods<
 
 const membersZods = <
   TMemberDefinitions extends ArrayMemberDefinition<
+    any,
     any,
     any,
     any,
@@ -724,10 +738,11 @@ const sanityDeepEquals = (a: unknown, b: unknown): boolean =>
 type MaybeZodEffects<T extends z.ZodTypeAny> = T | z.ZodEffects<T>;
 
 type ArrayZod<
-  TSchemaType extends SchemaTypeDefinition<"array", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"array", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = TSchemaType extends {
   of: infer TMemberDefinitions extends ArrayMemberDefinition<
+    any,
     any,
     any,
     any,
@@ -751,7 +766,7 @@ type ArrayZod<
   : never;
 
 const arrayZod = <
-  TSchemaType extends SchemaTypeDefinition<"array", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"array", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 >(
   schemaType: TSchemaType,
@@ -809,7 +824,6 @@ const blockFieldsZods = {
   _type: z.literal("block"),
   level: z.optional(z.number()),
   listItem: z.optional(z.string()),
-  style: z.optional(z.string()),
   markDefs: z.optional(
     z.array(
       z.object({
@@ -820,49 +834,93 @@ const blockFieldsZods = {
   ),
 };
 
+const blockCustomFields = <
+  TSchemaType extends SchemaTypeDefinition<"block", any, any, any, any, any>
+>({
+  styles,
+}: TSchemaType) => {
+  type TBlockStyle = TSchemaType extends SchemaTypeDefinition<
+    "block",
+    any,
+    any,
+    any,
+    infer TBlockStyle,
+    any
+  >
+    ? TBlockStyle
+    : never;
+
+  return {
+    style: typedTernary(
+      !styles?.length as Negate<IsStringLiteral<TBlockStyle>>,
+      () =>
+        z.union([
+          z.literal("blockquote"),
+          z.literal("h1"),
+          z.literal("h2"),
+          z.literal("h3"),
+          z.literal("h4"),
+          z.literal("h5"),
+          z.literal("h6"),
+          z.literal("normal"),
+        ]),
+      () =>
+        zodUnion(
+          (styles! as BlockStyleDefinition<TBlockStyle>[]).map(({ value }) =>
+            z.literal(value)
+          )
+        )
+    ),
+  };
+};
+
 type BlockZod<
-  TSchemaType extends SchemaTypeDefinition<"block", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"block", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = z.ZodObject<
-  typeof blockFieldsZods & {
-    children: z.ZodArray<
-      TSchemaType extends {
-        of?: infer TMemberDefinitions extends ArrayMemberDefinition<
-          any,
-          any,
-          any,
-          any,
-          any,
-          any,
-          any,
-          any,
-          any,
-          any,
-          any
-        >[];
-      }
-        ? MembersZods<TMemberDefinitions, TAliasedZods>[number] | SpanZod
-        : SpanZod
-    >;
-  }
+  ReturnType<typeof blockCustomFields<TSchemaType>> &
+    typeof blockFieldsZods & {
+      children: z.ZodArray<
+        TSchemaType extends {
+          of?: infer TMemberDefinitions extends ArrayMemberDefinition<
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any
+          >[];
+        }
+          ? MembersZods<TMemberDefinitions, TAliasedZods>[number] | SpanZod
+          : SpanZod
+      >;
+    }
 >;
 
 const blockZod = <
-  TSchemaType extends SchemaTypeDefinition<"block", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"block", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 >(
-  { of }: TSchemaType,
+  schemaType: TSchemaType,
   getZods: () => TAliasedZods
 ): BlockZod<TSchemaType, TAliasedZods> =>
   z.object({
     ...blockFieldsZods,
+    ...blockCustomFields<TSchemaType>(schemaType),
     children: z.array(
-      !of
+      !schemaType.of
         ? spanZod
         : zodUnion([
             spanZod,
             ...membersZods(
-              of as ArrayMemberDefinition<
+              schemaType.of as ArrayMemberDefinition<
+                any,
                 any,
                 any,
                 any,
@@ -887,11 +945,13 @@ type FieldsZods<
     any,
     any,
     any,
+    any,
     any
   >,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = TSchemaType extends {
   fields?: (infer TFieldDefinition extends FieldDefinition<
+    any,
     any,
     any,
     any,
@@ -908,7 +968,20 @@ type FieldsZods<
   ? {
       [Name in Extract<
         TFieldDefinition,
-        FieldDefinition<any, any, any, any, any, any, any, any, any, any, false>
+        FieldDefinition<
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          false
+        >
       >["name"]]: z.ZodOptional<
         // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
         SchemaTypeToZod<Extract<TFieldDefinition, { name: Name }>, TAliasedZods>
@@ -916,7 +989,20 @@ type FieldsZods<
     } & {
       [Name in Extract<
         TFieldDefinition,
-        FieldDefinition<any, any, any, any, any, any, any, any, any, any, true>
+        FieldDefinition<
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          true
+        >
         // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
       >["name"]]: SchemaTypeToZod<
         Extract<TFieldDefinition, { name: Name }>,
@@ -931,6 +1017,7 @@ const fieldsZods = <
     any,
     any,
     any,
+    any,
     any
   >,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
@@ -941,6 +1028,7 @@ const fieldsZods = <
   Object.fromEntries(
     (
       fields as FieldDefinition<
+        any,
         any,
         any,
         any,
@@ -971,12 +1059,12 @@ const fieldsZods = <
   ) as FieldsZods<TSchemaType, TAliasedZods>;
 
 type ObjectZod<
-  TSchemaType extends SchemaTypeDefinition<"object", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"object", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = z.ZodObject<FieldsZods<TSchemaType, TAliasedZods>>;
 
 const objectZod = <
-  TSchemaType extends SchemaTypeDefinition<"object", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"object", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 >(
   schema: TSchemaType,
@@ -993,14 +1081,14 @@ const documentFieldsZods = {
 };
 
 type DocumentZod<
-  TSchemaType extends SchemaTypeDefinition<"document", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"document", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = z.ZodObject<
   FieldsZods<TSchemaType, TAliasedZods> & typeof documentFieldsZods
 >;
 
 const documentZod = <
-  TSchemaType extends SchemaTypeDefinition<"document", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"document", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 >(
   schema: TSchemaType,
@@ -1036,12 +1124,12 @@ const fileFieldsZods = {
 };
 
 type FileZod<
-  TSchemaType extends SchemaTypeDefinition<"file", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"file", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = z.ZodObject<FieldsZods<TSchemaType, TAliasedZods> & typeof fileFieldsZods>;
 
 const fileZod = <
-  TSchemaType extends SchemaTypeDefinition<"file", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"file", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 >(
   schema: TSchemaType,
@@ -1075,13 +1163,14 @@ const imageHotspotFields = {
 };
 
 type ImageZod<
-  TSchemaType extends SchemaTypeDefinition<"image", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"image", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = z.ZodObject<
   FieldsZods<TSchemaType, TAliasedZods> &
     typeof imageFieldsZods &
     (TSchemaType extends SchemaTypeDefinition<
       "image",
+      any,
       any,
       any,
       any,
@@ -1094,7 +1183,7 @@ type ImageZod<
 >;
 
 const imageZod = <
-  TSchemaType extends SchemaTypeDefinition<"image", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"image", any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 >(
   schema: TSchemaType,
@@ -1107,7 +1196,7 @@ const imageZod = <
   }) as unknown as ImageZod<TSchemaType, TAliasedZods>;
 
 type AliasZod<
-  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = z.ZodLazy<
   TSchemaType["type"] extends keyof TAliasedZods
@@ -1116,7 +1205,7 @@ type AliasZod<
 >;
 
 const aliasZod = <
-  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 >(
   { type }: TSchemaType,
@@ -1128,14 +1217,17 @@ const aliasZod = <
   >;
 
 type SchemaTypeToZod<
-  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 > = TSchemaType["type"] extends keyof typeof constantZods
   ? (typeof constantZods)[TSchemaType["type"]]
   : TSchemaType["type"] extends "date"
   ? ReturnType<
       typeof dateZod<
-        Extract<TSchemaType, SchemaTypeDefinition<"date", any, any, any, any>>
+        Extract<
+          TSchemaType,
+          SchemaTypeDefinition<"date", any, any, any, any, any>
+        >
       >
     >
   : TSchemaType["type"] extends "datetime"
@@ -1143,14 +1235,17 @@ type SchemaTypeToZod<
       typeof datetimeZod<
         Extract<
           TSchemaType,
-          SchemaTypeDefinition<"datetime", any, any, any, any>
+          SchemaTypeDefinition<"datetime", any, any, any, any, any>
         >
       >
     >
   : TSchemaType["type"] extends "number"
   ? ReturnType<
       typeof numberZod<
-        Extract<TSchemaType, SchemaTypeDefinition<"number", any, any, any, any>>
+        Extract<
+          TSchemaType,
+          SchemaTypeDefinition<"number", any, any, any, any, any>
+        >
       >
     >
   : TSchemaType["type"] extends "reference"
@@ -1158,39 +1253,54 @@ type SchemaTypeToZod<
       typeof referenceZod<
         Extract<
           TSchemaType,
-          SchemaTypeDefinition<"reference", any, any, any, any>
+          SchemaTypeDefinition<"reference", any, any, any, any, any>
         >
       >
     >
   : TSchemaType["type"] extends "string"
   ? ReturnType<
       typeof stringZod<
-        Extract<TSchemaType, SchemaTypeDefinition<"string", any, any, any, any>>
+        Extract<
+          TSchemaType,
+          SchemaTypeDefinition<"string", any, any, any, any, any>
+        >
       >
     >
   : TSchemaType["type"] extends "text"
   ? ReturnType<
       typeof textZod<
-        Extract<TSchemaType, SchemaTypeDefinition<"text", any, any, any, any>>
+        Extract<
+          TSchemaType,
+          SchemaTypeDefinition<"text", any, any, any, any, any>
+        >
       >
     >
   : TSchemaType["type"] extends "url"
   ? ReturnType<
       typeof urlZod<
-        Extract<TSchemaType, SchemaTypeDefinition<"url", any, any, any, any>>
+        Extract<
+          TSchemaType,
+          SchemaTypeDefinition<"url", any, any, any, any, any>
+        >
       >
     >
   : TSchemaType["type"] extends "array"
   ? ReturnType<
       typeof arrayZod<
-        Extract<TSchemaType, SchemaTypeDefinition<"array", any, any, any, any>>,
+        Extract<
+          TSchemaType,
+          SchemaTypeDefinition<"array", any, any, any, any, any>
+        >,
         TAliasedZods
       >
     >
   : TSchemaType["type"] extends "block"
   ? ReturnType<
       typeof blockZod<
-        Extract<TSchemaType, SchemaTypeDefinition<"block", any, any, any, any>>,
+        Extract<
+          TSchemaType,
+          SchemaTypeDefinition<"block", any, any, any, any, any>
+        >,
         TAliasedZods
       >
     >
@@ -1199,7 +1309,7 @@ type SchemaTypeToZod<
       typeof objectZod<
         Extract<
           TSchemaType,
-          SchemaTypeDefinition<"object", any, any, any, any>
+          SchemaTypeDefinition<"object", any, any, any, any, any>
         >,
         TAliasedZods
       >
@@ -1209,7 +1319,7 @@ type SchemaTypeToZod<
       typeof documentZod<
         Extract<
           TSchemaType,
-          SchemaTypeDefinition<"document", any, any, any, any>
+          SchemaTypeDefinition<"document", any, any, any, any, any>
         >,
         TAliasedZods
       >
@@ -1217,21 +1327,27 @@ type SchemaTypeToZod<
   : TSchemaType["type"] extends "file"
   ? ReturnType<
       typeof fileZod<
-        Extract<TSchemaType, SchemaTypeDefinition<"file", any, any, any, any>>,
+        Extract<
+          TSchemaType,
+          SchemaTypeDefinition<"file", any, any, any, any, any>
+        >,
         TAliasedZods
       >
     >
   : TSchemaType["type"] extends "image"
   ? ReturnType<
       typeof imageZod<
-        Extract<TSchemaType, SchemaTypeDefinition<"image", any, any, any, any>>,
+        Extract<
+          TSchemaType,
+          SchemaTypeDefinition<"image", any, any, any, any, any>
+        >,
         TAliasedZods
       >
     >
   : ReturnType<typeof aliasZod<TSchemaType, TAliasedZods>>;
 
 const schemaTypeToZod = <
-  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any, any>,
   TAliasedZods extends { [name: string]: z.ZodTypeAny }
 >(
   schema: TSchemaType,
@@ -1245,56 +1361,56 @@ const schemaTypeToZod = <
     ? dateZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"date", any, any, any, any>
+          SchemaTypeDefinition<"date", any, any, any, any, any>
         >
       )
     : schema.type === "datetime"
     ? datetimeZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"datetime", any, any, any, any>
+          SchemaTypeDefinition<"datetime", any, any, any, any, any>
         >
       )
     : schema.type === "number"
     ? numberZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"number", any, any, any, any>
+          SchemaTypeDefinition<"number", any, any, any, any, any>
         >
       )
     : schema.type === "reference"
     ? referenceZod<
         Extract<
           TSchemaType,
-          SchemaTypeDefinition<"reference", any, any, any, any>
+          SchemaTypeDefinition<"reference", any, any, any, any, any>
         >
       >()
     : schema.type === "string"
     ? stringZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"string", any, any, any, any>
+          SchemaTypeDefinition<"string", any, any, any, any, any>
         >
       )
     : schema.type === "text"
     ? textZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"text", any, any, any, any>
+          SchemaTypeDefinition<"text", any, any, any, any, any>
         >
       )
     : schema.type === "url"
     ? urlZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"url", any, any, any, any>
+          SchemaTypeDefinition<"url", any, any, any, any, any>
         >
       )
     : schema.type === "array"
     ? arrayZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"array", any, any, any, any>
+          SchemaTypeDefinition<"array", any, any, any, any, any>
         >,
         getZods
       )
@@ -1302,7 +1418,7 @@ const schemaTypeToZod = <
     ? blockZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"block", any, any, any, any>
+          SchemaTypeDefinition<"block", any, any, any, any, any>
         >,
         getZods
       )
@@ -1310,7 +1426,7 @@ const schemaTypeToZod = <
     ? objectZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"object", any, any, any, any>
+          SchemaTypeDefinition<"object", any, any, any, any, any>
         >,
         getZods
       )
@@ -1318,7 +1434,7 @@ const schemaTypeToZod = <
     ? documentZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"document", any, any, any, any>
+          SchemaTypeDefinition<"document", any, any, any, any, any>
         >,
         getZods
       )
@@ -1326,7 +1442,7 @@ const schemaTypeToZod = <
     ? fileZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"file", any, any, any, any>
+          SchemaTypeDefinition<"file", any, any, any, any, any>
         >,
         getZods
       )
@@ -1334,7 +1450,7 @@ const schemaTypeToZod = <
     ? imageZod(
         schema as Extract<
           TSchemaType,
-          SchemaTypeDefinition<"image", any, any, any, any>
+          SchemaTypeDefinition<"image", any, any, any, any, any>
         >,
         getZods
       )
@@ -1378,6 +1494,7 @@ export const sanityConfigToZodsTyped = <
   const pluginsZods = plugins
     .map(
       (plugin) =>
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         sanityConfigToZodsTyped(plugin) as SanityConfigZods<TPluginOptions>
     )
     .reduce(
@@ -1418,6 +1535,7 @@ export const sanityDocumentsZod = <const TConfig extends ConfigBase<any, any>>(
 ) => {
   type TTypeDefinition = TConfig extends ConfigBase<
     infer TTypeDefinition extends TypeDefinition<
+      any,
       any,
       any,
       any,

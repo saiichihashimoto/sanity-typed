@@ -5,7 +5,10 @@ import RandExp from "randexp";
 import type { IsNumericLiteral, IsStringLiteral, Simplify } from "type-fest";
 
 import { traverseValidation } from "@sanity-typed/traverse-validation";
-import type { InferSchemaValues } from "@sanity-typed/types";
+import type {
+  BlockStyleDefinition,
+  InferSchemaValues,
+} from "@sanity-typed/types";
 import type {
   ArrayMemberDefinition,
   ConfigBase,
@@ -22,6 +25,7 @@ type SchemaTypeDefinition<
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  TBlockStyle extends string,
   THotspot extends boolean
 > =
   | ArrayMemberDefinition<
@@ -32,6 +36,7 @@ type SchemaTypeDefinition<
       TNumberValue,
       TStringValue,
       TReferenced,
+      TBlockStyle,
       THotspot,
       any,
       any,
@@ -45,6 +50,7 @@ type SchemaTypeDefinition<
       TNumberValue,
       TStringValue,
       TReferenced,
+      TBlockStyle,
       THotspot,
       any,
       any,
@@ -58,6 +64,7 @@ type SchemaTypeDefinition<
       TNumberValue,
       TStringValue,
       TReferenced,
+      TBlockStyle,
       THotspot,
       any,
       any
@@ -96,6 +103,7 @@ const dateAndDatetimeFaker = <
     any,
     any,
     any,
+    any,
     any
   >
 >(
@@ -131,7 +139,7 @@ const dateAndDatetimeFaker = <
 };
 
 const dateFaker = <
-  TSchemaType extends SchemaTypeDefinition<"date", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"date", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) => {
@@ -141,13 +149,13 @@ const dateFaker = <
 };
 
 const datetimeFaker = <
-  TSchemaType extends SchemaTypeDefinition<"datetime", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"datetime", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) => dateAndDatetimeFaker(schemaType);
 
 const numberFaker = <
-  TSchemaType extends SchemaTypeDefinition<"number", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"number", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) => {
@@ -193,6 +201,7 @@ const numberFaker = <
     infer TNumberValue,
     any,
     any,
+    any,
     any
   >
     ? TNumberValue
@@ -233,7 +242,16 @@ const numberFaker = <
 };
 
 const referenceFaker =
-  <TSchemaType extends SchemaTypeDefinition<"reference", any, any, any, any>>(
+  <
+    TSchemaType extends SchemaTypeDefinition<
+      "reference",
+      any,
+      any,
+      any,
+      any,
+      any
+    >
+  >(
     schemaType: TSchemaType,
     referencedIdFaker: (type: string) => (faker: Faker, index: number) => string
   ) =>
@@ -248,6 +266,7 @@ const referenceFaker =
         any,
         any,
         infer TReferenced,
+        any,
         any
       >
         ? TReferenced
@@ -288,6 +307,7 @@ const regexFaker = (regex: RegExp) => {
 const stringAndTextFaker = <
   TSchemaType extends SchemaTypeDefinition<
     "string" | "text",
+    any,
     any,
     any,
     any,
@@ -341,7 +361,7 @@ const stringAndTextFaker = <
 };
 
 const stringFaker = <
-  TSchemaType extends SchemaTypeDefinition<"string", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"string", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) => {
@@ -349,6 +369,7 @@ const stringFaker = <
     "string",
     any,
     infer TStringValue,
+    any,
     any,
     any
   >
@@ -378,7 +399,7 @@ const stringFaker = <
 };
 
 const textFaker = <
-  TSchemaType extends SchemaTypeDefinition<"text", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"text", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) =>
@@ -387,7 +408,7 @@ const textFaker = <
   );
 
 const urlFaker = <
-  TSchemaType extends SchemaTypeDefinition<"url", any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<"url", any, any, any, any, any>
 >(
   schemaType: TSchemaType
 ) => {
@@ -502,6 +523,7 @@ type MembersFaker<
     any,
     any,
     any,
+    any,
     any
   >[],
   TAliasedFakers extends {
@@ -511,6 +533,7 @@ type MembersFaker<
   faker: Faker,
   index: number
 ) => TMemberDefinitions extends (infer TMemberDefinition extends ArrayMemberDefinition<
+  any,
   any,
   any,
   any,
@@ -546,6 +569,7 @@ type MembersFaker<
 
 const membersFaker = <
   TMemberDefinitions extends ArrayMemberDefinition<
+    any,
     any,
     any,
     any,
@@ -615,12 +639,13 @@ const noInfinity = (value: number) =>
     : value;
 
 type ArrayFaker<
-  TSchemaType extends SchemaTypeDefinition<"array", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"array", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
 > = TSchemaType extends {
   of: infer TMemberDefinitions extends ArrayMemberDefinition<
+    any,
     any,
     any,
     any,
@@ -638,7 +663,7 @@ type ArrayFaker<
   : never;
 
 const arrayFaker = <
-  TSchemaType extends SchemaTypeDefinition<"array", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"array", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -710,12 +735,51 @@ const blockFieldsFaker = {
   _type: "block" as const,
   ...(true ? {} : { level: 0 }),
   ...(true ? {} : { listItem: "string" }),
-  ...(true ? {} : { style: "normal" }),
   ...(true ? {} : { markDefs: [{ _key: "key", _type: "type" }] }),
 };
 
+const blockCustomFaker = <
+  TSchemaType extends SchemaTypeDefinition<"block", any, any, any, any, any>
+>({
+  styles,
+}: TSchemaType) => {
+  type TBlockStyle = TSchemaType extends SchemaTypeDefinition<
+    "block",
+    any,
+    any,
+    any,
+    infer TBlockStyle,
+    any
+  >
+    ? TBlockStyle
+    : never;
+
+  return (faker: Faker) => ({
+    style: typedTernary(
+      !styles?.length as Negate<IsStringLiteral<TBlockStyle>>,
+      () =>
+        faker.helpers.arrayElement([
+          "blockquote",
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "normal",
+        ] as const),
+      () =>
+        faker.helpers.arrayElement(
+          (styles! as BlockStyleDefinition<TBlockStyle>[]).map(
+            ({ value }) => value
+          )
+        )
+    ),
+  });
+};
+
 type BlockFaker<
-  TSchemaType extends SchemaTypeDefinition<"block", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"block", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -723,44 +787,52 @@ type BlockFaker<
   faker: Faker,
   index: number
 ) => Simplify<
-  typeof blockFieldsFaker & {
-    children: (TSchemaType extends {
-      of?: infer TMemberDefinitions extends ArrayMemberDefinition<
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any
-      >[];
+  ReturnType<ReturnType<typeof blockCustomFaker<TSchemaType>>> &
+    typeof blockFieldsFaker & {
+      children: (TSchemaType extends {
+        of?: infer TMemberDefinitions extends ArrayMemberDefinition<
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any
+        >[];
+      }
+        ?
+            | ReturnType<
+                MembersFaker<TMemberDefinitions, TAliasedFakers>
+              >[number]
+            | ReturnType<typeof spanFaker>
+        : ReturnType<typeof spanFaker>)[];
     }
-      ?
-          | ReturnType<MembersFaker<TMemberDefinitions, TAliasedFakers>>[number]
-          | ReturnType<typeof spanFaker>
-      : ReturnType<typeof spanFaker>)[];
-  }
 >;
 
 const blockFaker = <
-  TSchemaType extends SchemaTypeDefinition<"block", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"block", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
 >(
-  { of }: TSchemaType,
+  schemaType: TSchemaType,
   getFakers: () => TAliasedFakers,
   instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (type: string | undefined) => (index: number) => string,
   referencedIdFaker: (type: string) => (faker: Faker, index: number) => string
-): BlockFaker<TSchemaType, TAliasedFakers> =>
-  ((faker: Faker, index: number) => {
+): BlockFaker<TSchemaType, TAliasedFakers> => {
+  const blockCustomFakerInstantiated =
+    blockCustomFaker<TSchemaType>(schemaType);
+
+  return ((faker: Faker, index: number) => {
     type TMemberDefinitions = TSchemaType extends {
       of?: infer TMemberDefinitionsInner extends ArrayMemberDefinition<
+        any,
         any,
         any,
         any,
@@ -776,7 +848,7 @@ const blockFaker = <
     }
       ? TMemberDefinitionsInner
       : never;
-    const members = (of as TMemberDefinitions) ?? [];
+    const members = (schemaType.of as TMemberDefinitions) ?? [];
 
     const length = faker.number.int({ min: 1, max: 5 });
     const numSpans = !members.length
@@ -785,6 +857,7 @@ const blockFaker = <
 
     return {
       ...blockFieldsFaker,
+      ...blockCustomFakerInstantiated(faker),
       children: faker.helpers.shuffle([
         ...Array.from({ length: numSpans }).map(() => spanFaker(faker)),
         ...(numSpans === length
@@ -801,10 +874,12 @@ const blockFaker = <
       ]),
     };
   }) as BlockFaker<TSchemaType, TAliasedFakers>;
+};
 
 type FieldsFaker<
   TSchemaType extends SchemaTypeDefinition<
     "document" | "file" | "image" | "object",
+    any,
     any,
     any,
     any,
@@ -815,6 +890,7 @@ type FieldsFaker<
   }
 > = TSchemaType extends {
   fields?: (infer TFieldDefinition extends FieldDefinition<
+    any,
     any,
     any,
     any,
@@ -836,6 +912,7 @@ type FieldsFaker<
         [Name in Extract<
           TFieldDefinition,
           FieldDefinition<
+            any,
             any,
             any,
             any,
@@ -869,6 +946,7 @@ type FieldsFaker<
             any,
             any,
             any,
+            any,
             true
           >
         >["name"]]: ReturnType<
@@ -888,6 +966,7 @@ const fieldsFaker = <
     any,
     any,
     any,
+    any,
     any
   >,
   TAliasedFakers extends {
@@ -902,6 +981,7 @@ const fieldsFaker = <
 ): FieldsFaker<TSchemaType, TAliasedFakers> => {
   const fieldsFakers = (
     fields as FieldDefinition<
+      any,
       any,
       any,
       any,
@@ -943,14 +1023,14 @@ const fieldsFaker = <
 };
 
 type ObjectFaker<
-  TSchemaType extends SchemaTypeDefinition<"object", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"object", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
 > = ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>;
 
 const objectFaker = <
-  TSchemaType extends SchemaTypeDefinition<"object", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"object", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -992,7 +1072,7 @@ const documentFieldsFaker =
   };
 
 type DocumentFaker<
-  TSchemaType extends SchemaTypeDefinition<"document", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"document", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -1005,7 +1085,7 @@ type DocumentFaker<
 >;
 
 const documentFaker = <
-  TSchemaType extends SchemaTypeDefinition<"document", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"document", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -1063,7 +1143,7 @@ const fileFieldsFaker = (faker: Faker) => ({
 });
 
 type FileFaker<
-  TSchemaType extends SchemaTypeDefinition<"file", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"file", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -1076,7 +1156,7 @@ type FileFaker<
 >;
 
 const fileFaker = <
-  TSchemaType extends SchemaTypeDefinition<"file", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"file", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -1124,7 +1204,7 @@ const imageHotspotFaker = (faker: Faker) => ({
 });
 
 type ImageFaker<
-  TSchemaType extends SchemaTypeDefinition<"image", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"image", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -1139,6 +1219,7 @@ type ImageFaker<
       any,
       any,
       any,
+      any,
       infer THotspot extends boolean
     >
       ? THotspot extends true
@@ -1148,7 +1229,7 @@ type ImageFaker<
 >;
 
 const imageFaker = <
-  TSchemaType extends SchemaTypeDefinition<"image", any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<"image", any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -1176,6 +1257,7 @@ const imageFaker = <
           any,
           any,
           any,
+          any,
           infer THotspot extends boolean
         >
           ? THotspot
@@ -1189,7 +1271,7 @@ const imageFaker = <
 };
 
 type AliasFaker<
-  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -1202,7 +1284,7 @@ type AliasFaker<
 
 const aliasFaker =
   <
-    TSchemaType extends SchemaTypeDefinition<any, any, any, any, any>,
+    TSchemaType extends SchemaTypeDefinition<any, any, any, any, any, any>,
     TAliasedFakers extends {
       [name: string]: (index: number) => any;
     }
@@ -1214,7 +1296,7 @@ const aliasFaker =
     getFakers()[type]?.(index) ?? (undefined as unknown);
 
 type SchemaTypeToFaker<
-  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -1227,7 +1309,7 @@ type SchemaTypeToFaker<
           typeof dateFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"date", any, any, any, any>
+              SchemaTypeDefinition<"date", any, any, any, any, any>
             >
           >
         >
@@ -1236,7 +1318,7 @@ type SchemaTypeToFaker<
           typeof datetimeFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"datetime", any, any, any, any>
+              SchemaTypeDefinition<"datetime", any, any, any, any, any>
             >
           >
         >
@@ -1245,7 +1327,7 @@ type SchemaTypeToFaker<
           typeof numberFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"number", any, any, any, any>
+              SchemaTypeDefinition<"number", any, any, any, any, any>
             >
           >
         >
@@ -1254,7 +1336,7 @@ type SchemaTypeToFaker<
           typeof referenceFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"reference", any, any, any, any>
+              SchemaTypeDefinition<"reference", any, any, any, any, any>
             >
           >
         >
@@ -1263,7 +1345,7 @@ type SchemaTypeToFaker<
           typeof stringFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"string", any, any, any, any>
+              SchemaTypeDefinition<"string", any, any, any, any, any>
             >
           >
         >
@@ -1272,7 +1354,7 @@ type SchemaTypeToFaker<
           typeof textFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"text", any, any, any, any>
+              SchemaTypeDefinition<"text", any, any, any, any, any>
             >
           >
         >
@@ -1281,7 +1363,7 @@ type SchemaTypeToFaker<
           typeof urlFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"url", any, any, any, any>
+              SchemaTypeDefinition<"url", any, any, any, any, any>
             >
           >
         >
@@ -1290,7 +1372,7 @@ type SchemaTypeToFaker<
           typeof arrayFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"array", any, any, any, any>
+              SchemaTypeDefinition<"array", any, any, any, any, any>
             >,
             TAliasedFakers
           >
@@ -1300,7 +1382,7 @@ type SchemaTypeToFaker<
           typeof blockFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"block", any, any, any, any>
+              SchemaTypeDefinition<"block", any, any, any, any, any>
             >,
             TAliasedFakers
           >
@@ -1310,7 +1392,7 @@ type SchemaTypeToFaker<
           typeof objectFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"object", any, any, any, any>
+              SchemaTypeDefinition<"object", any, any, any, any, any>
             >,
             TAliasedFakers
           >
@@ -1320,7 +1402,7 @@ type SchemaTypeToFaker<
           typeof documentFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"document", any, any, any, any>
+              SchemaTypeDefinition<"document", any, any, any, any, any>
             >,
             TAliasedFakers
           >
@@ -1330,7 +1412,7 @@ type SchemaTypeToFaker<
           typeof fileFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"file", any, any, any, any>
+              SchemaTypeDefinition<"file", any, any, any, any, any>
             >,
             TAliasedFakers
           >
@@ -1340,7 +1422,7 @@ type SchemaTypeToFaker<
           typeof imageFaker<
             Extract<
               TSchemaType,
-              SchemaTypeDefinition<"image", any, any, any, any>
+              SchemaTypeDefinition<"image", any, any, any, any, any>
             >,
             TAliasedFakers
           >
@@ -1352,7 +1434,7 @@ type SchemaTypeToFaker<
 const customFakerFn: unique symbol = Symbol("customFakerFn");
 
 export const customFaker = <
-  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any>
+  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any, any>
 >(
   schemaType: TSchemaType,
   fakerFn: (
@@ -1367,7 +1449,7 @@ export const customFaker = <
 ): TSchemaType => ({ ...schemaType, [customFakerFn]: fakerFn });
 
 const schemaTypeToFaker = <
-  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any>,
+  TSchemaType extends SchemaTypeDefinition<any, any, any, any, any, any>,
   TAliasedFakers extends {
     [name: string]: (index: number) => any;
   }
@@ -1390,28 +1472,28 @@ const schemaTypeToFaker = <
       ? dateFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"date", any, any, any, any>
+            SchemaTypeDefinition<"date", any, any, any, any, any>
           >
         )
       : schema.type === "datetime"
       ? datetimeFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"datetime", any, any, any, any>
+            SchemaTypeDefinition<"datetime", any, any, any, any, any>
           >
         )
       : schema.type === "number"
       ? numberFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"number", any, any, any, any>
+            SchemaTypeDefinition<"number", any, any, any, any, any>
           >
         )
       : schema.type === "reference"
       ? referenceFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"reference", any, any, any, any>
+            SchemaTypeDefinition<"reference", any, any, any, any, any>
           >,
           referencedIdFaker
         )
@@ -1419,28 +1501,28 @@ const schemaTypeToFaker = <
       ? stringFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"string", any, any, any, any>
+            SchemaTypeDefinition<"string", any, any, any, any, any>
           >
         )
       : schema.type === "text"
       ? textFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"text", any, any, any, any>
+            SchemaTypeDefinition<"text", any, any, any, any, any>
           >
         )
       : schema.type === "url"
       ? urlFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"url", any, any, any, any>
+            SchemaTypeDefinition<"url", any, any, any, any, any>
           >
         )
       : schema.type === "array"
       ? arrayFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"array", any, any, any, any>
+            SchemaTypeDefinition<"array", any, any, any, any, any>
           >,
           getFakers,
           prefixedInstantiateFakerByPath,
@@ -1451,7 +1533,7 @@ const schemaTypeToFaker = <
       ? blockFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"block", any, any, any, any>
+            SchemaTypeDefinition<"block", any, any, any, any, any>
           >,
           getFakers,
           prefixedInstantiateFakerByPath,
@@ -1462,7 +1544,7 @@ const schemaTypeToFaker = <
       ? objectFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"object", any, any, any, any>
+            SchemaTypeDefinition<"object", any, any, any, any, any>
           >,
           getFakers,
           prefixedInstantiateFakerByPath,
@@ -1473,7 +1555,7 @@ const schemaTypeToFaker = <
       ? documentFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"document", any, any, any, any>
+            SchemaTypeDefinition<"document", any, any, any, any, any>
           >,
           getFakers,
           prefixedInstantiateFakerByPath,
@@ -1484,7 +1566,7 @@ const schemaTypeToFaker = <
       ? fileFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"file", any, any, any, any>
+            SchemaTypeDefinition<"file", any, any, any, any, any>
           >,
           getFakers,
           prefixedInstantiateFakerByPath,
@@ -1495,7 +1577,7 @@ const schemaTypeToFaker = <
       ? imageFaker(
           schema as Extract<
             TSchemaType,
-            SchemaTypeDefinition<"image", any, any, any, any>
+            SchemaTypeDefinition<"image", any, any, any, any, any>
           >,
           getFakers,
           prefixedInstantiateFakerByPath,

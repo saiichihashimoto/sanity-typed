@@ -179,6 +179,30 @@ const nav = defineType({
 
 ## Breaking Changes
 
+### 5 to 6
+
+#### Block fields require `as const`
+
+Similar to references, to get the right types out of a block, we'll need a few `as const`
+
+```diff
+const foo = defineType({
+  name: "foo",
+  type: "array",
+  of: [
+    defineArrayMember({
+      type: "block",
+      styles: [
+-       { title: "Foo", value: "foo" },
++       { title: "Foo", value: "foo" as const },
+-       { title: "Bar", value: "bar" },
++       { title: "Bar", value: "bar" as const },
+      ],
+    }),
+  ],
+});
+```
+
 ### 4 to 5
 
 #### Removed `_InferValue` and `AliasValue`

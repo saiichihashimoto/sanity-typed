@@ -15,7 +15,7 @@ const fields: Omit<PortableTextBlock, "_type" | "children"> = {
   level: 1,
   listItem: "listItem",
   markDefs: [{ _key: "key", _type: "type" }],
-  style: "style",
+  style: "normal",
 };
 
 describe("block", () => {
@@ -189,7 +189,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts styles", async () => {
+    it("builds parser for styles", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -202,8 +202,8 @@ describe("block", () => {
                 defineArrayMember({
                   type: "block",
                   styles: [
-                    { title: "Foo", value: "foo" },
-                    { title: "Bar", value: "bar" },
+                    { title: "Foo", value: "foo" as const },
+                    { title: "Bar", value: "bar" as const },
                   ],
                 }),
               ],
@@ -218,6 +218,7 @@ describe("block", () => {
           ...fields,
           _key: "key",
           _type: "block",
+          style: "foo",
           children: [
             { _key: "key", _type: "span", marks: ["mark"], text: "text" },
           ],
@@ -523,7 +524,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts styles", async () => {
+    it("builds parser for styles", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -533,8 +534,8 @@ describe("block", () => {
               name: "foo",
               type: "block",
               styles: [
-                { title: "Foo", value: "foo" },
-                { title: "Bar", value: "bar" },
+                { title: "Foo", value: "foo" as const },
+                { title: "Bar", value: "bar" as const },
               ],
             }),
           ],
@@ -545,6 +546,7 @@ describe("block", () => {
       const unparsed = {
         ...fields,
         _type: "foo",
+        style: "foo",
         children: [
           { _key: "key", _type: "span", marks: ["mark"], text: "text" },
         ],

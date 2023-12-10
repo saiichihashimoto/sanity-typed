@@ -151,7 +151,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts styles", async () => {
+    it("mocks styles", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -164,8 +164,8 @@ describe("block", () => {
                 defineArrayMember({
                   type: "block",
                   styles: [
-                    { title: "Foo", value: "foo" },
-                    { title: "Bar", value: "bar" },
+                    { title: "Foo", value: "foo" as const },
+                    { title: "Bar", value: "bar" as const },
                   ],
                 }),
               ],
@@ -435,7 +435,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts styles", async () => {
+    it("mocks styles", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -445,8 +445,8 @@ describe("block", () => {
               name: "foo",
               type: "block",
               styles: [
-                { title: "Foo", value: "foo" },
-                { title: "Bar", value: "bar" },
+                { title: "Foo", value: "foo" as const },
+                { title: "Bar", value: "bar" as const },
               ],
             }),
           ],

@@ -41,7 +41,15 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
 
@@ -108,7 +116,15 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
 
@@ -154,11 +170,19 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
 
-    it("accepts styles", async () => {
+    it("infers styles", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -171,8 +195,8 @@ describe("block", () => {
                 defineArrayMember({
                   type: "block",
                   styles: [
-                    { title: "Foo", value: "foo" },
-                    { title: "Bar", value: "bar" },
+                    { title: "Foo", value: "foo" as const },
+                    { title: "Bar", value: "bar" as const },
                   ],
                 }),
               ],
@@ -196,7 +220,7 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style: "bar" | "foo";
       }>();
     });
 
@@ -238,7 +262,15 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
 
@@ -282,7 +314,15 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
 
@@ -337,7 +377,15 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
   });
@@ -399,7 +447,15 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
 
@@ -464,7 +520,15 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
 
@@ -504,11 +568,19 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
 
-    it("accepts styles", async () => {
+    it("infers styles", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -518,8 +590,8 @@ describe("block", () => {
               name: "foo",
               type: "block",
               styles: [
-                { title: "Foo", value: "foo" },
-                { title: "Bar", value: "bar" },
+                { title: "Foo", value: "foo" as const },
+                { title: "Bar", value: "bar" as const },
               ],
             }),
           ],
@@ -540,7 +612,7 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style: "bar" | "foo";
       }>();
     });
 
@@ -576,7 +648,15 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
 
@@ -614,7 +694,15 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
 
@@ -663,7 +751,15 @@ describe("block", () => {
           _key: string;
           _type: string;
         }[];
-        style?: string;
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }>();
     });
   });

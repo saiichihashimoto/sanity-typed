@@ -1,6 +1,7 @@
 export type {
   ArrayDefinition,
   BlockDefinition,
+  BlockStyleDefinition,
   BooleanDefinition,
   Config,
   CrossDatasetReferenceDefinition,

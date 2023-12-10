@@ -25,6 +25,8 @@ Infer Sanity Document Types from Sanity Schemas
 - [Considerations](#considerations)
   - [Types match config but not actual documents](#types-match-config-but-not-actual-documents)
 - [Breaking Changes](#breaking-changes)
+  - [5 to 6](#5-to-6)
+    - [Block fields require `as const`](#block-fields-require-as-const)
   - [4 to 5](#4-to-5)
     - [Removed `_InferValue` and `AliasValue`](#removed-_infervalue-and-aliasvalue)
   - [3 to 4](#3-to-4)
@@ -316,6 +318,30 @@ This can get unwieldy although, if you're diligent about data migrations of your
 <!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/types-vs-content-lake.md -->
 
 ## Breaking Changes
+
+### 5 to 6
+
+#### Block fields require `as const`
+
+Similar to references, to get the right types out of a block, we'll need a few `as const`
+
+```diff
+const foo = defineType({
+  name: "foo",
+  type: "array",
+  of: [
+    defineArrayMember({
+      type: "block",
+      styles: [
+-       { title: "Foo", value: "foo" },
++       { title: "Foo", value: "foo" as const },
+-       { title: "Bar", value: "bar" },
++       { title: "Bar", value: "bar" as const },
+      ],
+    }),
+  ],
+});
+```
 
 ### 4 to 5
 
