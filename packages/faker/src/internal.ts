@@ -19,8 +19,8 @@ import type {
   TypeDefinition,
   referenced,
 } from "@sanity-typed/types/src/internal";
-import { typedTernary } from "@sanity-typed/utils";
-import type { IsPlainObject, MaybeArray, Negate } from "@sanity-typed/utils";
+import { isPlainObject, typedTernary } from "@sanity-typed/utils";
+import type { MaybeArray, Negate } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<
   TType extends string,
@@ -543,21 +543,19 @@ const addType =
   (...args: Parameters<Fn>) => {
     const value: ReturnType<Fn> = fn(...args);
 
-    // TODO typedTernary
-    return (
-      typeof type !== "string"
-        ? value
-        : Array.isArray(value)
-        ? value
-        : // HACK
-        typeof value !== "object"
-        ? value
-        : { ...value, _type: type }
-    ) as IsStringLiteral<Type> extends false
-      ? typeof value
-      : IsPlainObject<typeof value> extends false
-      ? typeof value
-      : Omit<typeof value, "_type"> & { _type: Type };
+    return typedTernary(
+      (typeof type !== "string") as Negate<IsStringLiteral<Type>>,
+      () => value,
+      () =>
+        typedTernary(
+          isPlainObject(value),
+          () =>
+            ({ ...value, _type: type } as Omit<typeof value, "_type"> & {
+              _type: Type;
+            }),
+          () => value
+        )
+    );
   };
 
 const addTypeT = <
@@ -571,19 +569,17 @@ const addTypeT = <
 const addKey =
   <Fn extends (faker: Faker, count: number) => any>(fn: Fn) =>
   (faker: Faker, count: number) => {
-    const value = fn(faker, count);
+    const value: ReturnType<Fn> = fn(faker, count);
 
-    // TODO typedTernary
-    return (
-      Array.isArray(value)
-        ? value
-        : // HACK
-        typeof value !== "object"
-        ? value
-        : { ...value, _key: faker.database.mongodbObjectId() }
-    ) as IsPlainObject<ReturnType<Fn>> extends false
-      ? ReturnType<Fn>
-      : Omit<ReturnType<Fn>, "_key"> & { _key: string };
+    return typedTernary(
+      isPlainObject(value),
+      () =>
+        ({ ...value, _key: faker.database.mongodbObjectId() } as Omit<
+          ReturnType<Fn>,
+          "_key"
+        > & { _key: string }),
+      () => value
+    );
   };
 
 type MembersFaker<

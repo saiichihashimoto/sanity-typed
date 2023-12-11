@@ -1,3 +1,4 @@
+import { isPlainObject as isPlainObjectNative } from "lodash/fp";
 import type { IsNumericLiteral } from "type-fest";
 
 export type Negate<T> = T extends true ? false : true;
@@ -7,6 +8,9 @@ export type IsPlainObject<T> = T extends any[]
   : T extends object
   ? true
   : false;
+
+export const isPlainObject = <T>(value: T) =>
+  isPlainObjectNative(value) as IsPlainObject<T>;
 
 export type MaybeArray<T> = T | T[];
 
