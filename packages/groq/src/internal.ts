@@ -872,36 +872,58 @@ type Pair<TExpression extends string> =
         }
     : never;
 
-type FuncArgParse<TExpression extends string, TFuncFullName extends string> =
+type FuncArgParse<
+  TExpression extends string,
+  TFuncNamespace extends string,
+  TFuncName extends string
+> =
   | ParseInner<TExpression>
-  | (TFuncFullName extends "order"
-      ? Asc<TExpression> | Desc<TExpression>
-      : never)
-  | (TFuncFullName extends "select" ? Pair<TExpression> : never);
+  | (TFuncNamespace extends "global"
+      ?
+          | (TFuncName extends "order"
+              ? Asc<TExpression> | Desc<TExpression>
+              : never)
+          | (TFuncName extends "select" ? Pair<TExpression> : never)
+      : never);
 
 type FuncArgs<
   TArgs extends string,
-  TFuncFullName extends string,
+  TFuncNamespace extends string,
+  TFuncName extends string,
   _Prefix extends string = ""
 > = `${_Prefix}${TArgs}` extends ""
   ? []
   :
-      | (FuncArgParse<`${_Prefix}${TArgs}`, TFuncFullName> extends never
+      | (FuncArgParse<
+          `${_Prefix}${TArgs}`,
+          TFuncNamespace,
+          TFuncName
+        > extends never
           ? never
-          : [FuncArgParse<`${_Prefix}${TArgs}`, TFuncFullName>])
+          : [FuncArgParse<`${_Prefix}${TArgs}`, TFuncNamespace, TFuncName>])
       | (TArgs extends `${infer TFuncArg},${infer TFuncArgs}`
           ?
-              | FuncArgs<TFuncArgs, TFuncFullName, `${_Prefix}${TFuncArg},`>
+              | FuncArgs<
+                  TFuncArgs,
+                  TFuncNamespace,
+                  TFuncName,
+                  `${_Prefix}${TFuncArg},`
+                >
               | (FuncArgParse<
                   `${_Prefix}${TFuncArg}`,
-                  TFuncFullName
+                  TFuncNamespace,
+                  TFuncName
                 > extends never
                   ? never
-                  : FuncArgs<TFuncArgs, TFuncFullName> extends never
+                  : FuncArgs<TFuncArgs, TFuncNamespace, TFuncName> extends never
                   ? never
                   : [
-                      FuncArgParse<`${_Prefix}${TFuncArg}`, TFuncFullName>,
-                      ...FuncArgs<TFuncArgs, TFuncFullName>
+                      FuncArgParse<
+                        `${_Prefix}${TFuncArg}`,
+                        TFuncNamespace,
+                        TFuncName
+                      >,
+                      ...FuncArgs<TFuncArgs, TFuncNamespace, TFuncName>
                     ])
           : never);
 
@@ -940,11 +962,13 @@ type FuncCall<TExpression extends string> =
   TExpression extends `${infer TFuncFullName}(${infer TFuncCallArgs})`
     ? TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncName}`
       ? TFuncNamespace extends keyof Functions<any, any>
-        ? FuncArgs<TFuncCallArgs, TFuncNamespace> extends never
+        ? FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName> extends never
           ? never
           : TFuncName extends keyof Functions<any, any>[TFuncNamespace]
           ? {
-              args: Simplify<FuncArgs<TFuncCallArgs, TFuncNamespace>>;
+              args: Simplify<
+                FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>
+              >;
               func: GroqFunction;
               name: TFuncName;
               namespace: TFuncNamespace;
@@ -952,14 +976,14 @@ type FuncCall<TExpression extends string> =
             }
           : FunctionsToOtherNodes<
               TFuncName,
-              Simplify<FuncArgs<TFuncCallArgs, TFuncNamespace>>
+              Simplify<FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>>
             >
         : never
-      : FuncArgs<TFuncCallArgs, TFuncFullName> extends never
+      : FuncArgs<TFuncCallArgs, "global", TFuncFullName> extends never
       ? never
       : TFuncFullName extends keyof Functions<any, any>["global"]
       ? {
-          args: Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>;
+          args: Simplify<FuncArgs<TFuncCallArgs, "global", TFuncFullName>>;
           func: GroqFunction;
           name: TFuncFullName;
           namespace: "global";
@@ -967,7 +991,7 @@ type FuncCall<TExpression extends string> =
         }
       : FunctionsToOtherNodes<
           TFuncFullName,
-          Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>
+          Simplify<FuncArgs<TFuncCallArgs, "global", TFuncFullName>>
         >
     : never;
 
@@ -1269,37 +1293,68 @@ type TraversalExpression<TExpression extends string> =
   | SquareBracketTraversal<TExpression>;
 
 /**
+ * Whenever a tuple is reordered, we can't be certain what the types are.
+ * So each member is a union of all members.
+ * We also map instead of TArray[number][] to ensure the length of the tuple is preserved.
+ */
+type TupleToUnionArray<TArray extends any[]> = {
+  [Index in keyof TArray]: TArray[number];
+};
+
+type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
+  global: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#order()
+     */
+    order: TArgs extends [] ? never : TupleToUnionArray<TBase>;
+    // HACK As long as the args evaluate, we don't actually use them so... why bother evaluating boost at all?
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#score()
+     */
+    score: TArgs extends []
+      ? never
+      : TBase extends (infer Element)[]
+      ? (IsPlainObject<Element> extends false
+          ? never
+          : Element & { _score: number })[]
+      : never;
+  };
+};
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#PipeFuncCall
  */
 type PipeFuncCall<TExpression extends string> =
   TExpression extends `${infer TBase}|${infer TFuncFullName}(${infer TFuncCallArgs})`
     ? Parse<TBase> extends never
       ? never
-      : FuncArgs<TFuncCallArgs, TFuncFullName> extends never
+      : TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncName}`
+      ? TFuncNamespace extends keyof PipeFunctions<any, any>
+        ? FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName> extends never
+          ? never
+          : TFuncName extends keyof PipeFunctions<any, any>[TFuncNamespace]
+          ? {
+              args: Simplify<
+                FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>
+              >;
+              base: Parse<TBase>;
+              func: GroqPipeFunction;
+              name: TFuncNamespace extends "global" ? TFuncName : TFuncFullName;
+              type: "PipeFuncCall";
+            }
+          : never
+        : never
+      : FuncArgs<TFuncCallArgs, "global", TFuncFullName> extends never
       ? never
-      : TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncIdentifier}`
-      ? Identifier<TFuncNamespace> extends never
-        ? never
-        : Identifier<TFuncIdentifier> extends never
-        ? never
-        : {
-            args: Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>;
-            base: Parse<TBase>;
-            func: GroqPipeFunction;
-            name: TFuncNamespace extends "global"
-              ? TFuncIdentifier
-              : TFuncFullName;
-            type: "PipeFuncCall";
-          }
-      : Identifier<TFuncFullName> extends never
-      ? never
-      : {
-          args: Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>;
+      : TFuncFullName extends keyof PipeFunctions<any, any>["global"]
+      ? {
+          args: Simplify<FuncArgs<TFuncCallArgs, "global", TFuncFullName>>;
           base: Parse<TBase>;
           func: GroqPipeFunction;
           name: TFuncFullName;
           type: "PipeFuncCall";
         }
+      : never
     : never;
 
 /**
@@ -2055,35 +2110,6 @@ type EvaluateParenthesis<
   TNode extends ExprNode,
   TScope extends Scope<Context<any[], any>>
 > = TNode extends GroupNode ? Evaluate<TNode["base"], TScope> : never;
-
-/**
- * Whenever a tuple is reordered, we can't be certain what the types are.
- * So each member is a union of all members.
- * We also map instead of TArray[number][] to ensure the length of the tuple is preserved.
- */
-type TupleToUnionArray<TArray extends any[]> = {
-  [Index in keyof TArray]: TArray[number];
-};
-
-type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
-  global: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#order()
-     */
-    order: TArgs extends [] ? never : TupleToUnionArray<TBase>;
-    // HACK As long as the args evaluate, we don't actually use them so... why bother evaluating boost at all?
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#score()
-     */
-    score: TArgs extends []
-      ? never
-      : TBase extends (infer Element)[]
-      ? (IsPlainObject<Element> extends false
-          ? never
-          : Element & { _score: number })[]
-      : never;
-  };
-};
 
 /**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePipeFuncCall()
