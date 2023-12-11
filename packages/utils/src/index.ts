@@ -34,7 +34,7 @@ export type TupleOfLength<
           >
   : TupleOfLength<T, Min, Max, [T, ...Result]>;
 
-export const typedTernary = <Condition extends boolean, TrueValue, FalseValue>(
+export const ternary = <Condition extends boolean, TrueValue, FalseValue>(
   condition: Condition,
   ifTrue: () => TrueValue,
   ifFalse: () => FalseValue

@@ -19,7 +19,7 @@ import type {
   MaybeTitledListValue,
   TypeDefinition,
 } from "@sanity-typed/types/src/internal";
-import { typedTernary } from "@sanity-typed/utils";
+import { ternary } from "@sanity-typed/utils";
 import type { MaybeArray, Negate } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<
@@ -230,7 +230,7 @@ const numberZod = <
     ? TNumberValue
     : never;
 
-  return typedTernary(
+  return ternary(
     Boolean(schemaType.options?.list?.length) as IsNumericLiteral<TNumberValue>,
     () =>
       zodUnion(
@@ -432,7 +432,7 @@ const stringZod = <
     ? TStringValue
     : never;
 
-  return typedTernary(
+  return ternary(
     Boolean(schemaType.options?.list?.length) as IsStringLiteral<TStringValue>,
     () =>
       zodUnion(
@@ -975,7 +975,7 @@ const blockFieldsZods = <
     _type: z.literal("block"),
     // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
     level: z.optional(z.number()),
-    listItem: typedTernary(
+    listItem: ternary(
       !lists?.length as Negate<IsStringLiteral<TBlockListItem>>,
       () => z.optional(z.union([z.literal("bullet"), z.literal("number")])),
       () =>
@@ -987,7 +987,7 @@ const blockFieldsZods = <
           )
         )
     ),
-    style: typedTernary(
+    style: ternary(
       !styles?.length as Negate<IsStringLiteral<TBlockStyle>>,
       () =>
         z.union([
