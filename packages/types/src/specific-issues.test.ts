@@ -163,4 +163,48 @@ describe("specific issues", () => {
       }[];
     }>();
   });
+
+  it("#589 object -> array -> block -> object -> field", async () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            type: "object",
+            name: "foo",
+            fields: [
+              defineType({
+                name: "bar",
+                type: "array",
+                of: [
+                  defineArrayMember({
+                    type: "block",
+                    name: "baz",
+                    marks: {
+                      annotations: [
+                        defineArrayMember({
+                          name: "qux",
+                          type: "object",
+                          fields: [
+                            defineField({
+                              name: "quux",
+                              type: "string",
+                            }),
+                          ],
+                        }),
+                      ],
+                    },
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    // todo
+    expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual();
+  });
 });
