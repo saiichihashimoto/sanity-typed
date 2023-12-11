@@ -38,7 +38,7 @@
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
     "sanity": "3.21.1",
-    "typescript": "5.2.2"
+    "typescript": "5.3.3"
   },
   "peerDependencies": {
     "@portabletext/types": "^2.0.2",

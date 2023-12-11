@@ -41,7 +41,7 @@
     "@saiichihashimoto/test-utils": "1.0.2",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity/client": "6.9.3",
-    "typescript": "5.2.2"
+    "typescript": "5.3.3"
   },
   "peerDependencies": {
     "@sanity/client": "^6.1.7",

@@ -23,6 +23,6 @@
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "typescript": "5.2.2"
+    "typescript": "5.3.3"
   }
 }
