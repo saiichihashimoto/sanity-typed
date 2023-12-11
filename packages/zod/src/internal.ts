@@ -1789,6 +1789,7 @@ type SanityConfigZods<TConfig extends MaybeArray<ConfigBase<any, any>>> =
     ConfigBase<infer TTypeDefinition, infer TPluginOptions>
   >
     ? {
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         [Name in TTypeDefinition["name"]]: AddType<
           Name,
           SchemaTypeToZod<

@@ -145,7 +145,7 @@ describe("specific issues", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;

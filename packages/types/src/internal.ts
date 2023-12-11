@@ -417,9 +417,7 @@ export type BlockDefinition<
   DefinitionBase<
     TRequired,
     PortableTextBlock<
-      DefinitionBase<any, any, any> & {
-        name?: string;
-      } extends TBlockMarkAnnotation
+      TBlockMarkAnnotation extends never
         ? never
         : InferRawValue<TBlockMarkAnnotation> & { _key: string },
       | PortableTextSpan
@@ -433,9 +431,7 @@ export type BlockDefinition<
     >,
     RewriteValue<
       PortableTextBlock<
-        DefinitionBase<any, any, any> & {
-          name?: string;
-        } extends TBlockMarkAnnotation
+        TBlockMarkAnnotation extends never
           ? never
           : InferRawValue<TBlockMarkAnnotation> & { _key: string },
         | PortableTextSpan
@@ -860,10 +856,10 @@ export const makeDefineArrayMember =
     const TReferenced extends string,
     const TBlockStyle extends string,
     const TBlockListItem extends string,
-    const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
       name?: string;
-    },
-    const THotspot extends boolean,
+    } = never,
+    const THotspot extends boolean = boolean,
     TFieldDefinition extends DefinitionBase<any, any, any> & {
       name: string;
       [required]?: boolean;
@@ -975,10 +971,10 @@ export const defineField = <
   const TReferenced extends string,
   const TBlockStyle extends string,
   const TBlockListItem extends string,
-  const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
-  },
-  const THotspot extends boolean,
+  } = never,
+  const THotspot extends boolean = boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -1078,10 +1074,10 @@ export const defineType = <
   const TReferenced extends string,
   const TBlockStyle extends string,
   const TBlockListItem extends string,
-  const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
-  },
-  const THotspot extends boolean,
+  } = never,
+  const THotspot extends boolean = boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
