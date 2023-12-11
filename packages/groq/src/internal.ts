@@ -47,6 +47,7 @@ import type {
   ProjectionNode,
   SelectAlternativeNode,
   SelectNode,
+  SelectorNode,
   SliceNode,
   ThisNode,
   ValueNode,
@@ -456,6 +457,9 @@ type IdentifierRest<TIdentifierRest extends string> = TIdentifierRest extends ""
   ? IdentifierRest<TIdentifierRestInner>
   : false;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Identifier
+ */
 type Identifier<TIdentifier extends string> = TIdentifier extends `${
   | Alpha
   | "_"}${infer TIdentifierRest}`
@@ -507,6 +511,8 @@ export type Geo =
   | Point
   | Polygon
   | Position;
+
+declare const ArbitrarySelectorValue: unique symbol;
 
 type Functions<
   TArgs extends any[],
@@ -578,6 +584,44 @@ type Functions<
    */
   delta: {
     /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedAny()
+     */
+    changedAny: TArgs extends [infer TSelector]
+      ? TSelector extends typeof ArbitrarySelectorValue
+        ? TScope extends {
+            context: { delta: { after: infer TAfter; before: infer TBefore } };
+          }
+          ? TBefore extends null
+            ? never
+            : TAfter extends null
+            ? never
+            : Functions<
+                [TBefore, TAfter, TSelector],
+                TScope
+              >["diff"]["changedAny"]
+          : never
+        : never
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedOnly()
+     */
+    changedOnly: TArgs extends [infer TSelector]
+      ? TSelector extends typeof ArbitrarySelectorValue
+        ? TScope extends {
+            context: { delta: { after: infer TAfter; before: infer TBefore } };
+          }
+          ? TBefore extends null
+            ? never
+            : TAfter extends null
+            ? never
+            : Functions<
+                [TBefore, TAfter, TSelector],
+                TScope
+              >["diff"]["changedOnly"]
+          : never
+        : never
+      : never;
+    /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_operation()
      */
     operation: TArgs extends []
@@ -591,6 +635,27 @@ type Functions<
           : TAfter extends null
           ? "delete"
           : "update"
+        : never
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Diff-namespace
+   */
+  diff: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedAny()
+     */
+    changedAny: TArgs extends [any, any, infer TSelector]
+      ? TSelector extends typeof ArbitrarySelectorValue
+        ? boolean
+        : never
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedOnly()
+     */
+    changedOnly: TArgs extends [any, any, infer TSelector]
+      ? TSelector extends typeof ArbitrarySelectorValue
+        ? boolean
         : never
       : never;
   };
@@ -840,6 +905,9 @@ type Functions<
   };
 };
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Asc
+ */
 type Asc<TExpression extends string> = TExpression extends `${infer TBase} asc`
   ? ParseInner<TBase> extends never
     ? never
@@ -849,6 +917,9 @@ type Asc<TExpression extends string> = TExpression extends `${infer TBase} asc`
       }
   : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Desc
+ */
 type Desc<TExpression extends string> =
   TExpression extends `${infer TBase} desc`
     ? ParseInner<TBase> extends never
@@ -859,6 +930,9 @@ type Desc<TExpression extends string> =
         }
     : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Pair
+ */
 type Pair<TExpression extends string> =
   TExpression extends `${infer TCondition}=>${infer TValue}`
     ? ParseInner<TCondition> extends never
@@ -872,19 +946,95 @@ type Pair<TExpression extends string> =
         }
     : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ConstantEvaluate()
+ */
+type ConstantEvaluate<TNode extends ExprNode> =
+  // HACK Not sure if giving a never scope works! https://github.com/sanity-io/groq-js/blob/main/src/evaluator/constantEvaluate.ts#L48
+  Evaluate<TNode, never>;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SelectorTuple
+ */
+type SelectorTupleInner<TExpression extends string> =
+  TExpression extends `${infer TFirst},${infer TRest}`
+    ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursion
+      Selector<TFirst> extends never
+      ? never
+      : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursion
+        Selector<TRest> | SelectorTupleInner<TRest>
+    : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Selector
+ */
+type Selector<TExpression extends string> =
+  | (TExpression extends `(${infer TInnerExpression})`
+      ? Selector<TInnerExpression> | SelectorTupleInner<TInnerExpression>
+      : never)
+  | (TExpression extends `${infer TSelector}.${infer TIdentifier}`
+      ? Selector<TSelector> extends never
+        ? never
+        : Identifier<TIdentifier> extends never
+        ? TIdentifier extends `(${infer TInnerExpression})`
+          ? Selector<TInnerExpression> | SelectorTupleInner<TInnerExpression>
+          : never
+        : { type: "Selector" }
+      : never)
+  | (TExpression extends `${infer TSelector}[${infer TBracketExpression}]`
+      ? Selector<TSelector> extends never
+        ? never
+        : TBracketExpression extends ""
+        ? { type: "Selector" }
+        : ConstantEvaluate<ParseInner<TBracketExpression>> extends never
+        ? never
+        : ConstantEvaluate<ParseInner<TBracketExpression>> extends number
+        ? never
+        : { type: "Selector" }
+      : never)
+  | (ThisAttribute<TExpression> extends never ? never : { type: "Selector" });
+
+type FuncArgCustomParse<
+  TExpression extends string,
+  TFuncLastArg extends boolean
+> = {
+  delta: {
+    changedAny: TFuncLastArg extends true
+      ? Selector<TExpression>
+      : ParseInner<TExpression>;
+    changedOnly: TFuncLastArg extends true
+      ? Selector<TExpression>
+      : ParseInner<TExpression>;
+  };
+  diff: {
+    changedAny: TFuncLastArg extends true
+      ? Selector<TExpression>
+      : ParseInner<TExpression>;
+    changedOnly: TFuncLastArg extends true
+      ? Selector<TExpression>
+      : ParseInner<TExpression>;
+  };
+  global: {
+    order: Asc<TExpression> | Desc<TExpression> | ParseInner<TExpression>;
+    select:
+      | Pair<TExpression>
+      | (TFuncLastArg extends true ? ParseInner<TExpression> : never);
+  };
+};
+
 type FuncArgParse<
   TExpression extends string,
   TFuncNamespace extends string,
-  TFuncName extends string
-> =
-  | ParseInner<TExpression>
-  | (TFuncNamespace extends "global"
-      ?
-          | (TFuncName extends "order"
-              ? Asc<TExpression> | Desc<TExpression>
-              : never)
-          | (TFuncName extends "select" ? Pair<TExpression> : never)
-      : never);
+  TFuncName extends string,
+  TFuncLastArg extends boolean = false
+> = TFuncNamespace extends keyof FuncArgCustomParse<TExpression, TFuncLastArg>
+  ? TFuncName extends keyof FuncArgCustomParse<
+      TExpression,
+      TFuncLastArg
+    >[TFuncNamespace]
+    ? FuncArgCustomParse<TExpression, TFuncLastArg>[TFuncNamespace][TFuncName]
+    : ParseInner<TExpression>
+  : ParseInner<TExpression>;
 
 type FuncArgs<
   TArgs extends string,
@@ -897,10 +1047,18 @@ type FuncArgs<
       | (FuncArgParse<
           `${_Prefix}${TArgs}`,
           TFuncNamespace,
-          TFuncName
+          TFuncName,
+          true
         > extends never
           ? never
-          : [FuncArgParse<`${_Prefix}${TArgs}`, TFuncNamespace, TFuncName>])
+          : [
+              FuncArgParse<
+                `${_Prefix}${TArgs}`,
+                TFuncNamespace,
+                TFuncName,
+                true
+              >
+            ])
       | (TArgs extends `${infer TFuncArg},${infer TFuncArgs}`
           ?
               | FuncArgs<
@@ -1064,13 +1222,6 @@ type ArrayPostfix<TExpression extends string> =
       ? never
       : { base: Exclude<ParseInner<TBase>, Level10>; type: "ArrayCoerce" }
     : never;
-
-/**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ConstantEvaluate()
- */
-type ConstantEvaluate<TNode extends ExprNode> =
-  // HACK Not sure if giving a never scope works! https://github.com/sanity-io/groq-js/blob/main/src/evaluator/constantEvaluate.ts#L48
-  Evaluate<TNode, never>;
 
 type KnownArrayNode =
   | ArrayCoerceNode
@@ -2216,6 +2367,13 @@ type EvaluateSelect<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateSelector()
+ */
+type EvaluateSelector<TNode extends ExprNode> = TNode extends SelectorNode
+  ? typeof ArbitrarySelectorValue
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateSlice()
  */
 type EvaluateSlice<
@@ -2269,6 +2427,7 @@ type EvaluateExpression<
   | EvaluatePos<TNode, TScope>
   | EvaluateProjection<TNode, TScope>
   | EvaluateSelect<TNode, TScope>
+  | EvaluateSelector<TNode>
   | EvaluateSlice<TNode, TScope>
   | EvaluateThis<TNode, TScope>
   | EvaluateValue<TNode>;

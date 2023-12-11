@@ -7,7 +7,8 @@ import type { WritableDeep } from "type-fest";
 import type { ExecuteQuery, Parse } from ".";
 
 describe("diff", () => {
-  it("diff::changedAny(foo,bar,title)", async () => {
+  // TODO https://github.com/sanity-io/groq-js/issues/160
+  it.failing("diff::changedAny(foo,bar,title)", async () => {
     const query = "diff::changedAny(foo,bar,title)";
 
     const tree = parse(query);
@@ -29,24 +30,304 @@ describe("diff", () => {
       func: expect.any(Function),
     });
     expectType<Parse<typeof query>>().toStrictEqual<
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/194
       WritableDeep<typeof expectedTree>
     >();
 
-    await expect(async () => evaluate(tree)).rejects.toThrow("not implemented");
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
-  it("diff::changedAny(foo,bar,(title,description))", async () => {
+  it.failing("diff::changedAny(foo,bar,(title))", async () => {
+    const query = "diff::changedAny(foo,bar,(title))";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedAny",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing("diff::changedAny(foo,bar,(title,description))", async () => {
     const query = "diff::changedAny(foo,bar,(title,description))";
 
-    expect(() => parse(query)).toThrow("Invalid selector syntax");
-    expectType<Parse<typeof query>>().toStrictEqual<never>();
+    const tree = parse(query);
 
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedAny",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
-  it("diff::changedOnly(foo,bar,title)", async () => {
+  it.failing("diff::changedAny(foo,bar,title.description)", async () => {
+    const query = "diff::changedAny(foo,bar,title.description)";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedAny",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing('diff::changedAny(foo,bar,title["description"])', async () => {
+    const query = 'diff::changedAny(foo,bar,title["description"])';
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedAny",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing("diff::changedAny(foo,bar,title[])", async () => {
+    const query = "diff::changedAny(foo,bar,title[])";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedAny",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing('diff::changedAny(foo,bar,title[_type=="foo"])', async () => {
+    const query = 'diff::changedAny(foo,bar,title[_type=="foo"])';
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedAny",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing("diff::changedAny(foo,bar,title.(description))", async () => {
+    const query = "diff::changedAny(foo,bar,title.(description))";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedAny",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing(
+    "diff::changedAny(foo,bar,title.(description,description2))",
+    async () => {
+      const query =
+        "diff::changedAny(foo,bar,title.(description,description2))";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        args: [
+          { name: "foo", type: "AccessAttribute" },
+          { name: "bar", type: "AccessAttribute" },
+          { type: "Selector" },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "changedAny",
+        namespace: "diff",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...expectedTree,
+        func: expect.any(Function),
+      });
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = false as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    }
+  );
+
+  it.failing("diff::changedOnly(foo,bar,title)", async () => {
     const query = "diff::changedOnly(foo,bar,title)";
 
     const tree = parse(query);
@@ -68,20 +349,300 @@ describe("diff", () => {
       func: expect.any(Function),
     });
     expectType<Parse<typeof query>>().toStrictEqual<
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/194
       WritableDeep<typeof expectedTree>
     >();
 
-    await expect(async () => evaluate(tree)).rejects.toThrow("not implemented");
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
 
-  it("diff::changedOnly(foo,bar,(title,description))", async () => {
+  it.failing("diff::changedOnly(foo,bar,(title))", async () => {
+    const query = "diff::changedOnly(foo,bar,(title))";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedOnly",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing("diff::changedOnly(foo,bar,(title,description))", async () => {
     const query = "diff::changedOnly(foo,bar,(title,description))";
 
-    expect(() => parse(query)).toThrow("Invalid selector syntax");
-    expectType<Parse<typeof query>>().toStrictEqual<never>();
+    const tree = parse(query);
 
-    expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedOnly",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
   });
+
+  it.failing("diff::changedOnly(foo,bar,title.description)", async () => {
+    const query = "diff::changedOnly(foo,bar,title.description)";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedOnly",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing('diff::changedOnly(foo,bar,title["description"])', async () => {
+    const query = 'diff::changedOnly(foo,bar,title["description"])';
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedOnly",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing("diff::changedOnly(foo,bar,title[])", async () => {
+    const query = "diff::changedOnly(foo,bar,title[])";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedOnly",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing('diff::changedOnly(foo,bar,title[_type=="foo"])', async () => {
+    const query = 'diff::changedOnly(foo,bar,title[_type=="foo"])';
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedOnly",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing("diff::changedOnly(foo,bar,title.(description))", async () => {
+    const query = "diff::changedOnly(foo,bar,title.(description))";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [
+        { name: "foo", type: "AccessAttribute" },
+        { name: "bar", type: "AccessAttribute" },
+        { type: "Selector" },
+      ],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "changedOnly",
+      namespace: "diff",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = false as boolean;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
+  it.failing(
+    "diff::changedOnly(foo,bar,title.(description,description2))",
+    async () => {
+      const query =
+        "diff::changedOnly(foo,bar,title.(description,description2))";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        args: [
+          { name: "foo", type: "AccessAttribute" },
+          { name: "bar", type: "AccessAttribute" },
+          { type: "Selector" },
+        ],
+        func: (() => {}) as unknown as GroqFunction,
+        name: "changedOnly",
+        namespace: "diff",
+        type: "FuncCall",
+      } as const;
+
+      expect(tree).toStrictEqual({
+        ...expectedTree,
+        func: expect.any(Function),
+      });
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = false as boolean;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedResult>
+      >();
+    }
+  );
 });
