@@ -11,6 +11,47 @@ describe("delta", () => {
   it("delta::operation() (without delta)", async () => {
     const query = "delta::operation()";
 
+    const tree = parse(query);
+
+    const expectedTree = {
+      args: [],
+      func: (() => {}) as unknown as GroqFunction,
+      name: "operation",
+      namespace: "delta",
+      type: "FuncCall",
+    } as const;
+
+    expect(tree).toStrictEqual({
+      ...expectedTree,
+      func: expect.any(Function),
+    });
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const delta = {
+      after: null,
+      before: null,
+    } as const;
+
+    const result = await (await evaluate(tree, delta)).get();
+
+    const expectedResult = null;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        ScopeFromPartialContext<{
+          delta: WritableDeep<typeof delta>;
+        }>
+      >
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+  });
+
+  it("delta::operation() (without before or after)", async () => {
+    const query = "delta::operation()";
+
     const tree = parse(query, { mode: "delta" });
 
     const expectedTree = {

@@ -18,6 +18,19 @@ describe("global", () => {
   it("after() (without delta)", async () => {
     const query = "after()";
 
+    expect(() => parse(query)).toThrow("Undefined function: after");
+    expectType<Parse<typeof query>>()
+      // @ts-expect-error -- TODO Parse doesn't care about mode: "delta"
+      .toStrictEqual<never>();
+
+    expectType<ExecuteQuery<typeof query>>()
+      // @ts-expect-error -- TODO Parse doesn't care about mode: "delta"
+      .toStrictEqual<never>();
+  });
+
+  it("after() (without after)", async () => {
+    const query = "after()";
+
     const tree = parse(query, { mode: "delta" });
 
     const expectedTree = {
@@ -126,6 +139,19 @@ describe("global", () => {
   });
 
   it("before() (without delta)", async () => {
+    const query = "before()";
+
+    expect(() => parse(query)).toThrow("Undefined function: before");
+    expectType<Parse<typeof query>>()
+      // @ts-expect-error -- TODO Parse doesn't care about mode: "delta"
+      .toStrictEqual<never>();
+
+    expectType<ExecuteQuery<typeof query>>()
+      // @ts-expect-error -- TODO Parse doesn't care about mode: "delta"
+      .toStrictEqual<never>();
+  });
+
+  it("before() (without before)", async () => {
     const query = "before()";
 
     const tree = parse(query, { mode: "delta" });
