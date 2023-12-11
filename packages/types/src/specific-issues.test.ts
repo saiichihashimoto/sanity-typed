@@ -145,16 +145,21 @@ describe("specific issues", () => {
         children: {
           _key: string;
           _type: "span";
-          marks?: string[];
+          marks: string[];
           text: string;
         }[];
         level?: number;
-        listItem?: string;
-        markDefs?: {
-          _key: string;
-          _type: string;
-        }[];
-        style?: string;
+        listItem?: "bullet" | "number";
+        markDefs: never[];
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
       }[];
     }>();
   });

@@ -1,5 +1,5 @@
 import type {
-  PortableTextMarkDefinition as PortableTextMarkDefinitionNative,
+  PortableTextMarkDefinition,
   PortableTextSpan as PortableTextSpanNative,
   TypedObject,
 } from "@portabletext/types";
@@ -14,7 +14,10 @@ import type {
   ArrayDefinition as ArrayDefinitionNative,
   ArrayRule,
   BlockDefinition as BlockDefinitionNative,
+  BlockListDefinition as BlockListDefinitionNative,
+  BlockMarksDefinition,
   BlockRule,
+  BlockStyleDefinition as BlockStyleDefinitionNative,
   BooleanDefinition as BooleanDefinitionNative,
   BooleanRule,
   ComposableOption,
@@ -65,7 +68,6 @@ import type {
   StringRule,
   TextDefinition as TextDefinitionNative,
   TextRule,
-  TitledListValue,
   TypeAliasDefinition as TypeAliasDefinitionNative,
   TypeReference as TypeReferenceNative,
   UrlDefinition as UrlDefinitionNative,
@@ -127,7 +129,7 @@ type ValidationBuilder<
   rule: WithRequired<false, Rule>
 ) => MaybeArray<WithRequired<TRequired | false, Rule>>;
 
-type DefinitionBase<
+export type DefinitionBase<
   TRequired extends boolean,
   Value,
   Rule extends RuleDef<Rule, Value>
@@ -198,22 +200,28 @@ export type GeopointDefinition<TRequired extends boolean> = MergeOld<
   DefinitionBase<TRequired, GeopointValue, GeopointRule>
 >;
 
+export type TitledListValue<T> = {
+  _key?: string;
+  title: string;
+  value: T;
+};
+
 export type MaybeTitledListValue<T> = T | TitledListValue<T>;
 
 export type NumberDefinition<
-  TOptionsHelper,
+  TNumberValue extends number,
   TRequired extends boolean
 > = MergeOld<
   NumberDefinitionNative,
   DefinitionBase<
     TRequired,
-    TOptionsHelper & number,
-    RewriteValue<TOptionsHelper & number, NumberRule>
+    TNumberValue,
+    RewriteValue<TNumberValue, NumberRule>
   > & {
     options?: MergeOld<
       NumberOptions,
       {
-        list?: MaybeTitledListValue<TOptionsHelper>[];
+        list?: MaybeTitledListValue<TNumberValue>[];
       }
     >;
   }
@@ -306,15 +314,15 @@ export type RegexRule<Rule extends RuleDef<Rule, any>> = MergeOld<
 >;
 
 export type StringDefinition<
-  TOptionsHelper,
+  TStringValue extends string,
   TRequired extends boolean
 > = MergeOld<
   StringDefinitionNative,
   DefinitionBase<
     TRequired,
-    TOptionsHelper & string,
+    TStringValue,
     RewriteValue<
-      TOptionsHelper & string,
+      TStringValue,
       // @ts-expect-error -- IDK
       RegexRule<StringRule>
     >
@@ -322,7 +330,7 @@ export type StringDefinition<
     options?: MergeOld<
       StringOptions,
       {
-        list?: MaybeTitledListValue<TOptionsHelper>[];
+        list?: MaybeTitledListValue<TStringValue>[];
       }
     >;
   }
@@ -360,28 +368,48 @@ export type ArrayDefinition<
   }
 >;
 
-export type PortableTextMarkDefinition =
-  OmitIndexSignature<PortableTextMarkDefinitionNative>;
-
-export type PortableTextSpan = SetRequired<PortableTextSpanNative, "_key">;
+export type PortableTextSpan = SetRequired<
+  PortableTextSpanNative,
+  "_key" | "marks"
+>;
 
 export type PortableTextBlock<
-  M extends PortableTextMarkDefinitionNative = PortableTextMarkDefinition,
+  M extends PortableTextMarkDefinition = PortableTextMarkDefinition,
   C extends TypedObject = PortableTextSpan,
   S extends string = string,
   L extends string = string
 > = {
   _type: "block";
   children: C[];
+  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
   level?: number;
   listItem?: L;
-  markDefs?: M[];
-  style?: S;
+  markDefs: M[];
+  style: S;
 };
 // TODO PortableTextBlock is too complex for some reason https://github.com/saiichihashimoto/sanity-typed/issues/415
 // > = Omit<PortableTextBlockNative<M, C, S, L> & { _type: "block" }, "_key">;
 
+export type BlockStyleDefinition<Value extends string> = MergeOld<
+  BlockStyleDefinitionNative,
+  {
+    value: Value;
+  }
+>;
+
+export type BlockListDefinition<Value extends string> = MergeOld<
+  BlockListDefinitionNative,
+  {
+    value: Value;
+  }
+>;
+
 export type BlockDefinition<
+  TBlockStyle extends string,
+  TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TRequired extends boolean
 > = MergeOld<
@@ -389,24 +417,58 @@ export type BlockDefinition<
   DefinitionBase<
     TRequired,
     PortableTextBlock<
-      PortableTextMarkDefinition,
+      TBlockMarkAnnotation extends never
+        ? never
+        : InferRawValue<TBlockMarkAnnotation> & { _key: string },
       | PortableTextSpan
       | (TMemberDefinition extends never
           ? never
-          : InferRawValue<TMemberDefinition> & { _key: string })
+          : InferRawValue<TMemberDefinition> & { _key: string }),
+      string extends TBlockStyle
+        ? "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal"
+        : TBlockStyle,
+      string extends TBlockListItem ? "bullet" | "number" : TBlockListItem
     >,
     RewriteValue<
       PortableTextBlock<
-        PortableTextMarkDefinition,
+        TBlockMarkAnnotation extends never
+          ? never
+          : InferRawValue<TBlockMarkAnnotation> & { _key: string },
         | PortableTextSpan
         | (TMemberDefinition extends never
             ? never
-            : InferRawValue<TMemberDefinition> & { _key: string })
+            : InferRawValue<TMemberDefinition> & { _key: string }),
+        string extends TBlockStyle
+          ? "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal"
+          : TBlockStyle,
+        string extends TBlockListItem ? "bullet" | "number" : TBlockListItem
       >,
       BlockRule
     >
   > & {
+    lists?: BlockListDefinition<
+      TBlockListItem &
+        (IsStringLiteral<TBlockListItem> extends false
+          ? {
+              [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+            }
+          : unknown)
+    >[];
+    marks?: MergeOld<
+      BlockMarksDefinition,
+      {
+        annotations?: TBlockMarkAnnotation[];
+      }
+    >;
     of?: TupleOfLength<TMemberDefinition, 1>;
+    styles?: BlockStyleDefinition<
+      TBlockStyle &
+        (IsStringLiteral<TBlockStyle> extends false
+          ? {
+              [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+            }
+          : unknown)
+    >[];
   }
 >;
 
@@ -533,7 +595,7 @@ export type ImageValue<
 >;
 
 export type ImageDefinition<
-  TOptionsHelper,
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -543,15 +605,9 @@ export type ImageDefinition<
   ImageDefinitionNative,
   DefinitionBase<
     TRequired,
-    ImageValue<
-      TOptionsHelper extends boolean ? TOptionsHelper : false,
-      TFieldDefinition
-    >,
+    ImageValue<boolean extends THotspot ? false : THotspot, TFieldDefinition>,
     RewriteValue<
-      ImageValue<
-        TOptionsHelper extends boolean ? TOptionsHelper : false,
-        TFieldDefinition
-      >,
+      ImageValue<boolean extends THotspot ? false : THotspot, TFieldDefinition>,
       ImageRule
     >
   > & {
@@ -559,15 +615,22 @@ export type ImageDefinition<
     options?: MergeOld<
       ImageOptions,
       {
-        hotspot?: TOptionsHelper;
+        hotspot?: THotspot;
       }
     >;
   }
 >;
 
-export type IntrinsicDefinitions<
-  TOptionsHelper,
+type IntrinsicDefinitions<
+  TNumberValue extends number,
+  TStringValue extends string,
   TReferenced extends string,
+  TBlockStyle extends string,
+  TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -576,7 +639,13 @@ export type IntrinsicDefinitions<
   TRequired extends boolean
 > = {
   array: ArrayDefinition<TMemberDefinition, TRequired>;
-  block: BlockDefinition<TMemberDefinition, TRequired>;
+  block: BlockDefinition<
+    TBlockStyle,
+    TBlockListItem,
+    TBlockMarkAnnotation,
+    TMemberDefinition,
+    TRequired
+  >;
   boolean: BooleanDefinition<TRequired>;
   crossDatasetReference: CrossDatasetReferenceDefinition<TRequired>;
   date: DateDefinition<TRequired>;
@@ -585,18 +654,18 @@ export type IntrinsicDefinitions<
   email: EmailDefinition<TRequired>;
   file: FileDefinition<TFieldDefinition, TRequired>;
   geopoint: GeopointDefinition<TRequired>;
-  image: ImageDefinition<TOptionsHelper, TFieldDefinition, TRequired>;
-  number: NumberDefinition<TOptionsHelper, TRequired>;
+  image: ImageDefinition<THotspot, TFieldDefinition, TRequired>;
+  number: NumberDefinition<TNumberValue, TRequired>;
   object: ObjectDefinition<TFieldDefinition, TRequired>;
   reference: ReferenceDefinition<TReferenced, TRequired>;
   slug: SlugDefinition<TRequired>;
-  string: StringDefinition<TOptionsHelper, TRequired>;
+  string: StringDefinition<TStringValue, TRequired>;
   text: TextDefinition<TRequired>;
   url: UrlDefinition<TRequired>;
 };
 
 export type IntrinsicTypeName = Simplify<
-  keyof IntrinsicDefinitions<any, any, any, any, any>
+  keyof IntrinsicDefinitions<any, any, any, any, any, any, any, any, any, any>
 >;
 
 declare const aliasedType: unique symbol;
@@ -608,8 +677,15 @@ type AliasValue<TType extends string> = {
 export type TypeAliasDefinition<
   TType extends string,
   TAlias extends IntrinsicTypeName,
-  TOptionsHelper,
+  TNumberValue extends number,
+  TStringValue extends string,
   TReferenced extends string,
+  TBlockStyle extends string,
+  TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -621,8 +697,13 @@ export type TypeAliasDefinition<
   DefinitionBase<TRequired, AliasValue<TType>, any> & {
     options?: TAlias extends IntrinsicTypeName
       ? IntrinsicDefinitions<
-          TOptionsHelper,
+          TNumberValue,
+          TStringValue,
           TReferenced,
+          TBlockStyle,
+          TBlockListItem,
+          TBlockMarkAnnotation,
+          THotspot,
           TFieldDefinition,
           TMemberDefinition,
           TRequired
@@ -638,8 +719,15 @@ export type ArrayMemberDefinition<
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  TOptionsHelper,
+  TNumberValue extends number,
+  TStringValue extends string,
   TReferenced extends string,
+  TBlockStyle extends string,
+  TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -657,16 +745,26 @@ export type ArrayMemberDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TOptionsHelper,
+              TNumberValue,
+              TStringValue,
               TReferenced,
+              TBlockStyle,
+              TBlockListItem,
+              TBlockMarkAnnotation,
+              THotspot,
               TFieldDefinition,
               TMemberDefinition,
               any
             >[type] extends DefinitionBase<any, infer Value, infer Rule>
               ? MergeOld<
                   IntrinsicDefinitions<
-                    TOptionsHelper,
+                    TNumberValue,
+                    TStringValue,
                     TReferenced,
+                    TBlockStyle,
+                    TBlockListItem,
+                    TBlockMarkAnnotation,
+                    THotspot,
                     TFieldDefinition,
                     TMemberDefinition,
                     any
@@ -690,8 +788,13 @@ export type ArrayMemberDefinition<
                   >
                 >
               : IntrinsicDefinitions<
-                  TOptionsHelper,
+                  TNumberValue,
+                  TStringValue,
                   TReferenced,
+                  TBlockStyle,
+                  TBlockListItem,
+                  TBlockMarkAnnotation,
+                  THotspot,
                   TFieldDefinition,
                   TMemberDefinition,
                   any
@@ -706,8 +809,13 @@ export type ArrayMemberDefinition<
           TypeAliasDefinition<
             TType,
             TAlias,
-            TOptionsHelper,
+            TNumberValue,
+            TStringValue,
             TReferenced,
+            TBlockStyle,
+            TBlockListItem,
+            TBlockMarkAnnotation,
+            THotspot,
             TFieldDefinition,
             TMemberDefinition,
             any
@@ -743,8 +851,15 @@ export const makeDefineArrayMember =
     TName extends string,
     TAlias extends IntrinsicTypeName,
     TStrict extends StrictDefinition,
-    TReferenced extends string,
-    const TOptionsHelper,
+    const TNumberValue extends number,
+    const TStringValue extends string,
+    const TReferenced extends string,
+    const TBlockStyle extends string,
+    const TBlockListItem extends string,
+    TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+      name?: string;
+    } = never,
+    const THotspot extends boolean = boolean,
     TFieldDefinition extends DefinitionBase<any, any, any> & {
       name: string;
       [required]?: boolean;
@@ -758,8 +873,13 @@ export const makeDefineArrayMember =
       TName,
       TAlias,
       TStrict,
-      TOptionsHelper,
+      TNumberValue,
+      TStringValue,
       TReferenced,
+      TBlockStyle,
+      TBlockListItem,
+      TBlockMarkAnnotation,
+      THotspot,
       TFieldDefinition,
       TMemberDefinition,
       AllowArrays
@@ -778,8 +898,15 @@ export type FieldDefinition<
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  TOptionsHelper,
+  TNumberValue extends number,
+  TStringValue extends string,
   TReferenced extends string,
+  TBlockStyle extends string,
+  TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -798,8 +925,13 @@ export type FieldDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TOptionsHelper,
+              TNumberValue,
+              TStringValue,
               TReferenced,
+              TBlockStyle,
+              TBlockListItem,
+              TBlockMarkAnnotation,
+              THotspot,
               TFieldDefinition,
               TMemberDefinition,
               TRequired
@@ -812,8 +944,13 @@ export type FieldDefinition<
     : TypeAliasDefinition<
         TType,
         TAlias,
-        TOptionsHelper,
+        TNumberValue,
+        TStringValue,
         TReferenced,
+        TBlockStyle,
+        TBlockListItem,
+        TBlockMarkAnnotation,
+        THotspot,
         TFieldDefinition,
         TMemberDefinition,
         TRequired
@@ -829,8 +966,15 @@ export const defineField = <
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  const TOptionsHelper,
-  TReferenced extends string,
+  const TNumberValue extends number,
+  const TStringValue extends string,
+  const TReferenced extends string,
+  const TBlockStyle extends string,
+  const TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  } = never,
+  const THotspot extends boolean = boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -845,8 +989,13 @@ export const defineField = <
     TName,
     TAlias,
     TStrict,
-    TOptionsHelper,
+    TNumberValue,
+    TStringValue,
     TReferenced,
+    TBlockStyle,
+    TBlockListItem,
+    TBlockMarkAnnotation,
+    THotspot,
     TFieldDefinition,
     TMemberDefinition,
     TRequired
@@ -859,8 +1008,15 @@ export type TypeDefinition<
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  TOptionsHelper,
+  TNumberValue extends number,
+  TStringValue extends string,
   TReferenced extends string,
+  TBlockStyle extends string,
+  TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  },
+  THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -873,8 +1029,13 @@ export type TypeDefinition<
         {
           [type in IntrinsicTypeName]: Omit<
             IntrinsicDefinitions<
-              TOptionsHelper,
+              TNumberValue,
+              TStringValue,
               TReferenced,
+              TBlockStyle,
+              TBlockListItem,
+              TBlockMarkAnnotation,
+              THotspot,
               TFieldDefinition,
               TMemberDefinition,
               any
@@ -887,8 +1048,13 @@ export type TypeDefinition<
     : TypeAliasDefinition<
         TType,
         TAlias,
-        TOptionsHelper,
+        TNumberValue,
+        TStringValue,
         TReferenced,
+        TBlockStyle,
+        TBlockListItem,
+        TBlockMarkAnnotation,
+        THotspot,
         TFieldDefinition,
         TMemberDefinition,
         any
@@ -903,8 +1069,15 @@ export const defineType = <
   TName extends string,
   TAlias extends IntrinsicTypeName,
   TStrict extends StrictDefinition,
-  const TOptionsHelper,
-  TReferenced extends string,
+  const TNumberValue extends number,
+  const TStringValue extends string,
+  const TReferenced extends string,
+  const TBlockStyle extends string,
+  const TBlockListItem extends string,
+  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    name?: string;
+  } = never,
+  const THotspot extends boolean = boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -918,8 +1091,13 @@ export const defineType = <
     TName,
     TAlias,
     TStrict,
-    TOptionsHelper,
+    TNumberValue,
+    TStringValue,
     TReferenced,
+    TBlockStyle,
+    TBlockListItem,
+    TBlockMarkAnnotation,
+    THotspot,
     TFieldDefinition,
     TMemberDefinition
   >,
@@ -932,6 +1110,11 @@ export const defineType = <
 
 export type ConfigBase<
   TTypeDefinition extends TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
     any,
     any,
     any,
@@ -970,6 +1153,11 @@ export type PluginOptions<
     any,
     any,
     any,
+    any,
+    any,
+    any,
+    any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>
@@ -985,23 +1173,31 @@ export const definePlugin = <
     any,
     any,
     any,
+    any,
+    any,
+    any,
+    any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>,
-  TOptionsHelper = void
+  TOptions = void
 >(
   arg:
     | PluginOptions<TTypeDefinition, TPluginOptions>
-    | ((
-        options: TOptionsHelper
-      ) => PluginOptions<TTypeDefinition, TPluginOptions>)
+    | ((options: TOptions) => PluginOptions<TTypeDefinition, TPluginOptions>)
 ) =>
   definePluginNative(arg as any) as (
-    options: TOptionsHelper
+    options: TOptions
   ) => PluginOptions<TTypeDefinition, TPluginOptions>;
 
 type WorkspaceOptions<
   TTypeDefinition extends TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
     any,
     any,
     any,
@@ -1026,6 +1222,11 @@ export type Config<
     any,
     any,
     any,
+    any,
+    any,
+    any,
+    any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>
@@ -1041,6 +1242,11 @@ export type Config<
 
 export const defineConfig = <
   TTypeDefinition extends TypeDefinition<
+    any,
+    any,
+    any,
+    any,
+    any,
     any,
     any,
     any,
@@ -1101,6 +1307,11 @@ export type InferSchemaValues<
         AliasValue<TName>,
         InferSchemaValues<TPluginOptions> & {
           [TDefinition in TypeDefinition<
+            any,
+            any,
+            any,
+            any,
+            any,
             any,
             any,
             any,
@@ -1175,6 +1386,11 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
+                any,
+                any,
+                any,
+                any,
                 any
               >
             : never)
@@ -1190,6 +1406,11 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
+                any,
+                any,
+                any,
+                any,
                 any
               >
             : never)
@@ -1201,6 +1422,11 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 TName,
                 NonNullable<TAlias>,
                 TStrict,
+                any,
+                any,
+                any,
+                any,
+                any,
                 any,
                 any,
                 any,
@@ -1221,6 +1447,11 @@ export const castFromTyped = <Typed>(typed: Typed) =>
     infer TName extends string,
     infer TAlias extends IntrinsicTypeName,
     infer TStrict extends StrictDefinition,
+    any,
+    any,
+    any,
+    any,
+    any,
     any,
     any,
     any,
@@ -1245,6 +1476,11 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         any,
         any,
         any,
+        any,
+        any,
+        any,
+        any,
+        any,
         any
       >
     ? ReturnType<
@@ -1262,6 +1498,11 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         infer TName extends string,
         infer TAlias extends IntrinsicTypeName,
         infer TStrict extends StrictDefinition,
+        any,
+        any,
+        any,
+        any,
+        any,
         any,
         any,
         any,

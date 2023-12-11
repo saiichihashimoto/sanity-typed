@@ -11,9 +11,53 @@ import type {
 import type { MaybeArray } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<TType extends string> =
-  | ArrayMemberDefinition<TType, any, any, any, any, any, any, any, any>
-  | FieldDefinition<TType, any, any, any, any, any, any, any, any>
-  | TypeDefinition<TType, any, any, any, any, any, any, any>;
+  | ArrayMemberDefinition<
+      TType,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any
+    >
+  | FieldDefinition<
+      TType,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any
+    >
+  | TypeDefinition<
+      TType,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any
+    >;
 
 type ArgsObject = {
   [key in keyof UnionToIntersection<
