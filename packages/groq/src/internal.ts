@@ -47,6 +47,7 @@ import type {
   ProjectionNode,
   SelectAlternativeNode,
   SelectNode,
+  SelectorNode,
   SliceNode,
   ThisNode,
   ValueNode,
@@ -456,6 +457,9 @@ type IdentifierRest<TIdentifierRest extends string> = TIdentifierRest extends ""
   ? IdentifierRest<TIdentifierRestInner>
   : false;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Identifier
+ */
 type Identifier<TIdentifier extends string> = TIdentifier extends `${
   | Alpha
   | "_"}${infer TIdentifierRest}`
@@ -507,6 +511,8 @@ export type Geo =
   | Point
   | Polygon
   | Position;
+
+declare const ArbitrarySelectorValue: unique symbol;
 
 type Functions<
   TArgs extends any[],
@@ -578,6 +584,44 @@ type Functions<
    */
   delta: {
     /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedAny()
+     */
+    changedAny: TArgs extends [infer TSelector]
+      ? TSelector extends typeof ArbitrarySelectorValue
+        ? TScope extends {
+            context: { delta: { after: infer TAfter; before: infer TBefore } };
+          }
+          ? TBefore extends null
+            ? never
+            : TAfter extends null
+            ? never
+            : Functions<
+                [TBefore, TAfter, TSelector],
+                TScope
+              >["diff"]["changedAny"]
+          : never
+        : never
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedOnly()
+     */
+    changedOnly: TArgs extends [infer TSelector]
+      ? TSelector extends typeof ArbitrarySelectorValue
+        ? TScope extends {
+            context: { delta: { after: infer TAfter; before: infer TBefore } };
+          }
+          ? TBefore extends null
+            ? never
+            : TAfter extends null
+            ? never
+            : Functions<
+                [TBefore, TAfter, TSelector],
+                TScope
+              >["diff"]["changedOnly"]
+          : never
+        : never
+      : never;
+    /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_operation()
      */
     operation: TArgs extends []
@@ -591,6 +635,27 @@ type Functions<
           : TAfter extends null
           ? "delete"
           : "update"
+        : never
+      : never;
+  };
+  /**
+   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Diff-namespace
+   */
+  diff: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedAny()
+     */
+    changedAny: TArgs extends [any, any, infer TSelector]
+      ? TSelector extends typeof ArbitrarySelectorValue
+        ? boolean
+        : never
+      : never;
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedOnly()
+     */
+    changedOnly: TArgs extends [any, any, infer TSelector]
+      ? TSelector extends typeof ArbitrarySelectorValue
+        ? boolean
         : never
       : never;
   };
@@ -840,6 +905,9 @@ type Functions<
   };
 };
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Asc
+ */
 type Asc<TExpression extends string> = TExpression extends `${infer TBase} asc`
   ? ParseInner<TBase> extends never
     ? never
@@ -849,6 +917,9 @@ type Asc<TExpression extends string> = TExpression extends `${infer TBase} asc`
       }
   : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Desc
+ */
 type Desc<TExpression extends string> =
   TExpression extends `${infer TBase} desc`
     ? ParseInner<TBase> extends never
@@ -859,6 +930,9 @@ type Desc<TExpression extends string> =
         }
     : never;
 
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Pair
+ */
 type Pair<TExpression extends string> =
   TExpression extends `${infer TCondition}=>${infer TValue}`
     ? ParseInner<TCondition> extends never
@@ -872,36 +946,142 @@ type Pair<TExpression extends string> =
         }
     : never;
 
-type FuncArgParse<TExpression extends string, TFuncFullName extends string> =
-  | ParseInner<TExpression>
-  | (TFuncFullName extends "order"
-      ? Asc<TExpression> | Desc<TExpression>
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ConstantEvaluate()
+ */
+type ConstantEvaluate<TNode extends ExprNode> =
+  // HACK Not sure if giving a never scope works! https://github.com/sanity-io/groq-js/blob/main/src/evaluator/constantEvaluate.ts#L48
+  Evaluate<TNode, never>;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SelectorTuple
+ */
+type SelectorTupleInner<TExpression extends string> =
+  TExpression extends `${infer TFirst},${infer TRest}`
+    ? // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursion
+      Selector<TFirst> extends never
+      ? never
+      : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursion
+        Selector<TRest> | SelectorTupleInner<TRest>
+    : never;
+
+/**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Selector
+ */
+type Selector<TExpression extends string> =
+  | (TExpression extends `(${infer TInnerExpression})`
+      ? Selector<TInnerExpression> | SelectorTupleInner<TInnerExpression>
       : never)
-  | (TFuncFullName extends "select" ? Pair<TExpression> : never);
+  | (TExpression extends `${infer TSelector}.${infer TIdentifier}`
+      ? Selector<TSelector> extends never
+        ? never
+        : Identifier<TIdentifier> extends never
+        ? TIdentifier extends `(${infer TInnerExpression})`
+          ? Selector<TInnerExpression> | SelectorTupleInner<TInnerExpression>
+          : never
+        : { type: "Selector" }
+      : never)
+  | (TExpression extends `${infer TSelector}[${infer TBracketExpression}]`
+      ? Selector<TSelector> extends never
+        ? never
+        : TBracketExpression extends ""
+        ? { type: "Selector" }
+        : ConstantEvaluate<ParseInner<TBracketExpression>> extends never
+        ? never
+        : ConstantEvaluate<ParseInner<TBracketExpression>> extends number
+        ? never
+        : { type: "Selector" }
+      : never)
+  | (ThisAttribute<TExpression> extends never ? never : { type: "Selector" });
+
+type FuncArgCustomParse<
+  TExpression extends string,
+  TFuncLastArg extends boolean
+> = {
+  delta: {
+    changedAny: TFuncLastArg extends true
+      ? Selector<TExpression>
+      : ParseInner<TExpression>;
+    changedOnly: TFuncLastArg extends true
+      ? Selector<TExpression>
+      : ParseInner<TExpression>;
+  };
+  diff: {
+    changedAny: TFuncLastArg extends true
+      ? Selector<TExpression>
+      : ParseInner<TExpression>;
+    changedOnly: TFuncLastArg extends true
+      ? Selector<TExpression>
+      : ParseInner<TExpression>;
+  };
+  global: {
+    order: Asc<TExpression> | Desc<TExpression> | ParseInner<TExpression>;
+    select:
+      | Pair<TExpression>
+      | (TFuncLastArg extends true ? ParseInner<TExpression> : never);
+  };
+};
+
+type FuncArgParse<
+  TExpression extends string,
+  TFuncNamespace extends string,
+  TFuncName extends string,
+  TFuncLastArg extends boolean = false
+> = TFuncNamespace extends keyof FuncArgCustomParse<TExpression, TFuncLastArg>
+  ? TFuncName extends keyof FuncArgCustomParse<
+      TExpression,
+      TFuncLastArg
+    >[TFuncNamespace]
+    ? FuncArgCustomParse<TExpression, TFuncLastArg>[TFuncNamespace][TFuncName]
+    : ParseInner<TExpression>
+  : ParseInner<TExpression>;
 
 type FuncArgs<
   TArgs extends string,
-  TFuncFullName extends string,
+  TFuncNamespace extends string,
+  TFuncName extends string,
   _Prefix extends string = ""
 > = `${_Prefix}${TArgs}` extends ""
   ? []
   :
-      | (FuncArgParse<`${_Prefix}${TArgs}`, TFuncFullName> extends never
+      | (FuncArgParse<
+          `${_Prefix}${TArgs}`,
+          TFuncNamespace,
+          TFuncName,
+          true
+        > extends never
           ? never
-          : [FuncArgParse<`${_Prefix}${TArgs}`, TFuncFullName>])
+          : [
+              FuncArgParse<
+                `${_Prefix}${TArgs}`,
+                TFuncNamespace,
+                TFuncName,
+                true
+              >
+            ])
       | (TArgs extends `${infer TFuncArg},${infer TFuncArgs}`
           ?
-              | FuncArgs<TFuncArgs, TFuncFullName, `${_Prefix}${TFuncArg},`>
+              | FuncArgs<
+                  TFuncArgs,
+                  TFuncNamespace,
+                  TFuncName,
+                  `${_Prefix}${TFuncArg},`
+                >
               | (FuncArgParse<
                   `${_Prefix}${TFuncArg}`,
-                  TFuncFullName
+                  TFuncNamespace,
+                  TFuncName
                 > extends never
                   ? never
-                  : FuncArgs<TFuncArgs, TFuncFullName> extends never
+                  : FuncArgs<TFuncArgs, TFuncNamespace, TFuncName> extends never
                   ? never
                   : [
-                      FuncArgParse<`${_Prefix}${TFuncArg}`, TFuncFullName>,
-                      ...FuncArgs<TFuncArgs, TFuncFullName>
+                      FuncArgParse<
+                        `${_Prefix}${TFuncArg}`,
+                        TFuncNamespace,
+                        TFuncName
+                      >,
+                      ...FuncArgs<TFuncArgs, TFuncNamespace, TFuncName>
                     ])
           : never);
 
@@ -940,11 +1120,13 @@ type FuncCall<TExpression extends string> =
   TExpression extends `${infer TFuncFullName}(${infer TFuncCallArgs})`
     ? TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncName}`
       ? TFuncNamespace extends keyof Functions<any, any>
-        ? FuncArgs<TFuncCallArgs, TFuncNamespace> extends never
+        ? FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName> extends never
           ? never
           : TFuncName extends keyof Functions<any, any>[TFuncNamespace]
           ? {
-              args: Simplify<FuncArgs<TFuncCallArgs, TFuncNamespace>>;
+              args: Simplify<
+                FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>
+              >;
               func: GroqFunction;
               name: TFuncName;
               namespace: TFuncNamespace;
@@ -952,14 +1134,14 @@ type FuncCall<TExpression extends string> =
             }
           : FunctionsToOtherNodes<
               TFuncName,
-              Simplify<FuncArgs<TFuncCallArgs, TFuncNamespace>>
+              Simplify<FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>>
             >
         : never
-      : FuncArgs<TFuncCallArgs, TFuncFullName> extends never
+      : FuncArgs<TFuncCallArgs, "global", TFuncFullName> extends never
       ? never
       : TFuncFullName extends keyof Functions<any, any>["global"]
       ? {
-          args: Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>;
+          args: Simplify<FuncArgs<TFuncCallArgs, "global", TFuncFullName>>;
           func: GroqFunction;
           name: TFuncFullName;
           namespace: "global";
@@ -967,7 +1149,7 @@ type FuncCall<TExpression extends string> =
         }
       : FunctionsToOtherNodes<
           TFuncFullName,
-          Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>
+          Simplify<FuncArgs<TFuncCallArgs, "global", TFuncFullName>>
         >
     : never;
 
@@ -1040,13 +1222,6 @@ type ArrayPostfix<TExpression extends string> =
       ? never
       : { base: Exclude<ParseInner<TBase>, Level10>; type: "ArrayCoerce" }
     : never;
-
-/**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ConstantEvaluate()
- */
-type ConstantEvaluate<TNode extends ExprNode> =
-  // HACK Not sure if giving a never scope works! https://github.com/sanity-io/groq-js/blob/main/src/evaluator/constantEvaluate.ts#L48
-  Evaluate<TNode, never>;
 
 type KnownArrayNode =
   | ArrayCoerceNode
@@ -1269,37 +1444,68 @@ type TraversalExpression<TExpression extends string> =
   | SquareBracketTraversal<TExpression>;
 
 /**
+ * Whenever a tuple is reordered, we can't be certain what the types are.
+ * So each member is a union of all members.
+ * We also map instead of TArray[number][] to ensure the length of the tuple is preserved.
+ */
+type TupleToUnionArray<TArray extends any[]> = {
+  [Index in keyof TArray]: TArray[number];
+};
+
+type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
+  global: {
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#order()
+     */
+    order: TArgs extends [] ? never : TupleToUnionArray<TBase>;
+    // HACK As long as the args evaluate, we don't actually use them so... why bother evaluating boost at all?
+    /**
+     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#score()
+     */
+    score: TArgs extends []
+      ? never
+      : TBase extends (infer Element)[]
+      ? (IsPlainObject<Element> extends false
+          ? never
+          : Element & { _score: number })[]
+      : never;
+  };
+};
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#PipeFuncCall
  */
 type PipeFuncCall<TExpression extends string> =
   TExpression extends `${infer TBase}|${infer TFuncFullName}(${infer TFuncCallArgs})`
     ? Parse<TBase> extends never
       ? never
-      : FuncArgs<TFuncCallArgs, TFuncFullName> extends never
+      : TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncName}`
+      ? TFuncNamespace extends keyof PipeFunctions<any, any>
+        ? FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName> extends never
+          ? never
+          : TFuncName extends keyof PipeFunctions<any, any>[TFuncNamespace]
+          ? {
+              args: Simplify<
+                FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>
+              >;
+              base: Parse<TBase>;
+              func: GroqPipeFunction;
+              name: TFuncNamespace extends "global" ? TFuncName : TFuncFullName;
+              type: "PipeFuncCall";
+            }
+          : never
+        : never
+      : FuncArgs<TFuncCallArgs, "global", TFuncFullName> extends never
       ? never
-      : TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncIdentifier}`
-      ? Identifier<TFuncNamespace> extends never
-        ? never
-        : Identifier<TFuncIdentifier> extends never
-        ? never
-        : {
-            args: Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>;
-            base: Parse<TBase>;
-            func: GroqPipeFunction;
-            name: TFuncNamespace extends "global"
-              ? TFuncIdentifier
-              : TFuncFullName;
-            type: "PipeFuncCall";
-          }
-      : Identifier<TFuncFullName> extends never
-      ? never
-      : {
-          args: Simplify<FuncArgs<TFuncCallArgs, TFuncFullName>>;
+      : TFuncFullName extends keyof PipeFunctions<any, any>["global"]
+      ? {
+          args: Simplify<FuncArgs<TFuncCallArgs, "global", TFuncFullName>>;
           base: Parse<TBase>;
           func: GroqPipeFunction;
           name: TFuncFullName;
           type: "PipeFuncCall";
         }
+      : never
     : never;
 
 /**
@@ -2057,35 +2263,6 @@ type EvaluateParenthesis<
 > = TNode extends GroupNode ? Evaluate<TNode["base"], TScope> : never;
 
 /**
- * Whenever a tuple is reordered, we can't be certain what the types are.
- * So each member is a union of all members.
- * We also map instead of TArray[number][] to ensure the length of the tuple is preserved.
- */
-type TupleToUnionArray<TArray extends any[]> = {
-  [Index in keyof TArray]: TArray[number];
-};
-
-type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
-  global: {
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#order()
-     */
-    order: TArgs extends [] ? never : TupleToUnionArray<TBase>;
-    // HACK As long as the args evaluate, we don't actually use them so... why bother evaluating boost at all?
-    /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#score()
-     */
-    score: TArgs extends []
-      ? never
-      : TBase extends (infer Element)[]
-      ? (IsPlainObject<Element> extends false
-          ? never
-          : Element & { _score: number })[]
-      : never;
-  };
-};
-
-/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePipeFuncCall()
  */
 type EvaluatePipeFuncCall<
@@ -2190,6 +2367,13 @@ type EvaluateSelect<
   : never;
 
 /**
+ * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateSelector()
+ */
+type EvaluateSelector<TNode extends ExprNode> = TNode extends SelectorNode
+  ? typeof ArbitrarySelectorValue
+  : never;
+
+/**
  * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateSlice()
  */
 type EvaluateSlice<
@@ -2243,6 +2427,7 @@ type EvaluateExpression<
   | EvaluatePos<TNode, TScope>
   | EvaluateProjection<TNode, TScope>
   | EvaluateSelect<TNode, TScope>
+  | EvaluateSelector<TNode>
   | EvaluateSlice<TNode, TScope>
   | EvaluateThis<TNode, TScope>
   | EvaluateValue<TNode>;
