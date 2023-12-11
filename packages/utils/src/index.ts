@@ -1,3 +1,4 @@
+import { isPlainObject as isPlainObjectNative } from "lodash/fp";
 import type { IsNumericLiteral } from "type-fest";
 
 export type Negate<T> = T extends true ? false : true;
@@ -7,6 +8,9 @@ export type IsPlainObject<T> = T extends any[]
   : T extends object
   ? true
   : false;
+
+export const isPlainObject = <T>(value: T) =>
+  isPlainObjectNative(value) as IsPlainObject<T>;
 
 export type MaybeArray<T> = T | T[];
 
@@ -30,7 +34,7 @@ export type TupleOfLength<
           >
   : TupleOfLength<T, Min, Max, [T, ...Result]>;
 
-export const typedTernary = <Condition extends boolean, TrueValue, FalseValue>(
+export const ternary = <Condition extends boolean, TrueValue, FalseValue>(
   condition: Condition,
   ifTrue: () => TrueValue,
   ifFalse: () => FalseValue

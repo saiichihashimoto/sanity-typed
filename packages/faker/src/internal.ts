@@ -19,8 +19,8 @@ import type {
   TypeDefinition,
   referenced,
 } from "@sanity-typed/types/src/internal";
-import { typedTernary } from "@sanity-typed/utils";
-import type { IsPlainObject, MaybeArray, Negate } from "@sanity-typed/utils";
+import { isPlainObject, ternary } from "@sanity-typed/utils";
+import type { MaybeArray, Negate } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<
   TType extends string,
@@ -250,7 +250,7 @@ const numberFaker = <
     ? TNumberValue
     : never;
 
-  return typedTernary(
+  return ternary(
     Boolean(schemaType.options?.list?.length) as IsNumericLiteral<TNumberValue>,
     () => {
       const literals = (
@@ -436,7 +436,7 @@ const stringFaker = <
     ? TStringValue
     : never;
 
-  return typedTernary(
+  return ternary(
     Boolean(schemaType.options?.list?.length) as IsStringLiteral<TStringValue>,
     () => {
       const literals = (
@@ -543,21 +543,19 @@ const addType =
   (...args: Parameters<Fn>) => {
     const value: ReturnType<Fn> = fn(...args);
 
-    // TODO typedTernary
-    return (
-      typeof type !== "string"
-        ? value
-        : Array.isArray(value)
-        ? value
-        : // HACK
-        typeof value !== "object"
-        ? value
-        : { ...value, _type: type }
-    ) as IsStringLiteral<Type> extends false
-      ? typeof value
-      : IsPlainObject<typeof value> extends false
-      ? typeof value
-      : Omit<typeof value, "_type"> & { _type: Type };
+    return ternary(
+      (typeof type !== "string") as Negate<IsStringLiteral<Type>>,
+      () => value,
+      () =>
+        ternary(
+          isPlainObject(value),
+          () =>
+            ({ ...value, _type: type } as Omit<typeof value, "_type"> & {
+              _type: Type;
+            }),
+          () => value
+        )
+    );
   };
 
 const addTypeT = <
@@ -571,19 +569,17 @@ const addTypeT = <
 const addKey =
   <Fn extends (faker: Faker, count: number) => any>(fn: Fn) =>
   (faker: Faker, count: number) => {
-    const value = fn(faker, count);
+    const value: ReturnType<Fn> = fn(faker, count);
 
-    // TODO typedTernary
-    return (
-      Array.isArray(value)
-        ? value
-        : // HACK
-        typeof value !== "object"
-        ? value
-        : { ...value, _key: faker.database.mongodbObjectId() }
-    ) as IsPlainObject<ReturnType<Fn>> extends false
-      ? ReturnType<Fn>
-      : Omit<ReturnType<Fn>, "_key"> & { _key: string };
+    return ternary(
+      isPlainObject(value),
+      () =>
+        ({ ...value, _key: faker.database.mongodbObjectId() } as Omit<
+          ReturnType<Fn>,
+          "_key"
+        > & { _key: string }),
+      () => value
+    );
   };
 
 type MembersFaker<
@@ -916,7 +912,7 @@ const blockFieldsFaker = <
       : {
           // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
           level: 0,
-          listItem: typedTernary(
+          listItem: ternary(
             !lists?.length as Negate<IsStringLiteral<TBlockListItem>>,
             () => faker.helpers.arrayElement(["bullet", "number"] as const),
             () =>
@@ -927,7 +923,7 @@ const blockFieldsFaker = <
               )
           ),
         }),
-    style: typedTernary(
+    style: ternary(
       !styles?.length as Negate<IsStringLiteral<TBlockStyle>>,
       () =>
         faker.helpers.arrayElement([
@@ -1242,7 +1238,7 @@ const fieldsFaker = <
 
     return [
       field.name as string,
-      // TODO typedTernary
+      // TODO ternary
       traverseValidation(field).required
         ? (faker: Faker, index: number) => fieldFaker(index)
         : (faker: Faker, index: number) =>
@@ -1560,7 +1556,7 @@ const imageFaker = <
 
   return ((faker: Faker, index: number) => ({
     ...imageFieldsFaker(faker),
-    ...typedTernary(
+    ...ternary(
       !schema.options?.hotspot as Negate<
         TSchemaType extends SchemaTypeDefinition<
           "image",
