@@ -14,209 +14,218 @@ import { sanityConfigToZods } from "@sanity-typed/zod";
 import { customFaker } from ".";
 import { sanityConfigToFakerTyped } from "./internal";
 
-describe("slug", () => {
-  describe("defineArrayMember", () => {
-    it("mocks SlugValue", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "array",
-              of: [
-                defineArrayMember({
-                  type: "slug",
-                }),
-              ],
-            }),
-          ],
-        },
+describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
+  "slug %p",
+  ({ seed }) => {
+    describe("defineArrayMember", () => {
+      it("mocks SlugValue", () => {
+        const config = defineConfig({
+          dataset: "dataset",
+          projectId: "projectId",
+          schema: {
+            types: [
+              defineType({
+                name: "foo",
+                type: "array",
+                of: [
+                  defineArrayMember({
+                    type: "slug",
+                  }),
+                ],
+              }),
+            ],
+          },
+        });
+        const sanityFaker = sanityConfigToFakerTyped(config, {
+          seed,
+          faker: { locale: [en, base] },
+        });
+
+        const fake = sanityFaker.foo();
+
+        const zods = sanityConfigToZods(config);
+
+        expect(() => zods.foo.parse(fake)).not.toThrow();
+        expectType<(typeof fake)[number]>().toStrictEqual<
+          InferSchemaValues<typeof config>["foo"][number]
+        >();
       });
-      const sanityFaker = sanityConfigToFakerTyped(config, {
-        faker: { locale: [en, base] },
+
+      it("overwrites `_type` with `name`", () => {
+        const config = defineConfig({
+          dataset: "dataset",
+          projectId: "projectId",
+          schema: {
+            types: [
+              defineType({
+                name: "foo",
+                type: "array",
+                of: [
+                  defineArrayMember({
+                    name: "foo",
+                    type: "slug",
+                  }),
+                ],
+              }),
+            ],
+          },
+        });
+        const sanityFaker = sanityConfigToFakerTyped(config, {
+          seed,
+          faker: { locale: [en, base] },
+        });
+
+        const fake = sanityFaker.foo();
+
+        const zods = sanityConfigToZods(config);
+
+        expect(() => zods.foo.parse(fake)).not.toThrow();
+        expectType<(typeof fake)[number]>().toStrictEqual<
+          InferSchemaValues<typeof config>["foo"][number]
+        >();
       });
-
-      const fake = sanityFaker.foo();
-
-      const zods = sanityConfigToZods(config);
-
-      expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<(typeof fake)[number]>().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"][number]
-      >();
     });
 
-    it("overwrites `_type` with `name`", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "array",
-              of: [
-                defineArrayMember({
-                  name: "foo",
-                  type: "slug",
-                }),
-              ],
-            }),
-          ],
-        },
+    describe("defineField", () => {
+      it("mocks SlugValue", () => {
+        const config = defineConfig({
+          dataset: "dataset",
+          projectId: "projectId",
+          schema: {
+            types: [
+              defineType({
+                name: "foo",
+                type: "object",
+                fields: [
+                  defineField({
+                    name: "bar",
+                    type: "slug",
+                    validation: (Rule) => Rule.required(),
+                  }),
+                ],
+              }),
+            ],
+          },
+        });
+        const sanityFaker = sanityConfigToFakerTyped(config, {
+          seed,
+          faker: { locale: [en, base] },
+        });
+
+        const fake = sanityFaker.foo();
+
+        const zods = sanityConfigToZods(config);
+
+        expect(() => zods.foo.parse(fake)).not.toThrow();
+        expectType<(typeof fake)["bar"]>().toStrictEqual<
+          InferSchemaValues<typeof config>["foo"]["bar"]
+        >();
       });
-      const sanityFaker = sanityConfigToFakerTyped(config, {
-        faker: { locale: [en, base] },
-      });
-
-      const fake = sanityFaker.foo();
-
-      const zods = sanityConfigToZods(config);
-
-      expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<(typeof fake)[number]>().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"][number]
-      >();
-    });
-  });
-
-  describe("defineField", () => {
-    it("mocks SlugValue", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "object",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "slug",
-                  validation: (Rule) => Rule.required(),
-                }),
-              ],
-            }),
-          ],
-        },
-      });
-      const sanityFaker = sanityConfigToFakerTyped(config, {
-        faker: { locale: [en, base] },
-      });
-
-      const fake = sanityFaker.foo();
-
-      const zods = sanityConfigToZods(config);
-
-      expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<(typeof fake)["bar"]>().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"]["bar"]
-      >();
-    });
-  });
-
-  describe("defineType", () => {
-    it("mocks SlugValue", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "slug",
-            }),
-          ],
-        },
-      });
-      const sanityFaker = sanityConfigToFakerTyped(config, {
-        faker: { locale: [en, base] },
-      });
-
-      const fake = sanityFaker.foo();
-
-      const zods = sanityConfigToZods(config);
-
-      expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<typeof fake>().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"]
-      >();
     });
 
-    it("overwrites `_type` with defineArrayMember `name`", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "slug",
-            }),
-            defineType({
-              name: "bar",
-              type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
-            }),
-          ],
-        },
-      });
-      const sanityFaker = sanityConfigToFakerTyped(config, {
-        faker: { locale: [en, base] },
-      });
-
-      const fake = sanityFaker.foo();
-
-      const zods = sanityConfigToZods(config);
-
-      expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<typeof fake>().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"]
-      >();
-    });
-  });
-
-  describe("customMock", () => {
-    it("overrides mock", () => {
-      const config = defineConfig({
-        dataset: "dataset",
-        projectId: "projectId",
-        schema: {
-          types: [
-            customFaker(
+    describe("defineType", () => {
+      it("mocks SlugValue", () => {
+        const config = defineConfig({
+          dataset: "dataset",
+          projectId: "projectId",
+          schema: {
+            types: [
               defineType({
                 name: "foo",
                 type: "slug",
               }),
-              (faker, previous) => ({
-                ...previous,
-                current: "foo",
-              })
-            ),
-          ],
-        },
+            ],
+          },
+        });
+        const sanityFaker = sanityConfigToFakerTyped(config, {
+          seed,
+          faker: { locale: [en, base] },
+        });
+
+        const fake = sanityFaker.foo();
+
+        const zods = sanityConfigToZods(config);
+
+        expect(() => zods.foo.parse(fake)).not.toThrow();
+        expectType<typeof fake>().toStrictEqual<
+          InferSchemaValues<typeof config>["foo"]
+        >();
       });
-      const sanityFaker = sanityConfigToFakerTyped(config, {
-        faker: { locale: [en, base] },
+
+      it("overwrites `_type` with defineArrayMember `name`", () => {
+        const config = defineConfig({
+          dataset: "dataset",
+          projectId: "projectId",
+          schema: {
+            types: [
+              defineType({
+                name: "foo",
+                type: "slug",
+              }),
+              defineType({
+                name: "bar",
+                type: "array",
+                of: [
+                  defineArrayMember({
+                    name: "bar",
+                    type: "foo",
+                  }),
+                ],
+              }),
+            ],
+          },
+        });
+        const sanityFaker = sanityConfigToFakerTyped(config, {
+          seed,
+          faker: { locale: [en, base] },
+        });
+
+        const fake = sanityFaker.foo();
+
+        const zods = sanityConfigToZods(config);
+
+        expect(() => zods.foo.parse(fake)).not.toThrow();
+        expectType<typeof fake>().toStrictEqual<
+          InferSchemaValues<typeof config>["foo"]
+        >();
       });
-
-      const fake = sanityFaker.foo();
-
-      const zods = sanityConfigToZods(config);
-
-      expect(() => zods.foo.parse(fake)).not.toThrow();
-      expectType<typeof fake>().toStrictEqual<
-        InferSchemaValues<typeof config>["foo"]
-      >();
-      expect(fake).toHaveProperty("current", "foo");
     });
-  });
-});
+
+    describe("customMock", () => {
+      it("overrides mock", () => {
+        const config = defineConfig({
+          dataset: "dataset",
+          projectId: "projectId",
+          schema: {
+            types: [
+              customFaker(
+                defineType({
+                  name: "foo",
+                  type: "slug",
+                }),
+                (faker, previous) => ({
+                  ...previous,
+                  current: "foo",
+                })
+              ),
+            ],
+          },
+        });
+        const sanityFaker = sanityConfigToFakerTyped(config, {
+          seed,
+          faker: { locale: [en, base] },
+        });
+
+        const fake = sanityFaker.foo();
+
+        const zods = sanityConfigToZods(config);
+
+        expect(() => zods.foo.parse(fake)).not.toThrow();
+        expectType<typeof fake>().toStrictEqual<
+          InferSchemaValues<typeof config>["foo"]
+        >();
+        expect(fake).toHaveProperty("current", "foo");
+      });
+    });
+  }
+);

@@ -85,6 +85,7 @@ const config = defineConfig({
 });
 
 const sanityFaker = sanityConfigToFaker(config, {
+  seed,
   faker: { locale: [en, base] },
 });
 

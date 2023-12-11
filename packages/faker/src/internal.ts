@@ -511,31 +511,33 @@ const urlFaker = <
 
 type FakerOptions = ConstructorParameters<typeof Faker>[0];
 
-const instantiateFaker = (options: FakerOptions) => (path: string) => {
-  const faker = new Faker(options);
-  // eslint-disable-next-line fp/no-unused-expression -- Setting faker seed
-  faker.seed(
-    // https://stackoverflow.com/a/7616484
-    [...path].reduce(
-      (hash, chr) =>
-        Math.trunc(
-          // eslint-disable-next-line no-bitwise -- https://stackoverflow.com/a/7616484
-          (hash << 5) - hash + chr.codePointAt(0)!
-        ),
-      0
-    )
-  );
+const instantiateFaker =
+  (options: FakerOptions, seed: number) => (path: string) => {
+    const faker = new Faker(options);
+    // eslint-disable-next-line fp/no-unused-expression -- Setting faker seed
+    faker.seed(
+      // https://stackoverflow.com/a/7616484
+      [...path].reduce(
+        (hash, chr) =>
+          Math.trunc(
+            // eslint-disable-next-line no-bitwise -- https://stackoverflow.com/a/7616484
+            (hash << 5) - hash + chr.codePointAt(0)!
+          ),
+        seed
+      )
+    );
 
-  return <Fn extends (faker: Faker, index: number) => any>(fn: Fn) =>
-    (index: number) =>
-      fn(faker, index) as ReturnType<Fn>;
-};
+    return <Fn extends (faker: Faker, index: number) => any>(fn: Fn) =>
+      (index: number) =>
+        fn(faker, index) as ReturnType<Fn>;
+  };
 
 const instantiateFakerT = <Fn extends (faker: Faker, index: number) => any>(
   options: FakerOptions,
+  seed: number,
   path: string,
   fn: Fn
-) => instantiateFaker(options)(path)(fn);
+) => instantiateFaker(options, seed)(path)(fn);
 
 const addType =
   <const Type extends string | undefined>(type: Type) =>
@@ -2079,11 +2081,12 @@ export const sanityConfigToFakerTyped = <
   {
     faker,
     referencedChunkSize = 5,
-  }: { faker: FakerOptions; referencedChunkSize?: number }
+    seed = 0,
+  }: { faker: FakerOptions; referencedChunkSize?: number; seed?: number }
 ) => {
   const documentIdMemos: { [type: string]: string[] } = {};
 
-  const documentIdUndefined = instantiateFaker(faker)("<undefined>._id")(
+  const documentIdUndefined = instantiateFaker(faker, seed)("<undefined>._id")(
     (faker) => faker.string.uuid()
   );
   const documentIdFakerMemos: { [type: string]: (index: number) => string } =
@@ -2096,18 +2099,20 @@ export const sanityConfigToFakerTyped = <
     // eslint-disable-next-line fp/no-mutation -- Mutable
     documentIdFakerMemos[type] =
       documentIdFakerMemos[type] ??
-      instantiateFaker(faker)(`.${type}._id`)((faker: Faker, index: number) => {
-        // eslint-disable-next-line fp/no-loops -- Mutable
-        while ((documentIdMemos[type]?.length ?? 0) <= index) {
-          // eslint-disable-next-line fp/no-mutation -- Mutable
-          documentIdMemos[type] = [
-            ...(documentIdMemos[type] ?? []),
-            faker.string.uuid(),
-          ];
-        }
+      instantiateFaker(faker, seed)(`.${type}._id`)(
+        (faker: Faker, index: number) => {
+          // eslint-disable-next-line fp/no-loops -- Mutable
+          while ((documentIdMemos[type]?.length ?? 0) <= index) {
+            // eslint-disable-next-line fp/no-mutation -- Mutable
+            documentIdMemos[type] = [
+              ...(documentIdMemos[type] ?? []),
+              faker.string.uuid(),
+            ];
+          }
 
-        return documentIdMemos[type]![index]!;
-      });
+          return documentIdMemos[type]![index]!;
+        }
+      );
 
     return documentIdFakerMemos[type]!;
   };
@@ -2126,7 +2131,7 @@ export const sanityConfigToFakerTyped = <
 
   const fakersInner = sanityConfigToFakerInner(
     config,
-    instantiateFaker(faker),
+    instantiateFaker(faker, seed),
     documentIdFaker,
     referencedIdFaker
   );
