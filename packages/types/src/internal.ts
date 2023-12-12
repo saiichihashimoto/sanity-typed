@@ -373,19 +373,31 @@ export type PortableTextSpan = SetRequired<
   "marks"
 >;
 
+type BlockStyleDefault =
+  | "blockquote"
+  | "h1"
+  | "h2"
+  | "h3"
+  | "h4"
+  | "h5"
+  | "h6"
+  | "normal";
+
+type BlockListItemDefault = "bullet" | "number";
+
 export type PortableTextBlock<
-  M extends PortableTextMarkDefinition = PortableTextMarkDefinition,
-  C extends TypedObject = PortableTextSpan,
-  S extends string = string,
-  L extends string = string
+  TMarkDef extends PortableTextMarkDefinition = PortableTextMarkDefinition,
+  TChild extends TypedObject = PortableTextSpan,
+  TBlockStyle extends string = BlockStyleDefault,
+  TBlockListItem extends string = BlockListItemDefault
 > = {
   _type: "block";
-  children: C[];
+  children: TChild[];
   // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
   level?: number;
-  listItem?: L;
-  markDefs: M[];
-  style: S;
+  listItem?: TBlockListItem;
+  markDefs: TMarkDef[];
+  style: TBlockStyle;
 };
 // TODO PortableTextBlock is too complex for some reason https://github.com/saiichihashimoto/sanity-typed/issues/415
 // > = Omit<PortableTextBlockNative<M, C, S, L> & { _type: "block" }, "_key">;
@@ -417,31 +429,17 @@ export type BlockDefinition<
   DefinitionBase<
     TRequired,
     PortableTextBlock<
-      TBlockMarkAnnotation extends never
-        ? never
-        : InferRawValue<TBlockMarkAnnotation>,
-      | PortableTextSpan
-      | (TMemberDefinition extends never
-          ? never
-          : InferRawValue<TMemberDefinition>),
-      string extends TBlockStyle
-        ? "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal"
-        : TBlockStyle,
-      string extends TBlockListItem ? "bullet" | "number" : TBlockListItem
+      InferRawValue<TBlockMarkAnnotation>,
+      InferRawValue<TMemberDefinition> | PortableTextSpan,
+      TBlockStyle,
+      TBlockListItem
     >,
     RewriteValue<
       PortableTextBlock<
-        TBlockMarkAnnotation extends never
-          ? never
-          : InferRawValue<TBlockMarkAnnotation>,
-        | PortableTextSpan
-        | (TMemberDefinition extends never
-            ? never
-            : InferRawValue<TMemberDefinition>),
-        string extends TBlockStyle
-          ? "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal"
-          : TBlockStyle,
-        string extends TBlockListItem ? "bullet" | "number" : TBlockListItem
+        InferRawValue<TBlockMarkAnnotation>,
+        InferRawValue<TMemberDefinition> | PortableTextSpan,
+        TBlockStyle,
+        TBlockListItem
       >,
       BlockRule
     >
@@ -579,7 +577,7 @@ type ImageValueExtra = {
 };
 
 export type ImageValue<
-  THotspot extends boolean = boolean,
+  THotspot extends boolean = false,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -587,11 +585,7 @@ export type ImageValue<
 > = Simplify<
   ImageValueBase &
     ObjectValue<TFieldDefinition> &
-    (boolean extends THotspot
-      ? Partial<ImageValueExtra>
-      : THotspot extends true
-      ? ImageValueExtra
-      : unknown)
+    (THotspot extends true ? ImageValueExtra : unknown)
 >;
 
 export type ImageDefinition<
@@ -605,11 +599,8 @@ export type ImageDefinition<
   ImageDefinitionNative,
   DefinitionBase<
     TRequired,
-    ImageValue<boolean extends THotspot ? false : THotspot, TFieldDefinition>,
-    RewriteValue<
-      ImageValue<boolean extends THotspot ? false : THotspot, TFieldDefinition>,
-      ImageRule
-    >
+    ImageValue<THotspot, TFieldDefinition>,
+    RewriteValue<ImageValue<THotspot, TFieldDefinition>, ImageRule>
   > & {
     fields?: TFieldDefinition[];
     options?: MergeOld<
@@ -854,12 +845,12 @@ export const makeDefineArrayMember =
     const TNumberValue extends number,
     const TStringValue extends string,
     const TReferenced extends string,
-    const TBlockStyle extends string,
-    const TBlockListItem extends string,
+    const TBlockStyle extends string = BlockStyleDefault,
+    const TBlockListItem extends string = BlockListItemDefault,
     TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
       name?: string;
     } = never,
-    const THotspot extends boolean = boolean,
+    const THotspot extends boolean = false,
     TFieldDefinition extends DefinitionBase<any, any, any> & {
       name: string;
       [required]?: boolean;
@@ -969,12 +960,12 @@ export const defineField = <
   const TNumberValue extends number,
   const TStringValue extends string,
   const TReferenced extends string,
-  const TBlockStyle extends string,
-  const TBlockListItem extends string,
+  const TBlockStyle extends string = BlockStyleDefault,
+  const TBlockListItem extends string = BlockListItemDefault,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never,
-  const THotspot extends boolean = boolean,
+  const THotspot extends boolean = false,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
@@ -1072,12 +1063,12 @@ export const defineType = <
   const TNumberValue extends number,
   const TStringValue extends string,
   const TReferenced extends string,
-  const TBlockStyle extends string,
-  const TBlockListItem extends string,
+  const TBlockStyle extends string = BlockStyleDefault,
+  const TBlockListItem extends string = BlockListItemDefault,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never,
-  const THotspot extends boolean = boolean,
+  const THotspot extends boolean = false,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
