@@ -171,16 +171,16 @@ describe("specific issues", () => {
       schema: {
         types: [
           defineType({
-            type: "object",
             name: "foo",
+            type: "object",
             fields: [
-              defineType({
+              defineField({
                 name: "bar",
                 type: "array",
                 of: [
                   defineArrayMember({
-                    type: "block",
                     name: "baz",
+                    type: "block",
                     marks: {
                       annotations: [
                         defineArrayMember({
@@ -204,7 +204,34 @@ describe("specific issues", () => {
       },
     });
 
-    // todo
-    expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual();
+    expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+      _type: "foo";
+      bar?: {
+        _key: string;
+        _type: "baz";
+        children: {
+          _key: string;
+          _type: "span";
+          marks: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: "bullet" | "number";
+        markDefs: {
+          _key: string;
+          _type: "qux";
+          quux?: string;
+        }[];
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+      }[];
+    }>();
   });
 });
