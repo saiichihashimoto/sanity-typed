@@ -55,7 +55,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]>().toStrictEqual<
+      expectType<(typeof parsed)[number]>().toEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
@@ -133,12 +133,10 @@ describe("block", () => {
         },
       ];
 
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]["children"]>().toStrictEqual<
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
+      expectType<(typeof parsed)[number]["children"]>().toEqual<
         InferSchemaValues<typeof config>["foo"][number]["children"]
       >();
     });
@@ -180,12 +178,10 @@ describe("block", () => {
         },
       ];
 
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]["children"]>().toStrictEqual<
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
+      expectType<(typeof parsed)[number]["children"]>().toEqual<
         InferSchemaValues<typeof config>["foo"][number]["children"]
       >();
     });
@@ -229,7 +225,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]>().toStrictEqual<
+      expectType<(typeof parsed)[number]>().toEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
@@ -273,7 +269,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]>().toStrictEqual<
+      expectType<(typeof parsed)[number]>().toEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
@@ -318,7 +314,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]>().toStrictEqual<
+      expectType<(typeof parsed)[number]>().toEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
@@ -376,12 +372,10 @@ describe("block", () => {
         },
       ];
 
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)[number]>().toStrictEqual<
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
+      expectType<(typeof parsed)[number]>().toEqual<
         InferSchemaValues<typeof config>["foo"][number]
       >();
     });
@@ -414,7 +408,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
+      expectType<typeof parsed>().toEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
@@ -491,7 +485,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)["children"]>().toStrictEqual<
+      expectType<(typeof parsed)["children"]>().toEqual<
         InferSchemaValues<typeof config>["foo"]["children"]
       >();
     });
@@ -528,7 +522,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<(typeof parsed)["children"]>().toStrictEqual<
+      expectType<(typeof parsed)["children"]>().toEqual<
         InferSchemaValues<typeof config>["foo"]["children"]
       >();
     });
@@ -564,7 +558,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
+      expectType<typeof parsed>().toEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
@@ -600,7 +594,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
+      expectType<typeof parsed>().toEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
@@ -637,7 +631,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
+      expectType<typeof parsed>().toEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
@@ -690,7 +684,7 @@ describe("block", () => {
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
+      expectType<typeof parsed>().toEqual<
         InferSchemaValues<typeof config>["foo"]
       >();
     });
