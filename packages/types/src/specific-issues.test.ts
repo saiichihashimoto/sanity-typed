@@ -163,4 +163,75 @@ describe("specific issues", () => {
       }[];
     }>();
   });
+
+  it("#589 object -> array -> block -> object -> field", async () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "object",
+            fields: [
+              defineField({
+                name: "bar",
+                type: "array",
+                of: [
+                  defineArrayMember({
+                    name: "baz",
+                    type: "block",
+                    marks: {
+                      annotations: [
+                        defineArrayMember({
+                          name: "qux",
+                          type: "object",
+                          fields: [
+                            defineField({
+                              name: "quux",
+                              type: "string",
+                            }),
+                          ],
+                        }),
+                      ],
+                    },
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+      _type: "foo";
+      bar?: {
+        _key: string;
+        _type: "baz";
+        children: {
+          _key: string;
+          _type: "span";
+          marks: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: "bullet" | "number";
+        markDefs: {
+          _key: string;
+          _type: "qux";
+          quux?: string;
+        }[];
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+      }[];
+    }>();
+  });
 });

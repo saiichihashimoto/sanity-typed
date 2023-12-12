@@ -369,8 +369,8 @@ export type ArrayDefinition<
 >;
 
 export type PortableTextSpan = SetRequired<
-  PortableTextSpanNative,
-  "_key" | "marks"
+  Omit<PortableTextSpanNative, "_key">,
+  "marks"
 >;
 
 export type PortableTextBlock<
@@ -419,11 +419,11 @@ export type BlockDefinition<
     PortableTextBlock<
       TBlockMarkAnnotation extends never
         ? never
-        : InferRawValue<TBlockMarkAnnotation> & { _key: string },
+        : InferRawValue<TBlockMarkAnnotation>,
       | PortableTextSpan
       | (TMemberDefinition extends never
           ? never
-          : InferRawValue<TMemberDefinition> & { _key: string }),
+          : InferRawValue<TMemberDefinition>),
       string extends TBlockStyle
         ? "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal"
         : TBlockStyle,
@@ -433,11 +433,11 @@ export type BlockDefinition<
       PortableTextBlock<
         TBlockMarkAnnotation extends never
           ? never
-          : InferRawValue<TBlockMarkAnnotation> & { _key: string },
+          : InferRawValue<TBlockMarkAnnotation>,
         | PortableTextSpan
         | (TMemberDefinition extends never
             ? never
-            : InferRawValue<TMemberDefinition> & { _key: string }),
+            : InferRawValue<TMemberDefinition>),
         string extends TBlockStyle
           ? "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal"
           : TBlockStyle,
@@ -1279,9 +1279,9 @@ type ExpandAliasValues<
           ? TOverwriteType
           : TType;
       }
-  : Value extends Omit<PortableTextBlock<any, any, any, any>, "_type">
-  ? Value
-  : Value extends (infer Item)[]
+  : // : Value extends Omit<PortableTextBlock<any, any, any, any>, "_type">
+  // ? Value
+  Value extends (infer Item)[]
   ? (Item extends never
       ? never
       : IsPlainObject<Item> extends false

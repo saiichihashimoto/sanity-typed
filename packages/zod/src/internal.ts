@@ -1789,7 +1789,6 @@ type SanityConfigZods<TConfig extends MaybeArray<ConfigBase<any, any>>> =
     ConfigBase<infer TTypeDefinition, infer TPluginOptions>
   >
     ? {
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         [Name in TTypeDefinition["name"]]: AddType<
           Name,
           SchemaTypeToZod<
@@ -1821,12 +1820,7 @@ export const sanityConfigToZodsTyped = <
   const plugins = pluginsUntyped as TPluginOptions[];
 
   const pluginsZods = plugins
-    .map(
-      (plugin) =>
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment,@typescript-eslint/prefer-ts-expect-error -- TODO ts-expect-error fails in build, but is needed in test
-        // @ts-ignore -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
-        sanityConfigToZodsTyped(plugin) as SanityConfigZods<TPluginOptions>
-    )
+    .map((plugin) => sanityConfigToZodsTyped(plugin))
     .reduce(
       (acc, zods) => ({ ...acc, ...zods }),
       {} as SanityConfigZods<TPluginOptions>

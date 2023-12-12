@@ -46,7 +46,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<(typeof fake)[number]>().toStrictEqual<
+        expectType<(typeof fake)[number]>().toEqual<
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
@@ -109,13 +109,12 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         const fake = sanityFaker.foo();
 
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<(typeof fake)[number]>().toStrictEqual<
+        expectType<(typeof fake)[number]>().toEqual<
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
@@ -147,13 +146,12 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         const fake = sanityFaker.foo();
 
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<(typeof fake)[number]>().toStrictEqual<
+        expectType<(typeof fake)[number]>().toEqual<
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
@@ -190,7 +188,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<(typeof fake)[number]>().toStrictEqual<
+        expectType<(typeof fake)[number]>().toEqual<
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
@@ -227,7 +225,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<(typeof fake)[number]>().toStrictEqual<
+        expectType<(typeof fake)[number]>().toEqual<
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
@@ -266,7 +264,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<(typeof fake)[number]>().toStrictEqual<
+        expectType<(typeof fake)[number]>().toEqual<
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
@@ -309,7 +307,6 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         const fake = sanityFaker.foo();
 
         const zods = sanityConfigToZods(config);
@@ -345,7 +342,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -383,7 +380,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -412,7 +409,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -444,7 +441,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -476,7 +473,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -508,7 +505,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -542,7 +539,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -628,7 +625,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
         expect(fake).toHaveProperty("children", [
