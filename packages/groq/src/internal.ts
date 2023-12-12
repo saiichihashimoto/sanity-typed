@@ -1696,8 +1696,7 @@ type InOperator<
     Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4> extends never
     ? never
     : Exclude<ParseInner<TRight>, Level4> extends never
-    ? // TODO https://github.com/sanity-io/GROQ/issues/116
-      Range<TRight> extends never
+    ? Range<TRight> extends never
       ? never
       : {
           base: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
