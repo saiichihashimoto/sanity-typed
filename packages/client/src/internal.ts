@@ -782,10 +782,3 @@ export const castToTyped =
       TClientConfig,
       SanityValuesToDocumentUnion<SanityValues, TClientConfig>
     >;
-
-export const castFromTyped = <
-  TClientConfig extends ClientConfig,
-  TDocument extends AnySanityDocument
->(
-  typed: SanityClient<TClientConfig, TDocument>
-) => typed as unknown as SanityClientNative;

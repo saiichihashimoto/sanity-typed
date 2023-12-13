@@ -12,7 +12,6 @@ export type {
 } from "./internal";
 
 export {
-  castFromTyped,
   castToTyped,
   createClient,
   ObservablePatch,
