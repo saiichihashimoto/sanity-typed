@@ -359,18 +359,7 @@ describe("block", () => {
           _type: "internalLink";
           reference?: {
             _ref: string;
-            _strengthenOnPublish?: {
-              template?: {
-                id: string;
-                params: {
-                  [key: string]: boolean | number | string;
-                };
-              };
-              type: string;
-              weak?: boolean;
-            };
             _type: "reference";
-            _weak?: boolean;
             [referenced]: "post";
           };
         }[];
@@ -729,18 +718,7 @@ describe("block", () => {
           _type: "internalLink";
           reference?: {
             _ref: string;
-            _strengthenOnPublish?: {
-              template?: {
-                id: string;
-                params: {
-                  [key: string]: boolean | number | string;
-                };
-              };
-              type: string;
-              weak?: boolean;
-            };
             _type: "reference";
-            _weak?: boolean;
             [referenced]: "post";
           };
         }[];

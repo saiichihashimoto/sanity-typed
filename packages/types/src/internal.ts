@@ -244,9 +244,17 @@ export type NumberDefinition<
  */
 export const referenced: unique symbol = Symbol("referenced");
 
-export type ReferenceValue<TReferenced extends string> = MergeOld<
-  Omit<ReferenceValueNative, "_key">,
-  { _type: "reference"; [referenced]: TReferenced }
+export type ReferenceValue<
+  TReferenced extends string,
+  TReferenceWeak extends boolean = false
+> = MergeOld<
+  Omit<ReferenceValueNative, "_key" | "_strengthenOnPublish" | "_weak">,
+  (true extends TReferenceWeak
+    ? Pick<ReferenceValueNative, "_strengthenOnPublish"> & { _weak?: true }
+    : unknown) & {
+    _type: "reference";
+    [referenced]: TReferenced;
+  }
 >;
 
 type TypeReference<TReferenced extends string> = MergeOld<
@@ -263,15 +271,17 @@ type TypeReference<TReferenced extends string> = MergeOld<
 
 export type ReferenceDefinition<
   TReferenced extends string,
+  TReferenceWeak extends boolean,
   TRequired extends boolean
 > = MergeOld<
-  ReferenceDefinitionNative,
+  Omit<ReferenceDefinitionNative, "weak">,
   DefinitionBase<
     TRequired,
-    ReferenceValue<TReferenced>,
-    RewriteValue<ReferenceValue<TReferenced>, ReferenceRule>
+    ReferenceValue<TReferenced, TReferenceWeak>,
+    RewriteValue<ReferenceValue<TReferenced, TReferenceWeak>, ReferenceRule>
   > & {
     to: TupleOfLength<TypeReference<TReferenced>, 1>;
+    weak?: TReferenceWeak;
   }
 >;
 
@@ -616,6 +626,7 @@ type IntrinsicDefinitions<
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  TReferenceWeak extends boolean,
   TBlockStyle extends string,
   TBlockListItem extends string,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
@@ -648,7 +659,7 @@ type IntrinsicDefinitions<
   image: ImageDefinition<THotspot, TFieldDefinition, TRequired>;
   number: NumberDefinition<TNumberValue, TRequired>;
   object: ObjectDefinition<TFieldDefinition, TRequired>;
-  reference: ReferenceDefinition<TReferenced, TRequired>;
+  reference: ReferenceDefinition<TReferenced, TReferenceWeak, TRequired>;
   slug: SlugDefinition<TRequired>;
   string: StringDefinition<TStringValue, TRequired>;
   text: TextDefinition<TRequired>;
@@ -656,7 +667,19 @@ type IntrinsicDefinitions<
 };
 
 export type IntrinsicTypeName = Simplify<
-  keyof IntrinsicDefinitions<any, any, any, any, any, any, any, any, any, any>
+  keyof IntrinsicDefinitions<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >
 >;
 
 declare const aliasedType: unique symbol;
@@ -671,6 +694,7 @@ export type TypeAliasDefinition<
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  TReferenceWeak extends boolean,
   TBlockStyle extends string,
   TBlockListItem extends string,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
@@ -691,6 +715,7 @@ export type TypeAliasDefinition<
           TNumberValue,
           TStringValue,
           TReferenced,
+          TReferenceWeak,
           TBlockStyle,
           TBlockListItem,
           TBlockMarkAnnotation,
@@ -713,6 +738,7 @@ export type ArrayMemberDefinition<
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  TReferenceWeak extends boolean,
   TBlockStyle extends string,
   TBlockListItem extends string,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
@@ -739,6 +765,7 @@ export type ArrayMemberDefinition<
               TNumberValue,
               TStringValue,
               TReferenced,
+              TReferenceWeak,
               TBlockStyle,
               TBlockListItem,
               TBlockMarkAnnotation,
@@ -752,6 +779,7 @@ export type ArrayMemberDefinition<
                     TNumberValue,
                     TStringValue,
                     TReferenced,
+                    TReferenceWeak,
                     TBlockStyle,
                     TBlockListItem,
                     TBlockMarkAnnotation,
@@ -782,6 +810,7 @@ export type ArrayMemberDefinition<
                   TNumberValue,
                   TStringValue,
                   TReferenced,
+                  TReferenceWeak,
                   TBlockStyle,
                   TBlockListItem,
                   TBlockMarkAnnotation,
@@ -803,6 +832,7 @@ export type ArrayMemberDefinition<
             TNumberValue,
             TStringValue,
             TReferenced,
+            TReferenceWeak,
             TBlockStyle,
             TBlockListItem,
             TBlockMarkAnnotation,
@@ -845,6 +875,7 @@ export const makeDefineArrayMember =
     const TNumberValue extends number,
     const TStringValue extends string,
     const TReferenced extends string,
+    const TReferenceWeak extends boolean = false,
     const TBlockStyle extends string = BlockStyleDefault,
     const TBlockListItem extends string = BlockListItemDefault,
     TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
@@ -867,6 +898,7 @@ export const makeDefineArrayMember =
       TNumberValue,
       TStringValue,
       TReferenced,
+      TReferenceWeak,
       TBlockStyle,
       TBlockListItem,
       TBlockMarkAnnotation,
@@ -892,6 +924,7 @@ export type FieldDefinition<
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  TReferenceWeak extends boolean,
   TBlockStyle extends string,
   TBlockListItem extends string,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
@@ -919,6 +952,7 @@ export type FieldDefinition<
               TNumberValue,
               TStringValue,
               TReferenced,
+              TReferenceWeak,
               TBlockStyle,
               TBlockListItem,
               TBlockMarkAnnotation,
@@ -938,6 +972,7 @@ export type FieldDefinition<
         TNumberValue,
         TStringValue,
         TReferenced,
+        TReferenceWeak,
         TBlockStyle,
         TBlockListItem,
         TBlockMarkAnnotation,
@@ -960,6 +995,7 @@ export const defineField = <
   const TNumberValue extends number,
   const TStringValue extends string,
   const TReferenced extends string,
+  const TReferenceWeak extends boolean = false,
   const TBlockStyle extends string = BlockStyleDefault,
   const TBlockListItem extends string = BlockListItemDefault,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
@@ -983,6 +1019,7 @@ export const defineField = <
     TNumberValue,
     TStringValue,
     TReferenced,
+    TReferenceWeak,
     TBlockStyle,
     TBlockListItem,
     TBlockMarkAnnotation,
@@ -1002,6 +1039,7 @@ export type TypeDefinition<
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
+  TReferenceWeak extends boolean,
   TBlockStyle extends string,
   TBlockListItem extends string,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
@@ -1023,6 +1061,7 @@ export type TypeDefinition<
               TNumberValue,
               TStringValue,
               TReferenced,
+              TReferenceWeak,
               TBlockStyle,
               TBlockListItem,
               TBlockMarkAnnotation,
@@ -1042,6 +1081,7 @@ export type TypeDefinition<
         TNumberValue,
         TStringValue,
         TReferenced,
+        TReferenceWeak,
         TBlockStyle,
         TBlockListItem,
         TBlockMarkAnnotation,
@@ -1063,6 +1103,7 @@ export const defineType = <
   const TNumberValue extends number,
   const TStringValue extends string,
   const TReferenced extends string,
+  const TReferenceWeak extends boolean = false,
   const TBlockStyle extends string = BlockStyleDefault,
   const TBlockListItem extends string = BlockListItemDefault,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
@@ -1085,6 +1126,7 @@ export const defineType = <
     TNumberValue,
     TStringValue,
     TReferenced,
+    TReferenceWeak,
     TBlockStyle,
     TBlockListItem,
     TBlockMarkAnnotation,
@@ -1101,6 +1143,7 @@ export const defineType = <
 
 export type ConfigBase<
   TTypeDefinition extends TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -1149,6 +1192,7 @@ export type PluginOptions<
     any,
     any,
     any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>
@@ -1157,6 +1201,7 @@ export type PluginOptions<
 
 export const definePlugin = <
   TTypeDefinition extends TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -1196,6 +1241,7 @@ type WorkspaceOptions<
     any,
     any,
     any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>
@@ -1206,6 +1252,7 @@ type WorkspaceOptions<
 
 export type Config<
   TTypeDefinition extends TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -1245,6 +1292,7 @@ export const defineConfig = <
     any,
     any,
     any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>
@@ -1270,9 +1318,7 @@ type ExpandAliasValues<
           ? TOverwriteType
           : TType;
       }
-  : // : Value extends Omit<PortableTextBlock<any, any, any, any>, "_type">
-  // ? Value
-  Value extends (infer Item)[]
+  : Value extends (infer Item)[]
   ? (Item extends never
       ? never
       : IsPlainObject<Item> extends false
@@ -1298,6 +1344,7 @@ export type InferSchemaValues<
         AliasValue<TName>,
         InferSchemaValues<TPluginOptions> & {
           [TDefinition in TypeDefinition<
+            any,
             any,
             any,
             any,
@@ -1382,6 +1429,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
                 any
               >
             : never)
@@ -1393,6 +1441,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 TName,
                 NonNullable<TAlias>,
                 TStrict,
+                any,
                 any,
                 any,
                 any,
@@ -1421,6 +1470,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
                 any
               >
             : never)
@@ -1438,6 +1488,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
     infer TName extends string,
     infer TAlias extends IntrinsicTypeName,
     infer TStrict extends StrictDefinition,
+    any,
     any,
     any,
     any,
@@ -1472,6 +1523,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         any,
         any,
         any,
+        any,
         any
       >
     ? ReturnType<
@@ -1489,6 +1541,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         infer TName extends string,
         infer TAlias extends IntrinsicTypeName,
         infer TStrict extends StrictDefinition,
+        any,
         any,
         any,
         any,
