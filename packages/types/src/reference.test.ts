@@ -30,16 +30,7 @@ describe("reference", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _ref: string;
-        _strengthenOnPublish?: {
-          template?: {
-            id: string;
-            params: { [key: string]: boolean | number | string };
-          };
-          type: string;
-          weak?: boolean;
-        };
         _type: "reference";
-        _weak?: boolean;
         [referenced]: "other";
       }>();
     });
@@ -68,6 +59,44 @@ describe("reference", () => {
       expectType<
         InferSchemaValues<typeof config>["foo"][number]["_type"]
       >().toStrictEqual<"bar">();
+    });
+
+    it("adds weak fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "reference",
+                  weak: true,
+                  to: [{ type: "other" as const }],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _ref: string;
+        _strengthenOnPublish?: {
+          template?: {
+            id: string;
+            params: { [key: string]: boolean | number | string };
+          };
+          type: string;
+          weak?: boolean;
+        };
+        _type: "reference";
+        _weak?: true;
+        [referenced]: "other";
+      }>();
     });
   });
 
@@ -98,6 +127,38 @@ describe("reference", () => {
         InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _ref: string;
+        _type: "reference";
+        [referenced]: "other";
+      }>();
+    });
+
+    it("adds weak fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "reference",
+                  weak: true,
+                  validation: (Rule) => Rule.required(),
+                  to: [{ type: "other" as const }],
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["foo"]["bar"]
+      >().toStrictEqual<{
+        _ref: string;
         _strengthenOnPublish?: {
           template?: {
             id: string;
@@ -107,7 +168,7 @@ describe("reference", () => {
           weak?: boolean;
         };
         _type: "reference";
-        _weak?: boolean;
+        _weak?: true;
         [referenced]: "other";
       }>();
     });
@@ -131,16 +192,7 @@ describe("reference", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _ref: string;
-        _strengthenOnPublish?: {
-          template?: {
-            id: string;
-            params: { [key: string]: boolean | number | string };
-          };
-          type: string;
-          weak?: boolean;
-        };
         _type: "foo";
-        _weak?: boolean;
         [referenced]: "other";
       }>();
     });
@@ -173,6 +225,38 @@ describe("reference", () => {
       expectType<
         InferSchemaValues<typeof config>["bar"][number]["_type"]
       >().toStrictEqual<"bar">();
+    });
+
+    it("adds weak fields", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "reference",
+              weak: true,
+              to: [{ type: "other" as const }],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _ref: string;
+        _strengthenOnPublish?: {
+          template?: {
+            id: string;
+            params: { [key: string]: boolean | number | string };
+          };
+          type: string;
+          weak?: boolean;
+        };
+        _type: "foo";
+        _weak?: true;
+        [referenced]: "other";
+      }>();
     });
   });
 });

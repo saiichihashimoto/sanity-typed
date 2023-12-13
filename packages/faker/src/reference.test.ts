@@ -86,6 +86,41 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
+
+      it("adds weak fields", () => {
+        const config = defineConfig({
+          dataset: "dataset",
+          projectId: "projectId",
+          schema: {
+            types: [
+              defineType({
+                name: "foo",
+                type: "array",
+                of: [
+                  defineArrayMember({
+                    type: "reference",
+                    weak: true,
+                    to: [{ type: "other" as const }],
+                  }),
+                ],
+              }),
+            ],
+          },
+        });
+        const sanityFaker = sanityConfigToFakerTyped(config, {
+          seed,
+          faker: { locale: [en, base] },
+        });
+
+        const fake = sanityFaker.foo();
+
+        const zods = sanityConfigToZods(config);
+
+        expect(() => zods.foo.parse(fake)).not.toThrow();
+        expectType<(typeof fake)[number]>().toStrictEqual<
+          InferSchemaValues<typeof config>["foo"][number]
+        >();
+      });
     });
 
     describe("defineField", () => {
@@ -120,7 +155,44 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(() => zods.foo.parse(fake)).not.toThrow();
-        expectType<(typeof fake)["bar"]>().toStrictEqual<
+        expectType<(typeof fake)["bar"]>().toEqual<
+          InferSchemaValues<typeof config>["foo"]["bar"]
+        >();
+      });
+
+      it("adds weak fields", () => {
+        const config = defineConfig({
+          dataset: "dataset",
+          projectId: "projectId",
+          schema: {
+            types: [
+              defineType({
+                name: "foo",
+                type: "object",
+                fields: [
+                  defineField({
+                    name: "bar",
+                    type: "reference",
+                    weak: true,
+                    validation: (Rule) => Rule.required(),
+                    to: [{ type: "other" as const }],
+                  }),
+                ],
+              }),
+            ],
+          },
+        });
+        const sanityFaker = sanityConfigToFakerTyped(config, {
+          seed,
+          faker: { locale: [en, base] },
+        });
+
+        const fake = sanityFaker.foo();
+
+        const zods = sanityConfigToZods(config);
+
+        expect(() => zods.foo.parse(fake)).not.toThrow();
+        expectType<(typeof fake)["bar"]>().toEqual<
           InferSchemaValues<typeof config>["foo"]["bar"]
         >();
       });
@@ -176,6 +248,36 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     type: "foo",
                   }),
                 ],
+              }),
+            ],
+          },
+        });
+        const sanityFaker = sanityConfigToFakerTyped(config, {
+          seed,
+          faker: { locale: [en, base] },
+        });
+
+        const fake = sanityFaker.foo();
+
+        const zods = sanityConfigToZods(config);
+
+        expect(() => zods.foo.parse(fake)).not.toThrow();
+        expectType<typeof fake>().toStrictEqual<
+          InferSchemaValues<typeof config>["foo"]
+        >();
+      });
+
+      it("adds weak fields", () => {
+        const config = defineConfig({
+          dataset: "dataset",
+          projectId: "projectId",
+          schema: {
+            types: [
+              defineType({
+                name: "foo",
+                type: "reference",
+                weak: true,
+                to: [{ type: "other" as const }],
               }),
             ],
           },
