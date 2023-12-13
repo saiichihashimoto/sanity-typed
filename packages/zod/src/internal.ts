@@ -646,7 +646,7 @@ const extendViaIntersection =
   <Shape extends z.ZodRawShape>(shape: Shape) =>
   <Zod extends z.ZodTypeAny>(zod: Zod): ExtendViaIntersection<Zod, Shape> =>
     (zod instanceof z.ZodObject
-      ? zod.extend(shape)
+      ? zod.extend(shape).passthrough()
       : zod instanceof z.ZodLazy
       ? z.lazy(() =>
           extendViaIntersection(shape)(
