@@ -75,10 +75,14 @@ const data = await typedClient.fetch("*");
  */
 ```
 
-Similarly, if you have a typed client that you want to untype (presumably to export from a library for general consumption), the opposite exists as well:
+This function (nor the `createClient` function) have any runtime implications; it passes through the initial client unaltered.
+
+Similarly, if you have a typed client that you want to untype (presumably to export from a library for general consumption), you can always cast it:
 
 ```typescript
-import { castFromTyped, createClient } from "@sanity-typed/client";
+import type { SanityClient as SanityClientNative } from "@sanity/client";
+
+import { createClient } from "@sanity-typed/client";
 
 import type { SanityValues } from "./sanity.config";
 
@@ -88,17 +92,45 @@ const client = createClient<SanityValues>()({
 
 export const typedClient = client;
 
-export const untypedClient = castFromTyped(client);
+export const untypedClient = client as SanityClientNative;
 
 export default untypedClient;
 ```
-
-Neither of these functions (nor the `createClient` function) have any runtime implications; they pass through the initial client unaltered.
 
 ## Considerations
 
 @[:markdown](../../docs/considerations/types-vs-content-lake.md)
 @[:markdown](../../docs/considerations/evaluate-type-flakiness.md)
+
+## Breaking Changes
+
+### 1 to 2
+
+#### Removal of `castFromTyped`
+
+Casting from typed to untyped is now just a simple cast:
+
+```diff
++ import type { SanityClient as SanityClientNative } from "@sanity/client";
+
+- import { castFromTyped, createClient } from "@sanity-typed/client";
++ import { createClient } from "@sanity-typed/client";
+
+import type { SanityValues } from "./sanity.config";
+
+const client = createClient<SanityValues>()({
+  // ...
+});
+
+export const typedClient = client;
+
+- export const untypedClient = castFromTyped(client);
++ export const untypedClient = client as SanityClientNative;
+
+export default untypedClient;
+```
+
+`castToTyped` still exists.
 
 ## Alternatives
 

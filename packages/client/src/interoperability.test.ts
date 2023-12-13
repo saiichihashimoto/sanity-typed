@@ -1,15 +1,11 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 import { createClient as createClientNative } from "@sanity/client";
-import type {
-  ClientConfig,
-  SanityClient as SanityClientNative,
-} from "@sanity/client";
-import type { Merge } from "type-fest";
+import type { ClientConfig } from "@sanity/client";
 
 import type { SanityDocument } from "@sanity-typed/types";
 
-import { castFromTyped, castToTyped, createClient } from ".";
+import { castToTyped } from ".";
 import type { SanityClient } from ".";
 
 type AnySanityDocument = Omit<SanityDocument, "_type">;
@@ -81,25 +77,6 @@ describe("interoperability", () => {
           AnySanityDocument & { _type: "foo" }
         >
       >();
-    });
-  });
-
-  describe("castFromTyped", () => {
-    it("castFromTyped(createClient(...))", () => {
-      const exec = () => {
-        const client = castFromTyped(
-          createClient<{
-            foo: Merge<SanityDocument, { _type: "foo" }>;
-          }>()({
-            dataset: "dataset",
-            projectId: "projectId",
-          })
-        );
-
-        return client;
-      };
-
-      expectType<ReturnType<typeof exec>>().toStrictEqual<SanityClientNative>();
     });
   });
 });

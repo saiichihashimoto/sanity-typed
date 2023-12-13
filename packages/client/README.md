@@ -22,6 +22,9 @@
 - [Considerations](#considerations)
   - [Types match config but not actual documents](#types-match-config-but-not-actual-documents)
   - [GROQ Query results changes in seemingly breaking ways](#groq-query-results-changes-in-seemingly-breaking-ways)
+- [Breaking Changes](#breaking-changes)
+  - [1 to 2](#1-to-2)
+    - [Removal of `castFromTyped`](#removal-of-castfromtyped)
 - [Alternatives](#alternatives)
 
 ## Install
@@ -204,10 +207,14 @@ const data = await typedClient.fetch("*");
  */
 ```
 
-Similarly, if you have a typed client that you want to untype (presumably to export from a library for general consumption), the opposite exists as well:
+This function (nor the `createClient` function) have any runtime implications; it passes through the initial client unaltered.
+
+Similarly, if you have a typed client that you want to untype (presumably to export from a library for general consumption), you can always cast it:
 
 ```typescript
-import { castFromTyped, createClient } from "@sanity-typed/client";
+import type { SanityClient as SanityClientNative } from "@sanity/client";
+
+import { createClient } from "@sanity-typed/client";
 
 import type { SanityValues } from "./sanity.config";
 
@@ -217,12 +224,10 @@ const client = createClient<SanityValues>()({
 
 export const typedClient = client;
 
-export const untypedClient = castFromTyped(client);
+export const untypedClient = client as SanityClientNative;
 
 export default untypedClient;
 ```
-
-Neither of these functions (nor the `createClient` function) have any runtime implications; they pass through the initial client unaltered.
 
 ## Considerations
 
@@ -262,6 +267,36 @@ This can get unwieldy although, if you're diligent about data migrations of your
 
 Similar to [parsing](#the-parsed-tree-changes-in-seemingly-breaking-ways), evaluating groq queries will attempt to match how sanity actually evaluates queries. Again, any fixes to match that or changes to groq evaluation will likely not be considered a major change but, rather, a bug fix.
 <!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/evaluate-type-flakiness.md -->
+
+## Breaking Changes
+
+### 1 to 2
+
+#### Removal of `castFromTyped`
+
+Casting from typed to untyped is now just a simple cast:
+
+```diff
++ import type { SanityClient as SanityClientNative } from "@sanity/client";
+
+- import { castFromTyped, createClient } from "@sanity-typed/client";
++ import { createClient } from "@sanity-typed/client";
+
+import type { SanityValues } from "./sanity.config";
+
+const client = createClient<SanityValues>()({
+  // ...
+});
+
+export const typedClient = client;
+
+- export const untypedClient = castFromTyped(client);
++ export const untypedClient = client as SanityClientNative;
+
+export default untypedClient;
+```
+
+`castToTyped` still exists.
 
 ## Alternatives
 
