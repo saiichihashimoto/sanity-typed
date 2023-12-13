@@ -176,7 +176,7 @@ export type CrossDatasetReferenceDefinition<TRequired extends boolean> =
     DefinitionBase<
       TRequired,
       CrossDatasetReferenceValue,
-      RewriteValue<CrossDatasetReferenceValue, CrossDatasetReferenceRule>
+      CrossDatasetReferenceRule
     >
   >;
 

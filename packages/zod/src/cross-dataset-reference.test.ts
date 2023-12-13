@@ -134,7 +134,6 @@ describe("crossDatasetReference", () => {
         },
       };
 
-      // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
       const parsed = zods.foo.parse(unparsed);
 
       expect(parsed).toStrictEqual(unparsed);
