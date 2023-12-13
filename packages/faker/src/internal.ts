@@ -650,7 +650,8 @@ type MembersFaker<
   }
 > = (
   faker: Faker,
-  index: number
+  index: number,
+  options: { max?: number; min?: number }
 ) => TMemberDefinitions extends (infer TMemberDefinition extends ArrayMemberDefinition<
   any,
   any,
@@ -716,11 +717,7 @@ const membersFaker = <
   instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
   documentIdFaker: (type: string | undefined) => (index: number) => string,
   referencedIdFaker: (type: string) => (faker: Faker, index: number) => string,
-  {
-    min = 1,
-    max = 5,
-    unique = false,
-  }: { max?: number; min?: number; unique?: boolean }
+  { unique = false }: { unique?: boolean } = {}
 ): MembersFaker<TMemberDefinitions, TAliasedFakers> => {
   const memberFakers = members.map((member) =>
     addType(member.name)(
@@ -740,7 +737,11 @@ const membersFaker = <
 
   // @ts-expect-error -- TODO Why is this typed incorrectly
   return unique
-    ? (faker: Faker, index: number) =>
+    ? (
+        faker: Faker,
+        index: number,
+        { min = 1, max = 5 }: { max?: number; min?: number }
+      ) =>
         faker.helpers
           .uniqueArray(
             () => stringify(memberFaker(faker, index)),
@@ -752,7 +753,11 @@ const membersFaker = <
               index
             )
           )
-    : (faker: Faker, index: number) =>
+    : (
+        faker: Faker,
+        index: number,
+        { min = 1, max = 5 }: { max?: number; min?: number }
+      ) =>
         faker.helpers.multiple(() => addKey(memberFaker)(faker, index), {
           count: { min, max },
         });
@@ -797,7 +802,12 @@ type ArrayFaker<
     any
   >[];
 }
-  ? ReturnType<typeof membersFaker<TMemberDefinitions, TAliasedFakers>>
+  ? (
+      faker: Faker,
+      index: number
+    ) => ReturnType<
+      ReturnType<typeof membersFaker<TMemberDefinitions, TAliasedFakers>>
+    >
   : never;
 
 const arrayFaker = <
@@ -858,18 +868,26 @@ const arrayFaker = <
     minChosen ?? (maxChosen !== undefined ? Math.max(0, maxChosen - 4) : 1);
   const max = maxChosen ?? (minChosen !== undefined ? minChosen + 4 : 5);
 
-  return membersFaker(
-    schemaType.of as TSchemaType extends {
-      of: infer TMemberDefinitionsInner;
-    }
-      ? TMemberDefinitionsInner
-      : never,
+  type TMemberDefinitions = TSchemaType extends {
+    of: infer TMemberDefinitionsInner;
+  }
+    ? TMemberDefinitionsInner
+    : never;
+
+  const members = membersFaker(
+    schemaType.of as TMemberDefinitions,
     getFakers,
     instantiateFakerByPath,
     documentIdFaker,
     referencedIdFaker,
-    { min, max, unique: Boolean(traversal.unique) }
-  ) as ArrayFaker<TSchemaType, TAliasedFakers>;
+    { unique: Boolean(traversal.unique) }
+  );
+
+  return ((faker: Faker, index: number) =>
+    members(faker, index, { min, max })) as unknown as ArrayFaker<
+    TSchemaType,
+    TAliasedFakers
+  >;
 };
 
 const spanFaker =
@@ -1095,9 +1113,40 @@ const blockFaker = <
   const blockFields = blockFieldsFaker(schemaType);
   const span = spanFaker(schemaType);
 
-  return ((faker: Faker, index: number) => {
-    type TMemberDefinitions = TSchemaType extends {
-      of?: infer TMemberDefinitionsInner extends ArrayMemberDefinition<
+  type TMemberDefinitions = TSchemaType extends {
+    of?: infer TMemberDefinitionsInner extends ArrayMemberDefinition<
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any
+    >[];
+  }
+    ? TMemberDefinitionsInner
+    : never;
+  const of = (schemaType.of as TMemberDefinitions) ?? [];
+
+  const members = membersFaker(
+    of,
+    getFakers,
+    instantiateFakerByPath,
+    documentIdFaker,
+    referencedIdFaker
+  );
+
+  type TBlockMarkAnnotations = TSchemaType extends {
+    marks?: {
+      annotations?: infer TBlockMarkAnnotationsInner extends ArrayMemberDefinition<
         any,
         any,
         any,
@@ -1114,13 +1163,23 @@ const blockFaker = <
         any,
         any
       >[];
-    }
-      ? TMemberDefinitionsInner
-      : never;
-    const members = (schemaType.of as TMemberDefinitions) ?? [];
+    };
+  }
+    ? TBlockMarkAnnotationsInner
+    : never;
+  const markDefs = !schemaType.marks?.annotations
+    ? undefined
+    : membersFaker(
+        schemaType.marks.annotations as TBlockMarkAnnotations,
+        getFakers,
+        instantiateFakerByPath,
+        documentIdFaker,
+        referencedIdFaker
+      );
 
+  return ((faker: Faker, index: number) => {
     const length = faker.number.int({ min: 1, max: 5 });
-    const numSpans = !members.length
+    const numSpans = !of.length
       ? length
       : faker.number.int({ min: 0, max: length });
 
@@ -1130,28 +1189,13 @@ const blockFaker = <
         ...Array.from({ length: numSpans }).map(() => span(faker)),
         ...(numSpans === length
           ? []
-          : // TODO https://github.com/saiichihashimoto/sanity-typed/issues/479
-            membersFaker(
-              members,
-              getFakers,
-              instantiateFakerByPath,
-              documentIdFaker,
-              referencedIdFaker,
-              { min: length - numSpans, max: length - numSpans }
-            )(faker, index)),
+          : members(faker, index, {
+              min: length - numSpans,
+              max: length - numSpans,
+            })),
       ]),
       // TODO https://github.com/saiichihashimoto/sanity-typed/issues/537
-      markDefs: !schemaType.marks?.annotations
-        ? []
-        : // TODO https://github.com/saiichihashimoto/sanity-typed/issues/479
-          membersFaker(
-            schemaType.marks.annotations,
-            getFakers,
-            instantiateFakerByPath,
-            documentIdFaker,
-            referencedIdFaker,
-            { min: 1, max: 5 }
-          )(faker, index),
+      markDefs: markDefs?.(faker, index, { min: 1, max: 5 }) ?? [],
     };
   }) as BlockFaker<TSchemaType, TAliasedFakers>;
 };
