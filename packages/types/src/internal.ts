@@ -31,7 +31,6 @@ import type {
   DatetimeRule,
   DefineSchemaOptions,
   DocumentDefinition as DocumentDefinitionNative,
-  DocumentRule,
   EmailDefinition as EmailDefinitionNative,
   EmailRule,
   FieldDefinitionBase,
@@ -57,7 +56,6 @@ import type {
   ReferenceRule,
   ReferenceValue as ReferenceValueNative,
   RuleDef,
-  SanityDocument as SanityDocumentNative,
   SchemaPluginOptions as SchemaPluginOptionsNative,
   SlugDefinition as SlugDefinitionNative,
   SlugRule,
@@ -78,7 +76,6 @@ import type {
   Except,
   IsStringLiteral,
   Merge,
-  OmitIndexSignature,
   SetRequired,
   Simplify,
 } from "type-fest";
@@ -516,17 +513,28 @@ export type ObjectDefinition<
   }
 >;
 
+// HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
+type SanityDocumentBase = {
+  _createdAt: string;
+  _id: string;
+  _rev: string;
+  _type: "document";
+  _updatedAt: string;
+};
+
 export type SanityDocument<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   } = never
-> = Simplify<
-  ObjectValue<TFieldDefinition> &
-    OmitIndexSignature<SanityDocumentNative> & {
-      _type: "document";
-    }
->;
+> = Simplify<ObjectValue<TFieldDefinition> & SanityDocumentBase>;
+
+export type DocumentRule<
+  TFieldDefinition extends DefinitionBase<any, any, any> & {
+    name: string;
+    [required]?: boolean;
+  }
+> = RuleDef<DocumentRule<TFieldDefinition>, SanityDocument<TFieldDefinition>>;
 
 export type DocumentDefinition<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
@@ -539,13 +547,13 @@ export type DocumentDefinition<
   DefinitionBase<
     TRequired,
     SanityDocument<TFieldDefinition>,
-    RewriteValue<SanityDocument<TFieldDefinition>, DocumentRule>
+    DocumentRule<TFieldDefinition>
   > & {
     fields: TupleOfLength<TFieldDefinition, 1>;
   }
 >;
 
-// HACK #108 For whatever reason, typescript reduces complexity when "static" types are split out 🤷
+// HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
 type FileValueNative = {
   _type: "file";
   asset: ReferenceValueNative;
@@ -575,7 +583,7 @@ export type FileDefinition<
   }
 >;
 
-// HACK #108 For whatever reason, typescript reduces complexity when "static" types are split out 🤷
+// HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
 type ImageValueBase = {
   _type: "image";
   asset: ReferenceValueNative;

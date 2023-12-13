@@ -5,7 +5,6 @@ import { createClient as createMockClient } from "@sanity-typed/client-mock";
 
 import { getMockDataset } from "./mocks";
 
-// @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/482
 const createClient = process.env.VERCEL
   ? createLiveClient<SanityValues>()
   : createMockClient<SanityValues>({ dataset: getMockDataset() });
