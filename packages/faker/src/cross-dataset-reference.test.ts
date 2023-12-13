@@ -43,7 +43,6 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         const fake = sanityFaker.foo();
 
         const zods = sanityConfigToZods(config);
@@ -80,7 +79,6 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         const fake = sanityFaker.foo();
 
         const zods = sanityConfigToZods(config);
@@ -120,7 +118,6 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
         const fake = sanityFaker.foo();
 
         const zods = sanityConfigToZods(config);

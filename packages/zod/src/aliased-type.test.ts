@@ -532,7 +532,7 @@ describe("<alias>", () => {
       };
 
       const parsed = {
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
+        // @ts-expect-error -- Cyclical typing with zod doesn't seem to work
         foo: zods.foo.parse(unparsed.foo),
       };
 
@@ -612,7 +612,7 @@ describe("<alias>", () => {
       };
 
       const parsed = {
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/335
+        // @ts-expect-error -- Cyclical typing with zod doesn't seem to work
         foo: zods.foo.parse(unparsed.foo),
       };
 

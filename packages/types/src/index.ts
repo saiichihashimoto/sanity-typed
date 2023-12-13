@@ -10,6 +10,7 @@ export type {
   DateDefinition,
   DatetimeDefinition,
   DocumentDefinition,
+  DocumentRule,
   DocumentValues,
   EmailDefinition,
   FileDefinition,
