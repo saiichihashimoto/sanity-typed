@@ -193,7 +193,7 @@ jobs:
       - id: set-packages
         run: |
           echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(.taskId | sub("@sanity-typed/"; "") | sub("#build"; ""))')" >> $GITHUB_OUTPUT
-  test:
+  test-package:
     name: Test
     needs: [install-node-modules, packages]
     runs-on: ubuntu-latest
@@ -233,3 +233,9 @@ jobs:
             jest-
 
       - run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }} -- ${{ matrix.package }}/src
+  test:
+    name: Test
+    needs: test-package
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo done
