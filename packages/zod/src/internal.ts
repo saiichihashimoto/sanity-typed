@@ -634,7 +634,7 @@ const customValidationZod = <T>(
                 throw new Error("zod can't provide getDocumentExists");
               },
               // TODO ctx.schema
-              schema: {} as unknown as Schema,
+              schema: {} as Schema,
               // TODO ctx.document
               // TODO ctx.parent
               // TODO ctx.path
@@ -1326,7 +1326,7 @@ const fieldsZods = <
       const traversal = traverseValidation(field);
       const fieldZod = customValidationZod(
         // TODO
-        traversal.custom as unknown as [CustomValidator<unknown>][]
+        traversal.custom as [CustomValidator<unknown>][]
       )(
         // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive
         schemaTypeToZod(field, getZods)
@@ -1418,7 +1418,7 @@ const documentZod = <
   z.object({
     ...fieldsZods(schema, getZods),
     ...documentFieldsZods,
-  }) as unknown as DocumentZod<TSchemaType, TAliasedZods>;
+  }) as DocumentZod<TSchemaType, TAliasedZods>;
 
 const assetZod = z.object({
   _key: z.optional(z.string()),
@@ -1479,7 +1479,7 @@ const fileZod = <
   z.object({
     ...fieldsZods(schema, getZods),
     ...fileFieldsZods,
-  }) as unknown as FileZod<TSchemaType, TAliasedZods>;
+  }) as FileZod<TSchemaType, TAliasedZods>;
 
 const imageFieldsZods = {
   _type: z.literal("image"),
@@ -1557,7 +1557,7 @@ const imageZod = <
     ...fieldsZods(schema, getZods),
     ...imageFieldsZods,
     ...(!schema.options?.hotspot ? {} : imageHotspotFields),
-  }) as unknown as ImageZod<TSchemaType, TAliasedZods>;
+  }) as ImageZod<TSchemaType, TAliasedZods>;
 
 type AliasZod<
   TSchemaType extends SchemaTypeDefinition<

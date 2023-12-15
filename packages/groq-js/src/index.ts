@@ -59,7 +59,7 @@ export const evaluate = <
     timestamp?: Date;
   } = {}
 ) =>
-  evaluateNative(node, options) as unknown as MaybePromiseLike<
+  evaluateNative(node, options) as MaybePromiseLike<
     StaticOrStreamValue<
       Evaluate<
         WritableDeep<Node>,

@@ -132,7 +132,7 @@ export const traverseValidation = <
   const rule = validation?.(
     // @ts-expect-error -- This type is technically impossible, mainly because custom is conflicting across everything
     Rule({})
-  ) as unknown as
+  ) as
     | MaybeArray<
         UnionToIntersection<
           GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
