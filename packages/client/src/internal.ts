@@ -27,6 +27,12 @@ import type {
   SingleMutationResult,
   UnfilteredResponseQueryOptions,
 } from "@sanity/client";
+import { createClient as createStegaClientNative } from "@sanity/client/stega";
+import type {
+  ClientStegaConfig,
+  ObservableSanityStegaClient as ObservableSanityStegaClientNative,
+  SanityStegaClient as SanityStegaClientNative,
+} from "@sanity/client/stega";
 import type { Observable } from "rxjs";
 import type {
   Except,
@@ -762,6 +768,38 @@ export const createClient =
       SanityValuesToDocumentUnion<SanityValues, TClientConfig>
     >;
 
+export type ObservableSanityStegaClient<
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+> = OverrideSanityClient<
+  ObservableSanityStegaClientNative,
+  TClientConfig,
+  TDocument,
+  false
+>;
+
+export type SanityStegaClient<
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+> = OverrideSanityClient<
+  SanityStegaClientNative,
+  TClientConfig,
+  TDocument,
+  true
+>;
+
+/**
+ * Unfortunately, this has to have a very weird function signature due to this typescript issue:
+ * https://github.com/microsoft/TypeScript/issues/10571
+ */
+export const createStegaClient =
+  <SanityValues extends { [type: string]: any }>() =>
+  <const TClientConfig extends ClientStegaConfig>(config: TClientConfig) =>
+    createStegaClientNative(config) as unknown as SanityClient<
+      TClientConfig,
+      SanityValuesToDocumentUnion<SanityValues, TClientConfig>
+    >;
+
 export const castToTyped =
   <SanityValues extends { [type: string]: any } = never>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- not actually used
@@ -773,12 +811,20 @@ export const castToTyped =
           }
         ]
   ) =>
-  <const TClientConfig extends ClientConfig>(
-    untyped: SanityClientNative,
+  <
+    TClient extends SanityClientNative | SanityStegaClientNative,
+    const TClientConfig extends ClientConfig
+  >(
+    untyped: TClient,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- not actually used
     config?: TClientConfig
   ) =>
-    untyped as unknown as SanityClient<
-      TClientConfig,
-      SanityValuesToDocumentUnion<SanityValues, TClientConfig>
-    >;
+    untyped as unknown as TClient extends SanityStegaClientNative
+      ? SanityStegaClient<
+          TClientConfig,
+          SanityValuesToDocumentUnion<SanityValues, TClientConfig>
+        >
+      : SanityClient<
+          TClientConfig,
+          SanityValuesToDocumentUnion<SanityValues, TClientConfig>
+        >;
