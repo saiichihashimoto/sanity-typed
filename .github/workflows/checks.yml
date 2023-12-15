@@ -166,12 +166,12 @@ jobs:
             git --no-pager diff --color --text HEAD
             exit 1
           fi
-  test-matrix:
-    name: Test Matrix
+  packages:
+    name: Packages
     needs: install-node-modules
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      packages: ${{ steps.set-packages.outputs.packages }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -190,16 +190,17 @@ jobs:
       - if: steps.node-modules.outputs.cache-hit != 'true'
         run: exit 1
 
-      - id: set-matrix
+      - id: set-packages
         run: |
-          echo "matrix=$(npx turbo run build --dry=json | jq --compact-output '{ package: .tasks | map(.taskId | sub("@sanity-typed/"; "") | sub("#build"; "")) }')" >> $GITHUB_OUTPUT
+          echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(.taskId | sub("@sanity-typed/"; "") | sub("#build"; ""))')" >> $GITHUB_OUTPUT
   test:
     name: Test
-    needs: [install-node-modules, test-matrix]
+    needs: [install-node-modules, packages]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.test-matrix.outputs.matrix) }}
+      matrix:
+        package: ${{ fromJson(needs.packages.outputs.packages) }}
     steps:
       - uses: actions/checkout@v4
         with:
