@@ -19,8 +19,12 @@ branches:
           - Lint
           - Test (client)
           - Test (client-mock)
+          - Test (example-app)
+          - Test (example-studio)
           - Test (faker)
           - Test (groq)
           - Test (groq-js)
+          - Test (traverse-validation)
+          - Test (tsconfig)
           - Test (types)
           - Test (zod)
