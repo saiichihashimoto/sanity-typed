@@ -27,4 +27,5 @@ branches:
           - Test (traverse-validation)
           - Test (tsconfig)
           - Test (types)
+          - Test (utils)
           - Test (zod)
