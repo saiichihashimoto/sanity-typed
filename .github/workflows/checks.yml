@@ -144,13 +144,40 @@ jobs:
             git --no-pager diff --color --text HEAD
             exit 1
           fi
+  tesm:
+    name: Test Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.setMatrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4.0.0
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+      - id: node-modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
+      - run: npm ls --package-lock-only
+
+      - id: setMatrix
+        run: |
+          echo "matrix=$(npx turbo run build --dry=json | jq --compact-output '{ package: .tasks | map(.taskId | sub("@sanity-typed/"; "") | sub("#build"; "")) }')" >> $GITHUB_OUTPUT
   test:
     name: Test
+    needs: tesm
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        package: [client, client-mock, faker, groq, groq-js, types, zod]
+      matrix: ${{ fromJson(needs.tesm.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
         with:
