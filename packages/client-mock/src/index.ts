@@ -83,7 +83,7 @@ export const createClient =
       TClientConfig,
       SanityValuesToDocumentUnion<SanityValues, TClientConfig>
     > = {
-      ...({} as unknown as Pick<
+      ...({} as Pick<
         SanityClient<
           TClientConfig,
           SanityValuesToDocumentUnion<SanityValues, TClientConfig>
@@ -162,7 +162,7 @@ export const createClient =
             { result, query, ms: end - start }
           : result;
       },
-      listen: {} as unknown as SanityClient<
+      listen: {} as SanityClient<
         TClientConfig,
         SanityValuesToDocumentUnion<SanityValues, TClientConfig>
       >["listen"],
@@ -429,11 +429,11 @@ export const createClient =
         datasetById.set(newDoc._id, newDoc);
 
         return newDoc;
-      }) as unknown as SanityClient<
+      }) as SanityClient<
         TClientConfig,
         SanityValuesToDocumentUnion<SanityValues, TClientConfig>
       >["mutate"],
-      observable: {} as unknown as SanityClient<
+      observable: {} as SanityClient<
         TClientConfig,
         SanityValuesToDocumentUnion<SanityValues, TClientConfig>
       >["observable"],
