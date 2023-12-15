@@ -12,8 +12,30 @@ permissions:
 concurrency: checks-${{ github.ref == 'refs/heads/main' && 'main' || github.event.pull_request.head.sha }}
 
 jobs:
+  install-node-modules:
+    name: Install Node Modules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4.0.0
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+      - id: node-modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
+      - run: npm ls --package-lock-only
   build:
     name: Build
+    needs: install-node-modules
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -30,15 +52,14 @@ jobs:
           node-version-file: "package.json"
           cache: "npm"
       - id: node-modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
       - if: steps.node-modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
-      - run: npm ls --package-lock-only
+        run: exit 1
 
       - run: |
           DRY_RUN=$(npx turbo run build --dry=json)
@@ -108,6 +129,7 @@ jobs:
         run: npx multi-semantic-release --ignore-private-packages
   lint:
     name: Lint
+    needs: install-node-modules
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -118,15 +140,15 @@ jobs:
           node-version-file: "package.json"
           cache: "npm"
       - id: node-modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
       - if: steps.node-modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
-      - run: npm ls --package-lock-only
+        run: exit 1
+
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -144,13 +166,12 @@ jobs:
             git --no-pager diff --color --text HEAD
             exit 1
           fi
-  test:
-    name: Test
+  packages:
+    name: Packages
+    needs: install-node-modules
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        package: [client, client-mock, faker, groq, groq-js, types, zod]
+    outputs:
+      packages: ${{ steps.set-packages.outputs.packages }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -160,15 +181,43 @@ jobs:
           node-version-file: "package.json"
           cache: "npm"
       - id: node-modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
       - if: steps.node-modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
-      - run: npm ls --package-lock-only
+        run: exit 1
+
+      - id: set-packages
+        run: |
+          echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(.taskId | sub("@sanity-typed/"; "") | sub("#build"; ""))')" >> $GITHUB_OUTPUT
+  test:
+    name: Test
+    needs: [install-node-modules, packages]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.packages.outputs.packages) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4.0.0
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+      - id: node-modules
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        run: exit 1
 
       - id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v2
