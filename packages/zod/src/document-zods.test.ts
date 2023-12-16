@@ -47,7 +47,7 @@ describe("documentZods", () => {
     expectType<z.infer<typeof documentsZod>>().toStrictEqual<
       DocumentValues<InferSchemaValues<typeof config>>
     >();
-    expect(() =>
+    expect(
       documentsZod.parse({
         _createdAt: "createdAt",
         _id: "id",
@@ -56,8 +56,15 @@ describe("documentZods", () => {
         _updatedAt: "updatedAt",
         foo: true,
       })
-    ).not.toThrow();
-    expect(() =>
+    ).toStrictEqual({
+      _createdAt: "createdAt",
+      _id: "id",
+      _rev: "rev",
+      _type: "foo",
+      _updatedAt: "updatedAt",
+      foo: true,
+    });
+    expect(
       documentsZod.parse({
         _createdAt: "createdAt",
         _id: "id",
@@ -66,7 +73,14 @@ describe("documentZods", () => {
         _updatedAt: "updatedAt",
         bar: 1,
       })
-    ).not.toThrow();
+    ).toStrictEqual({
+      _createdAt: "createdAt",
+      _id: "id",
+      _rev: "rev",
+      _type: "bar",
+      _updatedAt: "updatedAt",
+      bar: 1,
+    });
     expect(() => documentsZod.parse("baz")).toThrow("Invalid input");
   });
 });

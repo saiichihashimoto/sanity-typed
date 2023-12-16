@@ -224,9 +224,10 @@ describe("slug", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
-        zods.foo.parse({ _type: "foo", current: "foo" })
-      ).not.toThrow();
+      expect(zods.foo.parse({ _type: "foo", current: "foo" })).toStrictEqual({
+        _type: "foo",
+        current: "foo",
+      });
       expect(() => zods.foo.parse({ _type: "foo", current: "bar" })).toThrow(
         "value can't be `bar`"
       );

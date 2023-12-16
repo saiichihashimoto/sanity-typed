@@ -177,14 +177,18 @@ describe("date", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: "2023-09-12",
           foo: "2023-09-11",
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: "2023-09-12",
+          foo: "2023-09-11",
+        });
     });
 
     it("max(maxDate)", () => {
@@ -236,14 +240,18 @@ describe("date", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: "2023-09-12",
           foo: "2023-09-13",
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: "2023-09-12",
+          foo: "2023-09-13",
+        });
     });
 
     it("custom(fn)", () => {
@@ -268,7 +276,7 @@ describe("date", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse("2023-09-12")).not.toThrow();
+      expect(zods.foo.parse("2023-09-12")).toBe("2023-09-12");
       expect(() => zods.foo.parse("2023-09-13")).toThrow(
         "value can't be `2023-09-13`"
       );
