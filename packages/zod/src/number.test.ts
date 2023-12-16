@@ -258,14 +258,18 @@ describe("number", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: 1,
           foo: 0,
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: 1,
+          foo: 0,
+        });
     });
 
     it("max(maxNumber)", () => {
@@ -317,14 +321,18 @@ describe("number", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: 1,
           foo: 2,
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: 1,
+          foo: 2,
+        });
     });
 
     it("lessThan(limit)", () => {
@@ -374,14 +382,18 @@ describe("number", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: 1,
           foo: 1,
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: 1,
+          foo: 1,
+        });
     });
 
     it("greaterThan(limit)", () => {
@@ -431,14 +443,18 @@ describe("number", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: 1,
           foo: 1,
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: 1,
+          foo: 1,
+        });
     });
 
     it("integer()", () => {
@@ -511,14 +527,18 @@ describe("number", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: 1,
           foo: 1.56,
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: 1,
+          foo: 1.56,
+        });
     });
 
     it("positive()", () => {
@@ -540,7 +560,7 @@ describe("number", () => {
       expect(() => zods.foo.parse(-1)).toThrow(
         "Number must be greater than or equal to 0"
       );
-      expect(() => zods.foo.parse(0)).not.toThrow();
+      expect(zods.foo.parse(0)).toBe(0);
     });
 
     it("negative()", () => {
@@ -582,7 +602,7 @@ describe("number", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse(1)).not.toThrow();
+      expect(zods.foo.parse(1)).toBe(1);
       expect(() => zods.foo.parse(2)).toThrow("value can't be `2`");
     });
   });

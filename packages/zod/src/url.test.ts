@@ -126,7 +126,7 @@ describe("url", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       expect(() => zods.foo.parse("foo")).toThrow("Not a valid URL");
-      expect(() => zods.foo.parse("https://google.com")).not.toThrow();
+      expect(zods.foo.parse("https://google.com")).toBe("https://google.com");
       expect(() => zods.foo.parse("/relative")).toThrow("Not a valid URL");
       expect(() => zods.foo.parse("https://user:pass@google.com")).toThrow(
         "Username/password not allowed"
@@ -155,8 +155,8 @@ describe("url", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse("https://google.com")).not.toThrow();
-      expect(() => zods.foo.parse("/relative")).not.toThrow();
+      expect(zods.foo.parse("https://google.com")).toBe("https://google.com");
+      expect(zods.foo.parse("/relative")).toBe("/relative");
     });
 
     it("uri({ relativeOnly })", () => {
@@ -178,7 +178,7 @@ describe("url", () => {
       expect(() => zods.foo.parse("https://google.com")).toThrow(
         "Only relative URLs are allowed"
       );
-      expect(() => zods.foo.parse("/relative")).not.toThrow();
+      expect(zods.foo.parse("/relative")).toBe("/relative");
     });
 
     it("uri({ allowCredentials })", () => {
@@ -197,9 +197,9 @@ describe("url", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
-        zods.foo.parse("https://user:pass@google.com")
-      ).not.toThrow();
+      expect(zods.foo.parse("https://user:pass@google.com")).toBe(
+        "https://user:pass@google.com"
+      );
     });
 
     it("uri({ scheme: string })", () => {
@@ -218,7 +218,7 @@ describe("url", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse("mailto:foo@bar.com")).not.toThrow();
+      expect(zods.foo.parse("mailto:foo@bar.com")).toBe("mailto:foo@bar.com");
     });
 
     it("uri({ scheme: RegExp })", () => {
@@ -237,7 +237,7 @@ describe("url", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse("tel:15555555555")).not.toThrow();
+      expect(zods.foo.parse("tel:15555555555")).toBe("tel:15555555555");
     });
 
     it("custom(fn)", () => {
@@ -263,7 +263,7 @@ describe("url", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse("https://google.com")).not.toThrow();
+      expect(zods.foo.parse("https://google.com")).toBe("https://google.com");
       expect(() => zods.foo.parse("https://yahoo.com")).toThrow(
         "value can't be `https://yahoo.com`"
       );

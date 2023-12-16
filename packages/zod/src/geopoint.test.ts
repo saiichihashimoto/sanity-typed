@@ -226,7 +226,10 @@ describe("geopoint", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse({ ...fields, _type: "foo" })).not.toThrow();
+      expect(zods.foo.parse({ ...fields, _type: "foo" })).toStrictEqual({
+        ...fields,
+        _type: "foo",
+      });
       expect(() => zods.foo.parse({ ...fields, _type: "foo", alt: 1 })).toThrow(
         "value can't be `1`"
       );

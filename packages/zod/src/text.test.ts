@@ -159,14 +159,18 @@ describe("text", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: 4,
           foo: "",
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: 4,
+          foo: "",
+        });
     });
 
     it("max(maxLength)", () => {
@@ -218,14 +222,18 @@ describe("text", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: 1,
           foo: "fo",
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: 1,
+          foo: "fo",
+        });
     });
 
     it("length(exactLength)", () => {
@@ -280,14 +288,18 @@ describe("text", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: 1,
           foo: "",
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: 1,
+          foo: "",
+        });
     });
 
     it("uppercase()", () => {
@@ -426,7 +438,7 @@ describe("text", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse("foo")).not.toThrow();
+      expect(zods.foo.parse("foo")).toBe("foo");
       expect(() => zods.foo.parse("bar")).toThrow(
         "Should not match /^(bar)+$/-pattern"
       );
@@ -449,7 +461,7 @@ describe("text", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse("foo")).not.toThrow();
+      expect(zods.foo.parse("foo")).toBe("foo");
       expect(() => zods.foo.parse("bar")).toThrow(
         "Should not match bar-pattern"
       );
@@ -476,7 +488,7 @@ describe("text", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse("foo")).not.toThrow();
+      expect(zods.foo.parse("foo")).toBe("foo");
       expect(() => zods.foo.parse("bar")).toThrow("value can't be `bar`");
     });
   });

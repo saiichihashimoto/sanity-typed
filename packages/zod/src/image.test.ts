@@ -800,7 +800,10 @@ describe("image", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse({ ...fields, _type: "foo" })).not.toThrow();
+      expect(zods.foo.parse({ ...fields, _type: "foo" })).toStrictEqual({
+        ...fields,
+        _type: "foo",
+      });
       expect(() =>
         zods.foo.parse({ ...fields, _type: "foo", bar: "bar" })
       ).toThrow("value can't be `bar`");

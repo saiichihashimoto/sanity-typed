@@ -150,7 +150,7 @@ describe("email", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse("foo@bar.com")).not.toThrow();
+      expect(zods.foo.parse("foo@bar.com")).toBe("foo@bar.com");
       expect(() => zods.foo.parse("bar@bar.com")).toThrow(
         "value can't be `bar@bar.com`"
       );
