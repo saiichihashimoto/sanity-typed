@@ -129,7 +129,7 @@ describe("boolean", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse(true)).not.toThrow();
+      expect(zods.foo.parse(true)).toBe(true);
       expect(() => zods.foo.parse(false)).toThrow("value must be `true`");
     });
   });

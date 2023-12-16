@@ -358,14 +358,18 @@ describe("array", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: 4,
           foo: [],
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: 4,
+          foo: [],
+        });
     });
 
     it("max(maxLength)", () => {
@@ -419,14 +423,18 @@ describe("array", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: 1,
           foo: [true, false],
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: 1,
+          foo: [true, false],
+        });
     });
 
     it("length(exactLength)", () => {
@@ -483,14 +491,18 @@ describe("array", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.bar.parse({
           _type: "bar",
           baz: 1,
           foo: [],
         })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .not.toThrow();
+        .toStrictEqual({
+          _type: "bar",
+          baz: 1,
+          foo: [],
+        });
     });
 
     it("custom(fn)", () => {
@@ -518,7 +530,11 @@ describe("array", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() => zods.foo.parse([true, false, true])).not.toThrow();
+      expect(zods.foo.parse([true, false, true])).toStrictEqual([
+        true,
+        false,
+        true,
+      ]);
       expect(() => zods.foo.parse([false, true])).toThrow(
         "first value must be `true`"
       );

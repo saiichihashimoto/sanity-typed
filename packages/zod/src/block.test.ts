@@ -714,7 +714,7 @@ describe("block", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(() =>
+      expect(
         zods.foo.parse({
           ...fields,
           _type: "foo",
@@ -722,7 +722,13 @@ describe("block", () => {
             { _key: "key", _type: "span", marks: ["mark"], text: "foo" },
           ],
         })
-      ).not.toThrow();
+      ).toStrictEqual({
+        ...fields,
+        _type: "foo",
+        children: [
+          { _key: "key", _type: "span", marks: ["mark"], text: "foo" },
+        ],
+      });
       expect(() =>
         zods.foo.parse({
           ...fields,
