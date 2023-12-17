@@ -4,12 +4,10 @@ import { createClient as createClientNative } from "@sanity/client";
 import type { ClientConfig } from "@sanity/client";
 import { createClient as createStegaClientNative } from "@sanity/client/stega";
 
-import type { SanityDocument } from "@sanity-typed/types";
+import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
 import { castToTyped } from ".";
 import type { SanityClient, SanityStegaClient } from ".";
-
-type AnySanityDocument = Omit<SanityDocument, "_type">;
 
 describe("interoperability", () => {
   describe("castToTyped", () => {

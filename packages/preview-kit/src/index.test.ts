@@ -17,11 +17,9 @@ import type {
   SanityClient,
   SanityStegaClient,
 } from "@sanity-typed/client";
-import type { SanityDocument } from "@sanity-typed/types";
+import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
 import { createClient } from ".";
-
-type AnySanityDocument = Omit<SanityDocument, "_type">;
 
 describe("createClient", () => {
   it("returns a SanityClient", () => {

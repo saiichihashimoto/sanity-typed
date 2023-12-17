@@ -15,12 +15,10 @@ import type {
   MutationEvent,
   RawQueryResponse,
 } from "@sanity-typed/client";
-import type { SanityDocument } from "@sanity-typed/types";
+import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
 import { createClient } from ".";
 import type { ObservableSanityClient } from ".";
-
-type AnySanityDocument = Omit<SanityDocument, "_type">;
 
 describe("observable", () => {
   it("adds _originalId to documents when perspective is `previewDrafts`", () => {

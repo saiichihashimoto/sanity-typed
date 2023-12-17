@@ -529,6 +529,8 @@ export type SanityDocument<
   } = never
 > = Simplify<ObjectValue<TFieldDefinition> & SanityDocumentBase>;
 
+export type AnySanityDocument = Merge<SanityDocument, { _type: string }>;
+
 export type DocumentRule<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;

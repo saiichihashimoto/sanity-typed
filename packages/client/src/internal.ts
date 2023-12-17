@@ -43,7 +43,8 @@ import type {
 } from "type-fest";
 
 import type { ExecuteQuery, RootScope } from "@sanity-typed/groq";
-import type { DocumentValues, SanityDocument } from "@sanity-typed/types";
+import type { DocumentValues } from "@sanity-typed/types";
+import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
 // HACK Couldn't use type-fest's Merge >=3.0.0
 type MergeOld<FirstType, SecondType> = Except<
@@ -53,8 +54,6 @@ type MergeOld<FirstType, SecondType> = Except<
   SecondType;
 
 declare const README: unique symbol;
-
-type AnySanityDocument = Merge<SanityDocument, { _type: string }>;
 
 type PromiseOrObservable<
   TIsPromise extends boolean,
