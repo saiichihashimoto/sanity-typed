@@ -121,28 +121,39 @@ export type SanityValues = InferSchemaValues<typeof config>;
  */
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
-
-`client.ts`:
-
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/next-sanity-client.ts -->
+```next-sanity-client.ts```:
 ```typescript
 import type { SanityValues } from "sanity.config";
 
 // import { createClient } from "next-sanity";
 import { createClient } from "@sanity-typed/next-sanity";
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID; // "pv8y60vp"
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET; // "production"
-const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2023-05-03";
-
 /** Small change using createClient */
 // export const client = createClient({
 export const client = createClient<SanityValues>()({
-  projectId,
-  dataset,
-  apiVersion, // https://www.sanity.io/docs/api-versioning
-  useCdn: true, // if you're using ISR or only static generation at build time then you can set this to `false` to guarantee no stale content
+  projectId: "59t1ed5o",
+  dataset: "production",
+  useCdn: true,
+  apiVersion: "2023-05-23",
 });
+
+export const makeTypedQuery = async () =>
+  client.fetch('*[_type=="product"]{_id,productName,tags}');
+/**
+ *  typeof makeTypedQuery === () => Promise<{
+ *    _id: string;
+ *    productName: string;
+ *    tags: {
+ *      _key: string;
+ *      _type: "tag";
+ *      label?: string;
+ *      value?: string;
+ *    }[] | null;
+ *  }[]>
+ */
 ```
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/next-sanity-client.ts -->
 
 ## Considerations
 
