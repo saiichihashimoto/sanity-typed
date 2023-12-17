@@ -31,9 +31,8 @@ import type {
   SanityValuesToDocumentUnion,
 } from "@sanity-typed/client/src/internal";
 import { evaluate, parse } from "@sanity-typed/groq-js";
-import type { DocumentValues, SanityDocument } from "@sanity-typed/types";
-
-type AnySanityDocument = Merge<SanityDocument, { _type: string }>;
+import type { DocumentValues } from "@sanity-typed/types";
+import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
 // const isPatch = (patch: unknown): patch is PatchType<any, any, any, any> =>
 //   patch instanceof Patch;
@@ -295,7 +294,9 @@ export const createClient =
           const { create: document } = operations;
 
           const now = new Date();
-          const _id = document._id ?? faker.string.uuid();
+          const _id =
+            ("_id" in document ? document._id : undefined) ??
+            faker.string.uuid();
 
           const doc = {
             ...document,

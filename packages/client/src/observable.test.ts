@@ -9,7 +9,7 @@ import type {
 import type { Observable } from "rxjs";
 import type { SetOptional } from "type-fest";
 
-import type { SanityDocument } from "@sanity-typed/types";
+import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
 import { ObservablePatch, ObservableTransaction, createClient } from ".";
 import type {
@@ -18,8 +18,6 @@ import type {
   ObservableSanityClient,
   RawQueryResponse,
 } from ".";
-
-type AnySanityDocument = Omit<SanityDocument, "_type">;
 
 describe("observable", () => {
   it("adds _originalId to documents when perspective is `previewDrafts`", () => {

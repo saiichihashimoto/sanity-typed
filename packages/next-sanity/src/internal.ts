@@ -1,15 +1,12 @@
 import type { ClientConfig } from "next-sanity";
 import { createClient as createClientNative } from "next-sanity";
-import type { Merge } from "type-fest";
 
 import type {
   SanityClient as SanityClientNative,
   SanityStegaClient,
 } from "@sanity-typed/client";
 import type { SanityValuesToDocumentUnion } from "@sanity-typed/client/src/internal";
-import type { SanityDocument } from "@sanity-typed/types";
-
-type AnySanityDocument = Merge<SanityDocument, { _type: string }>;
+import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
 export type SanityClient<
   TClientConfig extends ClientConfig,

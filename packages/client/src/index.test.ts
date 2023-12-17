@@ -9,7 +9,7 @@ import type {
 import type { Observable } from "rxjs";
 import type { SetOptional } from "type-fest";
 
-import type { SanityDocument } from "@sanity-typed/types";
+import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
 import { Patch, Transaction, createClient } from ".";
 import type {
@@ -18,8 +18,6 @@ import type {
   RawQueryResponse,
   SanityClient,
 } from ".";
-
-type AnySanityDocument = Omit<SanityDocument, "_type">;
 
 describe("createClient", () => {
   it("returns a SanityClient", () => {

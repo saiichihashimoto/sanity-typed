@@ -35,8 +35,7 @@
     "dev": "npm run build -- --clean"
   },
   "dependencies": {
-    "@sanity-typed/preview-kit": "0.0.0-development",
-    "type-fest": "4.8.3"
+    "@sanity-typed/preview-kit": "0.0.0-development"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
@@ -44,6 +43,7 @@
     "@sanity-typed/client": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "next-sanity": "7.0.4",
+    "type-fest": "4.8.3",
     "typescript": "5.2.2"
   },
   "peerDependencies": {
