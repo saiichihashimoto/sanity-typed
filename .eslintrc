@@ -127,6 +127,7 @@
             "groq",
             "hotspot",
             "randexp",
+            "stega",
             "tsup",
             "unstash",
             "zods"

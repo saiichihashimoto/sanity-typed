@@ -39,3 +39,10 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
 ### Packages
 
 - [`@sanity-typed/zod`](packages/zod): Generate [Zod](https://zod.dev) Schemas from Sanity Schemas
+
+## More Typed Packages
+
+### Packages
+
+- [`@sanity-typed/next-sanity`](packages/next-sanity): Typed [next-sanity](https://github.com/sanity-io/next-sanity)
+- [`@sanity-typed/preview-kit`](packages/preview-kit): Typed [@sanity/preview-kit](https://github.com/sanity-io/preview-kit)

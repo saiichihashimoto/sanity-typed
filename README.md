@@ -18,6 +18,8 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
   - [Packages](#packages-1)
 - [Runtime Validated Sanity Documents](#runtime-validated-sanity-documents)
   - [Packages](#packages-2)
+- [More Typed Packages](#more-typed-packages)
+  - [Packages](#packages-3)
 
 ## Fully Typed Sanity Client
 
@@ -46,4 +48,11 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
 ### Packages
 
 - [`@sanity-typed/zod`](packages/zod): Generate [Zod](https://zod.dev) Schemas from Sanity Schemas
+
+## More Typed Packages
+
+### Packages
+
+- [`@sanity-typed/next-sanity`](packages/next-sanity): Typed [next-sanity](https://github.com/sanity-io/next-sanity)
+- [`@sanity-typed/preview-kit`](packages/preview-kit): Typed [@sanity/preview-kit](https://github.com/sanity-io/preview-kit)
 <!-- <<<<<< END GENERATED FILE (include): SOURCE _README.md -->

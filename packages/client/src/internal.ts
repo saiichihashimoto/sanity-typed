@@ -27,6 +27,12 @@ import type {
   SingleMutationResult,
   UnfilteredResponseQueryOptions,
 } from "@sanity/client";
+import { createClient as createStegaClientNative } from "@sanity/client/stega";
+import type {
+  ClientStegaConfig,
+  ObservableSanityStegaClient as ObservableSanityStegaClientNative,
+  SanityStegaClient as SanityStegaClientNative,
+} from "@sanity/client/stega";
 import type { Observable } from "rxjs";
 import type {
   Except,
@@ -496,6 +502,7 @@ type OverrideSanityClient<
   TSanityClient,
   TClientConfig extends ClientConfig,
   TDocument extends AnySanityDocument,
+  TObservableClient,
   TIsPromise extends boolean
 > = MergeOld<
   TSanityClient,
@@ -504,6 +511,7 @@ type OverrideSanityClient<
       TSanityClient,
       TClientConfig,
       TDocument,
+      TObservableClient,
       TIsPromise
     >;
     config: <
@@ -516,6 +524,7 @@ type OverrideSanityClient<
           TSanityClient,
           Merge<TClientConfig, NewConfig>,
           TDocument,
+          TObservableClient,
           TIsPromise
         >;
     create: <
@@ -676,8 +685,7 @@ type OverrideSanityClient<
         TOptions
       >
     >;
-    observable: // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
-    ObservableSanityClient<TClientConfig, TDocument>;
+    observable: TObservableClient;
     patch: <
       TAttrs extends Partial<TDocument>,
       TKeys extends TDocument extends never ? never : (keyof TDocument)[]
@@ -722,25 +730,11 @@ type OverrideSanityClient<
       TSanityClient,
       Merge<TClientConfig, NewConfig>,
       TDocument,
+      TObservableClient,
       TIsPromise
     >;
   }
 >;
-
-export type ObservableSanityClient<
-  TClientConfig extends ClientConfig,
-  TDocument extends AnySanityDocument
-> = OverrideSanityClient<
-  ObservableSanityClientNative,
-  TClientConfig,
-  TDocument,
-  false
->;
-
-export type SanityClient<
-  TClientConfig extends ClientConfig,
-  TDocument extends AnySanityDocument
-> = OverrideSanityClient<SanityClientNative, TClientConfig, TDocument, true>;
 
 export type SanityValuesToDocumentUnion<
   SanityValues extends { [type: string]: any },
@@ -750,6 +744,29 @@ export type SanityValuesToDocumentUnion<
     ? { _originalId: string }
     : unknown);
 
+export type ObservableSanityClient<
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+> = OverrideSanityClient<
+  ObservableSanityClientNative,
+  TClientConfig,
+  TDocument,
+  // TODO
+  any,
+  false
+>;
+
+export type SanityClient<
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+> = OverrideSanityClient<
+  SanityClientNative,
+  TClientConfig,
+  TDocument,
+  ObservableSanityClient<TClientConfig, TDocument>,
+  true
+>;
+
 /**
  * Unfortunately, this has to have a very weird function signature due to this typescript issue:
  * https://github.com/microsoft/TypeScript/issues/10571
@@ -758,6 +775,41 @@ export const createClient =
   <SanityValues extends { [type: string]: any }>() =>
   <const TClientConfig extends ClientConfig>(config: TClientConfig) =>
     createClientNative(config) as unknown as SanityClient<
+      TClientConfig,
+      SanityValuesToDocumentUnion<SanityValues, TClientConfig>
+    >;
+
+export type ObservableSanityStegaClient<
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+> = OverrideSanityClient<
+  ObservableSanityStegaClientNative,
+  TClientConfig,
+  TDocument,
+  // TODO
+  any,
+  false
+>;
+
+export type SanityStegaClient<
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+> = OverrideSanityClient<
+  SanityStegaClientNative,
+  TClientConfig,
+  TDocument,
+  ObservableSanityStegaClient<TClientConfig, TDocument>,
+  true
+>;
+
+/**
+ * Unfortunately, this has to have a very weird function signature due to this typescript issue:
+ * https://github.com/microsoft/TypeScript/issues/10571
+ */
+export const createStegaClient =
+  <SanityValues extends { [type: string]: any }>() =>
+  <const TClientConfig extends ClientStegaConfig>(config: TClientConfig) =>
+    createStegaClientNative(config) as unknown as SanityClient<
       TClientConfig,
       SanityValuesToDocumentUnion<SanityValues, TClientConfig>
     >;
@@ -773,12 +825,20 @@ export const castToTyped =
           }
         ]
   ) =>
-  <const TClientConfig extends ClientConfig>(
-    untyped: SanityClientNative,
+  <
+    TClient extends SanityClientNative | SanityStegaClientNative,
+    const TClientConfig extends ClientConfig
+  >(
+    untyped: TClient,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- not actually used
     config?: TClientConfig
   ) =>
-    untyped as unknown as SanityClient<
-      TClientConfig,
-      SanityValuesToDocumentUnion<SanityValues, TClientConfig>
-    >;
+    untyped as unknown as TClient extends SanityStegaClientNative
+      ? SanityStegaClient<
+          TClientConfig,
+          SanityValuesToDocumentUnion<SanityValues, TClientConfig>
+        >
+      : SanityClient<
+          TClientConfig,
+          SanityValuesToDocumentUnion<SanityValues, TClientConfig>
+        >;
