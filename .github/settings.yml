@@ -5,7 +5,6 @@ repository:
   description: Completing sanity's developer experience with typescript (and more)!
   topics: sanity, sanity-io, types, typescript, cms, groq
   private: false
-  has_discussions: true
 labels:
   - name: "released on @alpha"
     color: "#1f883d"
