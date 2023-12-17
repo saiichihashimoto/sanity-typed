@@ -26,28 +26,7 @@ Use `createClient` exactly as you would from [`@sanity-typed/client`](../client/
 
 @[typescript](../example-studio/schemas/product.ts)
 @[typescript](../example-studio/sanity.config.ts)
-
-`client.ts`:
-
-```typescript
-import type { SanityValues } from "sanity.config";
-
-// import { createClient } from "next-sanity";
-import { createClient } from "@sanity-typed/next-sanity";
-
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID; // "pv8y60vp"
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET; // "production"
-const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2023-05-03";
-
-/** Small change using createClient */
-// export const client = createClient({
-export const client = createClient<SanityValues>()({
-  projectId,
-  dataset,
-  apiVersion, // https://www.sanity.io/docs/api-versioning
-  useCdn: true, // if you're using ISR or only static generation at build time then you can set this to `false` to guarantee no stale content
-});
-```
+@[typescript](../example-app/src/sanity/next-sanity-client.ts)
 
 ## Considerations
 
