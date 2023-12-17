@@ -502,6 +502,7 @@ type OverrideSanityClient<
   TSanityClient,
   TClientConfig extends ClientConfig,
   TDocument extends AnySanityDocument,
+  TObservableClient,
   TIsPromise extends boolean
 > = MergeOld<
   TSanityClient,
@@ -510,6 +511,7 @@ type OverrideSanityClient<
       TSanityClient,
       TClientConfig,
       TDocument,
+      TObservableClient,
       TIsPromise
     >;
     config: <
@@ -522,6 +524,7 @@ type OverrideSanityClient<
           TSanityClient,
           Merge<TClientConfig, NewConfig>,
           TDocument,
+          TObservableClient,
           TIsPromise
         >;
     create: <
@@ -682,8 +685,7 @@ type OverrideSanityClient<
         TOptions
       >
     >;
-    observable: // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursive type
-    ObservableSanityClient<TClientConfig, TDocument>;
+    observable: TObservableClient;
     patch: <
       TAttrs extends Partial<TDocument>,
       TKeys extends TDocument extends never ? never : (keyof TDocument)[]
@@ -728,25 +730,11 @@ type OverrideSanityClient<
       TSanityClient,
       Merge<TClientConfig, NewConfig>,
       TDocument,
+      TObservableClient,
       TIsPromise
     >;
   }
 >;
-
-export type ObservableSanityClient<
-  TClientConfig extends ClientConfig,
-  TDocument extends AnySanityDocument
-> = OverrideSanityClient<
-  ObservableSanityClientNative,
-  TClientConfig,
-  TDocument,
-  false
->;
-
-export type SanityClient<
-  TClientConfig extends ClientConfig,
-  TDocument extends AnySanityDocument
-> = OverrideSanityClient<SanityClientNative, TClientConfig, TDocument, true>;
 
 export type SanityValuesToDocumentUnion<
   SanityValues extends { [type: string]: any },
@@ -755,6 +743,29 @@ export type SanityValuesToDocumentUnion<
   (TClientConfig extends { perspective: "previewDrafts" }
     ? { _originalId: string }
     : unknown);
+
+export type ObservableSanityClient<
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+> = OverrideSanityClient<
+  ObservableSanityClientNative,
+  TClientConfig,
+  TDocument,
+  // TODO
+  any,
+  false
+>;
+
+export type SanityClient<
+  TClientConfig extends ClientConfig,
+  TDocument extends AnySanityDocument
+> = OverrideSanityClient<
+  SanityClientNative,
+  TClientConfig,
+  TDocument,
+  ObservableSanityClient<TClientConfig, TDocument>,
+  true
+>;
 
 /**
  * Unfortunately, this has to have a very weird function signature due to this typescript issue:
@@ -775,6 +786,8 @@ export type ObservableSanityStegaClient<
   ObservableSanityStegaClientNative,
   TClientConfig,
   TDocument,
+  // TODO
+  any,
   false
 >;
 
@@ -785,6 +798,7 @@ export type SanityStegaClient<
   SanityStegaClientNative,
   TClientConfig,
   TDocument,
+  ObservableSanityStegaClient<TClientConfig, TDocument>,
   true
 >;
 

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@sanity-typed/preview-kit",
+  "version": "0.0.0-development",
+  "description": "Typed @sanity/preview-kit similarly to @sanity-typed/client",
+  "keywords": [
+    "sanity",
+    "sanity-io",
+    "types",
+    "typescript",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "groq",
+    "live",
+    "preview",
+    "react",
+    "sanity.io",
+    "studio",
+    "svelte",
+    "vue"
+  ],
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/preview-kit",
+  "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
+  "repository": "github:saiichihashimoto/sanity-typed",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/saiichihashimoto"
+  },
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "npm run build -- --clean"
+  },
+  "dependencies": {
+    "@sanity-typed/client": "0.0.0-development",
+    "type-fest": "4.8.3"
+  },
+  "devDependencies": {
+    "@jest/globals": "29.7.0",
+    "@saiichihashimoto/test-utils": "1.0.2",
+    "@sanity-typed/tsconfig": "0.0.0-development",
+    "@sanity/preview-kit": "5.0.6",
+    "typescript": "5.2.2"
+  },
+  "peerDependencies": {
+    "@sanity/preview-kit": "^5.0.6",
+    "typescript": "^5.0.4"
+  }
+}
