@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@sanity-typed/preview-kit",
+  "name": "@sanity-typed/next-sanity",
   "version": "0.0.0-development",
-  "description": "Typed @sanity/preview-kit",
+  "description": "Typed next-sanity",
   "keywords": [
     "sanity",
     "sanity-io",
@@ -12,16 +12,14 @@
     "headless",
     "realtime",
     "content",
-    "groq",
-    "live",
-    "preview",
-    "react",
     "sanity.io",
+    "next.js",
     "studio",
-    "svelte",
-    "vue"
+    "studio-v3",
+    "live",
+    "preview"
   ],
-  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/preview-kit",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/next-sanity",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {
@@ -37,18 +35,19 @@
     "dev": "npm run build -- --clean"
   },
   "dependencies": {
-    "@sanity-typed/client": "0.0.0-development"
+    "@sanity-typed/preview-kit": "0.0.0-development",
+    "type-fest": "4.8.3"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.2",
+    "@sanity-typed/client": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@sanity/preview-kit": "5.0.6",
-    "type-fest": "4.8.3",
+    "next-sanity": "7.0.4",
     "typescript": "5.2.2"
   },
   "peerDependencies": {
-    "@sanity/preview-kit": "^5.0.6",
+    "next-sanity": "^7.0.4",
     "typescript": "^5.0.4"
   }
 }

@@ -17,8 +17,9 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
 - [Fully Offline Sanity Client](#fully-offline-sanity-client)
   - [Packages](#packages-1)
 - [Runtime Validated Sanity Documents](#runtime-validated-sanity-documents)
-- [More Typed Packages](#more-typed-packages)
   - [Packages](#packages-2)
+- [More Typed Packages](#more-typed-packages)
+  - [Packages](#packages-3)
 
 ## Fully Typed Sanity Client
 
@@ -44,11 +45,14 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
 
 [![Watch How to Generate Zod Schemas for Sanity Documents](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/d46bc235-827e-4fa6-ac8b-d653505b2d61)](https://github.com/saiichihashimoto/sanity-typed/assets/2819256/c014f8aa-a97a-4093-9924-94a2ecee4584)
 
-## More Typed Packages
-
-- [`@sanity-typed/preview-kit`](packages/preview-kit): Typed [@sanity/preview-kit](https://github.com/sanity-io/preview-kit) similarly to [@sanity-typed/client](packages/client)
-
 ### Packages
 
 - [`@sanity-typed/zod`](packages/zod): Generate [Zod](https://zod.dev) Schemas from Sanity Schemas
+
+## More Typed Packages
+
+### Packages
+
+- [`@sanity-typed/next-sanity`](packages/next-sanity): Typed [next-sanity](https://github.com/sanity-io/next-sanity)
+- [`@sanity-typed/preview-kit`](packages/preview-kit): Typed [@sanity/preview-kit](https://github.com/sanity-io/preview-kit)
 <!-- <<<<<< END GENERATED FILE (include): SOURCE _README.md -->
