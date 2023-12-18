@@ -1,12 +1,16 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { toHTML as toHTMLNative } from "@portabletext/to-html";
+import type { HtmlPortableTextList } from "@portabletext/to-html";
 import { expectType } from "@saiichihashimoto/test-utils";
 
 import type {
   PortableTextBlock,
   PortableTextSpan,
 } from "@portabletext-typed/types";
-import type { BlockListItemDefault } from "@portabletext-typed/types/src/internal";
+import type {
+  BlockListItemDefault,
+  BlockStyleDefault,
+} from "@portabletext-typed/types/src/internal";
 import {
   defineArrayMember,
   defineConfig,
@@ -663,7 +667,7 @@ describe("toHTML", () => {
               return `<div>${children}</div>`;
             },
             // @ts-expect-error -- Unless they're not provided
-            h1: ({ children }) => `<h1>${children}</h1>`,
+            h1: ({ children }) => `<h2>${children}</h2>`,
           },
         },
       })
@@ -673,7 +677,7 @@ describe("toHTML", () => {
           block: {
             foo: ({ children }) => `<marquee>${children}</marquee>`,
             normal: ({ children }) => `<div>${children}</div>`,
-            h1: ({ children }) => `<h1>${children}</h1>`,
+            h1: ({ children }) => `<h2>${children}</h2>`,
           },
         },
       })
@@ -707,5 +711,255 @@ describe("toHTML", () => {
     );
   });
 
-  it.todo("types list/listItem overrides");
+  it("types list/listItem overrides", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "array",
+            of: [
+              defineArrayMember({
+                type: "block",
+                lists: [
+                  { title: "Bullet", value: "bullet" as const },
+                  { title: "Foo", value: "foo" as const },
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    const blocks: InferSchemaValues<typeof config>["foo"] = [
+      {
+        _key: "R5FvMrjo",
+        _type: "block",
+        children: [
+          {
+            _key: "cZUQGmh4",
+            _type: "span",
+            marks: [],
+            text: "Span number one. ",
+          },
+          {
+            _key: "toaiCqIK",
+            _type: "span",
+            marks: [],
+            text: "And span number two.",
+          },
+        ],
+        markDefs: [],
+        style: "normal",
+      },
+      {
+        _key: "R5FvMrjo",
+        _type: "block",
+        children: [
+          {
+            _key: "cZUQGmh4",
+            _type: "span",
+            marks: [],
+            text: "Span number one. ",
+          },
+          {
+            _key: "toaiCqIK",
+            _type: "span",
+            marks: [],
+            text: "And span number two.",
+          },
+        ],
+        level: 1,
+        listItem: "bullet",
+        markDefs: [],
+        style: "normal",
+      },
+    ];
+
+    expect(
+      // @ts-expect-error -- toHTML requires options
+      toHTML(blocks)
+    ).toStrictEqual(toHTMLNative(blocks));
+
+    expect(
+      toHTML(
+        blocks,
+        // @ts-expect-error -- toHTML requires options.components
+        {}
+      )
+    ).toStrictEqual(toHTMLNative(blocks));
+
+    expect(
+      toHTML(blocks, {
+        // @ts-expect-error -- toHTML requires options.components.block
+        components: {},
+      })
+    ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          // @ts-expect-error -- toHTML requires options.components.block.foo
+          list: {},
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          list: {},
+        },
+      })
+    );
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          list: {
+            // @ts-expect-error -- toHTML requires options.components.block.foo
+            bar: () => "bar",
+          },
+          listItem: {
+            // @ts-expect-error -- listItem is optional, but it will type with the correct keys
+            bar: () => "bar",
+          },
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          list: {
+            bar: () => "bar",
+          },
+          listItem: {
+            bar: () => "bar",
+          },
+        },
+      })
+    );
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          list: {
+            foo: ({ children, value }) => {
+              expectType<typeof value>().toStrictEqual<
+                HtmlPortableTextList & { listItem: "foo" }
+              >();
+
+              return `<marquee>${children}</marquee>`;
+            },
+          },
+          listItem: {
+            foo: ({ children, value }) => {
+              expectType<typeof value>().toEqual<
+                PortableTextBlock<
+                  never,
+                  PortableTextSpan & { _key: string },
+                  BlockStyleDefault,
+                  "foo"
+                > & {
+                  _key: string;
+                  listItem: "foo";
+                }
+              >();
+
+              return `<span>${children}</span>`;
+            },
+          },
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          list: {
+            foo: ({ children }) => `<marquee>${children}</marquee>`,
+          },
+          listItem: {
+            foo: ({ children }) => `<span>${children}</span>`,
+          },
+        },
+      })
+    );
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          list: {
+            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            // Retyping defaults is fine
+            bullet: ({ children, value }) => {
+              expectType<typeof value>().toStrictEqual<
+                HtmlPortableTextList & { listItem: "bullet" }
+              >();
+
+              return `<ol>${children}</ol>`;
+            },
+            // @ts-expect-error -- Unless they're not provided
+            number: ({ children }) => `<ul>${children}</ul>`,
+          },
+          listItem: {
+            foo: ({ children }) => `<span>${children}</span>`,
+            // Retyping defaults is fine
+            bullet: ({ children }) => `<b>${children}</b>`,
+            // @ts-expect-error -- Unless they're not provided
+            number: ({ children }) => `<i>${children}</i>`,
+          },
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          list: {
+            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            bullet: ({ children }) => `<ol>${children}</ol>`,
+            number: ({ children }) => `<ul>${children}</ul>`,
+          },
+          listItem: {
+            foo: ({ children }) => `<span>${children}</span>`,
+            bullet: ({ children }) => `<b>${children}</b>`,
+            number: ({ children }) => `<i>${children}</i>`,
+          },
+        },
+      })
+    );
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          list: ({ children, value }) => {
+            expectType<typeof value>().toStrictEqual<
+              HtmlPortableTextList & { listItem: "bullet" | "foo" }
+            >();
+
+            return `<div>${children}</div>`;
+          },
+          listItem: ({ children, value }) => {
+            expectType<typeof value>().toEqual<
+              PortableTextBlock<
+                never,
+                PortableTextSpan & { _key: string },
+                BlockStyleDefault,
+                "bullet" | "foo"
+              > & {
+                _key: string;
+                listItem: "bullet" | "foo";
+              }
+            >();
+
+            return `<span>${children}</span>`;
+          },
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          list: ({ children }) => `<div>${children}</div>`,
+          listItem: ({ children }) => `<span>${children}</span>`,
+        },
+      })
+    );
+  });
 });
