@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import { toHTML as toHTMLNative } from "@portabletext/to-html";
 import { expectType } from "@saiichihashimoto/test-utils";
 
@@ -12,6 +12,10 @@ import type { InferSchemaValues } from "@sanity-typed/types";
 import { toHTML } from ".";
 
 describe("toHTML", () => {
+  beforeEach(() => {
+    jest.spyOn(console, "warn").mockImplementation(jest.fn());
+  });
+
   it("returns same value as @portabletext/to-html", () => {
     const blocks = [
       {
@@ -84,7 +88,7 @@ describe("toHTML", () => {
     expect(toHTML(blocks)).toStrictEqual(toHTMLNative(blocks));
   });
 
-  it("types adjacent type overrides", () => {
+  it("types sibling overrides", () => {
     const config = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
@@ -137,7 +141,7 @@ describe("toHTML", () => {
     expect(
       // @ts-expect-error -- toHTML requires options
       toHTML(blocks)
-    ).toStrictEqual(toHTMLNative(blocks, { onMissingComponent: false }));
+    ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(
@@ -145,16 +149,14 @@ describe("toHTML", () => {
         // @ts-expect-error -- toHTML requires options.components
         {}
       )
-    ).toStrictEqual(toHTMLNative(blocks, { onMissingComponent: false }));
+    ).toStrictEqual(toHTMLNative(blocks, {}));
 
     expect(
       toHTML(blocks, {
         // @ts-expect-error -- toHTML requires options.components.types
         components: {},
       })
-    ).toStrictEqual(
-      toHTMLNative(blocks, { onMissingComponent: false, components: {} })
-    );
+    ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
 
     expect(
       toHTML(blocks, {
@@ -165,7 +167,6 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        onMissingComponent: false,
         components: {
           types: {},
         },
@@ -183,7 +184,6 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        onMissingComponent: false,
         components: {
           types: {
             foo: () => "foo",
@@ -206,7 +206,6 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        onMissingComponent: false,
         components: {
           types: {
             slug: ({ isInline, value }) => {
@@ -271,7 +270,7 @@ describe("toHTML", () => {
     expect(
       // @ts-expect-error -- toHTML requires options
       toHTML(blocks)
-    ).toStrictEqual(toHTMLNative(blocks, { onMissingComponent: false }));
+    ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(
@@ -279,16 +278,14 @@ describe("toHTML", () => {
         // @ts-expect-error -- toHTML requires options.components
         {}
       )
-    ).toStrictEqual(toHTMLNative(blocks, { onMissingComponent: false }));
+    ).toStrictEqual(toHTMLNative(blocks, {}));
 
     expect(
       toHTML(blocks, {
         // @ts-expect-error -- toHTML requires options.components.types
         components: {},
       })
-    ).toStrictEqual(
-      toHTMLNative(blocks, { onMissingComponent: false, components: {} })
-    );
+    ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
 
     expect(
       toHTML(blocks, {
@@ -299,7 +296,6 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        onMissingComponent: false,
         components: {
           types: {},
         },
@@ -317,7 +313,6 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        onMissingComponent: false,
         components: {
           types: {
             foo: () => "foo",
@@ -340,7 +335,6 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        onMissingComponent: false,
         components: {
           types: {
             slug: ({ isInline, value }) => {
@@ -354,7 +348,7 @@ describe("toHTML", () => {
     );
   });
 
-  it("doesn't collide with adjacent types and children", () => {
+  it("doesn't collide with siblings and children", () => {
     const config = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
@@ -413,7 +407,7 @@ describe("toHTML", () => {
     expect(
       // @ts-expect-error -- toHTML requires options
       toHTML(blocks)
-    ).toStrictEqual(toHTMLNative(blocks, { onMissingComponent: false }));
+    ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(
@@ -421,16 +415,14 @@ describe("toHTML", () => {
         // @ts-expect-error -- toHTML requires options.components
         {}
       )
-    ).toStrictEqual(toHTMLNative(blocks, { onMissingComponent: false }));
+    ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(blocks, {
         // @ts-expect-error -- toHTML requires options.components.types
         components: {},
       })
-    ).toStrictEqual(
-      toHTMLNative(blocks, { onMissingComponent: false, components: {} })
-    );
+    ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
 
     expect(
       toHTML(blocks, {
@@ -441,7 +433,6 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        onMissingComponent: false,
         components: {
           types: {},
         },
@@ -459,7 +450,6 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        onMissingComponent: false,
         components: {
           types: {
             foo: () => "foo",
@@ -482,7 +472,6 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        onMissingComponent: false,
         components: {
           types: {
             slug: ({ isInline, value }) => {
@@ -495,4 +484,12 @@ describe("toHTML", () => {
       })
     );
   });
+
+  it.todo("types decorator overrides");
+
+  it.todo("types markDef overrides");
+
+  it.todo("types style overrides");
+
+  it.todo("types list/listItem overrides");
 });

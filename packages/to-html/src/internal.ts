@@ -4,85 +4,75 @@ import type {
   PortableTextOptions as PortableTextOptionsNative,
   PortableTextTypeComponentOptions,
 } from "@portabletext/to-html";
-import type {
-  PortableTextMarkDefinition,
-  TypedObject,
-} from "@portabletext/types";
-import type { Merge } from "type-fest";
+import type { Except, RequiredKeysOf, SetRequired } from "type-fest";
 
-import type { PortableTextBlock } from "@portabletext-typed/types";
+import type {
+  PortableTextBlock,
+  PortableTextSpan,
+} from "@portabletext-typed/types";
 import type { MaybeArray } from "@sanity-typed/utils";
+
+// HACK Couldn't use type-fest's Merge >=3.0.0
+type MergeOld<FirstType, SecondType> = Except<
+  FirstType,
+  Extract<keyof FirstType, keyof SecondType>
+> &
+  SecondType;
 
 export type PortableTextHtmlComponents<
   TChild extends { _type: string },
-  TOtherType extends Required<TypedObject>
-> = Merge<
-  Partial<PortableTextHtmlComponentsNative>,
-  TChild | TOtherType extends never
-    ? { types?: never }
-    : {
+  TSibling extends { _type: string }
+> = SetRequired<
+  Partial<
+    MergeOld<
+      PortableTextHtmlComponentsNative,
+      {
         types: {
-          [TType in TChild | TOtherType as TType["_type"]]: (
-            options: Merge<
+          [TType in TChild | TSibling as TType["_type"]]: (
+            options: MergeOld<
               PortableTextTypeComponentOptions<TType>,
               {
                 isInline:
                   | (TType extends TChild ? true : never)
-                  | (TType extends TOtherType ? false : never);
+                  | (TType extends TSibling ? false : never);
               }
             >
           ) => string;
         };
       }
+    >
+  >,
+  TChild | TSibling extends never ? never : "types"
 >;
 
 export type PortableTextOptions<
   TChild extends { _type: string },
-  TOtherType extends Required<TypedObject>
-> = Merge<
-  PortableTextOptionsNative,
-  TChild | TOtherType extends never
-    ? { components?: never }
-    : { components: PortableTextHtmlComponents<TChild, TOtherType> }
+  TSibling extends { _type: string }
+> = SetRequired<
+  Partial<
+    MergeOld<
+      PortableTextOptionsNative,
+      { components: PortableTextHtmlComponents<TChild, TSibling> }
+    >
+  >,
+  RequiredKeysOf<PortableTextHtmlComponents<TChild, TSibling>> extends never
+    ? never
+    : "components"
 >;
 
-type IsStringOr<TValue, TOtherValue> = string extends TValue
-  ? true
-  : TValue extends TOtherValue
-  ? true
-  : false;
-
 export const toHTML = <
-  TMarkDef extends PortableTextMarkDefinition,
-  TChild extends { _type: string },
-  TBlockStyle extends string,
-  TBlockListItem extends string,
-  TOtherType extends Required<TypedObject>
->(
-  blocks: MaybeArray<
-    | TOtherType
-    | (PortableTextBlock<TMarkDef, TChild, TBlockStyle, TBlockListItem> & {
-        _key: string;
-      })
+  TItem extends { _type: string },
+  TChild extends Exclude<
+    Extract<TItem, PortableTextBlock<any, any, any, any>>["children"][number],
+    PortableTextSpan
   >,
-  ...args:
-    | (
-        | IsStringOr<TChild["_type"], "span">
-        | IsStringOr<TOtherType["_type"], "block"> extends true
-        ? [] | [options: undefined]
-        : never)
-    | [
-        options: PortableTextOptions<
-          IsStringOr<TChild["_type"], "span"> extends true
-            ? never
-            : Exclude<TChild, { _type: "span" }>,
-          IsStringOr<TOtherType["_type"], "block"> extends true
-            ? never
-            : Exclude<TOtherType, { _type: "block" }>
-        >
-      ]
-) =>
-  toHTMLNative(blocks, {
-    onMissingComponent: false,
-    ...(args.length ? args[0] : {}),
-  });
+  TSibling extends Exclude<
+    string extends TItem["_type"] ? never : TItem,
+    PortableTextBlock<any, any, any, any>
+  >
+>(
+  blocks: MaybeArray<TItem>,
+  ...args: RequiredKeysOf<PortableTextOptions<TChild, TSibling>> extends never
+    ? [options?: PortableTextOptions<TChild, TSibling>]
+    : [options: PortableTextOptions<TChild, TSibling>]
+) => toHTMLNative(blocks, ...args);
