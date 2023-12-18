@@ -50,6 +50,7 @@ import type {
   NumberRule,
   ObjectDefinition as ObjectDefinitionNative,
   ObjectRule,
+  Plugin as PluginNative,
   PluginOptions as PluginOptionsNative,
   PreviewConfig,
   ReferenceDefinition as ReferenceDefinitionNative,
@@ -1484,10 +1485,8 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any
               >
             : never)
-    : Untyped extends (options: infer TOptions) => PluginOptionsNative
+    : Untyped extends PluginNative<infer TOptions>
     ? ReturnType<typeof definePlugin<any, any, TOptions>>
-    : Untyped extends PluginOptionsNative
-    ? PluginOptions<any, any>
     : {
         [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
       };
@@ -1573,8 +1572,8 @@ export const castFromTyped = <Typed>(typed: Typed) =>
           TStrict
         >
       >
-    : Typed extends PluginOptions<any, any>
-    ? PluginOptionsNative
+    : Typed extends (options: infer TOptions) => PluginOptions<any, any>
+    ? PluginNative<TOptions>
     : {
         [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
       };
