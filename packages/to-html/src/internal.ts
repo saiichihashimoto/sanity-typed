@@ -7,12 +7,7 @@ import type {
   PortableTextOptions as PortableTextOptionsNative,
   PortableTextTypeComponentOptions,
 } from "@portabletext/to-html";
-import type {
-  Except,
-  RequiredKeysOf,
-  SetOptional,
-  SetRequired,
-} from "type-fest";
+import type { Except, RequiredKeysOf, SetRequired } from "type-fest";
 
 import type {
   PortableTextBlock,
@@ -53,37 +48,48 @@ export type PortableTextHtmlComponents<
       PortableTextHtmlComponentsNative,
       {
         block:
-          | SetOptional<
-              {
-                [TStyle in TBlockStyle]: PortableTextComponent<
-                  TBlock & { style: TStyle }
-                >;
-              },
-              DefaultToHTMLPortableTextBlockStyles & TBlockStyle
-            >
-          | ((options: PortableTextComponentOptions<TBlock>) => string);
+          | ((options: PortableTextComponentOptions<TBlock>) => string)
+          | ({
+              [TStyle in DefaultToHTMLPortableTextBlockStyles &
+                TBlockStyle]?: PortableTextComponent<
+                TBlock & { style: TStyle }
+              >;
+            } & {
+              [TStyle in Exclude<
+                TBlockStyle,
+                DefaultToHTMLPortableTextBlockStyles
+              >]: PortableTextComponent<TBlock & { style: TStyle }>;
+            });
         list: // TODO Type HtmlPortableTextList more specifically
         | PortableTextComponent<
               HtmlPortableTextList & { listItem: TBlockListItem }
             >
-          | SetOptional<
-              {
-                [TList in TBlockListItem]: PortableTextComponent<
-                  HtmlPortableTextList & { listItem: TList }
-                >;
-              },
-              DefaultToHTMLPortableTextBlockListItems & TBlockListItem
-            >;
+          | ({
+              [TList in DefaultToHTMLPortableTextBlockListItems &
+                TBlockListItem]?: PortableTextComponent<
+                HtmlPortableTextList & { listItem: TList }
+              >;
+            } & {
+              [TList in Exclude<
+                TBlockListItem,
+                DefaultToHTMLPortableTextBlockListItems
+              >]: PortableTextComponent<
+                HtmlPortableTextList & { listItem: TList }
+              >;
+            });
         listItem:
           | PortableTextComponent<TBlock & { listItem: TBlockListItem }>
-          | SetOptional<
-              {
-                [TList in TBlockListItem]: PortableTextComponent<
-                  TBlock & { listItem: TList }
-                >;
-              },
-              DefaultToHTMLPortableTextBlockListItems & TBlockListItem
-            >;
+          | ({
+              [TList in DefaultToHTMLPortableTextBlockListItems &
+                TBlockListItem]?: PortableTextComponent<
+                TBlock & { listItem: TList }
+              >;
+            } & {
+              [TList in Exclude<
+                TBlockListItem,
+                DefaultToHTMLPortableTextBlockListItems
+              >]: PortableTextComponent<TBlock & { listItem: TList }>;
+            });
         types: {
           [TType in TChildSibling | TSibling as TType["_type"]]: (
             options: MergeOld<
