@@ -1,13 +1,14 @@
 import { describe, expect, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 
+import type { PortableTextBlock } from "@portabletext-typed/types";
 import {
   defineArrayMember,
   defineConfig,
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { InferSchemaValues, PortableTextBlock } from "@sanity-typed/types";
+import type { InferSchemaValues } from "@sanity-typed/types";
 
 import { enableZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";

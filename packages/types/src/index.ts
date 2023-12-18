@@ -23,8 +23,6 @@ export type {
   NumberDefinition,
   ObjectDefinition,
   PluginOptions,
-  PortableTextBlock,
-  PortableTextSpan,
   ReferenceDefinition,
   ReferenceValue,
   RegexRule,

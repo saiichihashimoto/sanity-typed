@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@sanity-typed/zod",
+  "name": "@portabletext-typed/to-html",
   "version": "0.0.0-development",
-  "description": "Generate Zod Schemas from Sanity Schemas",
+  "description": "FIXME",
   "keywords": [
     "sanity",
     "sanity-io",
@@ -11,14 +11,9 @@
     "cms",
     "headless",
     "realtime",
-    "content",
-    "zod",
-    "schema",
-    "validation",
-    "type",
-    "inference"
+    "content"
   ],
-  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/zod",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/to-html",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {
@@ -34,28 +29,18 @@
     "dev": "npm run build -- --clean"
   },
   "dependencies": {
-    "@portabletext-typed/types": "0.0.0-development",
-    "@sanity-typed/types": "0.0.0-development",
-    "lodash": "4.17.21",
-    "type-fest": "4.8.3"
+    "@portabletext-typed/types": "0.0.0-development"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
-    "@saiichihashimoto/test-utils": "1.0.2",
-    "@sanity-typed/traverse-validation": "0.0.0-development",
+    "@portabletext/to-html": "2.0.5",
+    "@portabletext/types": "2.0.8",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
-    "@types/lodash": "4.14.202",
-    "sanity": "3.21.3",
-    "typescript": "5.2.2",
-    "zod": "3.22.4"
+    "typescript": "5.2.2"
   },
   "peerDependencies": {
-    "sanity": "^3.12.0",
-    "typescript": "5.2.2",
-    "zod": "^3.21.4"
-  },
-  "engines": {
-    "node": "^18.17.0"
+    "@portabletext/to-html": "^2.0.5",
+    "typescript": "^5.0.4"
   }
 }

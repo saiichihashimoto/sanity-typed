@@ -7,7 +7,7 @@
     "@standard-configs/prettier-plugin"
   ],
   "quoteProps": "consistent",
-  "importOrder": ["^@sanity-typed/(.*)$", "^src/(.*)$", "^[./]"],
+  "importOrder": ["^@(sanity|portabletext)-typed/(.*)$", "^src/(.*)$", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true
 }

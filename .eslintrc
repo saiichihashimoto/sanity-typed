@@ -30,7 +30,7 @@
   },
   "settings": {
     "import/extensions": [".js", ".jsx", ".ts", ".tsx"],
-    "import/internal-regex": "^@sanity-typed/(?:traverse-validation|utils)",
+    "import/internal-regex": "^(?:(?:@sanity-typed/(?:traverse-validation|utils))|(?:@portabletext-typed/types))",
     "import/resolver": {
       "node": {
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
@@ -120,12 +120,13 @@
       {
         "autoFix": false,
         "cspell": {
-          "ignoreRegExpList": ["_rev: \".*\""],
+          "ignoreRegExpList": ["_key: \".*\"", "_rev: \".*\""],
           "words": [
             "datetime",
             "geopoint",
             "groq",
             "hotspot",
+            "portabletext",
             "randexp",
             "stega",
             "tsup",

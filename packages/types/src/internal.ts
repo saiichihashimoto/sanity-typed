@@ -1,8 +1,3 @@
-import type {
-  PortableTextMarkDefinition,
-  PortableTextSpan as PortableTextSpanNative,
-  TypedObject,
-} from "@portabletext/types";
 import {
   defineArrayMember as defineArrayMemberNative,
   defineConfig as defineConfigNative,
@@ -73,14 +68,16 @@ import type {
   UrlRule,
   WorkspaceOptions as WorkspaceOptionsNative,
 } from "sanity";
-import type {
-  Except,
-  IsStringLiteral,
-  Merge,
-  SetRequired,
-  Simplify,
-} from "type-fest";
+import type { Except, IsStringLiteral, Merge, Simplify } from "type-fest";
 
+import type {
+  PortableTextBlock,
+  PortableTextSpan,
+} from "@portabletext-typed/types";
+import type {
+  BlockListItemDefault,
+  BlockStyleDefault,
+} from "@portabletext-typed/types/src/internal";
 import type {
   IsPlainObject,
   MaybeArray,
@@ -375,40 +372,6 @@ export type ArrayDefinition<
     of: TupleOfLength<TMemberDefinition, 1>;
   }
 >;
-
-export type PortableTextSpan = SetRequired<
-  Omit<PortableTextSpanNative, "_key">,
-  "marks"
->;
-
-type BlockStyleDefault =
-  | "blockquote"
-  | "h1"
-  | "h2"
-  | "h3"
-  | "h4"
-  | "h5"
-  | "h6"
-  | "normal";
-
-type BlockListItemDefault = "bullet" | "number";
-
-export type PortableTextBlock<
-  TMarkDef extends PortableTextMarkDefinition = PortableTextMarkDefinition,
-  TChild extends TypedObject = PortableTextSpan,
-  TBlockStyle extends string = BlockStyleDefault,
-  TBlockListItem extends string = BlockListItemDefault
-> = {
-  _type: "block";
-  children: TChild[];
-  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
-  level?: number;
-  listItem?: TBlockListItem;
-  markDefs: TMarkDef[];
-  style: TBlockStyle;
-};
-// TODO PortableTextBlock is too complex for some reason https://github.com/saiichihashimoto/sanity-typed/issues/415
-// > = Omit<PortableTextBlockNative<M, C, S, L> & { _type: "block" }, "_key">;
 
 export type BlockStyleDefinition<Value extends string> = MergeOld<
   BlockStyleDefinitionNative,

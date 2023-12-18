@@ -10,6 +10,7 @@
   "verbose": true,
   "modulePaths": ["."],
   "moduleNameMapper": {
+    "^@portabletext-typed/([^/]*)$": "<rootDir>/packages/$1/src",
     "^@sanity-typed/([^/]*)$": "<rootDir>/packages/$1/src"
   }
 }

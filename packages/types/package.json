@@ -29,11 +29,11 @@
     "dev": "npm run build -- --clean"
   },
   "dependencies": {
+    "@portabletext-typed/types": "0.0.0-development",
     "type-fest": "4.8.3"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
-    "@portabletext/types": "2.0.8",
     "@saiichihashimoto/test-utils": "1.0.2",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
@@ -41,7 +41,6 @@
     "typescript": "5.2.2"
   },
   "peerDependencies": {
-    "@portabletext/types": "^2.0.2",
     "sanity": "^3.12.0",
     "typescript": "^5.0.4"
   }
