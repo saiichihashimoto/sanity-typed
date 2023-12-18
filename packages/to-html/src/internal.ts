@@ -1,10 +1,16 @@
 import { toHTML as toHTMLNative } from "@portabletext/to-html";
 import type {
+  PortableTextComponentOptions,
   PortableTextHtmlComponents as PortableTextHtmlComponentsNative,
   PortableTextOptions as PortableTextOptionsNative,
   PortableTextTypeComponentOptions,
 } from "@portabletext/to-html";
-import type { Except, RequiredKeysOf, SetRequired } from "type-fest";
+import type {
+  Except,
+  RequiredKeysOf,
+  SetOptional,
+  SetRequired,
+} from "type-fest";
 
 import type {
   PortableTextBlock,
@@ -19,21 +25,45 @@ type MergeOld<FirstType, SecondType> = Except<
 > &
   SecondType;
 
+type DefaultToHTMLPortableTextBlockStyles =
+  | "blockquote"
+  | "h1"
+  | "h2"
+  | "h3"
+  | "h4"
+  | "h5"
+  | "h6"
+  | "normal";
+
 export type PortableTextHtmlComponents<
-  TChild extends { _type: string },
+  TBlock extends PortableTextBlock<any, any, any, any>,
+  TChildSibling extends { _type: string },
+  TBlockStyle extends string,
   TSibling extends { _type: string }
 > = SetRequired<
   Partial<
     MergeOld<
       PortableTextHtmlComponentsNative,
       {
+        block:
+          | SetOptional<
+              {
+                [TStyle in TBlockStyle]: (
+                  options: PortableTextComponentOptions<
+                    TBlock & { style: TStyle }
+                  >
+                ) => string;
+              },
+              DefaultToHTMLPortableTextBlockStyles & TBlockStyle
+            >
+          | ((options: PortableTextComponentOptions<TBlock>) => string);
         types: {
-          [TType in TChild | TSibling as TType["_type"]]: (
+          [TType in TChildSibling | TSibling as TType["_type"]]: (
             options: MergeOld<
               PortableTextTypeComponentOptions<TType>,
               {
                 isInline:
-                  | (TType extends TChild ? true : never)
+                  | (TType extends TChildSibling ? true : never)
                   | (TType extends TSibling ? false : never);
               }
             >
@@ -42,37 +72,64 @@ export type PortableTextHtmlComponents<
       }
     >
   >,
-  TChild | TSibling extends never ? never : "types"
+  | (TBlockStyle extends DefaultToHTMLPortableTextBlockStyles ? never : "block")
+  | (TChildSibling | TSibling extends never ? never : "types")
 >;
 
 export type PortableTextOptions<
-  TChild extends { _type: string },
+  TBlock extends PortableTextBlock<any, any, any, any>,
+  TChildSibling extends { _type: string },
+  TBlockStyle extends string,
   TSibling extends { _type: string }
 > = SetRequired<
   Partial<
     MergeOld<
       PortableTextOptionsNative,
-      { components: PortableTextHtmlComponents<TChild, TSibling> }
+      {
+        components: PortableTextHtmlComponents<
+          TBlock,
+          TChildSibling,
+          TBlockStyle,
+          TSibling
+        >;
+      }
     >
   >,
-  RequiredKeysOf<PortableTextHtmlComponents<TChild, TSibling>> extends never
+  RequiredKeysOf<
+    PortableTextHtmlComponents<TBlock, TChildSibling, TBlockStyle, TSibling>
+  > extends never
     ? never
     : "components"
 >;
 
 export const toHTML = <
   TItem extends { _type: string },
-  TChild extends Exclude<
-    Extract<TItem, PortableTextBlock<any, any, any, any>>["children"][number],
-    PortableTextSpan
-  >,
+  TBlock extends Extract<TItem, PortableTextBlock<any, any, any, any>>,
+  TChildSibling extends Exclude<TBlock["children"][number], PortableTextSpan>,
+  TBlockStyle extends TBlock["style"],
   TSibling extends Exclude<
     string extends TItem["_type"] ? never : TItem,
-    PortableTextBlock<any, any, any, any>
+    TBlock
   >
 >(
   blocks: MaybeArray<TItem>,
-  ...args: RequiredKeysOf<PortableTextOptions<TChild, TSibling>> extends never
-    ? [options?: PortableTextOptions<TChild, TSibling>]
-    : [options: PortableTextOptions<TChild, TSibling>]
+  ...args: RequiredKeysOf<
+    PortableTextOptions<TBlock, TChildSibling, TBlockStyle, TSibling>
+  > extends never
+    ? [
+        options?: PortableTextOptions<
+          TBlock,
+          TChildSibling,
+          TBlockStyle,
+          TSibling
+        >
+      ]
+    : [
+        options: PortableTextOptions<
+          TBlock,
+          TChildSibling,
+          TBlockStyle,
+          TSibling
+        >
+      ]
 ) => toHTMLNative(blocks, ...args);
