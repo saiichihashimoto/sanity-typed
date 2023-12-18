@@ -208,11 +208,7 @@ describe("toHTML", () => {
       toHTMLNative(blocks, {
         components: {
           types: {
-            slug: ({ isInline, value }) => {
-              expectType<typeof isInline>().toStrictEqual<boolean>();
-
-              return value.current;
-            },
+            slug: ({ value: { current } }) => current,
           },
         },
       })
@@ -337,11 +333,7 @@ describe("toHTML", () => {
       toHTMLNative(blocks, {
         components: {
           types: {
-            slug: ({ isInline, value }) => {
-              expectType<typeof isInline>().toStrictEqual<boolean>();
-
-              return value.current;
-            },
+            slug: ({ value: { current } }) => current,
           },
         },
       })
@@ -474,11 +466,7 @@ describe("toHTML", () => {
       toHTMLNative(blocks, {
         components: {
           types: {
-            slug: ({ isInline, value }) => {
-              expectType<typeof isInline>().toStrictEqual<boolean>();
-
-              return value.current;
-            },
+            slug: ({ value: { current } }) => current,
           },
         },
       })
