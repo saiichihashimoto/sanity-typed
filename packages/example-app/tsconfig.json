@@ -3,6 +3,7 @@
   "extends": "@sanity-typed/tsconfig/tsconfig.json",
   "compilerOptions": {
     "incremental": true,
+    "jsx": "preserve",
     "paths": {
       "sanity.config": ["../../example-studio/sanity.config.ts"]
     },

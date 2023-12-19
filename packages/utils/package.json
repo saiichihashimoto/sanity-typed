@@ -15,10 +15,6 @@
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@types/lodash": "4.14.202",
-    "typescript": "5.2.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.4"
+    "@types/lodash": "4.14.202"
   }
 }

@@ -41,11 +41,9 @@
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.2",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "groq-js": "1.3.0",
-    "typescript": "5.2.2"
+    "groq-js": "1.3.0"
   },
   "peerDependencies": {
-    "groq-js": "^1.3.0",
-    "typescript": "^5.0.4"
+    "groq-js": "^1.3.0"
   }
 }

@@ -43,11 +43,9 @@
     "@sanity-typed/client": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "next-sanity": "7.0.4",
-    "type-fest": "4.8.3",
-    "typescript": "5.2.2"
+    "type-fest": "4.8.3"
   },
   "peerDependencies": {
-    "next-sanity": "^7.0.4",
-    "typescript": "^5.0.4"
+    "next-sanity": "^7.0.4"
   }
 }

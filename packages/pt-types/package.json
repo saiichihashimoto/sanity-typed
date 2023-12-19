@@ -23,11 +23,9 @@
   },
   "devDependencies": {
     "@portabletext/types": "2.0.8",
-    "@sanity-typed/tsconfig": "0.0.0-development",
-    "typescript": "5.2.2"
+    "@sanity-typed/tsconfig": "0.0.0-development"
   },
   "peerDependencies": {
-    "@portabletext/types": "^2.0.2",
-    "typescript": "^5.0.4"
+    "@portabletext/types": "^2.0.2"
   }
 }
