@@ -53,6 +53,8 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
 
 ### Packages
 
+- [`@portabletext-typed/to-html`](packages/to-html): **FIXME**
+- [`@portabletext-typed/types`](packages/pt-types): **FIXME**
 - [`@sanity-typed/next-sanity`](packages/next-sanity): [next-sanity](https://github.com/sanity-io/next-sanity) with typed GROQ Results
 - [`@sanity-typed/preview-kit`](packages/preview-kit): [@sanity/preview-kit](https://github.com/sanity-io/preview-kit) with typed GROQ Results
 <!-- <<<<<< END GENERATED FILE (include): SOURCE _README.md -->
