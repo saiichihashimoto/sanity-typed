@@ -1,19 +1,9 @@
 {
-  "$schema": "https://json.schemastore.org/package.json",
-  "name": "@sanity-typed/types",
+  "name": "@portabletext-typed/types",
   "version": "0.0.0-development",
-  "description": "Infer Sanity Document Types from Sanity Schemas",
-  "keywords": [
-    "sanity",
-    "sanity-io",
-    "types",
-    "typescript",
-    "cms",
-    "headless",
-    "realtime",
-    "content"
-  ],
-  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/types",
+  "description": "FIXME",
+  "keywords": ["portable-text"],
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/pt-types",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {
@@ -29,19 +19,15 @@
     "dev": "npm run build -- --clean"
   },
   "dependencies": {
-    "@portabletext-typed/types": "0.0.0-development",
     "type-fest": "4.8.3"
   },
   "devDependencies": {
-    "@jest/globals": "29.7.0",
-    "@saiichihashimoto/test-utils": "1.0.2",
+    "@portabletext/types": "2.0.8",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@sanity-typed/utils": "0.0.0-development",
-    "sanity": "3.21.3",
     "typescript": "5.2.2"
   },
   "peerDependencies": {
-    "sanity": "^3.12.0",
+    "@portabletext/types": "^2.0.2",
     "typescript": "^5.0.4"
   }
 }

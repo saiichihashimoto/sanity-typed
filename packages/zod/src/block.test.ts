@@ -1,13 +1,14 @@
 import { describe, expect, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 
+import type { PortableTextBlock } from "@portabletext-typed/types";
 import {
   defineArrayMember,
   defineConfig,
   defineField,
   defineType,
 } from "@sanity-typed/types";
-import type { InferSchemaValues, PortableTextBlock } from "@sanity-typed/types";
+import type { InferSchemaValues } from "@sanity-typed/types";
 
 import { enableZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";
@@ -274,7 +275,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts decorators", async () => {
+    it("builds parser for decorator", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -288,8 +289,8 @@ describe("block", () => {
                   type: "block",
                   marks: {
                     decorators: [
-                      { title: "Foo", value: "foo" },
-                      { title: "Bar", value: "bar" },
+                      { title: "Foo", value: "foo" as const },
+                      { title: "Bar", value: "bar" as const },
                     ],
                   },
                 }),
@@ -599,7 +600,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts decorators", async () => {
+    it("builds parser for decorator", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -610,8 +611,8 @@ describe("block", () => {
               type: "block",
               marks: {
                 decorators: [
-                  { title: "Foo", value: "foo" },
-                  { title: "Bar", value: "bar" },
+                  { title: "Foo", value: "foo" as const },
+                  { title: "Bar", value: "bar" as const },
                 ],
               },
             }),

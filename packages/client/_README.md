@@ -34,10 +34,10 @@ The `createClient<SanityValues>()(config)` syntax is due to having to infer one 
 
 ## Typing an untyped client (and vice versa)
 
-Sometimes, you'll have a preconfigured client from a separate library (notably, [`next-sanity`](https://github.com/sanity-io/next-sanity)) that you will still want typed results from. A `castToTyped` function is provided to do just that.
+Sometimes, you'll have a preconfigured client from a separate library that you will still want typed results from. A `castToTyped` function is provided to do just that.
 
 ```typescript
-import { createClient } from "next-sanity";
+import { createClient } from "some-other-create-client";
 
 import { castToTyped } from "@sanity-typed/client";
 

@@ -1,5 +1,6 @@
 export type {
   ArrayDefinition,
+  BlockDecoratorDefinition,
   BlockDefinition,
   BlockListDefinition,
   BlockStyleDefinition,
@@ -23,8 +24,6 @@ export type {
   NumberDefinition,
   ObjectDefinition,
   PluginOptions,
-  PortableTextBlock,
-  PortableTextSpan,
   ReferenceDefinition,
   ReferenceValue,
   RegexRule,

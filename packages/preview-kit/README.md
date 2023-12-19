@@ -11,7 +11,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
-Typed [@sanity/preview-kit](https://github.com/sanity-io/preview-kit)
+[@sanity/preview-kit](https://github.com/sanity-io/preview-kit) with typed GROQ Results
 
 ## Page Contents
 - [Install](#install)
@@ -28,7 +28,7 @@ npm install @sanity/preview-kit @sanity-typed/preview-kit
 
 ## Usage
 
-Use `createClient` exactly as you would from [`@sanity-typed/client`](../client/).
+Use `createClient` exactly as you would from [`@sanity-typed/client`](../client).
 
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
 ```product.ts```:
@@ -121,28 +121,44 @@ export type SanityValues = InferSchemaValues<typeof config>;
  */
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
-
-`client.ts`:
-
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/preview-kit-client.ts -->
+```preview-kit-client.ts```:
 ```typescript
-import type { PreviewKitClientConfig } from "@sanity/preview-kit/client";
 import type { SanityValues } from "sanity.config";
 
 // import { createClient } from "@sanity/preview-kit/client";
 import { createClient } from "@sanity-typed/preview-kit";
 
-const config: PreviewKitClientConfig = {
-  // ...base config options
-
-  studioUrl: "/studio",
-
-  encodeSourceMap: "auto",
-};
-
 /** Small change using createClient */
-// export const client = createClient(config);
-export const client = createClient<SanityValues>()(config);
+// export const client = createClient({
+export const client = createClient<SanityValues>()({
+  // ...base config options
+  projectId: "59t1ed5o",
+  dataset: "production",
+  useCdn: true,
+  apiVersion: "2023-05-23",
+
+  // ...@sanity/preview-kit/client options
+  studioUrl: "/studio",
+  encodeSourceMap: "auto",
+});
+
+export const makeTypedQuery = async () =>
+  client.fetch('*[_type=="product"]{_id,productName,tags}');
+/**
+ *  typeof makeTypedQuery === () => Promise<{
+ *    _id: string;
+ *    productName: string;
+ *    tags: {
+ *      _key: string;
+ *      _type: "tag";
+ *      label?: string;
+ *      value?: string;
+ *    }[] | null;
+ *  }[]>
+ */
 ```
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/preview-kit-client.ts -->
 
 ## Considerations
 

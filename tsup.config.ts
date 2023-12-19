@@ -26,8 +26,17 @@ const getLocalDeps = async (
     ...dependencies,
     ...devDependencies,
   })
-    .filter((dep) => dep.startsWith("@sanity-typed/"))
-    .map((dep) => dep.replace("@sanity-typed/", ""));
+    .filter(
+      (dep) =>
+        dep.startsWith("@sanity-typed/") ||
+        dep.startsWith("@portabletext-typed/")
+    )
+    .map((dep) =>
+      dep
+        .replace("@sanity-typed/", "")
+        .replace("@portabletext-typed/types", "pt-types")
+        .replace("@portabletext-typed/", "")
+    );
 
   return [
     ...new Set([

@@ -1,6 +1,8 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 
+import type { decorator } from "@portabletext-typed/types/src/internal";
+
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
 import type { ImageValue, InferSchemaValues, ReferenceValue } from ".";
 
@@ -145,6 +147,13 @@ describe("specific issues", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
           marks: string[];
           text: string;
         }[];
@@ -212,6 +221,13 @@ describe("specific issues", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
           marks: string[];
           text: string;
         }[];

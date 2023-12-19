@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@sanity-typed/faker",
+  "name": "@portabletext-typed/to-html",
   "version": "0.0.0-development",
-  "description": "Generate Mock Data from Sanity Schemas",
+  "description": "FIXME",
   "keywords": [
     "sanity",
     "sanity-io",
@@ -11,21 +11,9 @@
     "cms",
     "headless",
     "realtime",
-    "content",
-    "faker",
-    "faker.js",
-    "fakerjs",
-    "faker-js",
-    "fake data generator",
-    "fake data",
-    "fake-data",
-    "fake-generator",
-    "fake-data-generator",
-    "fake content generator",
-    "fake contextual data generator",
-    "fake contextual data"
+    "content"
   ],
-  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/faker",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/to-html",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {
@@ -42,28 +30,19 @@
   },
   "dependencies": {
     "@portabletext-typed/types": "0.0.0-development",
-    "@sanity-typed/types": "0.0.0-development",
-    "fast-json-stable-stringify": "2.1.0",
-    "lodash": "4.17.21",
-    "randexp": "0.5.3",
     "type-fest": "4.8.3"
   },
   "devDependencies": {
-    "@faker-js/faker": "8.3.1",
     "@jest/globals": "29.7.0",
+    "@portabletext/to-html": "2.0.5",
     "@saiichihashimoto/test-utils": "1.0.2",
-    "@sanity-typed/traverse-validation": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
+    "@sanity-typed/types": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
-    "@sanity-typed/zod": "0.0.0-development",
-    "@types/lodash": "4.14.202",
     "typescript": "5.2.2"
   },
   "peerDependencies": {
-    "@faker-js/faker": "^8.3.0",
-    "typescript": "5.2.2"
-  },
-  "engines": {
-    "node": "^18.17.0"
+    "@portabletext/to-html": "^2.0.5",
+    "typescript": "^5.0.4"
   }
 }

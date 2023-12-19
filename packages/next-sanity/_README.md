@@ -10,7 +10,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
-Typed [next-sanity](https://github.com/sanity-io/next-sanity)
+[next-sanity](https://github.com/sanity-io/next-sanity) with typed GROQ Results
 
 @[:page_toc](## Page Contents)
 
@@ -22,7 +22,7 @@ npm install next-sanity @sanity-typed/next-sanity
 
 ## Usage
 
-Use `createClient` exactly as you would from [`@sanity-typed/client`](../client/).
+Use `createClient` exactly as you would from [`@sanity-typed/client`](../client).
 
 @[typescript](../example-studio/schemas/product.ts)
 @[typescript](../example-studio/sanity.config.ts)
