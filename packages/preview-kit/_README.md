@@ -10,7 +10,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
-Typed [@sanity/preview-kit](https://github.com/sanity-io/preview-kit)
+[@sanity/preview-kit](https://github.com/sanity-io/preview-kit) with typed GROQ Results
 
 @[:page_toc](## Page Contents)
 
@@ -22,32 +22,11 @@ npm install @sanity/preview-kit @sanity-typed/preview-kit
 
 ## Usage
 
-Use `createClient` exactly as you would from [`@sanity-typed/client`](../client/).
+Use `createClient` exactly as you would from [`@sanity-typed/client`](../client).
 
 @[typescript](../example-studio/schemas/product.ts)
 @[typescript](../example-studio/sanity.config.ts)
-
-`client.ts`:
-
-```typescript
-import type { PreviewKitClientConfig } from "@sanity/preview-kit/client";
-import type { SanityValues } from "sanity.config";
-
-// import { createClient } from "@sanity/preview-kit/client";
-import { createClient } from "@sanity-typed/preview-kit";
-
-const config: PreviewKitClientConfig = {
-  // ...base config options
-
-  studioUrl: "/studio",
-
-  encodeSourceMap: "auto",
-};
-
-/** Small change using createClient */
-// export const client = createClient(config);
-export const client = createClient<SanityValues>()(config);
-```
+@[typescript](../example-app/src/sanity/preview-kit-client.ts)
 
 ## Considerations
 

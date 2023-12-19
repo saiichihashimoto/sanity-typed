@@ -11,7 +11,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
-Typed [next-sanity](https://github.com/sanity-io/next-sanity)
+[next-sanity](https://github.com/sanity-io/next-sanity) with typed GROQ Results
 
 ## Page Contents
 - [Install](#install)
@@ -28,7 +28,7 @@ npm install next-sanity @sanity-typed/next-sanity
 
 ## Usage
 
-Use `createClient` exactly as you would from [`@sanity-typed/client`](../client/).
+Use `createClient` exactly as you would from [`@sanity-typed/client`](../client).
 
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
 ```product.ts```:
@@ -132,10 +132,15 @@ import { createClient } from "@sanity-typed/next-sanity";
 /** Small change using createClient */
 // export const client = createClient({
 export const client = createClient<SanityValues>()({
+  // ...base config options
   projectId: "59t1ed5o",
   dataset: "production",
   useCdn: true,
   apiVersion: "2023-05-23",
+
+  // ...next-sanity options
+  studioUrl: "/studio",
+  encodeSourceMap: "auto",
 });
 
 export const makeTypedQuery = async () =>

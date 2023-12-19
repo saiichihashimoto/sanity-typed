@@ -1,7 +1,7 @@
 import type { SanityValues } from "sanity.config";
 
-// import { createClient } from "next-sanity";
-import { createClient } from "@sanity-typed/next-sanity";
+// import { createClient } from "@sanity/preview-kit/client";
+import { createClient } from "@sanity-typed/preview-kit";
 
 /** Small change using createClient */
 // export const client = createClient({
@@ -12,7 +12,7 @@ export const client = createClient<SanityValues>()({
   useCdn: true,
   apiVersion: "2023-05-23",
 
-  // ...next-sanity options
+  // ...@sanity/preview-kit/client options
   studioUrl: "/studio",
   encodeSourceMap: "auto",
 });

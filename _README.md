@@ -44,5 +44,5 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
 
 ### Packages
 
-- [`@sanity-typed/next-sanity`](packages/next-sanity): Typed [next-sanity](https://github.com/sanity-io/next-sanity)
-- [`@sanity-typed/preview-kit`](packages/preview-kit): Typed [@sanity/preview-kit](https://github.com/sanity-io/preview-kit)
+- [`@sanity-typed/next-sanity`](packages/next-sanity): [next-sanity](https://github.com/sanity-io/next-sanity) with typed GROQ Results
+- [`@sanity-typed/preview-kit`](packages/preview-kit): [@sanity/preview-kit](https://github.com/sanity-io/preview-kit) with typed GROQ Results
