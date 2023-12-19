@@ -1,4 +1,3 @@
-import { visionTool } from "@sanity/vision";
 import { deskTool } from "sanity/desk";
 
 // import { defineConfig } from "sanity";
@@ -11,7 +10,7 @@ import { product } from "./schemas/product";
 const config = defineConfig({
   projectId: "59t1ed5o",
   dataset: "production",
-  plugins: [deskTool(), visionTool()],
+  plugins: [deskTool()],
   schema: {
     types: [
       product,
