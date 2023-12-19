@@ -501,7 +501,164 @@ describe("toHTML", () => {
     );
   });
 
-  it.todo("types decorator overrides");
+  it("types decorator overrides", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "array",
+            of: [
+              defineArrayMember({
+                type: "block",
+                marks: {
+                  decorators: [
+                    { title: "Strong", value: "strong" as const },
+                    { title: "Foo", value: "foo" as const },
+                  ],
+                },
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    const blocks: InferSchemaValues<typeof config>["foo"] = [
+      {
+        _key: "R5FvMrjo",
+        _type: "block",
+        children: [
+          {
+            ...({} as { [decorator]: "foo" | "strong" }),
+            _key: "cZUQGmh4",
+            _type: "span",
+            marks: ["foo"],
+            text: "Span number one. ",
+          },
+          {
+            ...({} as { [decorator]: "foo" | "strong" }),
+            _key: "toaiCqIK",
+            _type: "span",
+            marks: ["strong"],
+            text: "And span number two.",
+          },
+        ],
+        markDefs: [],
+        style: "normal",
+      },
+    ];
+
+    expect(
+      // @ts-expect-error -- toHTML requires options
+      toHTML(blocks)
+    ).toStrictEqual(toHTMLNative(blocks));
+
+    expect(
+      toHTML(
+        blocks,
+        // @ts-expect-error -- toHTML requires options.components
+        {}
+      )
+    ).toStrictEqual(toHTMLNative(blocks));
+
+    expect(
+      toHTML(blocks, {
+        // @ts-expect-error -- toHTML requires options.components.marks
+        components: {},
+      })
+    ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          // @ts-expect-error -- toHTML requires options.components.marks.foo
+          marks: {},
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          marks: {},
+        },
+      })
+    );
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          marks: {
+            // @ts-expect-error -- toHTML requires options.components.marks.foo
+            bar: () => "bar",
+          },
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          marks: {
+            bar: () => "bar",
+          },
+        },
+      })
+    );
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          marks: {
+            foo: ({ children, markKey, markType, value }) => {
+              expectType<typeof markKey>().toStrictEqual<"foo">();
+              expectType<typeof markType>().toStrictEqual<"foo">();
+              expectType<typeof value>().toStrictEqual<undefined>();
+
+              return `<marquee>${children}</marquee>`;
+            },
+          },
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          marks: {
+            foo: ({ children }) => `<marquee>${children}</marquee>`,
+          },
+        },
+      })
+    );
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          marks: {
+            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            // Retyping defaults is fine
+            strong: ({ children, markKey, markType, value }) => {
+              expectType<typeof markKey>().toStrictEqual<"strong">();
+              expectType<typeof markType>().toStrictEqual<"strong">();
+              expectType<typeof value>().toStrictEqual<undefined>();
+
+              return `<i>${children}</i>`;
+            },
+            // @ts-expect-error -- Unless they're not provided
+            underline: ({ children }) => `<code>${children}</code>`,
+          },
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          marks: {
+            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            strong: ({ children }) => `<i>${children}</i>`,
+            underline: ({ children }) => `<code>${children}</code>`,
+          },
+        },
+      })
+    );
+  });
 
   it.todo("types markDef overrides");
 
