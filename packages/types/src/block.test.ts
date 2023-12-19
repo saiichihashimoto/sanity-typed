@@ -2,6 +2,8 @@ import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 import type { GeopointValue } from "sanity";
 
+import type { decorator } from "@portabletext-typed/types/src/internal";
+
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
 import type { InferSchemaValues, SlugValue } from ".";
 import type { referenced } from "./internal";
@@ -33,6 +35,13 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
           marks: string[];
           text: string;
         }[];
@@ -103,6 +112,13 @@ describe("block", () => {
           | {
               _key: string;
               _type: "span";
+              [decorator]:
+                | "code"
+                | "em"
+                | "strike-through"
+                | "strike"
+                | "strong"
+                | "underline";
               marks: string[];
               text: string;
             }
@@ -153,6 +169,13 @@ describe("block", () => {
           | {
               _key: string;
               _type: "span";
+              [decorator]:
+                | "code"
+                | "em"
+                | "strike-through"
+                | "strike"
+                | "strong"
+                | "underline";
               marks: string[];
               text: string;
             }
@@ -203,6 +226,13 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
           marks: string[];
           text: string;
         }[];
@@ -242,6 +272,13 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
           marks: string[];
           text: string;
         }[];
@@ -260,7 +297,7 @@ describe("block", () => {
       }>();
     });
 
-    it("accepts decorators", async () => {
+    it("infers decorator", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -274,8 +311,8 @@ describe("block", () => {
                   type: "block",
                   marks: {
                     decorators: [
-                      { title: "Foo", value: "foo" },
-                      { title: "Bar", value: "bar" },
+                      { title: "Foo", value: "foo" as const },
+                      { title: "Bar", value: "bar" as const },
                     ],
                   },
                 }),
@@ -291,6 +328,7 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]: "bar" | "foo";
           marks: string[];
           text: string;
         }[];
@@ -349,6 +387,13 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
           marks: string[];
           text: string;
         }[];
@@ -424,6 +469,13 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
           marks: string[];
           text: string;
         }[];
@@ -492,6 +544,13 @@ describe("block", () => {
           | {
               _key: string;
               _type: "span";
+              [decorator]:
+                | "code"
+                | "em"
+                | "strike-through"
+                | "strike"
+                | "strong"
+                | "underline";
               marks: string[];
               text: string;
             }
@@ -536,6 +595,13 @@ describe("block", () => {
           | {
               _key: string;
               _type: "span";
+              [decorator]:
+                | "code"
+                | "em"
+                | "strike-through"
+                | "strike"
+                | "strong"
+                | "underline";
               marks: string[];
               text: string;
             }
@@ -580,6 +646,13 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
           marks: string[];
           text: string;
         }[];
@@ -613,6 +686,13 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
           marks: string[];
           text: string;
         }[];
@@ -631,7 +711,7 @@ describe("block", () => {
       }>();
     });
 
-    it("accepts decorators", async () => {
+    it("infers decorator", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -642,8 +722,8 @@ describe("block", () => {
               type: "block",
               marks: {
                 decorators: [
-                  { title: "Foo", value: "foo" },
-                  { title: "Bar", value: "bar" },
+                  { title: "Foo", value: "foo" as const },
+                  { title: "Bar", value: "bar" as const },
                 ],
               },
             }),
@@ -656,6 +736,7 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]: "bar" | "foo";
           marks: string[];
           text: string;
         }[];
@@ -708,6 +789,13 @@ describe("block", () => {
         children: {
           _key: string;
           _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
           marks: string[];
           text: string;
         }[];

@@ -2,6 +2,10 @@ import { base, en } from "@faker-js/faker";
 import { describe, expect, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 
+import type {
+  BlockMarkDecoratorDefault,
+  decorator,
+} from "@portabletext-typed/types/src/internal";
 import {
   defineArrayMember,
   defineConfig,
@@ -230,7 +234,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         >();
       });
 
-      it("accepts decorators", async () => {
+      it("mocks decorator", async () => {
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
@@ -244,8 +248,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     type: "block",
                     marks: {
                       decorators: [
-                        { title: "Foo", value: "foo" },
-                        { title: "Bar", value: "bar" },
+                        { title: "Foo", value: "foo" as const },
+                        { title: "Bar", value: "bar" as const },
                       ],
                     },
                   }),
@@ -510,7 +514,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         >();
       });
 
-      it("accepts decorators", async () => {
+      it("mocks decorator", async () => {
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
@@ -521,8 +525,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 type: "block",
                 marks: {
                   decorators: [
-                    { title: "Foo", value: "foo" },
-                    { title: "Bar", value: "bar" },
+                    { title: "Foo", value: "foo" as const },
+                    { title: "Bar", value: "bar" as const },
                   ],
                 },
               }),
@@ -604,6 +608,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   ...previous,
                   children: [
                     {
+                      ...({} as { [decorator]: BlockMarkDecoratorDefault }),
                       _key: "key",
                       _type: "span" as const,
                       marks: ["mark"],

@@ -9,7 +9,9 @@ import type {
 } from "@portabletext-typed/types";
 import type {
   BlockListItemDefault,
+  BlockMarkDecoratorDefault,
   BlockStyleDefault,
+  decorator,
 } from "@portabletext-typed/types/src/internal";
 import {
   defineArrayMember,
@@ -77,12 +79,14 @@ describe("toHTML", () => {
         _type: "block",
         children: [
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "cZUQGmh4",
             _type: "span",
             marks: [],
             text: "Span number one. ",
           },
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
             _type: "span",
             marks: [],
@@ -125,12 +129,14 @@ describe("toHTML", () => {
         _type: "block",
         children: [
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "cZUQGmh4",
             _type: "span",
             marks: [],
             text: "Span number one. ",
           },
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
             _type: "span",
             marks: [],
@@ -253,6 +259,7 @@ describe("toHTML", () => {
         _type: "block",
         children: [
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "cZUQGmh4",
             _type: "span",
             marks: [],
@@ -264,6 +271,7 @@ describe("toHTML", () => {
             current: "current",
           },
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
             _type: "span",
             marks: [],
@@ -384,6 +392,7 @@ describe("toHTML", () => {
         _type: "block",
         children: [
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "cZUQGmh4",
             _type: "span",
             marks: [],
@@ -395,6 +404,7 @@ describe("toHTML", () => {
             current: "current",
           },
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
             _type: "span",
             marks: [],
@@ -524,12 +534,14 @@ describe("toHTML", () => {
         _type: "block",
         children: [
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "cZUQGmh4",
             _type: "span",
             marks: [],
             text: "Span number one. ",
           },
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
             _type: "span",
             marks: [],
@@ -544,12 +556,14 @@ describe("toHTML", () => {
         _type: "block",
         children: [
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "cZUQGmh4",
             _type: "span",
             marks: [],
             text: "Span number one. ",
           },
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
             _type: "span",
             marks: [],
@@ -622,8 +636,11 @@ describe("toHTML", () => {
             foo: ({ children, value }) => {
               expectType<typeof value>().toEqual<
                 PortableTextBlock<
+                  BlockMarkDecoratorDefault,
                   never,
-                  PortableTextSpan & { _key: string },
+                  PortableTextSpan<BlockMarkDecoratorDefault> & {
+                    _key: string;
+                  },
                   "foo",
                   BlockListItemDefault
                 > & {
@@ -655,8 +672,11 @@ describe("toHTML", () => {
             normal: ({ children, value }) => {
               expectType<typeof value>().toEqual<
                 PortableTextBlock<
+                  BlockMarkDecoratorDefault,
                   never,
-                  PortableTextSpan & { _key: string },
+                  PortableTextSpan<BlockMarkDecoratorDefault> & {
+                    _key: string;
+                  },
                   "normal",
                   BlockListItemDefault
                 > & {
@@ -689,8 +709,9 @@ describe("toHTML", () => {
           block: ({ children, value }) => {
             expectType<typeof value>().toStrictEqual<
               PortableTextBlock<
+                BlockMarkDecoratorDefault,
                 never,
-                PortableTextSpan & { _key: string },
+                PortableTextSpan<BlockMarkDecoratorDefault> & { _key: string },
                 "foo" | "normal",
                 BlockListItemDefault
               > & {
@@ -740,12 +761,14 @@ describe("toHTML", () => {
         _type: "block",
         children: [
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "cZUQGmh4",
             _type: "span",
             marks: [],
             text: "Span number one. ",
           },
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
             _type: "span",
             marks: [],
@@ -760,12 +783,14 @@ describe("toHTML", () => {
         _type: "block",
         children: [
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "cZUQGmh4",
             _type: "span",
             marks: [],
             text: "Span number one. ",
           },
           {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
             _type: "span",
             marks: [],
@@ -856,8 +881,11 @@ describe("toHTML", () => {
             foo: ({ children, value }) => {
               expectType<typeof value>().toEqual<
                 PortableTextBlock<
+                  BlockMarkDecoratorDefault,
                   never,
-                  PortableTextSpan & { _key: string },
+                  PortableTextSpan<BlockMarkDecoratorDefault> & {
+                    _key: string;
+                  },
                   BlockStyleDefault,
                   "foo"
                 > & {
@@ -939,8 +967,9 @@ describe("toHTML", () => {
           listItem: ({ children, value }) => {
             expectType<typeof value>().toEqual<
               PortableTextBlock<
+                BlockMarkDecoratorDefault,
                 never,
-                PortableTextSpan & { _key: string },
+                PortableTextSpan<BlockMarkDecoratorDefault> & { _key: string },
                 BlockStyleDefault,
                 "bullet" | "foo"
               > & {

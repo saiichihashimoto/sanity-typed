@@ -1,5 +1,6 @@
 export type {
   ArrayDefinition,
+  BlockDecoratorDefinition,
   BlockDefinition,
   BlockListDefinition,
   BlockStyleDefinition,

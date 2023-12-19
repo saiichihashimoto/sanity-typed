@@ -13,6 +13,7 @@ import type {
   PortableTextBlock,
   PortableTextSpan,
 } from "@portabletext-typed/types";
+import type { decorator } from "@portabletext-typed/types/src/internal";
 import type { MaybeArray } from "@sanity-typed/utils";
 
 // HACK Couldn't use type-fest's Merge >=3.0.0
@@ -37,7 +38,9 @@ type DefaultToHTMLPortableTextBlockStyles =
 type DefaultToHTMLPortableTextBlockListItems = "bullet" | "number";
 
 export type PortableTextHtmlComponents<
-  TBlock extends PortableTextBlock<any, any, any, any>,
+  TBlock extends PortableTextBlock<any, any, any, any, any>,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO
+  TBlockMarkDecorator extends string,
   TChildSibling extends { _type: string },
   TBlockStyle extends string,
   TBlockListItem extends string,
@@ -113,7 +116,8 @@ export type PortableTextHtmlComponents<
 >;
 
 export type PortableTextOptions<
-  TBlock extends PortableTextBlock<any, any, any, any>,
+  TBlock extends PortableTextBlock<any, any, any, any, any>,
+  TBlockMarkDecorator extends string,
   TChildSibling extends { _type: string },
   TBlockStyle extends string,
   TBlockListItem extends string,
@@ -125,6 +129,7 @@ export type PortableTextOptions<
       {
         components: PortableTextHtmlComponents<
           TBlock,
+          TBlockMarkDecorator,
           TChildSibling,
           TBlockStyle,
           TBlockListItem,
@@ -136,6 +141,7 @@ export type PortableTextOptions<
   RequiredKeysOf<
     PortableTextHtmlComponents<
       TBlock,
+      TBlockMarkDecorator,
       TChildSibling,
       TBlockStyle,
       TBlockListItem,
@@ -148,8 +154,15 @@ export type PortableTextOptions<
 
 export const toHTML = <
   TItem extends { _type: string },
-  TBlock extends Extract<TItem, PortableTextBlock<any, any, any, any>>,
-  TChildSibling extends Exclude<TBlock["children"][number], PortableTextSpan>,
+  TBlock extends Extract<TItem, PortableTextBlock<any, any, any, any, any>>,
+  TBlockMarkDecorator extends Extract<
+    TBlock["children"][number],
+    PortableTextSpan<any>
+  >[typeof decorator],
+  TChildSibling extends Exclude<
+    TBlock["children"][number],
+    PortableTextSpan<TBlockMarkDecorator>
+  >,
   TBlockStyle extends TBlock["style"],
   TBlockListItem extends NonNullable<TBlock["listItem"]>,
   TSibling extends Exclude<
@@ -161,6 +174,7 @@ export const toHTML = <
   ...args: RequiredKeysOf<
     PortableTextOptions<
       TBlock,
+      TBlockMarkDecorator,
       TChildSibling,
       TBlockStyle,
       TBlockListItem,
@@ -170,6 +184,7 @@ export const toHTML = <
     ? [
         options?: PortableTextOptions<
           TBlock,
+          TBlockMarkDecorator,
           TChildSibling,
           TBlockStyle,
           TBlockListItem,
@@ -179,6 +194,7 @@ export const toHTML = <
     : [
         options: PortableTextOptions<
           TBlock,
+          TBlockMarkDecorator,
           TChildSibling,
           TBlockStyle,
           TBlockListItem,

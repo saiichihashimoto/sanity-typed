@@ -8,6 +8,7 @@ import {
 import type {
   ArrayDefinition as ArrayDefinitionNative,
   ArrayRule,
+  BlockDecoratorDefinition as BlockDecoratorDefinitionNative,
   BlockDefinition as BlockDefinitionNative,
   BlockListDefinition as BlockListDefinitionNative,
   BlockMarksDefinition,
@@ -76,6 +77,7 @@ import type {
 } from "@portabletext-typed/types";
 import type {
   BlockListItemDefault,
+  BlockMarkDecoratorDefault,
   BlockStyleDefault,
 } from "@portabletext-typed/types/src/internal";
 import type {
@@ -225,17 +227,15 @@ export type NumberDefinition<
 /**
  * **WARNING!!!**
  *
- * This is *not* used during runtime by any \@sanity-typed/* packages.
+ * This is *not* used during runtime in any way.
  *
- * ReferenceValue will not actually have a a key of this symbol.
+ * ReferenceValue will not actually have a key of this symbol.
  *
  * This is only used to help with type inference.
  *
- * \@sanity-typed/types does not change the runtime output of any define* schema, so this is not something that will ever be actually included.
+ * DO NOT rely on or use this symbol in runtime in any way. Typescript won't complain but it won't be there. We *cannot* change the output of sanity's content lake to include anything, especially symbols.
  *
- * This is also true for @sanity-typed/faker and @sanity-typed/zod. Although they both import this symbol, it's only to assume the same type inference.
- *
- * DO NOT rely on or use this symbol in runtime in any way. Typescript won't complain but it won't actually be there. We cannot change the output of sanity's content lake to include anything, especially this symbol.
+ * This is also true for the other `@sanity-typed/*` packages. Although they import this symbol, it's only for type inference.
  */
 export const referenced: unique symbol = Symbol("referenced");
 
@@ -387,9 +387,17 @@ export type BlockListDefinition<Value extends string> = MergeOld<
   }
 >;
 
+export type BlockDecoratorDefinition<Value extends string> = MergeOld<
+  BlockDecoratorDefinitionNative,
+  {
+    value: Value;
+  }
+>;
+
 export type BlockDefinition<
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkDecorator extends string,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   },
@@ -400,15 +408,18 @@ export type BlockDefinition<
   DefinitionBase<
     TRequired,
     PortableTextBlock<
+      TBlockMarkDecorator,
       InferRawValue<TBlockMarkAnnotation>,
-      InferRawValue<TMemberDefinition> | PortableTextSpan,
+      InferRawValue<TMemberDefinition> | PortableTextSpan<TBlockMarkDecorator>,
       TBlockStyle,
       TBlockListItem
     >,
     RewriteValue<
       PortableTextBlock<
+        TBlockMarkDecorator,
         InferRawValue<TBlockMarkAnnotation>,
-        InferRawValue<TMemberDefinition> | PortableTextSpan,
+        | InferRawValue<TMemberDefinition>
+        | PortableTextSpan<TBlockMarkDecorator>,
         TBlockStyle,
         TBlockListItem
       >,
@@ -423,12 +434,17 @@ export type BlockDefinition<
             }
           : unknown)
     >[];
-    marks?: MergeOld<
-      BlockMarksDefinition,
-      {
-        annotations?: TBlockMarkAnnotation[];
-      }
-    >;
+    marks?: Omit<BlockMarksDefinition, "annotations" | "decorators"> & {
+      annotations?: TBlockMarkAnnotation[];
+      decorators?: BlockDecoratorDefinition<
+        TBlockMarkDecorator &
+          (IsStringLiteral<TBlockMarkDecorator> extends false
+            ? {
+                [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+              }
+            : unknown)
+      >[];
+    };
     of?: TupleOfLength<TMemberDefinition, 1>;
     styles?: BlockStyleDefinition<
       TBlockStyle &
@@ -603,6 +619,7 @@ type IntrinsicDefinitions<
   TReferenceWeak extends boolean,
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkDecorator extends string,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   },
@@ -618,6 +635,7 @@ type IntrinsicDefinitions<
   block: BlockDefinition<
     TBlockStyle,
     TBlockListItem,
+    TBlockMarkDecorator,
     TBlockMarkAnnotation,
     TMemberDefinition,
     TRequired
@@ -652,6 +670,7 @@ export type IntrinsicTypeName = Simplify<
     any,
     any,
     any,
+    any,
     any
   >
 >;
@@ -671,6 +690,7 @@ export type TypeAliasDefinition<
   TReferenceWeak extends boolean,
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkDecorator extends string,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   },
@@ -692,6 +712,7 @@ export type TypeAliasDefinition<
           TReferenceWeak,
           TBlockStyle,
           TBlockListItem,
+          TBlockMarkDecorator,
           TBlockMarkAnnotation,
           THotspot,
           TFieldDefinition,
@@ -715,6 +736,7 @@ export type ArrayMemberDefinition<
   TReferenceWeak extends boolean,
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkDecorator extends string,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   },
@@ -742,6 +764,7 @@ export type ArrayMemberDefinition<
               TReferenceWeak,
               TBlockStyle,
               TBlockListItem,
+              TBlockMarkDecorator,
               TBlockMarkAnnotation,
               THotspot,
               TFieldDefinition,
@@ -756,6 +779,7 @@ export type ArrayMemberDefinition<
                     TReferenceWeak,
                     TBlockStyle,
                     TBlockListItem,
+                    TBlockMarkDecorator,
                     TBlockMarkAnnotation,
                     THotspot,
                     TFieldDefinition,
@@ -787,6 +811,7 @@ export type ArrayMemberDefinition<
                   TReferenceWeak,
                   TBlockStyle,
                   TBlockListItem,
+                  TBlockMarkDecorator,
                   TBlockMarkAnnotation,
                   THotspot,
                   TFieldDefinition,
@@ -809,6 +834,7 @@ export type ArrayMemberDefinition<
             TReferenceWeak,
             TBlockStyle,
             TBlockListItem,
+            TBlockMarkDecorator,
             TBlockMarkAnnotation,
             THotspot,
             TFieldDefinition,
@@ -852,6 +878,7 @@ export const makeDefineArrayMember =
     const TReferenceWeak extends boolean = false,
     const TBlockStyle extends string = BlockStyleDefault,
     const TBlockListItem extends string = BlockListItemDefault,
+    const TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
     TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
       name?: string;
     } = never,
@@ -875,6 +902,7 @@ export const makeDefineArrayMember =
       TReferenceWeak,
       TBlockStyle,
       TBlockListItem,
+      TBlockMarkDecorator,
       TBlockMarkAnnotation,
       THotspot,
       TFieldDefinition,
@@ -901,6 +929,7 @@ export type FieldDefinition<
   TReferenceWeak extends boolean,
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkDecorator extends string,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   },
@@ -929,6 +958,7 @@ export type FieldDefinition<
               TReferenceWeak,
               TBlockStyle,
               TBlockListItem,
+              TBlockMarkDecorator,
               TBlockMarkAnnotation,
               THotspot,
               TFieldDefinition,
@@ -949,6 +979,7 @@ export type FieldDefinition<
         TReferenceWeak,
         TBlockStyle,
         TBlockListItem,
+        TBlockMarkDecorator,
         TBlockMarkAnnotation,
         THotspot,
         TFieldDefinition,
@@ -972,6 +1003,7 @@ export const defineField = <
   const TReferenceWeak extends boolean = false,
   const TBlockStyle extends string = BlockStyleDefault,
   const TBlockListItem extends string = BlockListItemDefault,
+  const TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never,
@@ -996,6 +1028,7 @@ export const defineField = <
     TReferenceWeak,
     TBlockStyle,
     TBlockListItem,
+    TBlockMarkDecorator,
     TBlockMarkAnnotation,
     THotspot,
     TFieldDefinition,
@@ -1016,6 +1049,7 @@ export type TypeDefinition<
   TReferenceWeak extends boolean,
   TBlockStyle extends string,
   TBlockListItem extends string,
+  TBlockMarkDecorator extends string,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   },
@@ -1038,6 +1072,7 @@ export type TypeDefinition<
               TReferenceWeak,
               TBlockStyle,
               TBlockListItem,
+              TBlockMarkDecorator,
               TBlockMarkAnnotation,
               THotspot,
               TFieldDefinition,
@@ -1058,6 +1093,7 @@ export type TypeDefinition<
         TReferenceWeak,
         TBlockStyle,
         TBlockListItem,
+        TBlockMarkDecorator,
         TBlockMarkAnnotation,
         THotspot,
         TFieldDefinition,
@@ -1080,6 +1116,7 @@ export const defineType = <
   const TReferenceWeak extends boolean = false,
   const TBlockStyle extends string = BlockStyleDefault,
   const TBlockListItem extends string = BlockListItemDefault,
+  const TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
   TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never,
@@ -1103,6 +1140,7 @@ export const defineType = <
     TReferenceWeak,
     TBlockStyle,
     TBlockListItem,
+    TBlockMarkDecorator,
     TBlockMarkAnnotation,
     THotspot,
     TFieldDefinition,
@@ -1117,6 +1155,7 @@ export const defineType = <
 
 export type ConfigBase<
   TTypeDefinition extends TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -1167,6 +1206,7 @@ export type PluginOptions<
     any,
     any,
     any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>
@@ -1175,6 +1215,7 @@ export type PluginOptions<
 
 export const definePlugin = <
   TTypeDefinition extends TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -1216,6 +1257,7 @@ type WorkspaceOptions<
     any,
     any,
     any,
+    any,
     any
   >,
   TPluginOptions extends PluginOptions<any, any>
@@ -1226,6 +1268,7 @@ type WorkspaceOptions<
 
 export type Config<
   TTypeDefinition extends TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -1254,6 +1297,7 @@ export type Config<
 
 export const defineConfig = <
   TTypeDefinition extends TypeDefinition<
+    any,
     any,
     any,
     any,
@@ -1318,6 +1362,7 @@ export type InferSchemaValues<
         AliasValue<TName>,
         InferSchemaValues<TPluginOptions> & {
           [TDefinition in TypeDefinition<
+            any,
             any,
             any,
             any,
@@ -1404,6 +1449,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
                 any
               >
             : never)
@@ -1415,6 +1461,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 TName,
                 NonNullable<TAlias>,
                 TStrict,
+                any,
                 any,
                 any,
                 any,
@@ -1445,6 +1492,7 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
                 any,
                 any,
                 any,
+                any,
                 any
               >
             : never)
@@ -1460,6 +1508,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
     infer TName extends string,
     infer TAlias extends IntrinsicTypeName,
     infer TStrict extends StrictDefinition,
+    any,
     any,
     any,
     any,
@@ -1496,6 +1545,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         any,
         any,
         any,
+        any,
         any
       >
     ? ReturnType<
@@ -1513,6 +1563,7 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         infer TName extends string,
         infer TAlias extends IntrinsicTypeName,
         infer TStrict extends StrictDefinition,
+        any,
         any,
         any,
         any,

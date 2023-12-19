@@ -275,7 +275,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts decorators", async () => {
+    it("builds parser for decorator", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -289,8 +289,8 @@ describe("block", () => {
                   type: "block",
                   marks: {
                     decorators: [
-                      { title: "Foo", value: "foo" },
-                      { title: "Bar", value: "bar" },
+                      { title: "Foo", value: "foo" as const },
+                      { title: "Bar", value: "bar" as const },
                     ],
                   },
                 }),
@@ -600,7 +600,7 @@ describe("block", () => {
       >();
     });
 
-    it("accepts decorators", async () => {
+    it("builds parser for decorator", async () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
@@ -611,8 +611,8 @@ describe("block", () => {
               type: "block",
               marks: {
                 decorators: [
-                  { title: "Foo", value: "foo" },
-                  { title: "Bar", value: "bar" },
+                  { title: "Foo", value: "foo" as const },
+                  { title: "Bar", value: "bar" as const },
                 ],
               },
             }),
