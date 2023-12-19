@@ -16,6 +16,7 @@ import type {
 import {
   defineArrayMember,
   defineConfig,
+  defineField,
   defineType,
 } from "@sanity-typed/types";
 import type { InferSchemaValues, SlugValue } from "@sanity-typed/types";
@@ -660,7 +661,194 @@ describe("toHTML", () => {
     );
   });
 
-  it.todo("types markDef overrides");
+  it("types markDef overrides", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [
+          defineType({
+            name: "foo",
+            type: "array",
+            of: [
+              defineArrayMember({
+                type: "block",
+                marks: {
+                  annotations: [
+                    defineArrayMember({
+                      name: "link",
+                      type: "object",
+                      fields: [
+                        defineField({
+                          name: "href",
+                          type: "url",
+                          validation: (Rule) => Rule.required(),
+                        }),
+                      ],
+                    }),
+                    defineArrayMember({
+                      name: "foo",
+                      type: "slug",
+                    }),
+                  ],
+                },
+              }),
+            ],
+          }),
+        ],
+      },
+    });
+
+    const blocks: InferSchemaValues<typeof config>["foo"] = [
+      {
+        _key: "R5FvMrjo",
+        _type: "block",
+        children: [
+          {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
+            _key: "cZUQGmh4",
+            _type: "span",
+            marks: ["linkKey"],
+            text: "Span number one. ",
+          },
+          {
+            ...({} as { [decorator]: BlockMarkDecoratorDefault }),
+            _key: "toaiCqIK",
+            _type: "span",
+            marks: ["fooKey"],
+            text: "And span number two.",
+          },
+        ],
+        markDefs: [
+          {
+            _key: "linkKey",
+            _type: "link",
+            href: "https://www.google.com",
+          },
+          {
+            _key: "fooKey",
+            _type: "foo",
+            current: "current",
+          },
+        ],
+        style: "normal",
+      },
+    ];
+
+    expect(
+      // @ts-expect-error -- toHTML requires options
+      toHTML(blocks)
+    ).toStrictEqual(toHTMLNative(blocks));
+
+    expect(
+      toHTML(
+        blocks,
+        // @ts-expect-error -- toHTML requires options.components
+        {}
+      )
+    ).toStrictEqual(toHTMLNative(blocks));
+
+    expect(
+      toHTML(blocks, {
+        // @ts-expect-error -- toHTML requires options.components.marks
+        components: {},
+      })
+    ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          // @ts-expect-error -- toHTML requires options.components.marks.foo
+          marks: {},
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          marks: {},
+        },
+      })
+    );
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          marks: {
+            // @ts-expect-error -- toHTML requires options.components.marks.foo
+            bar: () => "bar",
+          },
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          marks: {
+            bar: () => "bar",
+          },
+        },
+      })
+    );
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          marks: {
+            foo: ({ children, markKey, markType, value }) => {
+              expectType<typeof markKey>().toStrictEqual<string>();
+              expectType<typeof markType>().toStrictEqual<"foo">();
+              expectType<typeof value>().toEqual<{
+                _key: string;
+                _type: "foo";
+                current: string;
+              }>();
+
+              return `<marquee>${children}</marquee>`;
+            },
+          },
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          marks: {
+            foo: ({ children }) => `<marquee>${children}</marquee>`,
+          },
+        },
+      })
+    );
+
+    expect(
+      toHTML(blocks, {
+        components: {
+          marks: {
+            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            // Retyping defaults is fine
+            link: ({ children, markKey, markType, value }) => {
+              expectType<typeof markKey>().toStrictEqual<string>();
+              expectType<typeof markType>().toStrictEqual<"link">();
+              expectType<typeof value>().toEqual<{
+                _key: string;
+                _type: "link";
+                href: string;
+              }>();
+
+              return `<span>${value.href} ${children}</span>`;
+            },
+          },
+        },
+      })
+    ).toStrictEqual(
+      toHTMLNative(blocks, {
+        components: {
+          marks: {
+            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            link: ({ children, value: { href } }) =>
+              `<span>${href} ${children}</span>`,
+          },
+        },
+      })
+    );
+  });
 
   it("types style overrides", () => {
     const config = defineConfig({

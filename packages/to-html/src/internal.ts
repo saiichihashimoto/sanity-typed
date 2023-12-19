@@ -1,10 +1,10 @@
 import { toHTML as toHTMLNative } from "@portabletext/to-html";
 import type {
   HtmlPortableTextList,
+  NodeRenderer,
   PortableTextComponent,
   PortableTextComponentOptions,
   PortableTextHtmlComponents as PortableTextHtmlComponentsNative,
-  PortableTextMarkComponentOptions,
   PortableTextOptions as PortableTextOptionsNative,
   PortableTextTypeComponentOptions,
 } from "@portabletext/to-html";
@@ -25,7 +25,7 @@ type MergeOld<FirstType, SecondType> = Except<
   SecondType;
 
 // https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/marks.ts#L16
-type DefaultToHTMLBlockMarkDecorators =
+type BlockMarkDecoratorDefault =
   | "code"
   | "em"
   // TODO https://github.com/sanity-io/sanity/issues/5344
@@ -34,8 +34,11 @@ type DefaultToHTMLBlockMarkDecorators =
   | "strong"
   | "underline";
 
+// https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/marks.ts#L5
+type MarkDefDefault = "link";
+
 // https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/defaults.ts#L15
-type DefaultToHTMLPortableTextBlockStyles =
+type BlockStyleDefault =
   | "blockquote"
   | "h1"
   | "h2"
@@ -46,11 +49,25 @@ type DefaultToHTMLPortableTextBlockStyles =
   | "normal";
 
 // https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/list.ts#L3
-type DefaultToHTMLPortableTextBlockListItems = "bullet" | "number";
+type BlockListItemDefault = "bullet" | "number";
+
+export type PortableTextMarkComponentOptions<
+  Value,
+  TMarkKey extends string,
+  TMarkType extends string
+> = {
+  children: string;
+  markKey: TMarkKey;
+  markType: TMarkType;
+  renderNode: NodeRenderer;
+  text: string;
+  value: Value;
+};
 
 export type PortableTextHtmlComponents<
   TBlock extends PortableTextBlock<any, any, any, any, any>,
   TBlockMarkDecorator extends string,
+  TMarkDef extends { _key: string; _type: string },
   TChildSibling extends { _type: string },
   TBlockStyle extends string,
   TBlockListItem extends string,
@@ -63,14 +80,14 @@ export type PortableTextHtmlComponents<
         block:
           | ((options: PortableTextComponentOptions<TBlock>) => string)
           | ({
-              [TStyle in DefaultToHTMLPortableTextBlockStyles &
+              [TStyle in BlockStyleDefault &
                 TBlockStyle]?: PortableTextComponent<
                 TBlock & { style: TStyle }
               >;
             } & {
               [TStyle in Exclude<
                 TBlockStyle,
-                DefaultToHTMLPortableTextBlockStyles
+                BlockStyleDefault
               >]: PortableTextComponent<TBlock & { style: TStyle }>;
             });
         // TODO Type HtmlPortableTextList more specifically
@@ -79,14 +96,14 @@ export type PortableTextHtmlComponents<
               HtmlPortableTextList & { listItem: TBlockListItem }
             >
           | ({
-              [TList in DefaultToHTMLPortableTextBlockListItems &
+              [TList in BlockListItemDefault &
                 TBlockListItem]?: PortableTextComponent<
                 HtmlPortableTextList & { listItem: TList }
               >;
             } & {
               [TList in Exclude<
                 TBlockListItem,
-                DefaultToHTMLPortableTextBlockListItems
+                BlockListItemDefault
               >]: PortableTextComponent<
                 HtmlPortableTextList & { listItem: TList }
               >;
@@ -94,36 +111,33 @@ export type PortableTextHtmlComponents<
         listItem:
           | PortableTextComponent<TBlock & { listItem: TBlockListItem }>
           | ({
-              [TList in DefaultToHTMLPortableTextBlockListItems &
+              [TList in BlockListItemDefault &
                 TBlockListItem]?: PortableTextComponent<
                 TBlock & { listItem: TList }
               >;
             } & {
               [TList in Exclude<
                 TBlockListItem,
-                DefaultToHTMLPortableTextBlockListItems
+                BlockListItemDefault
               >]: PortableTextComponent<TBlock & { listItem: TList }>;
             });
-        marks: {
-          [TMark in DefaultToHTMLBlockMarkDecorators & TBlockMarkDecorator]?: (
-            options: PortableTextMarkComponentOptions<never> & {
-              markKey: TMark;
-              markType: TMark;
-              value: undefined;
-            }
-          ) => string;
-        } & {
-          [TMark in Exclude<
-            TBlockMarkDecorator,
-            DefaultToHTMLBlockMarkDecorators
-          >]: (
-            options: PortableTextMarkComponentOptions<never> & {
-              markKey: TMark;
-              markType: TMark;
-              value: undefined;
-            }
-          ) => string;
-        };
+        marks: SetRequired<
+          {
+            [TMark in TBlockMarkDecorator]?: (
+              options: PortableTextMarkComponentOptions<undefined, TMark, TMark>
+            ) => string;
+          } & {
+            [TMark in TMarkDef as TMark["_type"]]?: (
+              options: PortableTextMarkComponentOptions<
+                TMark,
+                string,
+                TMark["_type"]
+              >
+            ) => string;
+          },
+          | Exclude<TBlockMarkDecorator, BlockMarkDecoratorDefault>
+          | Exclude<TMarkDef["_type"], MarkDefDefault>
+        >;
         types: {
           [TType in TChildSibling | TSibling as TType["_type"]]: (
             options: MergeOld<
@@ -139,19 +153,17 @@ export type PortableTextHtmlComponents<
       }
     >
   >,
-  | (TBlockListItem extends DefaultToHTMLPortableTextBlockListItems
-      ? never
-      : "list")
-  | (TBlockMarkDecorator extends DefaultToHTMLBlockMarkDecorators
-      ? never
-      : "marks")
-  | (TBlockStyle extends DefaultToHTMLPortableTextBlockStyles ? never : "block")
+  | (TBlockListItem extends BlockListItemDefault ? never : "list")
+  | (TBlockMarkDecorator extends BlockMarkDecoratorDefault ? never : "marks")
+  | (TBlockStyle extends BlockStyleDefault ? never : "block")
   | (TChildSibling | TSibling extends never ? never : "types")
+  | (TMarkDef["_type"] extends MarkDefDefault ? never : "marks")
 >;
 
 export type PortableTextOptions<
   TBlock extends PortableTextBlock<any, any, any, any, any>,
   TBlockMarkDecorator extends string,
+  TMarkDef extends { _key: string; _type: string },
   TChildSibling extends { _type: string },
   TBlockStyle extends string,
   TBlockListItem extends string,
@@ -164,6 +176,7 @@ export type PortableTextOptions<
         components: PortableTextHtmlComponents<
           TBlock,
           TBlockMarkDecorator,
+          TMarkDef,
           TChildSibling,
           TBlockStyle,
           TBlockListItem,
@@ -176,6 +189,7 @@ export type PortableTextOptions<
     PortableTextHtmlComponents<
       TBlock,
       TBlockMarkDecorator,
+      TMarkDef,
       TChildSibling,
       TBlockStyle,
       TBlockListItem,
@@ -193,6 +207,7 @@ export const toHTML = <
     TBlock["children"][number],
     PortableTextSpan<any>
   >[typeof decorator],
+  TMarkDef extends TBlock["markDefs"][number],
   TChildSibling extends Exclude<
     TBlock["children"][number],
     PortableTextSpan<TBlockMarkDecorator>
@@ -209,6 +224,7 @@ export const toHTML = <
     PortableTextOptions<
       TBlock,
       TBlockMarkDecorator,
+      TMarkDef,
       TChildSibling,
       TBlockStyle,
       TBlockListItem,
@@ -219,6 +235,7 @@ export const toHTML = <
         options?: PortableTextOptions<
           TBlock,
           TBlockMarkDecorator,
+          TMarkDef,
           TChildSibling,
           TBlockStyle,
           TBlockListItem,
@@ -229,6 +246,7 @@ export const toHTML = <
         options: PortableTextOptions<
           TBlock,
           TBlockMarkDecorator,
+          TMarkDef,
           TChildSibling,
           TBlockStyle,
           TBlockListItem,
