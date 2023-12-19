@@ -40,11 +40,9 @@
     "@sanity-typed/types": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
     "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "typescript": "5.2.2"
+    "react-dom": "18.2.0"
   },
   "peerDependencies": {
-    "@portabletext/react": "^3.0.11",
-    "typescript": "^5.0.4"
+    "@portabletext/react": "^3.0.11"
   }
 }

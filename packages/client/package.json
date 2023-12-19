@@ -40,11 +40,9 @@
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.2",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@sanity/client": "6.10.0",
-    "typescript": "5.2.2"
+    "@sanity/client": "6.10.0"
   },
   "peerDependencies": {
-    "@sanity/client": "^6.1.7",
-    "typescript": "^5.0.4"
+    "@sanity/client": "^6.1.7"
   }
 }
