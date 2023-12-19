@@ -1,17 +1,18 @@
-import { toHTML as toHTMLNative } from "@portabletext/to-html";
+import { PortableText as PortableTextNative } from "@portabletext/react";
 import type {
-  HtmlPortableTextList,
   NodeRenderer,
   PortableTextComponent,
-  PortableTextHtmlComponents as PortableTextHtmlComponentsNative,
-  PortableTextOptions as PortableTextOptionsNative,
-  PortableTextTypeComponentOptions,
-} from "@portabletext/to-html";
+  PortableTextProps as PortableTextPropsNative,
+  PortableTextReactComponents as PortableTextReactComponentsNative,
+  PortableTextTypeComponentProps,
+  ReactPortableTextList,
+} from "@portabletext/react";
+import type { ComponentType, ReactNode } from "react";
 import type {
   Except,
   IsStringLiteral,
   RequiredKeysOf,
-  SetRequired,
+  Simplify,
 } from "type-fest";
 
 import type {
@@ -28,7 +29,17 @@ type MergeOld<FirstType, SecondType> = Except<
 > &
   SecondType;
 
-// https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/marks.ts#L16
+type SetRequired<
+  BaseType,
+  Keys extends keyof BaseType
+> = BaseType extends unknown
+  ? Simplify<
+      // HACK For whatever reason, React gets mad when we use Omit or Except, ie Omit<BaseType, Keys>
+      BaseType & Required<Pick<BaseType, Keys>>
+    >
+  : never;
+
+// https://github.com/portabletext/react-portabletext/blob/534fd4693b39cd1860a3c2c7c308df7bba534d24/src/components/marks.tsx#L15
 type BlockMarkDecoratorDefault =
   | "code"
   | "em"
@@ -38,10 +49,10 @@ type BlockMarkDecoratorDefault =
   | "strong"
   | "underline";
 
-// https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/marks.ts#L5
+// https://github.com/portabletext/react-portabletext/blob/534fd4693b39cd1860a3c2c7c308df7bba534d24/src/components/marks.tsx#L9
 type MarkDefDefault = "link";
 
-// https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/defaults.ts#L15
+// https://github.com/portabletext/react-portabletext/blob/534fd4693b39cd1860a3c2c7c308df7bba534d24/src/components/defaults.tsx#L15
 type BlockStyleDefault =
   | "blockquote"
   | "h1"
@@ -52,23 +63,23 @@ type BlockStyleDefault =
   | "h6"
   | "normal";
 
-// https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/list.ts#L3
+// https://github.com/portabletext/react-portabletext/blob/534fd4693b39cd1860a3c2c7c308df7bba534d24/src/components/list.tsx#L3
 type BlockListItemDefault = "bullet" | "number";
 
-export type PortableTextMarkComponentOptions<
+export type PortableTextMarkComponent<
   Value,
   TMarkKey extends string,
   TMarkType extends string
-> = {
-  children: string;
+> = ComponentType<{
+  children: ReactNode;
   markKey: TMarkKey;
   markType: TMarkType;
   renderNode: NodeRenderer;
   text: string;
   value: Value;
-};
+}>;
 
-export type PortableTextHtmlComponents<
+export type PortableTextReactComponents<
   TItem extends { _type: string },
   TBlock extends PortableTextBlock<any, any, any, any, any> = Extract<
     TItem,
@@ -92,7 +103,7 @@ export type PortableTextHtmlComponents<
 > = SetRequired<
   Partial<
     MergeOld<
-      PortableTextHtmlComponentsNative,
+      PortableTextReactComponentsNative,
       {
         block:
           | PortableTextComponent<TBlock>
@@ -107,22 +118,22 @@ export type PortableTextHtmlComponents<
                 BlockStyleDefault
               >]: PortableTextComponent<TBlock & { style: TStyle }>;
             });
-        // TODO Type HtmlPortableTextList more specifically
+        // TODO Type ReactPortableTextList more specifically
         list:
           | PortableTextComponent<
-              HtmlPortableTextList & { listItem: TBlockListItem }
+              ReactPortableTextList & { listItem: TBlockListItem }
             >
           | ({
               [TList in BlockListItemDefault &
                 TBlockListItem]?: PortableTextComponent<
-                HtmlPortableTextList & { listItem: TList }
+                ReactPortableTextList & { listItem: TList }
               >;
             } & {
               [TList in Exclude<
                 TBlockListItem,
                 BlockListItemDefault
               >]: PortableTextComponent<
-                HtmlPortableTextList & { listItem: TList }
+                ReactPortableTextList & { listItem: TList }
               >;
             });
         listItem:
@@ -140,32 +151,32 @@ export type PortableTextHtmlComponents<
             });
         marks: SetRequired<
           {
-            [TMark in TBlockMarkDecorator]?: (
-              options: PortableTextMarkComponentOptions<undefined, TMark, TMark>
-            ) => string;
+            [TMark in TBlockMarkDecorator]?: PortableTextMarkComponent<
+              undefined,
+              TMark,
+              TMark
+            >;
           } & {
-            [TMark in TMarkDef as TMark["_type"]]?: (
-              options: PortableTextMarkComponentOptions<
-                TMark,
-                string,
-                TMark["_type"]
-              >
-            ) => string;
+            [TMark in TMarkDef as TMark["_type"]]?: PortableTextMarkComponent<
+              TMark,
+              string,
+              TMark["_type"]
+            >;
           },
           | Exclude<TBlockMarkDecorator, BlockMarkDecoratorDefault>
           | Exclude<TMarkDef["_type"], MarkDefDefault>
         >;
         types: {
-          [TType in TChildSibling | TSibling as TType["_type"]]: (
-            options: MergeOld<
-              PortableTextTypeComponentOptions<TType>,
+          [TType in TChildSibling | TSibling as TType["_type"]]: ComponentType<
+            MergeOld<
+              PortableTextTypeComponentProps<TType>,
               {
                 isInline:
                   | (TType extends TChildSibling ? true : never)
                   | (TType extends TSibling ? false : never);
               }
             >
-          ) => string;
+          >;
         };
       }
     >
@@ -177,7 +188,7 @@ export type PortableTextHtmlComponents<
   | (TMarkDef["_type"] extends MarkDefDefault ? never : "marks")
 >;
 
-export type PortableTextOptions<
+export type PortableTextProps<
   TItem extends { _type: string },
   TBlock extends PortableTextBlock<any, any, any, any, any> = Extract<
     TItem,
@@ -201,9 +212,9 @@ export type PortableTextOptions<
 > = SetRequired<
   Partial<
     MergeOld<
-      PortableTextOptionsNative,
+      Omit<PortableTextPropsNative<TItem>, "value">,
       {
-        components: PortableTextHtmlComponents<
+        components: PortableTextReactComponents<
           TItem,
           TBlock,
           TBlockMarkDecorator,
@@ -217,7 +228,7 @@ export type PortableTextOptions<
     >
   >,
   RequiredKeysOf<
-    PortableTextHtmlComponents<
+    PortableTextReactComponents<
       TItem,
       TBlock,
       TBlockMarkDecorator,
@@ -230,9 +241,11 @@ export type PortableTextOptions<
   > extends never
     ? never
     : "components"
->;
+> & {
+  value: MaybeArray<TItem>;
+};
 
-export const toHTML = <
+export const PortableText = <
   TItem extends { _type: string },
   TBlock extends Extract<TItem, PortableTextBlock<any, any, any, any, any>>,
   TBlockMarkDecorator extends Extract<
@@ -251,41 +264,14 @@ export const toHTML = <
     { _type: "block" }
   >
 >(
-  blocks: MaybeArray<TItem>,
-  ...args: RequiredKeysOf<
-    PortableTextOptions<
-      TItem,
-      TBlock,
-      TBlockMarkDecorator,
-      TMarkDef,
-      TChildSibling,
-      TBlockStyle,
-      TBlockListItem,
-      TSibling
-    >
-  > extends never
-    ? [
-        options?: PortableTextOptions<
-          TItem,
-          TBlock,
-          TBlockMarkDecorator,
-          TMarkDef,
-          TChildSibling,
-          TBlockStyle,
-          TBlockListItem,
-          TSibling
-        >
-      ]
-    : [
-        options: PortableTextOptions<
-          TItem,
-          TBlock,
-          TBlockMarkDecorator,
-          TMarkDef,
-          TChildSibling,
-          TBlockStyle,
-          TBlockListItem,
-          TSibling
-        >
-      ]
-) => toHTMLNative(blocks, ...args);
+  props: PortableTextProps<
+    TItem,
+    TBlock,
+    TBlockMarkDecorator,
+    TMarkDef,
+    TChildSibling,
+    TBlockStyle,
+    TBlockListItem,
+    TSibling
+  >
+) => PortableTextNative(props as any);

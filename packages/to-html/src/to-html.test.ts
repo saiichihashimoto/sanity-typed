@@ -115,6 +115,10 @@ describe("toHTML", () => {
     ];
 
     expect(toHTML(blocks)).toStrictEqual(toHTMLNative(blocks));
+
+    expectType<{ [key: string]: never }>().toBeAssignableTo<
+      PortableTextOptions<(typeof blocks)[number]>
+    >();
   });
 
   it("types sibling overrides", () => {
@@ -654,7 +658,7 @@ describe("toHTML", () => {
               expectType<typeof markType>().toStrictEqual<"foo">();
               expectType<typeof value>().toStrictEqual<undefined>();
 
-              return `<marquee>${children}</marquee>`;
+              return `<blockquote>${children}</blockquote>`;
             },
           },
         },
@@ -663,7 +667,7 @@ describe("toHTML", () => {
       toHTMLNative(blocks, {
         components: {
           marks: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
           },
         },
       })
@@ -673,7 +677,7 @@ describe("toHTML", () => {
       toHTML(blocks, {
         components: {
           marks: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
             // Retyping defaults is fine
             strong: ({ children, markKey, markType, value }) => {
               expectType<typeof markKey>().toStrictEqual<"strong">();
@@ -691,7 +695,7 @@ describe("toHTML", () => {
       toHTMLNative(blocks, {
         components: {
           marks: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
             strong: ({ children }) => `<i>${children}</i>`,
             underline: ({ children }) => `<code>${children}</code>`,
           },
@@ -849,7 +853,7 @@ describe("toHTML", () => {
                 current: string;
               }>();
 
-              return `<marquee>${children}</marquee>`;
+              return `<blockquote>${children}</blockquote>`;
             },
           },
         },
@@ -858,7 +862,7 @@ describe("toHTML", () => {
       toHTMLNative(blocks, {
         components: {
           marks: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
           },
         },
       })
@@ -868,7 +872,7 @@ describe("toHTML", () => {
       toHTML(blocks, {
         components: {
           marks: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
             // Retyping defaults is fine
             link: ({ children, markKey, markType, value }) => {
               expectType<typeof markKey>().toStrictEqual<string>();
@@ -888,7 +892,7 @@ describe("toHTML", () => {
       toHTMLNative(blocks, {
         components: {
           marks: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
             link: ({ children, value: { href } }) =>
               `<span>${href} ${children}</span>`,
           },
@@ -1048,7 +1052,7 @@ describe("toHTML", () => {
                 }
               >();
 
-              return `<marquee>${children}</marquee>`;
+              return `<blockquote>${children}</blockquote>`;
             },
           },
         },
@@ -1057,7 +1061,7 @@ describe("toHTML", () => {
       toHTMLNative(blocks, {
         components: {
           block: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
           },
         },
       })
@@ -1067,7 +1071,7 @@ describe("toHTML", () => {
       toHTML(blocks, {
         components: {
           block: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
             // Retyping defaults is fine
             normal: ({ children, value }) => {
               expectType<typeof value>().toEqual<
@@ -1095,7 +1099,7 @@ describe("toHTML", () => {
       toHTMLNative(blocks, {
         components: {
           block: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
             normal: ({ children }) => `<div>${children}</div>`,
             h1: ({ children }) => `<h2>${children}</h2>`,
           },
@@ -1282,7 +1286,7 @@ describe("toHTML", () => {
                 HtmlPortableTextList & { listItem: "foo" }
               >();
 
-              return `<marquee>${children}</marquee>`;
+              return `<blockquote>${children}</blockquote>`;
             },
           },
           listItem: {
@@ -1311,7 +1315,7 @@ describe("toHTML", () => {
       toHTMLNative(blocks, {
         components: {
           list: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
           },
           listItem: {
             foo: ({ children }) => `<span>${children}</span>`,
@@ -1324,7 +1328,7 @@ describe("toHTML", () => {
       toHTML(blocks, {
         components: {
           list: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
             // Retyping defaults is fine
             bullet: ({ children, value }) => {
               expectType<typeof value>().toStrictEqual<
@@ -1349,7 +1353,7 @@ describe("toHTML", () => {
       toHTMLNative(blocks, {
         components: {
           list: {
-            foo: ({ children }) => `<marquee>${children}</marquee>`,
+            foo: ({ children }) => `<blockquote>${children}</blockquote>`,
             bullet: ({ children }) => `<ol>${children}</ol>`,
             number: ({ children }) => `<ul>${children}</ul>`,
           },
