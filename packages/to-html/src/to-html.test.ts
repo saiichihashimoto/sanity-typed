@@ -21,11 +21,22 @@ import {
 } from "@sanity-typed/types";
 import type { InferSchemaValues, SlugValue } from "@sanity-typed/types";
 
+import type { PortableTextOptions } from ".";
 import { toHTML } from ".";
 
 describe("toHTML", () => {
   beforeEach(() => {
     jest.spyOn(console, "warn").mockImplementation(jest.fn());
+  });
+
+  it("works with empty array", () => {
+    const blocks = [] as never[];
+
+    expect(toHTML(blocks)).toStrictEqual(toHTMLNative(blocks));
+
+    expectType<{ [key: string]: never }>().toBeAssignableTo<
+      PortableTextOptions<(typeof blocks)[number]>
+    >();
   });
 
   it("returns same value as @portabletext/to-html", () => {
@@ -53,6 +64,10 @@ describe("toHTML", () => {
     ];
 
     expect(toHTML(blocks)).toStrictEqual(toHTMLNative(blocks));
+
+    expectType<{ [key: string]: never }>().toBeAssignableTo<
+      PortableTextOptions<(typeof blocks)[number]>
+    >();
   });
 
   it("accepts blocks from @sanity-typed/types", () => {
@@ -232,6 +247,14 @@ describe("toHTML", () => {
         },
       })
     );
+
+    expectType<{
+      components: {
+        types: {
+          slug: () => string;
+        };
+      };
+    }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
   it("types child overrides", () => {
@@ -362,6 +385,14 @@ describe("toHTML", () => {
         },
       })
     );
+
+    expectType<{
+      components: {
+        types: {
+          slug: () => string;
+        };
+      };
+    }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
   it("doesn't collide with siblings and children", () => {
@@ -500,6 +531,14 @@ describe("toHTML", () => {
         },
       })
     );
+
+    expectType<{
+      components: {
+        types: {
+          slug: () => string;
+        };
+      };
+    }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
   it("types decorator overrides", () => {
@@ -659,6 +698,14 @@ describe("toHTML", () => {
         },
       })
     );
+
+    expectType<{
+      components: {
+        marks: {
+          foo: () => string;
+        };
+      };
+    }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
   it("types markDef overrides", () => {
@@ -848,6 +895,14 @@ describe("toHTML", () => {
         },
       })
     );
+
+    expectType<{
+      components: {
+        marks: {
+          foo: () => string;
+        };
+      };
+    }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
   it("types style overrides", () => {
@@ -1075,6 +1130,14 @@ describe("toHTML", () => {
         },
       })
     );
+
+    expectType<{
+      components: {
+        block: {
+          foo: () => string;
+        };
+      };
+    }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
   it("types list/listItem overrides", () => {
@@ -1335,5 +1398,16 @@ describe("toHTML", () => {
         },
       })
     );
+
+    expectType<{
+      components: {
+        list: {
+          foo: () => string;
+        };
+        listItem: {
+          foo: () => string;
+        };
+      };
+    }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 });

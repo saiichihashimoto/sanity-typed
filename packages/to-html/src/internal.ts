@@ -8,7 +8,12 @@ import type {
   PortableTextOptions as PortableTextOptionsNative,
   PortableTextTypeComponentOptions,
 } from "@portabletext/to-html";
-import type { Except, RequiredKeysOf, SetRequired } from "type-fest";
+import type {
+  Except,
+  IsStringLiteral,
+  RequiredKeysOf,
+  SetRequired,
+} from "type-fest";
 
 import type {
   PortableTextBlock,
@@ -65,13 +70,26 @@ export type PortableTextMarkComponentOptions<
 };
 
 export type PortableTextHtmlComponents<
-  TBlock extends PortableTextBlock<any, any, any, any, any>,
-  TBlockMarkDecorator extends string,
-  TMarkDef extends { _key: string; _type: string },
-  TChildSibling extends { _type: string },
-  TBlockStyle extends string,
-  TBlockListItem extends string,
-  TSibling extends { _type: string }
+  TItem extends { _type: string },
+  TBlock extends PortableTextBlock<any, any, any, any, any> = Extract<
+    TItem,
+    PortableTextBlock<any, any, any, any, any>
+  >,
+  TBlockMarkDecorator extends string = Extract<
+    TBlock["children"][number],
+    PortableTextSpan<any>
+  >[typeof decorator],
+  TMarkDef extends { _key: string; _type: string } = TBlock["markDefs"][number],
+  TChildSibling extends { _type: string } = Exclude<
+    TBlock["children"][number],
+    PortableTextSpan<TBlockMarkDecorator>
+  >,
+  TBlockStyle extends string = TBlock["style"],
+  TBlockListItem extends string = NonNullable<TBlock["listItem"]>,
+  TSibling extends { _type: string } = Exclude<
+    IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
+    TBlock
+  >
 > = SetRequired<
   Partial<
     MergeOld<
@@ -161,19 +179,33 @@ export type PortableTextHtmlComponents<
 >;
 
 export type PortableTextOptions<
-  TBlock extends PortableTextBlock<any, any, any, any, any>,
-  TBlockMarkDecorator extends string,
-  TMarkDef extends { _key: string; _type: string },
-  TChildSibling extends { _type: string },
-  TBlockStyle extends string,
-  TBlockListItem extends string,
-  TSibling extends { _type: string }
+  TItem extends { _type: string },
+  TBlock extends PortableTextBlock<any, any, any, any, any> = Extract<
+    TItem,
+    PortableTextBlock<any, any, any, any, any>
+  >,
+  TBlockMarkDecorator extends string = Extract<
+    TBlock["children"][number],
+    PortableTextSpan<any>
+  >[typeof decorator],
+  TMarkDef extends { _key: string; _type: string } = TBlock["markDefs"][number],
+  TChildSibling extends { _type: string } = Exclude<
+    TBlock["children"][number],
+    PortableTextSpan<TBlockMarkDecorator>
+  >,
+  TBlockStyle extends string = TBlock["style"],
+  TBlockListItem extends string = NonNullable<TBlock["listItem"]>,
+  TSibling extends { _type: string } = Exclude<
+    IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
+    TBlock
+  >
 > = SetRequired<
   Partial<
     MergeOld<
       PortableTextOptionsNative,
       {
         components: PortableTextHtmlComponents<
+          TItem,
           TBlock,
           TBlockMarkDecorator,
           TMarkDef,
@@ -187,6 +219,7 @@ export type PortableTextOptions<
   >,
   RequiredKeysOf<
     PortableTextHtmlComponents<
+      TItem,
       TBlock,
       TBlockMarkDecorator,
       TMarkDef,
@@ -215,13 +248,14 @@ export const toHTML = <
   TBlockStyle extends TBlock["style"],
   TBlockListItem extends NonNullable<TBlock["listItem"]>,
   TSibling extends Exclude<
-    string extends TItem["_type"] ? never : TItem,
+    IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
     TBlock
   >
 >(
   blocks: MaybeArray<TItem>,
   ...args: RequiredKeysOf<
     PortableTextOptions<
+      TItem,
       TBlock,
       TBlockMarkDecorator,
       TMarkDef,
@@ -233,6 +267,7 @@ export const toHTML = <
   > extends never
     ? [
         options?: PortableTextOptions<
+          TItem,
           TBlock,
           TBlockMarkDecorator,
           TMarkDef,
@@ -244,6 +279,7 @@ export const toHTML = <
       ]
     : [
         options: PortableTextOptions<
+          TItem,
           TBlock,
           TBlockMarkDecorator,
           TMarkDef,
