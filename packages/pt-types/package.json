@@ -1,7 +1,7 @@
 {
   "name": "@portabletext-typed/types",
   "version": "0.0.0-development",
-  "description": "FIXME",
+  "description": "@portabletext/types with typed generics. Mostly internal for other packages in the monorepo.",
   "keywords": ["portable-text"],
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/pt-types",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",

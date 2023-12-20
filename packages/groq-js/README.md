@@ -161,6 +161,7 @@ import { deskTool } from "sanity/desk";
 import { defineConfig } from "@sanity-typed/types";
 import type { InferSchemaValues } from "@sanity-typed/types";
 
+import { post } from "./schemas/post";
 import { product } from "./schemas/product";
 
 /** No changes using defineConfig */
@@ -172,6 +173,7 @@ const config = defineConfig({
     types: [
       product,
       // ...
+      post,
     ],
   },
 });

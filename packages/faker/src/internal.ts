@@ -4,7 +4,7 @@ import { flow, identity } from "lodash/fp";
 import RandExp from "randexp";
 import type { IsNumericLiteral, IsStringLiteral, Simplify } from "type-fest";
 
-import type { decorator } from "@portabletext-typed/types/src/internal";
+import type { decorator } from "@portabletext-typed/types";
 import { traverseValidation } from "@sanity-typed/traverse-validation";
 import type {
   BlockDecoratorDefinition,

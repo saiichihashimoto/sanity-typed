@@ -2,10 +2,8 @@ import { base, en } from "@faker-js/faker";
 import { describe, expect, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 
-import type {
-  BlockMarkDecoratorDefault,
-  decorator,
-} from "@portabletext-typed/types/src/internal";
+import type { decorator } from "@portabletext-typed/types";
+import type { BlockMarkDecoratorDefault } from "@portabletext-typed/types/src/internal";
 import {
   defineArrayMember,
   defineConfig,

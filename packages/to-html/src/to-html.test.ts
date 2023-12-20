@@ -6,12 +6,12 @@ import { expectType } from "@saiichihashimoto/test-utils";
 import type {
   PortableTextBlock,
   PortableTextSpan,
+  decorator,
 } from "@portabletext-typed/types";
 import type {
   BlockListItemDefault,
   BlockMarkDecoratorDefault,
   BlockStyleDefault,
-  decorator,
 } from "@portabletext-typed/types/src/internal";
 import {
   defineArrayMember,

@@ -10,7 +10,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
-**FIXME**
+[@portabletext/react](https://github.com/portabletext/react) with typed arguments
 
 @[:page_toc](## Page Contents)
 
@@ -22,4 +22,7 @@ npm install @portabletext/react @portabletext-typed/react
 
 ## Usage
 
-**FIXME**
+After using [@sanity-typed/types](../types) and [@sanity-typed/client](../client) and you have typed blocks, use `PortableText` from this library as you would from [`@portabletext/react`](https://github.com/portabletext/react) to get fully typed arguments!
+
+@[typescript](../example-studio/schemas/post.ts)
+@[typescript](../example-app/src/pages/with-portabletext-react.tsx)

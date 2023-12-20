@@ -17,8 +17,8 @@ import type {
 import type {
   PortableTextBlock,
   PortableTextSpan,
+  decorator,
 } from "@portabletext-typed/types";
-import type { decorator } from "@portabletext-typed/types/src/internal";
 import type { MaybeArray } from "@sanity-typed/utils";
 
 // HACK Couldn't use type-fest's Merge >=3.0.0
@@ -81,100 +81,87 @@ export type PortableTextHtmlComponents<
   TMarkDef extends { _key: string; _type: string } = TBlock["markDefs"][number],
   TChildSibling extends { _type: string } = Exclude<
     TBlock["children"][number],
-    PortableTextSpan<TBlockMarkDecorator>
+    PortableTextSpan<any>
   >,
   TBlockStyle extends string = TBlock["style"],
   TBlockListItem extends string = NonNullable<TBlock["listItem"]>,
   TSibling extends { _type: string } = Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
-    { _type: "block" }
+    PortableTextBlock<any, any, any, any, any>
   >
-> = SetRequired<
-  Partial<
-    MergeOld<
-      PortableTextHtmlComponentsNative,
-      {
-        block:
-          | PortableTextComponent<TBlock>
-          | ({
-              [TStyle in BlockStyleDefault &
-                TBlockStyle]?: PortableTextComponent<
+> = MergeOld<
+  Partial<PortableTextHtmlComponentsNative>,
+  SetRequired<
+    {
+      block?:
+        | PortableTextComponent<TBlock>
+        | SetRequired<
+            {
+              [TStyle in TBlockStyle]?: PortableTextComponent<
                 TBlock & { style: TStyle }
               >;
-            } & {
-              [TStyle in Exclude<
-                TBlockStyle,
-                BlockStyleDefault
-              >]: PortableTextComponent<TBlock & { style: TStyle }>;
-            });
-        // TODO Type HtmlPortableTextList more specifically
-        list:
-          | PortableTextComponent<
-              HtmlPortableTextList & { listItem: TBlockListItem }
-            >
-          | ({
-              [TList in BlockListItemDefault &
-                TBlockListItem]?: PortableTextComponent<
+            },
+            Exclude<TBlockStyle, BlockStyleDefault>
+          >;
+      // TODO Type HtmlPortableTextList more specifically
+      list?:
+        | PortableTextComponent<
+            HtmlPortableTextList & { listItem: TBlockListItem }
+          >
+        | SetRequired<
+            {
+              [TList in TBlockListItem]?: PortableTextComponent<
                 HtmlPortableTextList & { listItem: TList }
               >;
-            } & {
-              [TList in Exclude<
-                TBlockListItem,
-                BlockListItemDefault
-              >]: PortableTextComponent<
-                HtmlPortableTextList & { listItem: TList }
-              >;
-            });
-        listItem:
-          | PortableTextComponent<TBlock & { listItem: TBlockListItem }>
-          | ({
-              [TList in BlockListItemDefault &
-                TBlockListItem]?: PortableTextComponent<
+            },
+            Exclude<TBlockListItem, BlockListItemDefault>
+          >;
+      listItem?:
+        | PortableTextComponent<TBlock & { listItem: TBlockListItem }>
+        | SetRequired<
+            {
+              [TList in TBlockListItem]?: PortableTextComponent<
                 TBlock & { listItem: TList }
               >;
-            } & {
-              [TList in Exclude<
-                TBlockListItem,
-                BlockListItemDefault
-              >]: PortableTextComponent<TBlock & { listItem: TList }>;
-            });
-        marks: SetRequired<
-          {
-            [TMark in TBlockMarkDecorator]?: (
-              options: PortableTextMarkComponentOptions<undefined, TMark, TMark>
-            ) => string;
-          } & {
-            [TMark in TMarkDef as TMark["_type"]]?: (
-              options: PortableTextMarkComponentOptions<
-                TMark,
-                string,
-                TMark["_type"]
-              >
-            ) => string;
-          },
-          | Exclude<TBlockMarkDecorator, BlockMarkDecoratorDefault>
-          | Exclude<TMarkDef["_type"], MarkDefDefault>
-        >;
-        types: {
-          [TType in TChildSibling | TSibling as TType["_type"]]: (
-            options: MergeOld<
-              PortableTextTypeComponentOptions<TType>,
-              {
-                isInline:
-                  | (TType extends TChildSibling ? true : never)
-                  | (TType extends TSibling ? false : never);
-              }
+            },
+            Exclude<TBlockListItem, BlockListItemDefault>
+          >;
+      marks?: SetRequired<
+        {
+          [TMark in TBlockMarkDecorator]?: (
+            options: PortableTextMarkComponentOptions<undefined, TMark, TMark>
+          ) => string;
+        } & {
+          [TMark in TMarkDef as TMark["_type"]]?: (
+            options: PortableTextMarkComponentOptions<
+              TMark,
+              string,
+              TMark["_type"]
             >
           ) => string;
-        };
-      }
-    >
-  >,
-  | (TBlockListItem extends BlockListItemDefault ? never : "list")
-  | (TBlockMarkDecorator extends BlockMarkDecoratorDefault ? never : "marks")
-  | (TBlockStyle extends BlockStyleDefault ? never : "block")
-  | (TChildSibling | TSibling extends never ? never : "types")
-  | (TMarkDef["_type"] extends MarkDefDefault ? never : "marks")
+        },
+        | Exclude<TBlockMarkDecorator, BlockMarkDecoratorDefault>
+        | Exclude<TMarkDef["_type"], MarkDefDefault>
+      >;
+      types?: {
+        [TType in TChildSibling | TSibling as TType["_type"]]: (
+          options: MergeOld<
+            PortableTextTypeComponentOptions<TType>,
+            {
+              isInline:
+                | (TType extends TChildSibling ? true : never)
+                | (TType extends TSibling ? false : never);
+            }
+          >
+        ) => string;
+      };
+    },
+    | (TBlockListItem extends BlockListItemDefault ? never : "list")
+    | (TBlockMarkDecorator extends BlockMarkDecoratorDefault ? never : "marks")
+    | (TBlockStyle extends BlockStyleDefault ? never : "block")
+    | (TChildSibling | TSibling extends never ? never : "types")
+    | (TMarkDef["_type"] extends MarkDefDefault ? never : "marks")
+  >
 >;
 
 export type PortableTextOptions<
@@ -190,46 +177,44 @@ export type PortableTextOptions<
   TMarkDef extends { _key: string; _type: string } = TBlock["markDefs"][number],
   TChildSibling extends { _type: string } = Exclude<
     TBlock["children"][number],
-    PortableTextSpan<TBlockMarkDecorator>
+    PortableTextSpan<any>
   >,
   TBlockStyle extends string = TBlock["style"],
   TBlockListItem extends string = NonNullable<TBlock["listItem"]>,
   TSibling extends { _type: string } = Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
-    { _type: "block" }
+    PortableTextBlock<any, any, any, any, any>
   >
-> = SetRequired<
-  Partial<
-    MergeOld<
-      PortableTextOptionsNative,
-      {
-        components: PortableTextHtmlComponents<
-          TItem,
-          TBlock,
-          TBlockMarkDecorator,
-          TMarkDef,
-          TChildSibling,
-          TBlockStyle,
-          TBlockListItem,
-          TSibling
-        >;
-      }
-    >
-  >,
-  RequiredKeysOf<
-    PortableTextHtmlComponents<
-      TItem,
-      TBlock,
-      TBlockMarkDecorator,
-      TMarkDef,
-      TChildSibling,
-      TBlockStyle,
-      TBlockListItem,
-      TSibling
-    >
-  > extends never
-    ? never
-    : "components"
+> = MergeOld<
+  Partial<PortableTextOptionsNative>,
+  SetRequired<
+    {
+      components?: PortableTextHtmlComponents<
+        TItem,
+        TBlock,
+        TBlockMarkDecorator,
+        TMarkDef,
+        TChildSibling,
+        TBlockStyle,
+        TBlockListItem,
+        TSibling
+      >;
+    },
+    RequiredKeysOf<
+      PortableTextHtmlComponents<
+        TItem,
+        TBlock,
+        TBlockMarkDecorator,
+        TMarkDef,
+        TChildSibling,
+        TBlockStyle,
+        TBlockListItem,
+        TSibling
+      >
+    > extends never
+      ? never
+      : "components"
+  >
 >;
 
 export const toHTML = <
@@ -242,13 +227,13 @@ export const toHTML = <
   TMarkDef extends TBlock["markDefs"][number],
   TChildSibling extends Exclude<
     TBlock["children"][number],
-    PortableTextSpan<TBlockMarkDecorator>
+    PortableTextSpan<any>
   >,
   TBlockStyle extends TBlock["style"],
   TBlockListItem extends NonNullable<TBlock["listItem"]>,
   TSibling extends Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
-    { _type: "block" }
+    PortableTextBlock<any, any, any, any, any>
   >
 >(
   blocks: MaybeArray<TItem>,
@@ -288,4 +273,4 @@ export const toHTML = <
           TSibling
         >
       ]
-) => toHTMLNative(blocks, ...args);
+) => toHTMLNative(blocks, ...(args as any));

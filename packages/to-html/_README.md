@@ -10,7 +10,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
-**FIXME**
+[@portabletext/to-html](https://github.com/portabletext/to-html) with typed arguments
 
 @[:page_toc](## Page Contents)
 
@@ -22,4 +22,7 @@ npm install @portabletext/to-html @portabletext-typed/to-html
 
 ## Usage
 
-**FIXME**
+After using [@sanity-typed/types](../types) and [@sanity-typed/client](../client) and you have typed blocks, use `toHTML` from this library as you would from [`@portabletext/to-html`](https://github.com/portabletext/to-html) to get fully typed arguments!
+
+@[typescript](../example-studio/schemas/post.ts)
+@[typescript](../example-app/src/pages/with-portabletext-to-html.tsx)

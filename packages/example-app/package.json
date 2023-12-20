@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@faker-js/faker": "8.3.1",
+    "@portabletext-typed/react": "0.0.0-development",
+    "@portabletext-typed/to-html": "0.0.0-development",
     "@sanity-typed/client": "0.0.0-development",
     "@sanity-typed/client-mock": "0.0.0-development",
     "@sanity-typed/example-studio": "0.0.0-development",
@@ -25,7 +27,8 @@
     "@sanity-typed/preview-kit": "0.0.0-development",
     "@sanity-typed/zod": "0.0.0-development",
     "@sanity/client": "6.10.0",
-    "next": "14.0.4"
+    "next": "14.0.4",
+    "react": "18.2.0"
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development"
