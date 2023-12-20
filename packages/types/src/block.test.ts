@@ -2,7 +2,7 @@ import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 import type { GeopointValue } from "sanity";
 
-import type { decorator } from "@portabletext-typed/types/src/internal";
+import type { decorator } from "@portabletext-typed/types";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
 import type { InferSchemaValues, SlugValue } from ".";

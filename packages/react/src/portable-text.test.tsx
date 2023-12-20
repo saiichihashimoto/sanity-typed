@@ -8,12 +8,12 @@ import { renderToString } from "react-dom/server";
 import type {
   PortableTextBlock,
   PortableTextSpan,
+  decorator,
 } from "@portabletext-typed/types";
 import type {
   BlockListItemDefault,
   BlockMarkDecoratorDefault,
   BlockStyleDefault,
-  decorator,
 } from "@portabletext-typed/types/src/internal";
 import {
   defineArrayMember,

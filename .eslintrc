@@ -352,6 +352,13 @@
             "extensions": [".jsx", ".tsx"]
           }
         ],
+        "react/no-danger": "off",
+        "react/no-unstable-nested-components": [
+          "error",
+          {
+            "allowAsProps": true
+          }
+        ],
         "react/react-in-jsx-scope": "off"
       }
     },
