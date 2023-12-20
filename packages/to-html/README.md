@@ -11,7 +11,7 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
-**FIXME**
+[@portabletext/to-html](https://github.com/portabletext/to-html) with typed arguments
 
 ## Page Contents
 - [Install](#install)
@@ -25,7 +25,7 @@ npm install @portabletext/to-html @portabletext-typed/to-html
 
 ## Usage
 
-**FIXME**
+After using [@sanity-typed/types](../types) and [@sanity-typed/client](../client) and you have typed blocks, use `toHTML` from this library as you would from [`@portabletext/to-html`](https://github.com/portabletext/to-html) to get fully typed arguments!
 
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/post.ts -->
 ```post.ts```:
@@ -68,9 +68,6 @@ export const post = defineType({
             ],
             annotations: [
               defineArrayMember({
-                // Default Annotation
-                // In to-html: https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/marks.ts#L10
-                // In react: https://github.com/portabletext/react-portabletext/blob/534fd4693b39cd1860a3c2c7c308df7bba534d24/src/components/marks.tsx#L9
                 name: "link",
                 type: "object",
                 title: "Link",

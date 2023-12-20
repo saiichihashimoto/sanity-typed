@@ -36,9 +36,6 @@ export const post = defineType({
             ],
             annotations: [
               defineArrayMember({
-                // Default Annotation
-                // In to-html: https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/marks.ts#L10
-                // In react: https://github.com/portabletext/react-portabletext/blob/534fd4693b39cd1860a3c2c7c308df7bba534d24/src/components/marks.tsx#L9
                 name: "link",
                 type: "object",
                 title: "Link",

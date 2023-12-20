@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@portabletext-typed/react",
   "version": "0.0.0-development",
-  "description": "FIXME",
+  "description": "@portabletext/react with typed arguments",
   "keywords": [
     "sanity",
     "sanity-io",

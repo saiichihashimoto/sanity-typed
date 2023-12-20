@@ -11,19 +11,5 @@
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
-**FIXME**
-
-## Page Contents
-- [Install](#install)
-- [Usage](#usage)
-
-## Install
-
-```bash
-npm install @portabletext/types @portabletext-typed/types
-```
-
-## Usage
-
-**FIXME**
+[@portabletext/types](https://github.com/portabletext/types) with typed generics. Mostly internal for other packages in the monorepo.
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/pt-types/_README.md -->
