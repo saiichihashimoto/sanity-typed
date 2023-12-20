@@ -35,12 +35,12 @@
     "dev": "npm run build -- --clean"
   },
   "dependencies": {
-    "@sanity-typed/preview-kit": "0.0.0-development"
+    "@sanity-typed/client": "0.0.0-development",
+    "@sanity-typed/types": "0.0.0-development"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.2",
-    "@sanity-typed/client": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "next-sanity": "7.0.4",
     "type-fest": "4.8.3"
