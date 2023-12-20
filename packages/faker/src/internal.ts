@@ -249,7 +249,6 @@ const numberFaker = <
     ...(!traversal.negative?.length ? [] : [-epsilon])
   );
 
-  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/536
   const precision = traversal.precision
     ?.map(([limit]) => limit)
     .filter((limit): limit is number => typeof limit === "number")
@@ -422,7 +421,6 @@ const stringAndTextFaker = <
 ) => {
   const traversal = traverseValidation(schemaType);
 
-  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/536
   const length = traversal.length
     ?.map(([exactLength]) => exactLength)
     .find(
@@ -451,8 +449,7 @@ const stringAndTextFaker = <
     );
 
   return traversal.regex
-    ? // TODO https://github.com/saiichihashimoto/sanity-typed/issues/536
-      regexFaker(traversal.regex![0]![0])
+    ? regexFaker(traversal.regex![0]![0])
     : traversal.email
     ? (faker: Faker) => faker.internet.email()
     : (faker: Faker) =>
@@ -859,7 +856,6 @@ const arrayFaker = <
 ): ArrayFaker<TSchemaType, TAliasedFakers> => {
   const traversal = traverseValidation(schemaType);
 
-  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/536
   const length = traversal.length
     ?.map(([exactLength]) => exactLength)
     .find(
@@ -1036,7 +1032,6 @@ const blockFieldsFaker = <
     ...(faker.datatype.boolean()
       ? {}
       : {
-          // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
           level: 0,
           listItem: ternary(
             !lists?.length as Negate<IsStringLiteral<TBlockListItem>>,

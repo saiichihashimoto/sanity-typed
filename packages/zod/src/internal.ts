@@ -1082,7 +1082,6 @@ const blockFieldsZods = <
 
   return {
     _type: z.literal("block"),
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
     level: z.optional(z.number()),
     listItem: ternary(
       !lists?.length as Negate<IsStringLiteral<TBlockListItem>>,
