@@ -98,7 +98,7 @@ export type PortableTextReactComponents<
   TBlockListItem extends string = NonNullable<TBlock["listItem"]>,
   TSibling extends { _type: string } = Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
-    { _type: "block" }
+    PortableTextBlock<any, any, any, any, any>
   >
 > = MergeOld<
   Partial<PortableTextReactComponentsNative>,
@@ -106,53 +106,36 @@ export type PortableTextReactComponents<
     {
       block?:
         | PortableTextComponent<TBlock>
-        | Simplify<
+        | SetRequired<
             {
-              [TStyle in BlockStyleDefault &
-                TBlockStyle]?: PortableTextComponent<
+              [TStyle in TBlockStyle]?: PortableTextComponent<
                 TBlock & { style: TStyle }
               >;
-            } & {
-              [TStyle in Exclude<
-                TBlockStyle,
-                BlockStyleDefault
-              >]: PortableTextComponent<TBlock & { style: TStyle }>;
-            }
+            },
+            Exclude<TBlockStyle, BlockStyleDefault>
           >;
       // TODO Type ReactPortableTextList more specifically
       list?:
         | PortableTextComponent<
             ReactPortableTextList & { listItem: TBlockListItem }
           >
-        | Simplify<
+        | SetRequired<
             {
-              [TList in BlockListItemDefault &
-                TBlockListItem]?: PortableTextComponent<
+              [TList in TBlockListItem]?: PortableTextComponent<
                 ReactPortableTextList & { listItem: TList }
               >;
-            } & {
-              [TList in Exclude<
-                TBlockListItem,
-                BlockListItemDefault
-              >]: PortableTextComponent<
-                ReactPortableTextList & { listItem: TList }
-              >;
-            }
+            },
+            Exclude<TBlockListItem, BlockListItemDefault>
           >;
       listItem?:
         | PortableTextComponent<TBlock & { listItem: TBlockListItem }>
-        | Simplify<
+        | SetRequired<
             {
-              [TList in BlockListItemDefault &
-                TBlockListItem]?: PortableTextComponent<
+              [TList in TBlockListItem]?: PortableTextComponent<
                 TBlock & { listItem: TList }
               >;
-            } & {
-              [TList in Exclude<
-                TBlockListItem,
-                BlockListItemDefault
-              >]: PortableTextComponent<TBlock & { listItem: TList }>;
-            }
+            },
+            Exclude<TBlockListItem, BlockListItemDefault>
           >;
       marks?: SetRequired<
         {
@@ -171,7 +154,7 @@ export type PortableTextReactComponents<
         | Exclude<TBlockMarkDecorator, BlockMarkDecoratorDefault>
         | Exclude<TMarkDef["_type"], MarkDefDefault>
       >;
-      types?: Simplify<{
+      types?: {
         [TType in TChildSibling | TSibling as TType["_type"]]: ComponentType<
           MergeOld<
             PortableTextTypeComponentProps<TType>,
@@ -182,7 +165,7 @@ export type PortableTextReactComponents<
             }
           >
         >;
-      }>;
+      };
     },
     | (TBlockListItem extends BlockListItemDefault ? never : "list")
     | (TBlockMarkDecorator extends BlockMarkDecoratorDefault ? never : "marks")
@@ -211,7 +194,7 @@ export type PortableTextProps<
   TBlockListItem extends string = NonNullable<TBlock["listItem"]>,
   TSibling extends { _type: string } = Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
-    { _type: "block" }
+    PortableTextBlock<any, any, any, any, any>
   >
 > = MergeOld<
   Partial<Omit<PortableTextPropsNative<TItem>, "value">>,
@@ -263,7 +246,7 @@ export const PortableText = <
   TBlockListItem extends NonNullable<TBlock["listItem"]>,
   TSibling extends Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
-    { _type: "block" }
+    PortableTextBlock<any, any, any, any, any>
   >
 >(
   props: PortableTextProps<

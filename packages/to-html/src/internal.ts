@@ -12,7 +12,6 @@ import type {
   IsStringLiteral,
   RequiredKeysOf,
   SetRequired,
-  Simplify,
 } from "type-fest";
 
 import type {
@@ -88,7 +87,7 @@ export type PortableTextHtmlComponents<
   TBlockListItem extends string = NonNullable<TBlock["listItem"]>,
   TSibling extends { _type: string } = Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
-    { _type: "block" }
+    PortableTextBlock<any, any, any, any, any>
   >
 > = MergeOld<
   Partial<PortableTextHtmlComponentsNative>,
@@ -96,53 +95,36 @@ export type PortableTextHtmlComponents<
     {
       block?:
         | PortableTextComponent<TBlock>
-        | Simplify<
+        | SetRequired<
             {
-              [TStyle in BlockStyleDefault &
-                TBlockStyle]?: PortableTextComponent<
+              [TStyle in TBlockStyle]?: PortableTextComponent<
                 TBlock & { style: TStyle }
               >;
-            } & {
-              [TStyle in Exclude<
-                TBlockStyle,
-                BlockStyleDefault
-              >]: PortableTextComponent<TBlock & { style: TStyle }>;
-            }
+            },
+            Exclude<TBlockStyle, BlockStyleDefault>
           >;
       // TODO Type HtmlPortableTextList more specifically
       list?:
         | PortableTextComponent<
             HtmlPortableTextList & { listItem: TBlockListItem }
           >
-        | Simplify<
+        | SetRequired<
             {
-              [TList in BlockListItemDefault &
-                TBlockListItem]?: PortableTextComponent<
+              [TList in TBlockListItem]?: PortableTextComponent<
                 HtmlPortableTextList & { listItem: TList }
               >;
-            } & {
-              [TList in Exclude<
-                TBlockListItem,
-                BlockListItemDefault
-              >]: PortableTextComponent<
-                HtmlPortableTextList & { listItem: TList }
-              >;
-            }
+            },
+            Exclude<TBlockListItem, BlockListItemDefault>
           >;
       listItem?:
         | PortableTextComponent<TBlock & { listItem: TBlockListItem }>
-        | Simplify<
+        | SetRequired<
             {
-              [TList in BlockListItemDefault &
-                TBlockListItem]?: PortableTextComponent<
+              [TList in TBlockListItem]?: PortableTextComponent<
                 TBlock & { listItem: TList }
               >;
-            } & {
-              [TList in Exclude<
-                TBlockListItem,
-                BlockListItemDefault
-              >]: PortableTextComponent<TBlock & { listItem: TList }>;
-            }
+            },
+            Exclude<TBlockListItem, BlockListItemDefault>
           >;
       marks?: SetRequired<
         {
@@ -161,7 +143,7 @@ export type PortableTextHtmlComponents<
         | Exclude<TBlockMarkDecorator, BlockMarkDecoratorDefault>
         | Exclude<TMarkDef["_type"], MarkDefDefault>
       >;
-      types?: Simplify<{
+      types?: {
         [TType in TChildSibling | TSibling as TType["_type"]]: (
           options: MergeOld<
             PortableTextTypeComponentOptions<TType>,
@@ -172,7 +154,7 @@ export type PortableTextHtmlComponents<
             }
           >
         ) => string;
-      }>;
+      };
     },
     | (TBlockListItem extends BlockListItemDefault ? never : "list")
     | (TBlockMarkDecorator extends BlockMarkDecoratorDefault ? never : "marks")
@@ -201,7 +183,7 @@ export type PortableTextOptions<
   TBlockListItem extends string = NonNullable<TBlock["listItem"]>,
   TSibling extends { _type: string } = Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
-    { _type: "block" }
+    PortableTextBlock<any, any, any, any, any>
   >
 > = MergeOld<
   Partial<PortableTextOptionsNative>,
@@ -251,7 +233,7 @@ export const toHTML = <
   TBlockListItem extends NonNullable<TBlock["listItem"]>,
   TSibling extends Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
-    { _type: "block" }
+    PortableTextBlock<any, any, any, any, any>
   >
 >(
   blocks: MaybeArray<TItem>,
