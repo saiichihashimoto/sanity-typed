@@ -69,7 +69,6 @@ export type PortableTextBlock<
   {
     _type: "block";
     children: TChild[];
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
     level?: number;
     listItem?: TBlockListItem;
     markDefs: TMarkDef[];

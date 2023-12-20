@@ -1032,7 +1032,6 @@ const blockFieldsFaker = <
     ...(faker.datatype.boolean()
       ? {}
       : {
-          // TODO https://github.com/saiichihashimoto/sanity-typed/issues/538
           level: 0,
           listItem: ternary(
             !lists?.length as Negate<IsStringLiteral<TBlockListItem>>,
