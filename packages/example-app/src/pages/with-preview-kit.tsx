@@ -34,11 +34,6 @@ const Index = ({
     <pre style={{ padding: 4 }}>
       products = {JSON.stringify(products, null, 4)}
     </pre>
-    <style
-      dangerouslySetInnerHTML={{
-        __html: "body{background:black;color:white;font-size:18px;}",
-      }}
-    />
   </>
 );
 

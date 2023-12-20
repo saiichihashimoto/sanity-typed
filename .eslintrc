@@ -352,6 +352,7 @@
             "extensions": [".jsx", ".tsx"]
           }
         ],
+        "react/jsx-props-no-spreading": "off",
         "react/no-danger": "off",
         "react/no-unstable-nested-components": [
           "error",
