@@ -23,3 +23,6 @@ npm install @portabletext/to-html @portabletext-typed/to-html
 ## Usage
 
 **FIXME**
+
+@[typescript](../example-studio/schemas/post.ts)
+@[typescript](../example-app/src/pages/with-portabletext-to-html.tsx)

@@ -26,4 +26,193 @@ npm install @portabletext/to-html @portabletext-typed/to-html
 ## Usage
 
 **FIXME**
+
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/post.ts -->
+```post.ts```:
+```typescript
+// import { defineArrayMember, defineField, defineType } from "sanity";
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+} from "@sanity-typed/types";
+
+/** No changes using defineType, defineField, and defineArrayMember */
+export const post = defineType({
+  name: "post",
+  type: "document",
+  title: "Post",
+  fields: [
+    defineField({
+      name: "content",
+      type: "array",
+      title: "Content",
+      validation: (Rule) => Rule.required(),
+      of: [
+        defineArrayMember({ type: "image" }),
+        defineArrayMember({
+          type: "block",
+          of: [defineArrayMember({ type: "file" })],
+          styles: [
+            { title: "Normal", value: "normal" as const },
+            { title: "Foo", value: "foo" as const },
+          ],
+          lists: [
+            { title: "Bullet", value: "bullet" as const },
+            { title: "Bar", value: "bar" as const },
+          ],
+          marks: {
+            decorators: [
+              { title: "Strong", value: "strong" as const },
+              { title: "Baz", value: "baz" as const },
+            ],
+            annotations: [
+              defineArrayMember({
+                // Default Annotation
+                // In to-html: https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/marks.ts#L10
+                // In react: https://github.com/portabletext/react-portabletext/blob/534fd4693b39cd1860a3c2c7c308df7bba534d24/src/components/marks.tsx#L9
+                name: "link",
+                type: "object",
+                title: "Link",
+                fields: [
+                  defineField({
+                    name: "href",
+                    type: "string",
+                    validation: (Rule) => Rule.required(),
+                  }),
+                ],
+              }),
+              defineArrayMember({
+                name: "qux",
+                type: "object",
+                title: "Qux",
+                fields: [
+                  defineField({
+                    name: "value",
+                    type: "string",
+                    validation: (Rule) => Rule.required(),
+                  }),
+                ],
+              }),
+            ],
+          },
+        }),
+      ],
+    }),
+  ],
+});
+```
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/post.ts -->
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-app/src/pages/with-portabletext-to-html.tsx -->
+```with-portabletext-to-html.tsx```:
+```typescript
+import type { InferGetStaticPropsType } from "next";
+import { Fragment } from "react";
+
+// import { toHTML } from "@portabletext/to-html";
+import { toHTML } from "@portabletext-typed/to-html";
+
+import { client } from "../sanity/client";
+
+export const getStaticProps = async () => ({
+  props: {
+    posts: await client.fetch('*[_type=="post"]'),
+  },
+});
+
+const Index = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => (
+  <>
+    <h1>Posts</h1>
+    {posts.map(({ _id, content }) => (
+      <Fragment key={_id}>
+        <h2>Post</h2>
+        <div
+          dangerouslySetInnerHTML={{
+            // Typed Components!
+            __html: toHTML(content, {
+              components: {
+                types: {
+                  // From Siblings
+                  image: ({ isInline, value }) => `
+                    <div>
+                      typeof ${isInline} === false,
+                      <br />
+                      typeof ${JSON.stringify(value)} === ImageValue,
+                    </div>`,
+                  // From Children
+                  file: ({ isInline, value }) => `
+                    <span>
+                      typeof ${isInline} === true,
+                      typeof ${JSON.stringify(value)} === FileValue,
+                    </span>`,
+                },
+                block: {
+                  // Non-Default Styles
+                  foo: ({ children, value }) => `
+                    <div>
+                      typeof ${JSON.stringify(
+                        value
+                      )} === PortableTextBlock\\< ... \\> & { style: "foo" },
+                      ${children}
+                    </div>`,
+                },
+                list: {
+                  // Non-Default Lists
+                  bar: ({ children, value }) => `
+                    <ul>
+                      <li>typeof ${JSON.stringify(
+                        value
+                      )} === ToolkitPortableTextList & { listItem: "bar"; },</li>
+                      ${children}
+                    </ul>`,
+                },
+                listItem: {
+                  // Non-Default Lists
+                  bar: ({ children, value }) => `
+                    <li>
+                      typeof ${JSON.stringify(
+                        value
+                      )} === PortableTextBlock\\< ... \\> & { listItem: "bar" },
+                      ${children}
+                    </li>`,
+                },
+                marks: {
+                  // Non-Default Decorators
+                  baz: ({ children, markKey, markType, value }) => `
+                    <span>
+                      typeof ${value} === undefined,
+                      typeof ${markKey} === "baz",
+                      typeof ${markType} === "baz",
+                      ${children}
+                    </span>`,
+                  // Non-Default Annotations
+                  qux: ({ children, markKey, markType, value }) => `
+                    <span>
+                      typeof ${JSON.stringify(value)} === {
+                        _key: string,
+                        _type: "qux",
+                        value: typeof ${value.value} === string,
+                      },
+                      typeof ${markKey} === string,
+                      typeof ${markType} === "qux",
+                      ${children}
+                    </span>`,
+                },
+              },
+            }),
+          }}
+        />
+      </Fragment>
+    ))}
+    <style
+      dangerouslySetInnerHTML={{
+        __html: "body{background:black;color:white;font-size:18px;}",
+      }}
+    />
+  </>
+);
+
+export default Index;
+```
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/pages/with-portabletext-to-html.tsx -->
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/to-html/_README.md -->

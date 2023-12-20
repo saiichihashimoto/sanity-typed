@@ -23,3 +23,6 @@ npm install @portabletext/react @portabletext-typed/react
 ## Usage
 
 **FIXME**
+
+@[typescript](../example-studio/schemas/post.ts)
+@[typescript](../example-app/src/pages/with-portabletext-react.tsx)

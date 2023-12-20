@@ -15,8 +15,8 @@ const config = defineConfig({
   schema: {
     types: [
       product,
-      post,
       // ...
+      post,
     ],
   },
 });
