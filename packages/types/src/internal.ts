@@ -19,7 +19,6 @@ import type {
   ComposableOption,
   ConfigContext,
   CrossDatasetReferenceDefinition as CrossDatasetReferenceDefinitionNative,
-  CrossDatasetReferenceValue as CrossDatasetReferenceValueNative,
   CustomValidator,
   DateDefinition as DateDefinitionNative,
   DateRule,
@@ -30,11 +29,13 @@ import type {
   EmailDefinition as EmailDefinitionNative,
   EmailRule,
   FieldDefinitionBase,
+  FileAsset,
   FileDefinition as FileDefinitionNative,
   FileRule,
   GeopointDefinition as GeopointDefinitionNative,
   GeopointRule,
   GeopointValue,
+  ImageAsset,
   ImageCrop,
   ImageDefinition as ImageDefinitionNative,
   ImageHotspot,
@@ -157,10 +158,14 @@ export type BooleanDefinition<TRequired extends boolean> = MergeOld<
   DefinitionBase<TRequired, boolean, BooleanRule>
 >;
 
-export type CrossDatasetReferenceValue = MergeOld<
-  Omit<CrossDatasetReferenceValueNative, "_key">,
-  { _type: "crossDatasetReference" }
->;
+// HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
+export type CrossDatasetReferenceValue = {
+  _dataset: string;
+  _projectId: string;
+  _ref: string;
+  _type: "crossDatasetReference";
+  _weak?: boolean;
+};
 
 type CrossDatasetReferenceRule = RuleDef<
   CrossDatasetReferenceRule,
@@ -536,9 +541,9 @@ export type DocumentDefinition<
 >;
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
-type FileValueNative = {
+type FileValueBase = {
   _type: "file";
-  asset: ReferenceValueNative;
+  asset: ReferenceValue<"sanity.fileAsset", false>;
 };
 
 export type FileValue<
@@ -546,7 +551,7 @@ export type FileValue<
     name: string;
     [required]?: boolean;
   } = never
-> = Simplify<FileValueNative & ObjectValue<TFieldDefinition>>;
+> = Simplify<FileValueBase & ObjectValue<TFieldDefinition>>;
 
 export type FileDefinition<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
@@ -568,7 +573,7 @@ export type FileDefinition<
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
 type ImageValueBase = {
   _type: "image";
-  asset: ReferenceValueNative;
+  asset: ReferenceValue<"sanity.imageAsset", false>;
 };
 
 type ImageValueExtra = {
@@ -1321,6 +1326,12 @@ export const defineConfig = <
     ? Extract<typeof config, any[]>
     : Exclude<typeof config, any[]>;
 
+export type ImplicitDocuments = {
+  [TImplicitDoc in
+    | FileAsset
+    | ImageAsset as TImplicitDoc["_type"]]: TImplicitDoc;
+};
+
 type ExpandAliasValues<
   Value,
   AliasedValues extends { [name: string]: any }
@@ -1351,45 +1362,45 @@ type ExpandAliasValues<
   : Value;
 
 export type InferSchemaValues<
-  TConfig extends MaybeArray<ConfigBase<any, any>>
+  TConfig extends MaybeArray<ConfigBase<any, any> | ConfigBase<never, any>>
 > = PluginOptionsNative extends TConfig
   ? object
   : TConfig extends MaybeArray<
       ConfigBase<infer TTypeDefinition, infer TPluginOptions>
     >
-  ? {
-      [TName in TTypeDefinition["name"]]: ExpandAliasValues<
-        AliasValue<TName>,
-        InferSchemaValues<TPluginOptions> & {
-          [TDefinition in TypeDefinition<
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any,
-            any
-          > extends TTypeDefinition
-            ? never
-            : TTypeDefinition as TDefinition["name"]]: InferRawValue<TDefinition>;
-        }
-      >;
-    }
+  ? Merge<
+      ImplicitDocuments,
+      {
+        [TName in TTypeDefinition["name"]]: ExpandAliasValues<
+          AliasValue<TName>,
+          InferSchemaValues<TPluginOptions> & {
+            [TDefinition in TypeDefinition<
+              any,
+              any,
+              any,
+              any,
+              any,
+              any,
+              any,
+              any,
+              any,
+              any,
+              any,
+              any,
+              any,
+              any,
+              any
+            > extends TTypeDefinition
+              ? never
+              : TTypeDefinition as TDefinition["name"]]: InferRawValue<TDefinition>;
+          }
+        >;
+      }
+    >
   : never;
 
 export type DocumentValues<SanityValues extends InferSchemaValues<any>> =
-  Extract<
-    SanityValues[keyof SanityValues],
-    Merge<SanityDocument, { _type: string }>
-  >;
+  Extract<SanityValues[keyof SanityValues], AnySanityDocument>;
 
 export const castToTyped = <Untyped>(untyped: Untyped) =>
   untyped as Untyped extends

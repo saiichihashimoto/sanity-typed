@@ -1,11 +1,25 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
-import type { Reference } from "sanity";
+import type { FileAsset } from "sanity";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { InferSchemaValues } from ".";
+import type { InferSchemaValues, ReferenceValue } from ".";
 
 describe("file", () => {
+  it("infers FileAsset automatically", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [],
+      },
+    });
+
+    expectType<
+      InferSchemaValues<typeof config>["sanity.fileAsset"]
+    >().toStrictEqual<FileAsset>();
+  });
+
   describe("defineArrayMember", () => {
     it("infers FileValue", () => {
       const config = defineConfig({
@@ -29,7 +43,7 @@ describe("file", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
       }>();
     });
 
@@ -90,7 +104,7 @@ describe("file", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
         bar?: boolean;
         tar?: number;
       }>();
@@ -125,7 +139,7 @@ describe("file", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
         bar: boolean;
       }>();
     });
@@ -166,7 +180,7 @@ describe("file", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "file";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
         bar: {
           tar: number;
         };
@@ -200,7 +214,7 @@ describe("file", () => {
         InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _type: "file";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
       }>();
     });
 
@@ -239,7 +253,7 @@ describe("file", () => {
         InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _type: "file";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
         bar?: boolean;
         tar?: number;
       }>();
@@ -277,7 +291,7 @@ describe("file", () => {
         InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _type: "file";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
         bar: boolean;
       }>();
     });
@@ -321,7 +335,7 @@ describe("file", () => {
         InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _type: "file";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
         bar: {
           tar: number;
         };
@@ -346,7 +360,7 @@ describe("file", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
       }>();
     });
 
@@ -405,7 +419,7 @@ describe("file", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
         bar?: boolean;
         tar?: number;
       }>();
@@ -434,7 +448,7 @@ describe("file", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
         bar: boolean;
       }>();
     });
@@ -470,7 +484,7 @@ describe("file", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.fileAsset", false>;
         bar: {
           tar: number;
         };

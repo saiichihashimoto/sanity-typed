@@ -5,8 +5,7 @@ import type { GeopointValue } from "sanity";
 import type { decorator } from "@portabletext-typed/types";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { InferSchemaValues, SlugValue } from ".";
-import type { referenced } from "./internal";
+import type { InferSchemaValues, ReferenceValue, SlugValue } from ".";
 
 describe("block", () => {
   describe("defineArrayMember", () => {
@@ -402,11 +401,7 @@ describe("block", () => {
         markDefs: {
           _key: string;
           _type: "internalLink";
-          reference?: {
-            _ref: string;
-            _type: "reference";
-            [referenced]: "post";
-          };
+          reference?: ReferenceValue<"post", false>;
         }[];
         style:
           | "blockquote"
@@ -804,11 +799,7 @@ describe("block", () => {
         markDefs: {
           _key: string;
           _type: "internalLink";
-          reference?: {
-            _ref: string;
-            _type: "reference";
-            [referenced]: "post";
-          };
+          reference?: ReferenceValue<"post", false>;
         }[];
         style:
           | "blockquote"

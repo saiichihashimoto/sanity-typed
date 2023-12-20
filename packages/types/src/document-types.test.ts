@@ -1,11 +1,12 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
+import type { FileAsset, ImageAsset } from "sanity";
 
 import { defineConfig, defineField, defineType } from ".";
 import type { DocumentValues, InferSchemaValues } from ".";
 
 describe("type DocumentValues", () => {
-  it("infers union of only sanity documents", () => {
+  it("infers union of sanity documents, including implicit ones", () => {
     const config = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
@@ -40,6 +41,8 @@ describe("type DocumentValues", () => {
     });
 
     expectType<DocumentValues<InferSchemaValues<typeof config>>>().toEqual<
+      | FileAsset
+      | ImageAsset
       | {
           _createdAt: string;
           _id: string;

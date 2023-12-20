@@ -1,11 +1,25 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
-import type { ImageCrop, ImageHotspot, Reference } from "sanity";
+import type { ImageAsset, ImageCrop, ImageHotspot } from "sanity";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
-import type { InferSchemaValues } from ".";
+import type { InferSchemaValues, ReferenceValue } from ".";
 
 describe("image", () => {
+  it("infers ImageAsset automatically", () => {
+    const config = defineConfig({
+      dataset: "dataset",
+      projectId: "projectId",
+      schema: {
+        types: [],
+      },
+    });
+
+    expectType<
+      InferSchemaValues<typeof config>["sanity.imageAsset"]
+    >().toStrictEqual<ImageAsset>();
+  });
+
   describe("defineArrayMember", () => {
     it("infers ImageValue", () => {
       const config = defineConfig({
@@ -29,7 +43,7 @@ describe("image", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
       }>();
     });
 
@@ -83,7 +97,7 @@ describe("image", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         crop: ImageCrop;
         hotspot: ImageHotspot;
       }>();
@@ -121,7 +135,7 @@ describe("image", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         bar?: boolean;
         tar?: number;
       }>();
@@ -156,7 +170,7 @@ describe("image", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         bar: boolean;
       }>();
     });
@@ -197,7 +211,7 @@ describe("image", () => {
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
         _type: "image";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         bar: {
           tar: number;
         };
@@ -231,7 +245,7 @@ describe("image", () => {
         InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _type: "image";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
       }>();
     });
 
@@ -263,7 +277,7 @@ describe("image", () => {
         InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _type: "image";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         crop: ImageCrop;
         hotspot: ImageHotspot;
       }>();
@@ -304,7 +318,7 @@ describe("image", () => {
         InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _type: "image";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         bar?: boolean;
         tar?: number;
       }>();
@@ -342,7 +356,7 @@ describe("image", () => {
         InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _type: "image";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         bar: boolean;
       }>();
     });
@@ -386,7 +400,7 @@ describe("image", () => {
         InferSchemaValues<typeof config>["foo"]["bar"]
       >().toStrictEqual<{
         _type: "image";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         bar: {
           tar: number;
         };
@@ -411,7 +425,7 @@ describe("image", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
       }>();
     });
 
@@ -463,7 +477,7 @@ describe("image", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         crop: ImageCrop;
         hotspot: ImageHotspot;
       }>();
@@ -495,7 +509,7 @@ describe("image", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         bar?: boolean;
         tar?: number;
       }>();
@@ -524,7 +538,7 @@ describe("image", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         bar: boolean;
       }>();
     });
@@ -559,7 +573,7 @@ describe("image", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        asset: Reference;
+        asset: ReferenceValue<"sanity.imageAsset", false>;
         bar: {
           tar: number;
         };
