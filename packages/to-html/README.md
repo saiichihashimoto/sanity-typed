@@ -201,11 +201,6 @@ const Index = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => (
         />
       </Fragment>
     ))}
-    <style
-      dangerouslySetInnerHTML={{
-        __html: "body{background:black;color:white;font-size:18px;}",
-      }}
-    />
   </>
 );
 
