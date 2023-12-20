@@ -953,7 +953,6 @@ const spanFaker =
       marks: faker.helpers
         .arrayElements(
           [
-            // TODO https://github.com/saiichihashimoto/sanity-typed/issues/537
             () => faker.database.mongodbObjectId(),
             ...((
               decorators as
@@ -1248,7 +1247,6 @@ const blockFaker = <
               max: length - numSpans,
             })),
       ]),
-      // TODO https://github.com/saiichihashimoto/sanity-typed/issues/537
       markDefs: markDefs?.(faker, index, { min: 1, max: 5 }) ?? [],
     };
   }) as BlockFaker<TSchemaType, TAliasedFakers>;
