@@ -30,7 +30,7 @@
   },
   "settings": {
     "import/extensions": [".js", ".jsx", ".ts", ".tsx"],
-    "import/internal-regex": "^(?:(?:@sanity-typed/(?:traverse-validation|utils))|(?:@portabletext-typed/types))",
+    "import/internal-regex": "^(?:@sanity-typed/(?:traverse-validation|utils))",
     "import/resolver": {
       "node": {
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
