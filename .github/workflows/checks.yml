@@ -51,15 +51,13 @@ jobs:
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - id: node-modules
-        uses: actions/cache/restore@v3
+      - uses: actions/cache/restore@v3
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
-      - if: steps.node-modules.outputs.cache-hit != 'true'
-        run: exit 1
+          fail-on-cache-miss: true
 
       - run: |
           DRY_RUN=$(npx turbo run build --dry=json)
@@ -169,15 +167,13 @@ jobs:
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - id: node-modules
-        uses: actions/cache/restore@v3
+      - uses: actions/cache/restore@v3
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
-      - if: steps.node-modules.outputs.cache-hit != 'true'
-        run: exit 1
+          fail-on-cache-miss: true
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -210,15 +206,13 @@ jobs:
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - id: node-modules
-        uses: actions/cache/restore@v3
+      - uses: actions/cache/restore@v3
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
-      - if: steps.node-modules.outputs.cache-hit != 'true'
-        run: exit 1
+          fail-on-cache-miss: true
 
       - id: set-packages
         run: |
@@ -239,15 +233,13 @@ jobs:
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - id: node-modules
-        uses: actions/cache/restore@v3
+      - uses: actions/cache/restore@v3
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
-      - if: steps.node-modules.outputs.cache-hit != 'true'
-        run: exit 1
+          fail-on-cache-miss: true
 
       - id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v2
