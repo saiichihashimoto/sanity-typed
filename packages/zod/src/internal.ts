@@ -1028,7 +1028,6 @@ const spanZod = <
       >(),
     _key: z.string(),
     _type: z.literal("span"),
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/537
     marks: z.array(z.string()),
     text: z.string(),
   });
@@ -1236,7 +1235,6 @@ const blockZod = <
             ),
           ])
     ),
-    // TODO https://github.com/saiichihashimoto/sanity-typed/issues/537
     markDefs: z.array(
       !schemaType.marks?.annotations
         ? z.never()
