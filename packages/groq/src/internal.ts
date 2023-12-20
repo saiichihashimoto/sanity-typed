@@ -1,4 +1,3 @@
-import type { PortableTextBlock } from "@portabletext/types";
 import type { ClientConfig } from "@sanity/client";
 import type {
   GeometryCollection,
@@ -62,6 +61,7 @@ import type {
   UnionToIntersection,
 } from "type-fest";
 
+import type { PortableTextBlock } from "@portabletext-typed/types";
 import type { ReferenceValue, referenced } from "@sanity-typed/types";
 import type { IsPlainObject, TupleOfLength } from "@sanity-typed/utils";
 
@@ -784,8 +784,10 @@ type Functions<
     /**
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
      */
-    pt: TArgs extends (infer TBase)[]
-      ? TBase extends PortableTextBlock | PortableTextBlock[]
+    pt: TArgs extends [infer TBase]
+      ? TBase extends
+          | PortableTextBlock<any, any, any, any, any>
+          | PortableTextBlock<any, any, any, any, any>[]
         ? TBase
         : null
       : never;
@@ -856,7 +858,9 @@ type Functions<
      * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#pt_text()
      */
     text: TArgs extends (infer TBase)[]
-      ? TBase extends PortableTextBlock | PortableTextBlock[]
+      ? TBase extends
+          | PortableTextBlock<any, any, any, any, any>
+          | PortableTextBlock<any, any, any, any, any>[]
         ? string
         : null
       : never;

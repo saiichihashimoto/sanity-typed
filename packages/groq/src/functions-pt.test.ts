@@ -4,6 +4,8 @@ import { evaluate, parse } from "groq-js";
 import type { GroqFunction } from "groq-js";
 import type { WritableDeep } from "type-fest";
 
+import type { PortableTextBlock } from "@portabletext-typed/types";
+
 import type { ExecuteQuery, Parse } from ".";
 import type { ScopeFromPartialContext } from "./internal";
 
@@ -65,15 +67,19 @@ describe("portable text extension", () => {
       param: {
         _type: "block",
         children: [{ _type: "span", text: "foo" }],
-      },
-    } as const;
+        markDefs: [],
+        style: "normal",
+      } satisfies PortableTextBlock<any, any, any, any, any>,
+    };
 
     const result = await (await evaluate(tree, { params })).get();
 
     const expectedResult = {
       _type: "block",
       children: [{ _type: "span", text: "foo" }],
-    } as const;
+      markDefs: [],
+      style: "normal",
+    } satisfies PortableTextBlock<any, any, any, any, any>;
 
     expect(result).toStrictEqual(expectedResult);
     expectType<
@@ -112,13 +118,17 @@ describe("portable text extension", () => {
         {
           _type: "block",
           children: [{ _type: "span", text: "foo" }],
+          markDefs: [],
+          style: "normal",
         },
         {
           _type: "block",
           children: [{ _type: "span", text: "bar" }],
+          markDefs: [],
+          style: "normal",
         },
-      ],
-    } as const;
+      ] satisfies PortableTextBlock<any, any, any, any, any>[],
+    };
 
     const result = await (await evaluate(tree, { params })).get();
 
@@ -126,12 +136,16 @@ describe("portable text extension", () => {
       {
         _type: "block",
         children: [{ _type: "span", text: "foo" }],
+        markDefs: [],
+        style: "normal",
       },
       {
         _type: "block",
         children: [{ _type: "span", text: "bar" }],
+        markDefs: [],
+        style: "normal",
       },
-    ] as const;
+    ] satisfies PortableTextBlock<any, any, any, any, any>[];
 
     expect(result).toStrictEqual(expectedResult);
     expectType<
@@ -170,13 +184,17 @@ describe("portable text extension", () => {
         {
           _type: "block",
           children: [{ _type: "span", text: "foo" }],
+          markDefs: [],
+          style: "normal",
         },
         {
           _type: "block",
           children: [{ _type: "span", text: "bar" }],
+          markDefs: [],
+          style: "normal",
         },
-      ],
-    } as const;
+      ] satisfies PortableTextBlock<any, any, any, any, any>[],
+    };
 
     const result = await (await evaluate(tree, { params })).get();
 
@@ -184,12 +202,16 @@ describe("portable text extension", () => {
       {
         _type: "block",
         children: [{ _type: "span", text: "foo" }],
+        markDefs: [],
+        style: "normal",
       },
       {
         _type: "block",
         children: [{ _type: "span", text: "bar" }],
+        markDefs: [],
+        style: "normal",
       },
-    ] as const;
+    ] satisfies PortableTextBlock<any, any, any, any, any>[];
 
     expect(result).toStrictEqual(expectedResult);
     expectType<
@@ -258,8 +280,10 @@ describe("portable text extension", () => {
       param: {
         _type: "block",
         children: [{ _type: "span", text: "foo" }],
-      },
-    } as const;
+        markDefs: [],
+        style: "normal",
+      } satisfies PortableTextBlock<any, any, any, any, any>,
+    };
 
     const result = await (await evaluate(tree, { params })).get();
 
@@ -302,13 +326,17 @@ describe("portable text extension", () => {
         {
           _type: "block",
           children: [{ _type: "span", text: "foo" }],
+          markDefs: [],
+          style: "normal",
         },
         {
           _type: "block",
           children: [{ _type: "span", text: "bar" }],
+          markDefs: [],
+          style: "normal",
         },
-      ],
-    } as const;
+      ] satisfies PortableTextBlock<any, any, any, any, any>[],
+    };
 
     const result = await (await evaluate(tree, { params })).get();
 
