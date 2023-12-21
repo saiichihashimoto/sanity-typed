@@ -150,7 +150,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: node_modules/.cache/turbo
-          key: turbo-cache-all-${{ hashFiles('node_modules/.cache/turbo') }}
+          key: turbo-cache-all-${{ github.sha }}
 
       - env:
           NODE_OPTIONS: "--max_old_space_size=4096"
@@ -160,7 +160,7 @@ jobs:
         uses: actions/cache/save@v3
         with:
           path: node_modules/.cache/turbo
-          key: turbo-cache-all-${{ hashFiles('node_modules/.cache/turbo') }}
+          key: turbo-cache-all-${{ github.sha }}
 
       - run: npm config set workspaces-update false
       - env:
