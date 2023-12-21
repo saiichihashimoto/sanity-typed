@@ -1338,8 +1338,13 @@ export type FileAsset = OmitIndexSignature<FileAssetNative>;
 
 // TODO include other metadata based on options https://www.sanity.io/docs/image-metadata#3e05db6e3c80
 // TODO exif https://www.sanity.io/docs/image-metadata#3e05db6e3c80
-// TODO location https://www.sanity.io/docs/image-metadata#df19f6f51379
-export type ImageAsset = OmitIndexSignature<ImageAssetNative>;
+export type ImageAsset = OmitIndexSignature<
+  ImageAssetNative & {
+    metadata: ImageAssetNative["metadata"] & {
+      location?: GeopointValue;
+    };
+  }
+>;
 
 export type ImplicitDocuments = {
   [TImplicitDoc in

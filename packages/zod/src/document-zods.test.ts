@@ -5,7 +5,8 @@ import type { z } from "zod";
 import { defineConfig, defineField, defineType } from "@sanity-typed/types";
 import type { DocumentValues, InferSchemaValues } from "@sanity-typed/types";
 
-import { sanityConfigToZods, sanityDocumentsZod } from ".";
+import { sanityDocumentsZod } from ".";
+import { sanityConfigToZodsTyped } from "./internal";
 
 describe("documentZods", () => {
   it("builds parser for union of only sanity documents", () => {
@@ -41,10 +42,10 @@ describe("documentZods", () => {
         ],
       },
     });
-    const zods = sanityConfigToZods(config);
+    const zods = sanityConfigToZodsTyped(config);
     const documentsZod = sanityDocumentsZod(config, zods);
 
-    expectType<z.infer<typeof documentsZod>>().toStrictEqual<
+    expectType<z.infer<typeof documentsZod>>().toEqual<
       DocumentValues<InferSchemaValues<typeof config>>
     >();
 

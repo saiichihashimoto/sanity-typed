@@ -2265,6 +2265,7 @@ const imageAssetZod = assetZod.extend({
       blurHash: z.optional(z.string()),
       hasAlpha: z.boolean(),
       isOpaque: z.boolean(),
+      location: z.optional(constantZods.geopoint),
       lqip: z.optional(z.string()),
       dimensions: z.object({
         _type: z.literal("sanity.imageDimensions"),
@@ -2365,9 +2366,12 @@ export const sanityConfigToZods = <const TConfig extends ConfigBase<any, any>>(
     >;
   };
 
-export const sanityDocumentsZod = <const TConfig extends ConfigBase<any, any>>(
+export const sanityDocumentsZod = <
+  const TConfig extends ConfigBase<any, any>,
+  Zods extends { [type: string]: z.ZodType<any> }
+>(
   config: TConfig,
-  zods: ReturnType<typeof sanityConfigToZods<TConfig>>
+  zods: Zods
 ) => {
   type TTypeDefinition = TConfig extends ConfigBase<
     infer TTypeDefinition extends TypeDefinition<
@@ -2392,19 +2396,19 @@ export const sanityDocumentsZod = <const TConfig extends ConfigBase<any, any>>(
     ? TTypeDefinition
     : never;
 
-  const documentTypes = (config.schema?.types ?? []) as NonNullable<
+  const types = (config.schema?.types ?? []) as NonNullable<
     NonNullable<ConfigBase<TTypeDefinition, any>["schema"]>["types"]
   >;
 
   return zodUnion(
     flow(
-      (zodsInner: typeof zods) => zodsInner,
+      (zodsInner: Zods) => zodsInner,
       pick(
-        Array.isArray(documentTypes)
+        Array.isArray(types)
           ? [
               "sanity.fileAsset",
               "sanity.imageAsset",
-              ...documentTypes
+              ...types
                 .filter(({ type }) => type === "document")
                 .map(({ name }) => name),
             ]
@@ -2412,9 +2416,7 @@ export const sanityDocumentsZod = <const TConfig extends ConfigBase<any, any>>(
             (undefined as never)
       ),
       values
-    )(zods) as (typeof zods)[DocumentValues<
-      InferSchemaValues<TConfig>
-    >["_type"] &
-      keyof typeof zods][]
+    )(zods) as Zods[DocumentValues<InferSchemaValues<TConfig>>["_type"] &
+      keyof Zods][]
   );
 };

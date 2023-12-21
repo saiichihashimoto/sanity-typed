@@ -2537,6 +2537,9 @@ const imageAssetFaker = (
           : { blurHash: faker.string.sample(44) }),
         ...(faker.datatype.boolean()
           ? {}
+          : { location: constantFakers.geopoint(faker) }),
+        ...(faker.datatype.boolean()
+          ? {}
           : {
               // TODO Can we mock a base64 image?
               lqip: `data:image/jpeg;base64,${faker.string.alphanumeric(300)}`,

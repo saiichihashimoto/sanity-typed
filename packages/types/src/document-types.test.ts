@@ -1,5 +1,6 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
+import type { GeopointValue } from "sanity";
 
 import { defineConfig, defineField, defineType } from ".";
 import type { DocumentValues, InferSchemaValues } from ".";
@@ -104,6 +105,7 @@ describe("type DocumentValues", () => {
             };
             hasAlpha: boolean;
             isOpaque: boolean;
+            location?: GeopointValue;
             lqip?: string;
             palette?: {
               _type: "sanity.imagePalette";
