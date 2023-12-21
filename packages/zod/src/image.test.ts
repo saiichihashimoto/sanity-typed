@@ -12,7 +12,9 @@ import type { ImageValue, InferSchemaValues } from "@sanity-typed/types";
 import { enableZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";
 
-const fields: Omit<ImageValue, "_type"> = {
+const fields: Omit<ImageValue, "_type" | "asset"> & {
+  asset: Omit<ImageValue["asset"], symbol>;
+} = {
   asset: {
     _ref: "ref",
     _type: "reference",

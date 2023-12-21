@@ -1,25 +1,10 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
-import type { FileAsset } from "sanity";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
 import type { InferSchemaValues, ReferenceValue } from ".";
 
 describe("file", () => {
-  it("infers FileAsset automatically", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [],
-      },
-    });
-
-    expectType<
-      InferSchemaValues<typeof config>["sanity.fileAsset"]
-    >().toStrictEqual<FileAsset>();
-  });
-
   describe("defineArrayMember", () => {
     it("infers FileValue", () => {
       const config = defineConfig({

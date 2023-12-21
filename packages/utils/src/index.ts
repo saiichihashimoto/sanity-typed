@@ -42,3 +42,6 @@ export const ternary = <Condition extends boolean, TrueValue, FalseValue>(
   (condition ? ifTrue() : ifFalse()) as Condition extends true
     ? TrueValue
     : FalseValue;
+
+export const addIndexSignature = <Obj>(obj: Obj) =>
+  obj as Obj & { [key: string]: unknown };

@@ -29,13 +29,13 @@ import type {
   EmailDefinition as EmailDefinitionNative,
   EmailRule,
   FieldDefinitionBase,
-  FileAsset,
+  FileAsset as FileAssetNative,
   FileDefinition as FileDefinitionNative,
   FileRule,
   GeopointDefinition as GeopointDefinitionNative,
   GeopointRule,
   GeopointValue,
-  ImageAsset,
+  ImageAsset as ImageAssetNative,
   ImageCrop,
   ImageDefinition as ImageDefinitionNative,
   ImageHotspot,
@@ -70,7 +70,13 @@ import type {
   UrlRule,
   WorkspaceOptions as WorkspaceOptionsNative,
 } from "sanity";
-import type { Except, IsStringLiteral, Merge, Simplify } from "type-fest";
+import type {
+  Except,
+  IsStringLiteral,
+  Merge,
+  OmitIndexSignature,
+  Simplify,
+} from "type-fest";
 
 import type {
   PortableTextBlock,
@@ -1184,14 +1190,16 @@ export type ConfigBase<
     SchemaPluginOptionsNative,
     {
       types?:
-        | ComposableOption<
-            TTypeDefinition[],
-            Omit<
-              ConfigContext,
-              "client" | "currentUser" | "getClient" | "schema"
-            >
-          >
-        | TTypeDefinition[];
+        | TTypeDefinition[]
+        | (TTypeDefinition extends never
+            ? never
+            : ComposableOption<
+                TTypeDefinition[],
+                Omit<
+                  ConfigContext,
+                  "client" | "currentUser" | "getClient" | "schema"
+                >
+              >);
     }
   >;
 };
@@ -1326,6 +1334,13 @@ export const defineConfig = <
     ? Extract<typeof config, any[]>
     : Exclude<typeof config, any[]>;
 
+export type FileAsset = OmitIndexSignature<FileAssetNative>;
+
+// TODO include other metadata based on options https://www.sanity.io/docs/image-metadata#3e05db6e3c80
+// TODO exif https://www.sanity.io/docs/image-metadata#3e05db6e3c80
+// TODO location https://www.sanity.io/docs/image-metadata#df19f6f51379
+export type ImageAsset = OmitIndexSignature<ImageAssetNative>;
+
 export type ImplicitDocuments = {
   [TImplicitDoc in
     | FileAsset
@@ -1362,7 +1377,7 @@ type ExpandAliasValues<
   : Value;
 
 export type InferSchemaValues<
-  TConfig extends MaybeArray<ConfigBase<any, any> | ConfigBase<never, any>>
+  TConfig extends MaybeArray<ConfigBase<any, any>>
 > = PluginOptionsNative extends TConfig
   ? object
   : TConfig extends MaybeArray<

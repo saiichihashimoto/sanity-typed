@@ -1,25 +1,11 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
-import type { ImageAsset, ImageCrop, ImageHotspot } from "sanity";
+import type { ImageCrop, ImageHotspot } from "sanity";
 
 import { defineArrayMember, defineConfig, defineField, defineType } from ".";
 import type { InferSchemaValues, ReferenceValue } from ".";
 
 describe("image", () => {
-  it("infers ImageAsset automatically", () => {
-    const config = defineConfig({
-      dataset: "dataset",
-      projectId: "projectId",
-      schema: {
-        types: [],
-      },
-    });
-
-    expectType<
-      InferSchemaValues<typeof config>["sanity.imageAsset"]
-    >().toStrictEqual<ImageAsset>();
-  });
-
   describe("defineArrayMember", () => {
     it("infers ImageValue", () => {
       const config = defineConfig({

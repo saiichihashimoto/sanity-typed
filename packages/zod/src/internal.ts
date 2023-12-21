@@ -10,7 +10,7 @@ import type {
   BlockStyleDefinition,
   InferSchemaValues,
 } from "@sanity-typed/types";
-import { referenced } from "@sanity-typed/types";
+import { defineType, referenced } from "@sanity-typed/types";
 import type {
   ArrayMemberDefinition,
   ConfigBase,
@@ -1492,28 +1492,15 @@ const documentZod = <
     ...documentFieldsZods,
   }) as DocumentZod<TSchemaType, TAliasedZods>;
 
-const assetZod = z.object({
-  _key: z.optional(z.string()),
-  _ref: z.string(),
-  _type: z.string(),
-  _weak: z.optional(z.boolean()),
-  _strengthenOnPublish: z.optional(
-    z.object({
-      type: z.string(),
-      weak: z.optional(z.boolean()),
-      template: z.optional(
-        z.object({
-          id: z.string(),
-          params: z.record(z.union([z.string(), z.number(), z.boolean()])),
-        })
-      ),
-    })
-  ),
-});
-
 const fileFieldsZods = {
   _type: z.literal("file"),
-  asset: assetZod,
+  asset: referenceZod(
+    defineType({
+      name: "sanity.fileAsset",
+      type: "reference",
+      to: [{ type: "sanity.fileAsset" as const }],
+    })
+  ),
 };
 
 type FileZod<
@@ -1557,10 +1544,16 @@ const fileZod = <
 
 const imageFieldsZods = {
   _type: z.literal("image"),
-  asset: assetZod,
+  asset: referenceZod(
+    defineType({
+      name: "sanity.imageAsset",
+      type: "reference",
+      to: [{ type: "sanity.imageAsset" as const }],
+    })
+  ),
 };
 
-const imageHotspotFields = {
+const imageHotspotFieldsZods = {
   crop: z.object({
     _type: z.optional(z.literal("sanity.imageCrop")),
     bottom: z.number(),
@@ -1607,7 +1600,7 @@ type ImageZod<
       infer THotspot extends boolean
     >
       ? THotspot extends true
-        ? typeof imageHotspotFields
+        ? typeof imageHotspotFieldsZods
         : unknown
       : unknown)
 >;
@@ -1633,7 +1626,7 @@ const imageZod = <
   z.object({
     ...fieldsZods(schema, getZods),
     ...imageFieldsZods,
-    ...(!schema.options?.hotspot ? {} : imageHotspotFields),
+    ...(!schema.options?.hotspot ? {} : imageHotspotFieldsZods),
   }) as ImageZod<TSchemaType, TAliasedZods>;
 
 type AliasZod<
@@ -2227,11 +2220,84 @@ const schemaTypeToZod = <
       )
     : aliasZod(schema, getZods)) as SchemaTypeToZod<TSchemaType, TAliasedZods>;
 
+const assetZod = z.object({
+  assetId: z.string(),
+  creditLine: z.optional(z.string()),
+  description: z.optional(z.string()),
+  extension: z.string(),
+  label: z.optional(z.string()),
+  mimeType: z.string(),
+  originalFilename: z.optional(z.string()),
+  path: z.string(),
+  sha1hash: z.string(),
+  size: z.number(),
+  title: z.optional(z.string()),
+  url: z.string().url(),
+  source: z.optional(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      url: z.optional(z.string().url()),
+    })
+  ),
+});
+
+const fileAssetZod = assetZod.extend({
+  ...documentFieldsZods,
+  _type: z.literal("sanity.fileAsset"),
+  metadata: z.record(z.unknown()),
+});
+
+const imageSwatchZod = z.object({
+  _type: z.literal("sanity.imagePaletteSwatch"),
+  background: z.string(),
+  foreground: z.string(),
+  population: z.number(),
+  title: z.optional(z.string()),
+});
+
+const imageAssetZod = assetZod.extend({
+  ...documentFieldsZods,
+  _type: z.literal("sanity.imageAsset"),
+  metadata: z
+    .object({
+      _type: z.literal("sanity.imageMetadata"),
+      blurHash: z.optional(z.string()),
+      hasAlpha: z.boolean(),
+      isOpaque: z.boolean(),
+      lqip: z.optional(z.string()),
+      dimensions: z.object({
+        _type: z.literal("sanity.imageDimensions"),
+        aspectRatio: z.number(),
+        height: z.number(),
+        width: z.number(),
+      }),
+      palette: z.optional(
+        z.object({
+          _type: z.literal("sanity.imagePalette"),
+          darkMuted: z.optional(imageSwatchZod),
+          darkVibrant: z.optional(imageSwatchZod),
+          dominant: z.optional(imageSwatchZod),
+          lightMuted: z.optional(imageSwatchZod),
+          lightVibrant: z.optional(imageSwatchZod),
+          muted: z.optional(imageSwatchZod),
+          vibrant: z.optional(imageSwatchZod),
+        })
+      ),
+    })
+    .passthrough(),
+});
+
+const implicitDocumentZods = {
+  "sanity.fileAsset": fileAssetZod,
+  "sanity.imageAsset": imageAssetZod,
+};
+
 type SanityConfigZods<TConfig extends MaybeArray<ConfigBase<any, any>>> =
   TConfig extends MaybeArray<
     ConfigBase<infer TTypeDefinition, infer TPluginOptions>
   >
-    ? {
+    ? typeof implicitDocumentZods & {
         [Name in TTypeDefinition["name"]]: AddType<
           Name,
           SchemaTypeToZod<
@@ -2266,21 +2332,24 @@ export const sanityConfigToZodsTyped = <
     .map((plugin) => sanityConfigToZodsTyped(plugin))
     .reduce(
       (acc, zods) => ({ ...acc, ...zods }),
-      {} as SanityConfigZods<TPluginOptions>
+      implicitDocumentZods as SanityConfigZods<TPluginOptions>
     );
 
   const zods: SanityConfigZods<TConfig> = Array.isArray(types)
-    ? Object.fromEntries(
-        types.map((type) => [
-          type.name,
-          customValidationZod(traverseValidation(type).custom)(
-            addType(
-              type.name,
-              schemaTypeToZod(type, () => ({ ...pluginsZods, ...zods }))
-            )
-          ),
-        ])
-      )
+    ? {
+        ...implicitDocumentZods,
+        ...Object.fromEntries(
+          types.map((type) => [
+            type.name,
+            customValidationZod(traverseValidation(type).custom)(
+              addType(
+                type.name,
+                schemaTypeToZod(type, () => ({ ...pluginsZods, ...zods }))
+              )
+            ),
+          ])
+        ),
+      }
     : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
       (undefined as never);
 
@@ -2332,9 +2401,13 @@ export const sanityDocumentsZod = <const TConfig extends ConfigBase<any, any>>(
       (zodsInner: typeof zods) => zodsInner,
       pick(
         Array.isArray(documentTypes)
-          ? documentTypes
-              .filter(({ type }) => type === "document")
-              .map(({ name }) => name)
+          ? [
+              "sanity.fileAsset",
+              "sanity.imageAsset",
+              ...documentTypes
+                .filter(({ type }) => type === "document")
+                .map(({ name }) => name),
+            ]
           : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
             (undefined as never)
       ),
