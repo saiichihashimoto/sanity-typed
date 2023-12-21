@@ -146,9 +146,21 @@ jobs:
           path: node_modules/.cache/turbo/${{ env.HASH_ZOD }}*
           key: turbo-cache-${{ env.HASH_ZOD }}
 
+      - if: ${{ github.ref == 'refs/heads/main' }}
+        uses: actions/cache/restore@v3
+        with:
+          path: node_modules/.cache/turbo
+          key: turbo-cache-all-${{ hashFiles('node_modules/.cache/turbo') }}
+
       - env:
           NODE_OPTIONS: "--max_old_space_size=4096"
         run: npm run build
+
+      - if: ${{ github.ref == 'refs/heads/main' }}
+        uses: actions/cache/save@v3
+        with:
+          path: node_modules/.cache/turbo
+          key: turbo-cache-all-${{ hashFiles('node_modules/.cache/turbo') }}
 
       - run: npm config set workspaces-update false
       - env:
