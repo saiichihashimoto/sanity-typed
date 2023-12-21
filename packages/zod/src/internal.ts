@@ -1,4 +1,4 @@
-import { flow, pick, reduce, values } from "lodash/fp";
+import { flow, identity, pick } from "lodash/fp";
 import type { CustomValidator, CustomValidatorResult, Schema } from "sanity";
 import type { IsNumericLiteral, IsStringLiteral } from "type-fest";
 import { z } from "zod";
@@ -10,7 +10,7 @@ import type {
   BlockStyleDefinition,
   InferSchemaValues,
 } from "@sanity-typed/types";
-import { referenced } from "@sanity-typed/types";
+import { defineType, referenced } from "@sanity-typed/types";
 import type {
   ArrayMemberDefinition,
   ConfigBase,
@@ -20,7 +20,7 @@ import type {
   MaybeTitledListValue,
   TypeDefinition,
 } from "@sanity-typed/types/src/internal";
-import { ternary } from "@sanity-typed/utils";
+import { reduceAcc, ternary, values } from "@sanity-typed/utils";
 import type { MaybeArray, Negate } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<
@@ -124,15 +124,6 @@ const constantZods = {
   }),
 };
 
-const reduceAcc =
-  <T, TResult>(
-    collection: T[] | null | undefined,
-    // eslint-disable-next-line promise/prefer-await-to-callbacks -- lodash/fp reorder
-    callback: (prev: TResult, current: T) => TResult
-  ) =>
-  (accumulator: TResult) =>
-    reduce(callback, accumulator, collection);
-
 const toZodType = <Output, Input>(
   zod: z.ZodType<Output, z.ZodTypeDef, Input>
 ) => zod as z.ZodType<Output, z.ZodTypeDef, Input>;
@@ -156,8 +147,8 @@ const dateZod = <
   const traversal = traverseValidation(schemaType);
 
   return flow(
-    (zod: z.ZodString) =>
-      zod.regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Invalid date" }),
+    identity<z.ZodString>,
+    (zod) => zod.regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Invalid date" }),
     toZodType,
     reduceAcc(traversal.min, (zod, [minDate]) =>
       typeof minDate !== "string"
@@ -195,7 +186,8 @@ const datetimeZod = <
   const traversal = traverseValidation(schemaType);
 
   return flow(
-    (zod: z.ZodString) => zod.datetime(),
+    identity<z.ZodString>,
+    (zod) => zod.datetime(),
     toZodType,
     reduceAcc(traversal.min, (zod, [minDate]) =>
       typeof minDate !== "string"
@@ -268,7 +260,7 @@ const numberZod = <
     () =>
       flow(
         flow(
-          (zod: z.ZodNumber) => zod,
+          identity<z.ZodNumber>,
           reduceAcc(traversal.min, (zod, [minNumber]) =>
             typeof minNumber !== "number" ? zod : zod.min(minNumber)
           ),
@@ -389,7 +381,7 @@ const stringAndTextZod = <
 
   return flow(
     flow(
-      (zod: z.ZodString) => zod,
+      identity<z.ZodString>,
       reduceAcc(traversal.min, (zod, [minLength]) =>
         typeof minLength !== "number" ? zod : zod.min(minLength)
       ),
@@ -549,7 +541,7 @@ const urlZod = <
   type UriType = NonNullable<typeof traversal.uri>;
 
   return flow(
-    (zod: z.ZodType<string>) => zod,
+    identity<z.ZodType<string>>,
     reduceAcc(
       traversal.uri ?? ([[{}]] as UriType),
       (
@@ -843,7 +835,7 @@ const membersZods = <
     const zod = schemaTypeToZod(member, getZods);
 
     return flow(
-      (zod2: typeof zod) => zod2,
+      identity<typeof zod>,
       addTypeFp(member.name),
       addKey,
       customValidationZod(
@@ -965,7 +957,7 @@ const arrayZod = <
   const traversal = traverseValidation(schemaType);
 
   return flow(
-    (zod: typeof arrayZodInner) => zod,
+    identity<typeof arrayZodInner>,
     reduceAcc(traversal.min, (zod, [minLength]) =>
       typeof minLength !== "number" ? zod : zod.min(minLength)
     ),
@@ -1492,28 +1484,15 @@ const documentZod = <
     ...documentFieldsZods,
   }) as DocumentZod<TSchemaType, TAliasedZods>;
 
-const assetZod = z.object({
-  _key: z.optional(z.string()),
-  _ref: z.string(),
-  _type: z.string(),
-  _weak: z.optional(z.boolean()),
-  _strengthenOnPublish: z.optional(
-    z.object({
-      type: z.string(),
-      weak: z.optional(z.boolean()),
-      template: z.optional(
-        z.object({
-          id: z.string(),
-          params: z.record(z.union([z.string(), z.number(), z.boolean()])),
-        })
-      ),
-    })
-  ),
-});
-
 const fileFieldsZods = {
   _type: z.literal("file"),
-  asset: assetZod,
+  asset: referenceZod(
+    defineType({
+      name: "sanity.fileAsset",
+      type: "reference",
+      to: [{ type: "sanity.fileAsset" as const }],
+    })
+  ),
 };
 
 type FileZod<
@@ -1557,10 +1536,16 @@ const fileZod = <
 
 const imageFieldsZods = {
   _type: z.literal("image"),
-  asset: assetZod,
+  asset: referenceZod(
+    defineType({
+      name: "sanity.imageAsset",
+      type: "reference",
+      to: [{ type: "sanity.imageAsset" as const }],
+    })
+  ),
 };
 
-const imageHotspotFields = {
+const imageHotspotFieldsZods = {
   crop: z.object({
     _type: z.optional(z.literal("sanity.imageCrop")),
     bottom: z.number(),
@@ -1607,7 +1592,7 @@ type ImageZod<
       infer THotspot extends boolean
     >
       ? THotspot extends true
-        ? typeof imageHotspotFields
+        ? typeof imageHotspotFieldsZods
         : unknown
       : unknown)
 >;
@@ -1633,7 +1618,7 @@ const imageZod = <
   z.object({
     ...fieldsZods(schema, getZods),
     ...imageFieldsZods,
-    ...(!schema.options?.hotspot ? {} : imageHotspotFields),
+    ...(!schema.options?.hotspot ? {} : imageHotspotFieldsZods),
   }) as ImageZod<TSchemaType, TAliasedZods>;
 
 type AliasZod<
@@ -2227,11 +2212,88 @@ const schemaTypeToZod = <
       )
     : aliasZod(schema, getZods)) as SchemaTypeToZod<TSchemaType, TAliasedZods>;
 
+const assetZod = z.object({
+  assetId: z.string(),
+  creditLine: z.optional(z.string()),
+  description: z.optional(z.string()),
+  extension: z.string(),
+  label: z.optional(z.string()),
+  mimeType: z.string(),
+  originalFilename: z.optional(z.string()),
+  path: z.string(),
+  sha1hash: z.string(),
+  size: z.number(),
+  title: z.optional(z.string()),
+  url: z.string().url(),
+  source: z.optional(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      url: z.optional(z.string().url()),
+    })
+  ),
+});
+
+const fileAssetZod = assetZod.extend({
+  ...documentFieldsZods,
+  _type: z.literal("sanity.fileAsset"),
+  metadata: z.record(z.unknown()),
+});
+
+const imageSwatchZod = z.object({
+  _type: z.literal("sanity.imagePaletteSwatch"),
+  background: z.string(),
+  foreground: z.string(),
+  population: z.number(),
+  title: z.optional(z.string()),
+});
+
+const imageAssetZod = assetZod.extend({
+  ...documentFieldsZods,
+  _type: z.literal("sanity.imageAsset"),
+  metadata: z
+    .object({
+      _type: z.literal("sanity.imageMetadata"),
+      blurHash: z.optional(z.string()),
+      hasAlpha: z.boolean(),
+      isOpaque: z.boolean(),
+      location: z.optional(constantZods.geopoint),
+      lqip: z.optional(z.string()),
+      dimensions: z.object({
+        _type: z.literal("sanity.imageDimensions"),
+        aspectRatio: z.number(),
+        height: z.number(),
+        width: z.number(),
+      }),
+      exif: z.optional(
+        z.object({ _type: z.literal("sanity.imageExifMetadata") }).passthrough()
+      ),
+      palette: z.optional(
+        z.object({
+          _type: z.literal("sanity.imagePalette"),
+          darkMuted: z.optional(imageSwatchZod),
+          darkVibrant: z.optional(imageSwatchZod),
+          dominant: z.optional(imageSwatchZod),
+          lightMuted: z.optional(imageSwatchZod),
+          lightVibrant: z.optional(imageSwatchZod),
+          muted: z.optional(imageSwatchZod),
+          vibrant: z.optional(imageSwatchZod),
+        })
+      ),
+    })
+    .passthrough(),
+});
+
+const implicitDocumentZods = {
+  "sanity.fileAsset": fileAssetZod,
+  "sanity.imageAsset": imageAssetZod,
+};
+
 type SanityConfigZods<TConfig extends MaybeArray<ConfigBase<any, any>>> =
   TConfig extends MaybeArray<
     ConfigBase<infer TTypeDefinition, infer TPluginOptions>
   >
-    ? {
+    ? typeof implicitDocumentZods & {
         [Name in TTypeDefinition["name"]]: AddType<
           Name,
           SchemaTypeToZod<
@@ -2266,21 +2328,24 @@ export const sanityConfigToZodsTyped = <
     .map((plugin) => sanityConfigToZodsTyped(plugin))
     .reduce(
       (acc, zods) => ({ ...acc, ...zods }),
-      {} as SanityConfigZods<TPluginOptions>
+      implicitDocumentZods as SanityConfigZods<TPluginOptions>
     );
 
   const zods: SanityConfigZods<TConfig> = Array.isArray(types)
-    ? Object.fromEntries(
-        types.map((type) => [
-          type.name,
-          customValidationZod(traverseValidation(type).custom)(
-            addType(
-              type.name,
-              schemaTypeToZod(type, () => ({ ...pluginsZods, ...zods }))
-            )
-          ),
-        ])
-      )
+    ? {
+        ...implicitDocumentZods,
+        ...Object.fromEntries(
+          types.map((type) => [
+            type.name,
+            customValidationZod(traverseValidation(type).custom)(
+              addType(
+                type.name,
+                schemaTypeToZod(type, () => ({ ...pluginsZods, ...zods }))
+              )
+            ),
+          ])
+        ),
+      }
     : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
       (undefined as never);
 
@@ -2296,9 +2361,12 @@ export const sanityConfigToZods = <const TConfig extends ConfigBase<any, any>>(
     >;
   };
 
-export const sanityDocumentsZod = <const TConfig extends ConfigBase<any, any>>(
+export const sanityDocumentsZod = <
+  const TConfig extends ConfigBase<any, any>,
+  Zods extends { [type: string]: z.ZodType<any> }
+>(
   config: TConfig,
-  zods: ReturnType<typeof sanityConfigToZods<TConfig>>
+  zods: Zods
 ) => {
   type TTypeDefinition = TConfig extends ConfigBase<
     infer TTypeDefinition extends TypeDefinition<
@@ -2323,25 +2391,21 @@ export const sanityDocumentsZod = <const TConfig extends ConfigBase<any, any>>(
     ? TTypeDefinition
     : never;
 
-  const documentTypes = (config.schema?.types ?? []) as NonNullable<
+  const types = (config.schema?.types ?? []) as NonNullable<
     NonNullable<ConfigBase<TTypeDefinition, any>["schema"]>["types"]
   >;
 
-  return zodUnion(
-    flow(
-      (zodsInner: typeof zods) => zodsInner,
-      pick(
-        Array.isArray(documentTypes)
-          ? documentTypes
-              .filter(({ type }) => type === "document")
-              .map(({ name }) => name)
-          : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
-            (undefined as never)
-      ),
-      values
-    )(zods) as (typeof zods)[DocumentValues<
-      InferSchemaValues<TConfig>
-    >["_type"] &
-      keyof typeof zods][]
-  );
+  const documentTypes: (DocumentValues<InferSchemaValues<TConfig>>["_type"] &
+    keyof Zods)[] = Array.isArray(types)
+    ? [
+        "sanity.fileAsset",
+        "sanity.imageAsset",
+        ...types
+          .filter(({ type }) => type === "document")
+          .map(({ name }) => name),
+      ]
+    : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
+      (undefined as never);
+
+  return zodUnion(flow(identity<Zods>, pick(documentTypes), values)(zods));
 };

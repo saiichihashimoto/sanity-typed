@@ -1,15 +1,17 @@
 import { Faker } from "@faker-js/faker";
 import stringify from "fast-json-stable-stringify";
-import { flow, identity } from "lodash/fp";
+import { flow, identity, pick } from "lodash/fp";
 import RandExp from "randexp";
 import type { IsNumericLiteral, IsStringLiteral, Simplify } from "type-fest";
 
 import type { decorator } from "@portabletext-typed/types";
 import { traverseValidation } from "@sanity-typed/traverse-validation";
+import { defineType } from "@sanity-typed/types";
 import type {
   BlockDecoratorDefinition,
   BlockListDefinition,
   BlockStyleDefinition,
+  DocumentValues,
   InferSchemaValues,
 } from "@sanity-typed/types";
 import type {
@@ -21,7 +23,12 @@ import type {
   TypeDefinition,
   referenced,
 } from "@sanity-typed/types/src/internal";
-import { isPlainObject, ternary } from "@sanity-typed/utils";
+import {
+  addIndexSignature,
+  isPlainObject,
+  ternary,
+  values,
+} from "@sanity-typed/utils";
 import type { MaybeArray, Negate } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<
@@ -454,7 +461,7 @@ const stringAndTextFaker = <
     ? (faker: Faker) => faker.internet.email()
     : (faker: Faker) =>
         flow(
-          (value: string) => value,
+          identity<string>,
           (value) => (!traversal.uppercase ? value : value.toUpperCase()),
           (value) => (!traversal.lowercase ? value : value.toLowerCase())
         )(stringFaker(faker).slice(0, faker.number.int({ min, max })));
@@ -1540,10 +1547,8 @@ const documentFaker = <
   documentIdFaker: (type: string | undefined) => (index: number) => string,
   referencedIdFaker: (type: string) => (faker: Faker, index: number) => string
 ): DocumentFaker<TSchemaType, TAliasedFakers> => {
-  const documentFieldsFakerInstantiated = documentFieldsFaker(
-    documentIdFaker(schema.name)
-  );
-  const fieldsFakerInstantiated = fieldsFaker(
+  const documentFields = documentFieldsFaker(documentIdFaker(schema.name));
+  const fields = fieldsFaker(
     schema,
     getFakers,
     instantiateFakerByPath,
@@ -1552,38 +1557,28 @@ const documentFaker = <
   );
 
   return ((faker: Faker, index: number) => ({
-    ...documentFieldsFakerInstantiated(faker, index),
-    ...fieldsFakerInstantiated(faker, index),
+    ...documentFields(faker, index),
+    ...fields(faker, index),
   })) as DocumentFaker<TSchemaType, TAliasedFakers>;
 };
 
-const assetFaker = (faker: Faker) => ({
-  _ref: faker.string.uuid(),
-  _type: "reference",
-  ...(true ? {} : { _key: "key" }),
-  ...(true ? {} : { _weak: false }),
-  ...(true
-    ? {}
-    : {
-        _strengthenOnPublish: {
-          type: "string",
-          ...(true ? {} : { weak: false }),
-          ...(true
-            ? {}
-            : {
-                template: {
-                  id: "string",
-                  params: {} as { [key: string]: boolean | number | string },
-                },
-              }),
-        },
-      }),
-});
+const fileFieldsFaker = (
+  referencedIdFaker: (type: string) => (faker: Faker, index: number) => string
+) => {
+  const assetReferenceFaker = referenceFaker(
+    defineType({
+      name: "sanity.fileAsset",
+      type: "reference",
+      to: [{ type: "sanity.fileAsset" as const }],
+    }),
+    referencedIdFaker
+  );
 
-const fileFieldsFaker = (faker: Faker) => ({
-  _type: "file" as const,
-  asset: assetFaker(faker),
-});
+  return (faker: Faker, index: number) => ({
+    _type: "file" as const,
+    asset: assetReferenceFaker(faker, index),
+  });
+};
 
 type FileFaker<
   TSchemaType extends SchemaTypeDefinition<
@@ -1606,7 +1601,7 @@ type FileFaker<
   index: number
 ) => Simplify<
   ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>> &
-    ReturnType<typeof fileFieldsFaker>
+    ReturnType<ReturnType<typeof fileFieldsFaker>>
 >;
 
 const fileFaker = <
@@ -1632,7 +1627,8 @@ const fileFaker = <
   documentIdFaker: (type: string | undefined) => (index: number) => string,
   referencedIdFaker: (type: string) => (faker: Faker, index: number) => string
 ): FileFaker<TSchemaType, TAliasedFakers> => {
-  const fieldsFakerInstantiated = fieldsFaker(
+  const fileFields = fileFieldsFaker(referencedIdFaker);
+  const fields = fieldsFaker(
     schema,
     getFakers,
     instantiateFakerByPath,
@@ -1641,15 +1637,28 @@ const fileFaker = <
   );
 
   return ((faker: Faker, index: number) => ({
-    ...fileFieldsFaker(faker),
-    ...fieldsFakerInstantiated(faker, index),
-  })) as FileFaker<TSchemaType, TAliasedFakers>;
+    ...fileFields(faker, index),
+    ...fields(faker, index),
+  })) as unknown as FileFaker<TSchemaType, TAliasedFakers>;
 };
 
-const imageFieldsFaker = (faker: Faker) => ({
-  _type: "image" as const,
-  asset: assetFaker(faker),
-});
+const imageFieldsFaker = (
+  referencedIdFaker: (type: string) => (faker: Faker, index: number) => string
+) => {
+  const assetReferenceFaker = referenceFaker(
+    defineType({
+      name: "sanity.imageAsset",
+      type: "reference",
+      to: [{ type: "sanity.imageAsset" as const }],
+    }),
+    referencedIdFaker
+  );
+
+  return (faker: Faker, index: number) => ({
+    _type: "image" as const,
+    asset: assetReferenceFaker(faker, index),
+  });
+};
 
 const imageHotspotFaker = (faker: Faker) => ({
   crop: {
@@ -1689,7 +1698,7 @@ type ImageFaker<
   index: number
 ) => Simplify<
   ReturnType<ReturnType<typeof fieldsFaker<TSchemaType, TAliasedFakers>>> &
-    ReturnType<typeof imageFieldsFaker> &
+    ReturnType<ReturnType<typeof imageFieldsFaker>> &
     (TSchemaType extends SchemaTypeDefinition<
       "image",
       any,
@@ -1731,7 +1740,8 @@ const imageFaker = <
   documentIdFaker: (type: string | undefined) => (index: number) => string,
   referencedIdFaker: (type: string) => (faker: Faker, index: number) => string
 ): ImageFaker<TSchemaType, TAliasedFakers> => {
-  const fieldsFakerInstantiated = fieldsFaker(
+  const imageFields = imageFieldsFaker(referencedIdFaker);
+  const fields = fieldsFaker(
     schema,
     getFakers,
     instantiateFakerByPath,
@@ -1740,7 +1750,7 @@ const imageFaker = <
   );
 
   return ((faker: Faker, index: number) => ({
-    ...imageFieldsFaker(faker),
+    ...imageFields(faker, index),
     ...ternary(
       !schema.options?.hotspot as Negate<
         TSchemaType extends SchemaTypeDefinition<
@@ -1761,7 +1771,7 @@ const imageFaker = <
       () => ({}),
       () => imageHotspotFaker(faker)
     ),
-    ...fieldsFakerInstantiated(faker, index),
+    ...fields(faker, index),
   })) as unknown as ImageFaker<TSchemaType, TAliasedFakers>;
 };
 
@@ -2423,7 +2433,7 @@ const schemaTypeToFaker = <
       : aliasFaker(schema, getFakers);
 
   return flow(
-    (schemaTypeFakerInner: typeof schemaTypeFaker) => schemaTypeFakerInner,
+    identity<typeof schemaTypeFaker>,
     customFakerFn in schema
       ? (schemaTypeFaker) => (faker: Faker, index: number) =>
           (
@@ -2436,16 +2446,172 @@ const schemaTypeToFaker = <
   )(schemaTypeFaker) as SchemaTypeToFaker<TSchemaType, TAliasedFakers>;
 };
 
+const assetFaker = (faker: Faker, mimeTypePrefix?: string) => {
+  const mimeType = !mimeTypePrefix
+    ? faker.system.mimeType()
+    : faker.helpers.arrayElement(
+        Object.keys(faker.definitions.system.mimeTypes).filter((mimeType) =>
+          mimeType.startsWith(mimeTypePrefix)
+        )
+      );
+  const extension = faker.system.fileExt(mimeType);
+  const originalFilename = `${faker.system.fileName()}.${extension}`;
+  const path = `${faker.system.directoryPath()}/${originalFilename}`.slice(1);
+
+  return {
+    extension,
+    mimeType,
+    path,
+    assetId: faker.string.alphanumeric(40),
+    sha1hash: faker.string.alphanumeric(40),
+    size: faker.number.int({ min: 100, max: 1000 }),
+    url: `${faker.internet.url()}/${path}`,
+    ...(faker.datatype.boolean()
+      ? {}
+      : { creditLine: faker.person.fullName() }),
+    ...(faker.datatype.boolean() ? {} : { description: faker.lorem.lines(1) }),
+    ...(faker.datatype.boolean()
+      ? {}
+      : { label: faker.lorem.words({ min: 3, max: 5 }) }),
+    ...(faker.datatype.boolean() ? {} : { originalFilename }),
+    ...(faker.datatype.boolean()
+      ? {}
+      : { title: faker.lorem.words({ min: 3, max: 5 }) }),
+    ...(faker.datatype.boolean()
+      ? {}
+      : {
+          source: {
+            id: faker.string.uuid(),
+            name: faker.lorem.words({ min: 3, max: 5 }),
+            ...(faker.datatype.boolean() ? {} : { url: faker.internet.url() }),
+          },
+        }),
+  };
+};
+
+const fileAssetFaker = (
+  documentIdFaker: (type: string | undefined) => (index: number) => string
+) => {
+  const documentFields = documentFieldsFaker(
+    documentIdFaker("sanity.fileAsset")
+  );
+
+  return (faker: Faker, index: number) => ({
+    ...assetFaker(faker),
+    ...documentFields(faker, index),
+    _type: "sanity.fileAsset" as const,
+    metadata: addIndexSignature({}),
+  });
+};
+
+const imageSwatchFaker = (faker: Faker) => ({
+  _type: "sanity.imagePaletteSwatch" as const,
+  background: faker.color.rgb(),
+  foreground: faker.color.rgb(),
+  population: faker.number.int({ min: 0, max: 1292 }),
+  ...(faker.datatype.boolean() ? {} : { title: faker.color.rgb() }),
+});
+
+const imageAssetFaker = (
+  documentIdFaker: (type: string | undefined) => (index: number) => string
+) => {
+  const documentFields = documentFieldsFaker(
+    documentIdFaker("sanity.imageAsset")
+  );
+
+  return (faker: Faker, index: number) => {
+    const height = faker.number.int({ min: 300, max: 2000 });
+    const width = faker.number.int({ min: 300, max: 2000 });
+
+    return {
+      ...assetFaker(faker, "image/"),
+      ...documentFields(faker, index),
+      _type: "sanity.imageAsset" as const,
+      url: faker.image.url({ height, width }),
+      metadata: addIndexSignature({
+        _type: "sanity.imageMetadata" as const,
+        hasAlpha: faker.datatype.boolean(),
+        isOpaque: faker.datatype.boolean(),
+        dimensions: {
+          height,
+          width,
+          _type: "sanity.imageDimensions" as const,
+          aspectRatio: width / height,
+        },
+        ...(faker.datatype.boolean()
+          ? {}
+          : { blurHash: faker.string.sample(44) }),
+        ...(faker.datatype.boolean()
+          ? {}
+          : {
+              exif: addIndexSignature({
+                _type: "sanity.imageExifMetadata" as const,
+              }),
+            }),
+        ...(faker.datatype.boolean()
+          ? {}
+          : { location: constantFakers.geopoint(faker) }),
+        ...(faker.datatype.boolean()
+          ? {}
+          : {
+              // TODO Can we mock a base64 image?
+              lqip: `data:image/jpeg;base64,${faker.string.alphanumeric(300)}`,
+            }),
+        ...(faker.datatype.boolean()
+          ? {}
+          : {
+              palette: {
+                _type: "sanity.imagePalette" as const,
+                ...(faker.datatype.boolean()
+                  ? {}
+                  : { darkMuted: imageSwatchFaker(faker) }),
+                ...(faker.datatype.boolean()
+                  ? {}
+                  : { darkVibrant: imageSwatchFaker(faker) }),
+                ...(faker.datatype.boolean()
+                  ? {}
+                  : { dominant: imageSwatchFaker(faker) }),
+                ...(faker.datatype.boolean()
+                  ? {}
+                  : { lightMuted: imageSwatchFaker(faker) }),
+                ...(faker.datatype.boolean()
+                  ? {}
+                  : { lightVibrant: imageSwatchFaker(faker) }),
+                ...(faker.datatype.boolean()
+                  ? {}
+                  : { muted: imageSwatchFaker(faker) }),
+                ...(faker.datatype.boolean()
+                  ? {}
+                  : { vibrant: imageSwatchFaker(faker) }),
+              },
+            }),
+      }),
+    };
+  };
+};
+
+const implicitDocumentFakers = (
+  instantiateFakerByPath: ReturnType<typeof instantiateFaker>,
+  documentIdFaker: (type: string | undefined) => (index: number) => string
+) => ({
+  "sanity.fileAsset": instantiateFakerByPath(`.sanity.fileAsset`)(
+    fileAssetFaker(documentIdFaker)
+  ),
+  "sanity.imageAsset": instantiateFakerByPath(`.sanity.imageAsset`)(
+    imageAssetFaker(documentIdFaker)
+  ),
+});
+
 type SanityConfigFakers<TConfig extends MaybeArray<ConfigBase<any, any>>> =
   TConfig extends MaybeArray<
     ConfigBase<infer TTypeDefinition, infer TPluginOptions>
   >
-    ? {
-        [Name in TTypeDefinition["name"]]: ReturnType<
+    ? ReturnType<typeof implicitDocumentFakers> & {
+        [TType in TTypeDefinition as TType["name"]]: ReturnType<
           typeof addTypeT<
-            Name,
+            TType["name"],
             SchemaTypeToFaker<
-              Extract<TTypeDefinition, { name: Name }>,
+              TType,
               SanityConfigFakers<TConfig> & SanityConfigFakers<TPluginOptions>
             >
           >
@@ -2462,10 +2628,16 @@ const sanityConfigToFakerInner = <const TConfig extends ConfigBase<any, any>>(
   documentIdFaker: (type: string | undefined) => (index: number) => string,
   referencedIdFaker: (type: string) => (faker: Faker, index: number) => string
 ) => {
+  const implicitDocuments = implicitDocumentFakers(
+    instantiateFakerByPath,
+    documentIdFaker
+  );
+
   type TTypeDefinition = TConfig extends ConfigBase<infer TTypeDefinition, any>
     ? TTypeDefinition
     : never;
 
+  // HERE!!!!
   const types = typesUntyped as NonNullable<
     NonNullable<ConfigBase<TTypeDefinition, any>["schema"]>["types"]
   >;
@@ -2487,29 +2659,32 @@ const sanityConfigToFakerInner = <const TConfig extends ConfigBase<any, any>>(
     )
     .reduce(
       (acc, fakers) => ({ ...acc, ...fakers }),
-      {} as SanityConfigFakers<TPluginOptions>
+      implicitDocuments as SanityConfigFakers<TPluginOptions>
     );
 
   const fakers: SanityConfigFakers<TConfig> = Array.isArray(types)
-    ? Object.fromEntries(
-        types.map((type) => {
-          const schemaTypeFaker = schemaTypeToFaker(
-            type,
-            () => ({
-              ...pluginsFakers,
-              ...fakers,
-            }),
-            instantiateFakerByPath,
-            documentIdFaker,
-            referencedIdFaker
-          );
+    ? {
+        ...implicitDocuments,
+        ...Object.fromEntries(
+          types.map((type) => {
+            const schemaTypeFaker = schemaTypeToFaker(
+              type,
+              () => ({
+                ...pluginsFakers,
+                ...fakers,
+              }),
+              instantiateFakerByPath,
+              documentIdFaker,
+              referencedIdFaker
+            );
 
-          return [
-            type.name,
-            addType(type.name as TTypeDefinition["name"])(schemaTypeFaker),
-          ];
-        })
-      )
+            return [
+              type.name as TTypeDefinition["name"],
+              addType(type.name as TTypeDefinition["name"])(schemaTypeFaker),
+            ] as const;
+          })
+        ),
+      }
     : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
       (undefined as never);
 
@@ -2607,3 +2782,63 @@ export const sanityConfigToFaker = <const TConfig extends ConfigBase<any, any>>(
   sanityConfigToFakerTyped(...args) as {
     [TType in keyof InferSchemaValues<TConfig>]: () => InferSchemaValues<TConfig>[TType];
   };
+
+export const sanityDocumentsFaker = <
+  const TConfig extends ConfigBase<any, any>,
+  Fakers extends { [type: string]: () => any }
+>(
+  config: TConfig,
+  fakers: Fakers,
+  { referencedChunkSize = 5 }: { referencedChunkSize?: number } = {}
+) => {
+  type TTypeDefinition = TConfig extends ConfigBase<
+    infer TTypeDefinition extends TypeDefinition<
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any
+    >,
+    any
+  >
+    ? TTypeDefinition
+    : never;
+
+  const types = (config.schema?.types ?? []) as NonNullable<
+    NonNullable<ConfigBase<TTypeDefinition, any>["schema"]>["types"]
+  >;
+
+  const documentTypes: (DocumentValues<InferSchemaValues<TConfig>>["_type"] &
+    keyof Fakers)[] = Array.isArray(types)
+    ? [
+        "sanity.fileAsset",
+        "sanity.imageAsset",
+        ...types
+          .filter(({ type }) => type === "document")
+          .map(({ name }) => name),
+      ]
+    : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
+      (undefined as never);
+
+  return flow(
+    identity<Fakers>,
+    pick(documentTypes),
+    values,
+    (fakers) => () =>
+      fakers.flatMap((faker) =>
+        Array.from({ length: referencedChunkSize }).map(
+          () => faker() as ReturnType<typeof faker>
+        )
+      )
+  )(fakers);
+};

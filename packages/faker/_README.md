@@ -28,6 +28,31 @@ npm install sanity @faker-js/faker @sanity-typed/faker
 @[typescript](../example-studio/sanity.config.ts)
 @[typescript](../example-app/src/sanity/mocks.ts)
 
+## `sanityDocumentsFaker`
+
+While `sanityConfigToFaker` gives you all the fakers for a given config keyed by type, sometimes you just want an array of all the `SanityDocument`s. Drop it into `sanityDocumentsFaker`:
+
+```typescript
+import type {
+  sanityConfigToFaker,
+  sanityDocumentsFaker,
+} from "@sanity-typed/zod";
+
+const config = defineConfig({
+  /* ... */
+});
+
+const fakers = sanityConfigToFaker(config);
+/**
+ *  fakers === { [type: string]: () => typeButSomeTypesArentDocuments }
+ */
+
+const documentsFaker = sanityDocumentsFaker(config, fakers);
+/**
+ *  documentsFaker === () => (Each | Document | In | An | Array | Many | Times)[]
+ */
+```
+
 ## Reference Validity
 
 Reference mocks point to document mocks, so you can use [`groq-js` or `@sanity-typed/groq-js`](../groq-js) and be certain that your references will work.

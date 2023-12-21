@@ -17,6 +17,29 @@ import { sanityConfigToFakerTyped } from "./internal";
 describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
   "file %p",
   ({ seed }) => {
+    it("mocks FileAsset automatically", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [],
+        },
+      });
+      const sanityFaker = sanityConfigToFakerTyped(config, {
+        seed,
+        faker: { locale: [en, base] },
+      });
+
+      const fake = sanityFaker["sanity.fileAsset"]();
+
+      const zods = sanityConfigToZods(config);
+
+      expect(zods["sanity.fileAsset"].parse(fake)).toStrictEqual(fake);
+      expectType<typeof fake>().toEqual<
+        InferSchemaValues<typeof config>["sanity.fileAsset"]
+      >();
+    });
+
     describe("defineArrayMember", () => {
       it("mocks FileValue", () => {
         const config = defineConfig({
@@ -46,7 +69,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<(typeof fake)[number]>().toStrictEqual<
+        expectType<(typeof fake)[number]>().toEqual<
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
@@ -89,7 +112,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<(typeof fake)[number]>().toStrictEqual<
+        expectType<(typeof fake)[number]>().toEqual<
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
@@ -133,7 +156,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<(typeof fake)[number]>().toStrictEqual<
+        expectType<(typeof fake)[number]>().toEqual<
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
@@ -173,7 +196,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<(typeof fake)[number]>().toStrictEqual<
+        expectType<(typeof fake)[number]>().toEqual<
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
@@ -220,7 +243,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<(typeof fake)[number]>().toStrictEqual<
+        expectType<(typeof fake)[number]>().toEqual<
           InferSchemaValues<typeof config>["foo"][number]
         >();
       });
@@ -257,7 +280,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<(typeof fake)["bar"]>().toStrictEqual<
+        expectType<(typeof fake)["bar"]>().toEqual<
           InferSchemaValues<typeof config>["foo"]["bar"]
         >();
       });
@@ -302,7 +325,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<(typeof fake)["bar"]>().toStrictEqual<
+        expectType<(typeof fake)["bar"]>().toEqual<
           InferSchemaValues<typeof config>["foo"]["bar"]
         >();
       });
@@ -344,7 +367,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<(typeof fake)["bar"]>().toStrictEqual<
+        expectType<(typeof fake)["bar"]>().toEqual<
           InferSchemaValues<typeof config>["foo"]["bar"]
         >();
       });
@@ -393,7 +416,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<(typeof fake)["bar"]>().toStrictEqual<
+        expectType<(typeof fake)["bar"]>().toEqual<
           InferSchemaValues<typeof config>["foo"]["bar"]
         >();
       });
@@ -423,7 +446,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -461,7 +484,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -509,7 +532,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -544,7 +567,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -586,7 +609,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
       });
@@ -625,7 +648,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const zods = sanityConfigToZods(config);
 
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
-        expectType<typeof fake>().toStrictEqual<
+        expectType<typeof fake>().toEqual<
           InferSchemaValues<typeof config>["foo"]
         >();
         expect(fake).toHaveProperty("asset._ref", "foo");

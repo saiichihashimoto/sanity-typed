@@ -18,6 +18,7 @@ Generate Mock Data from Sanity Schemas
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
+- [`sanityDocumentsFaker`](#sanitydocumentsfaker)
 - [Reference Validity](#reference-validity)
 - [Field Consistency](#field-consistency)
 - [Custom Mocks](#custom-mocks)
@@ -130,7 +131,7 @@ export type SanityValues = InferSchemaValues<typeof config>;
 import { base, en } from "@faker-js/faker";
 import config from "sanity.config";
 
-import { sanityConfigToFaker } from "@sanity-typed/faker";
+import { sanityConfigToFaker, sanityDocumentsFaker } from "@sanity-typed/faker";
 
 export const getMockDataset = () => {
   const sanityFaker = sanityConfigToFaker(config, {
@@ -142,16 +143,40 @@ export const getMockDataset = () => {
    *  }
    */
 
-  return [
-    sanityFaker.product(),
-    sanityFaker.product(),
-    sanityFaker.product(),
-    sanityFaker.product(),
-    sanityFaker.product(),
-  ];
+  const documentsFaker = sanityDocumentsFaker(config, sanityFaker);
+  /**
+   *  typeof documentsFaker === () => SanityValues[keyof SanityValues][]
+   */
+
+  return documentsFaker();
 };
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/mocks.ts -->
+
+## `sanityDocumentsFaker`
+
+While `sanityConfigToFaker` gives you all the fakers for a given config keyed by type, sometimes you just want an array of all the `SanityDocument`s. Drop it into `sanityDocumentsFaker`:
+
+```typescript
+import type {
+  sanityConfigToFaker,
+  sanityDocumentsFaker,
+} from "@sanity-typed/zod";
+
+const config = defineConfig({
+  /* ... */
+});
+
+const fakers = sanityConfigToFaker(config);
+/**
+ *  fakers === { [type: string]: () => typeButSomeTypesArentDocuments }
+ */
+
+const documentsFaker = sanityDocumentsFaker(config, fakers);
+/**
+ *  documentsFaker === () => (Each | Document | In | An | Array | Many | Times)[]
+ */
+```
 
 ## Reference Validity
 

@@ -8,7 +8,7 @@ import type {
   UnfilteredResponseQueryOptions,
 } from "@sanity/client";
 import { applyPatches, parsePatch } from "@sanity/diff-match-patch";
-import { flow, identity, omit, reduce } from "lodash/fp";
+import { flow, identity, omit } from "lodash/fp";
 import type { Merge, SetOptional, WritableDeep } from "type-fest";
 
 import {
@@ -33,6 +33,7 @@ import type {
 import { evaluate, parse } from "@sanity-typed/groq-js";
 import type { DocumentValues } from "@sanity-typed/types";
 import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
+import { reduceAcc } from "@sanity-typed/utils";
 
 // const isPatch = (patch: unknown): patch is PatchType<any, any, any, any> =>
 //   patch instanceof Patch;
@@ -52,15 +53,6 @@ const isTransaction = <
 > =>
   transaction instanceof Transaction ||
   transaction instanceof ObservableTransaction;
-
-const reduceAcc =
-  <T, TResult>(
-    collection: T[] | null | undefined,
-    // eslint-disable-next-line promise/prefer-await-to-callbacks -- lodash/fp reorder
-    callback: (prev: TResult, current: T) => TResult
-  ) =>
-  (accumulator: TResult) =>
-    reduce(callback, accumulator, collection);
 
 /**
  * Unfortunately, this has to have a very weird function signature due to this typescript issue:
@@ -375,7 +367,7 @@ export const createClient =
 
         const newDoc = flow(
           flow(
-            (doc: TDocument) => doc,
+            identity<TDocument>,
             !Object.keys(patchOperation.setIfMissing ?? {}).length
               ? identity<TDocument>
               : (doc) =>

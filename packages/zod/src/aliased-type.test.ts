@@ -61,8 +61,11 @@ describe("<alias>", () => {
       };
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
-        InferSchemaValues<typeof config>
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"]
+      >();
+      expectType<(typeof parsed)["foo"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
     });
 
@@ -120,8 +123,11 @@ describe("<alias>", () => {
       };
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
-        InferSchemaValues<typeof config>
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["bar"]
+      >();
+      expectType<(typeof parsed)["foo"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
     });
 
@@ -166,9 +172,8 @@ describe("<alias>", () => {
       // It really is cyclical!
       expect(parsed).toStrictEqual(unparsed);
       expect(zods.foo.shape.foo.unwrap().schema).toStrictEqual(zods.foo);
-      expectType<typeof parsed>().toStrictEqual<
-        // @ts-expect-error -- Cyclical typing with zod doesn't seem to work
-        InferSchemaValues<typeof config>
+      expectType<(typeof parsed)["foo"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
     });
 
@@ -249,9 +254,8 @@ describe("<alias>", () => {
       expect(
         zods.foo.shape.bar.unwrap().schema.shape.baz.schema.shape.foo.schema
       ).toStrictEqual(zods.foo);
-      expectType<typeof parsed>().toStrictEqual<
-        // @ts-expect-error -- Cyclical typing with zod doesn't seem to work
-        InferSchemaValues<typeof config>
+      expectType<(typeof parsed)["foo"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
     });
 
@@ -313,8 +317,8 @@ describe("<alias>", () => {
       };
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
-        InferSchemaValues<typeof config>
+      expectType<(typeof parsed)["foo"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
     });
 
@@ -389,8 +393,8 @@ describe("<alias>", () => {
       };
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
-        InferSchemaValues<typeof config>
+      expectType<(typeof parsed)["foo"]>().toStrictEqual<
+        InferSchemaValues<typeof config>["foo"]
       >();
     });
   });
@@ -436,8 +440,11 @@ describe("<alias>", () => {
       };
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
-        InferSchemaValues<typeof plugin>
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof plugin>["bar"]
+      >();
+      expectType<(typeof parsed)["foo"]>().toStrictEqual<
+        InferSchemaValues<typeof plugin>["foo"]
       >();
     });
 
@@ -494,8 +501,11 @@ describe("<alias>", () => {
       };
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
-        InferSchemaValues<typeof plugin>
+      expectType<(typeof parsed)["bar"]>().toStrictEqual<
+        InferSchemaValues<typeof plugin>["bar"]
+      >();
+      expectType<(typeof parsed)["foo"]>().toStrictEqual<
+        InferSchemaValues<typeof plugin>["foo"]
       >();
     });
 
@@ -684,8 +694,8 @@ describe("<alias>", () => {
       };
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
-        InferSchemaValues<typeof plugin>
+      expectType<(typeof parsed)["foo"]>().toStrictEqual<
+        InferSchemaValues<typeof plugin>["foo"]
       >();
     });
 
@@ -759,8 +769,8 @@ describe("<alias>", () => {
       };
 
       expect(parsed).toStrictEqual(unparsed);
-      expectType<typeof parsed>().toStrictEqual<
-        InferSchemaValues<typeof plugin>
+      expectType<(typeof parsed)["foo"]>().toStrictEqual<
+        InferSchemaValues<typeof plugin>["foo"]
       >();
     });
   });

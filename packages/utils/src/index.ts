@@ -1,4 +1,4 @@
-import { isPlainObject as isPlainObjectNative } from "lodash/fp";
+import { isPlainObject as isPlainObjectNative, reduce } from "lodash/fp";
 import type { IsNumericLiteral } from "type-fest";
 
 export type Negate<T> = T extends true ? false : true;
@@ -42,3 +42,18 @@ export const ternary = <Condition extends boolean, TrueValue, FalseValue>(
   (condition ? ifTrue() : ifFalse()) as Condition extends true
     ? TrueValue
     : FalseValue;
+
+export const addIndexSignature = <Obj>(obj: Obj) =>
+  obj as Obj & { [key: string]: unknown };
+
+export const values = <Obj>(obj: Obj) =>
+  Object.values(obj as any) as Obj[keyof Obj][];
+
+export const reduceAcc =
+  <T, TResult>(
+    collection: T[] | null | undefined,
+    // eslint-disable-next-line promise/prefer-await-to-callbacks -- lodash/fp reorder
+    callback: (prev: TResult, current: T) => TResult
+  ) =>
+  (accumulator: TResult) =>
+    reduce(callback, accumulator, collection);
