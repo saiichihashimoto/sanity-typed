@@ -123,6 +123,7 @@ export const traverseValidation = <
         path: "",
         type: Symbol("TODO"),
       }),
+       
     } as unknown as UnionToIntersection<
       GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
     > & {
@@ -137,6 +138,7 @@ export const traverseValidation = <
     Rule({})
   ) as
     | MaybeArray<
+         
         UnionToIntersection<
           GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
         > & {

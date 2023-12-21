@@ -94,6 +94,7 @@ import type {
 } from "@sanity-typed/utils";
 
 // HACK Couldn't use type-fest's Merge >=3.0.0
+ 
 type Merge_<FirstType, SecondType> = Except<
   FirstType,
   Extract<keyof FirstType, keyof SecondType>

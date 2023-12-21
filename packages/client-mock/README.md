@@ -186,7 +186,7 @@ Depending on your tree-shaking setup, you'll want to swap between the real clien
 import { base, en } from "@faker-js/faker";
 import config from "sanity.config";
 
-import { sanityConfigToFaker } from "@sanity-typed/faker";
+import { sanityConfigToFaker, sanityDocumentsFaker } from "@sanity-typed/faker";
 
 export const getMockDataset = () => {
   const sanityFaker = sanityConfigToFaker(config, {
@@ -198,13 +198,12 @@ export const getMockDataset = () => {
    *  }
    */
 
-  return [
-    sanityFaker.product(),
-    sanityFaker.product(),
-    sanityFaker.product(),
-    sanityFaker.product(),
-    sanityFaker.product(),
-  ];
+  const documentsFaker = sanityDocumentsFaker(config, sanityFaker);
+  /**
+   *  typeof documentsFaker === () => SanityValues[keyof SanityValues][]
+   */
+
+  return documentsFaker();
 };
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/mocks.ts -->
