@@ -461,7 +461,7 @@ const stringAndTextFaker = <
     ? (faker: Faker) => faker.internet.email()
     : (faker: Faker) =>
         flow(
-          (value: string) => value,
+          identity<string>,
           (value) => (!traversal.uppercase ? value : value.toUpperCase()),
           (value) => (!traversal.lowercase ? value : value.toLowerCase())
         )(stringFaker(faker).slice(0, faker.number.int({ min, max })));
@@ -2433,7 +2433,7 @@ const schemaTypeToFaker = <
       : aliasFaker(schema, getFakers);
 
   return flow(
-    (schemaTypeFakerInner: typeof schemaTypeFaker) => schemaTypeFakerInner,
+    identity<typeof schemaTypeFaker>,
     customFakerFn in schema
       ? (schemaTypeFaker) => (faker: Faker, index: number) =>
           (

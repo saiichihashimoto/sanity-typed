@@ -1,4 +1,4 @@
-import { flow, identity, pick, reduce } from "lodash/fp";
+import { flow, identity, pick } from "lodash/fp";
 import type { CustomValidator, CustomValidatorResult, Schema } from "sanity";
 import type { IsNumericLiteral, IsStringLiteral } from "type-fest";
 import { z } from "zod";
@@ -20,7 +20,7 @@ import type {
   MaybeTitledListValue,
   TypeDefinition,
 } from "@sanity-typed/types/src/internal";
-import { ternary, values } from "@sanity-typed/utils";
+import { reduceAcc, ternary, values } from "@sanity-typed/utils";
 import type { MaybeArray, Negate } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<
@@ -124,15 +124,6 @@ const constantZods = {
   }),
 };
 
-const reduceAcc =
-  <T, TResult>(
-    collection: T[] | null | undefined,
-    // eslint-disable-next-line promise/prefer-await-to-callbacks -- lodash/fp reorder
-    callback: (prev: TResult, current: T) => TResult
-  ) =>
-  (accumulator: TResult) =>
-    reduce(callback, accumulator, collection);
-
 const toZodType = <Output, Input>(
   zod: z.ZodType<Output, z.ZodTypeDef, Input>
 ) => zod as z.ZodType<Output, z.ZodTypeDef, Input>;
@@ -156,8 +147,8 @@ const dateZod = <
   const traversal = traverseValidation(schemaType);
 
   return flow(
-    (zod: z.ZodString) =>
-      zod.regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Invalid date" }),
+    identity<z.ZodString>,
+    (zod) => zod.regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Invalid date" }),
     toZodType,
     reduceAcc(traversal.min, (zod, [minDate]) =>
       typeof minDate !== "string"
@@ -195,7 +186,8 @@ const datetimeZod = <
   const traversal = traverseValidation(schemaType);
 
   return flow(
-    (zod: z.ZodString) => zod.datetime(),
+    identity<z.ZodString>,
+    (zod) => zod.datetime(),
     toZodType,
     reduceAcc(traversal.min, (zod, [minDate]) =>
       typeof minDate !== "string"
@@ -268,7 +260,7 @@ const numberZod = <
     () =>
       flow(
         flow(
-          (zod: z.ZodNumber) => zod,
+          identity<z.ZodNumber>,
           reduceAcc(traversal.min, (zod, [minNumber]) =>
             typeof minNumber !== "number" ? zod : zod.min(minNumber)
           ),
@@ -389,7 +381,7 @@ const stringAndTextZod = <
 
   return flow(
     flow(
-      (zod: z.ZodString) => zod,
+      identity<z.ZodString>,
       reduceAcc(traversal.min, (zod, [minLength]) =>
         typeof minLength !== "number" ? zod : zod.min(minLength)
       ),
@@ -549,7 +541,7 @@ const urlZod = <
   type UriType = NonNullable<typeof traversal.uri>;
 
   return flow(
-    (zod: z.ZodType<string>) => zod,
+    identity<z.ZodType<string>>,
     reduceAcc(
       traversal.uri ?? ([[{}]] as UriType),
       (
@@ -843,7 +835,7 @@ const membersZods = <
     const zod = schemaTypeToZod(member, getZods);
 
     return flow(
-      (zod2: typeof zod) => zod2,
+      identity<typeof zod>,
       addTypeFp(member.name),
       addKey,
       customValidationZod(
@@ -965,7 +957,7 @@ const arrayZod = <
   const traversal = traverseValidation(schemaType);
 
   return flow(
-    (zod: typeof arrayZodInner) => zod,
+    identity<typeof arrayZodInner>,
     reduceAcc(traversal.min, (zod, [minLength]) =>
       typeof minLength !== "number" ? zod : zod.min(minLength)
     ),
