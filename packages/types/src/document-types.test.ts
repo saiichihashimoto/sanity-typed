@@ -103,6 +103,10 @@ describe("type DocumentValues", () => {
               height: number;
               width: number;
             };
+            exif?: {
+              [key: string]: unknown;
+              _type: "sanity.imageExifMetadata";
+            };
             hasAlpha: boolean;
             isOpaque: boolean;
             location?: GeopointValue;

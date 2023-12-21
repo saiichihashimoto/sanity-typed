@@ -2537,6 +2537,13 @@ const imageAssetFaker = (
           : { blurHash: faker.string.sample(44) }),
         ...(faker.datatype.boolean()
           ? {}
+          : {
+              exif: addIndexSignature({
+                _type: "sanity.imageExifMetadata" as const,
+              }),
+            }),
+        ...(faker.datatype.boolean()
+          ? {}
           : { location: constantFakers.geopoint(faker) }),
         ...(faker.datatype.boolean()
           ? {}

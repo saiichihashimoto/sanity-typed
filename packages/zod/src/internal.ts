@@ -2273,6 +2273,9 @@ const imageAssetZod = assetZod.extend({
         height: z.number(),
         width: z.number(),
       }),
+      exif: z.optional(
+        z.object({ _type: z.literal("sanity.imageExifMetadata") }).passthrough()
+      ),
       palette: z.optional(
         z.object({
           _type: z.literal("sanity.imagePalette"),

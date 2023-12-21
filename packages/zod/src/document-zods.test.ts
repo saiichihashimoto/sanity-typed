@@ -135,6 +135,16 @@ describe("documentZods", () => {
           height: 0,
           width: 0,
         },
+        exif: {
+          key: "value",
+          _type: "sanity.imageExifMetadata",
+        },
+        location: {
+          _type: "geopoint",
+          alt: 0,
+          lat: 0,
+          lng: 0,
+        },
         palette: {
           _type: "sanity.imagePalette",
           darkMuted: {
