@@ -70,7 +70,7 @@ jobs:
           HASH_GROQ=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/groq#build\")) | .hash")
           HASH_NEXT_SANITY=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/next-sanity#build\")) | .hash")
           HASH_PREVIEW_KIT=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/preview-kit#build\")) | .hash")
-          HASH_PT_TYPES=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@portabletext-typed/pt-types#build\")) | .hash")
+          HASH_PT_TYPES=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@portabletext-typed/types#build\")) | .hash")
           HASH_REACT=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@portabletext-typed/react#build\")) | .hash")
           HASH_TO_HTML=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@portabletext-typed/to-html#build\")) | .hash")
           HASH_TYPES=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/types#build\")) | .hash")
