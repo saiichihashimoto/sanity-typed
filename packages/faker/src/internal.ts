@@ -1,6 +1,6 @@
 import { Faker } from "@faker-js/faker";
 import stringify from "fast-json-stable-stringify";
-import { flow, identity } from "lodash/fp";
+import { flow, identity, pick } from "lodash/fp";
 import RandExp from "randexp";
 import type { IsNumericLiteral, IsStringLiteral, Simplify } from "type-fest";
 
@@ -11,6 +11,7 @@ import type {
   BlockDecoratorDefinition,
   BlockListDefinition,
   BlockStyleDefinition,
+  DocumentValues,
   InferSchemaValues,
 } from "@sanity-typed/types";
 import type {
@@ -22,7 +23,12 @@ import type {
   TypeDefinition,
   referenced,
 } from "@sanity-typed/types/src/internal";
-import { addIndexSignature, isPlainObject, ternary } from "@sanity-typed/utils";
+import {
+  addIndexSignature,
+  isPlainObject,
+  ternary,
+  values,
+} from "@sanity-typed/utils";
 import type { MaybeArray, Negate } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<
@@ -2776,3 +2782,63 @@ export const sanityConfigToFaker = <const TConfig extends ConfigBase<any, any>>(
   sanityConfigToFakerTyped(...args) as {
     [TType in keyof InferSchemaValues<TConfig>]: () => InferSchemaValues<TConfig>[TType];
   };
+
+export const sanityDocumentsFaker = <
+  const TConfig extends ConfigBase<any, any>,
+  Fakers extends { [type: string]: () => any }
+>(
+  config: TConfig,
+  fakers: Fakers,
+  { referencedChunkSize = 5 }: { referencedChunkSize?: number } = {}
+) => {
+  type TTypeDefinition = TConfig extends ConfigBase<
+    infer TTypeDefinition extends TypeDefinition<
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any,
+      any
+    >,
+    any
+  >
+    ? TTypeDefinition
+    : never;
+
+  const types = (config.schema?.types ?? []) as NonNullable<
+    NonNullable<ConfigBase<TTypeDefinition, any>["schema"]>["types"]
+  >;
+
+  const documentTypes: (DocumentValues<InferSchemaValues<TConfig>>["_type"] &
+    keyof Fakers)[] = Array.isArray(types)
+    ? [
+        "sanity.fileAsset",
+        "sanity.imageAsset",
+        ...types
+          .filter(({ type }) => type === "document")
+          .map(({ name }) => name),
+      ]
+    : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
+      (undefined as never);
+
+  return flow(
+    identity<Fakers>,
+    pick(documentTypes),
+    values,
+    (fakers) => () =>
+      fakers.flatMap((faker) =>
+        Array.from({ length: referencedChunkSize }).map(
+          () => faker() as ReturnType<typeof faker>
+        )
+      )
+  )(fakers);
+};

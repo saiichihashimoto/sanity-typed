@@ -45,3 +45,6 @@ export const ternary = <Condition extends boolean, TrueValue, FalseValue>(
 
 export const addIndexSignature = <Obj>(obj: Obj) =>
   obj as Obj & { [key: string]: unknown };
+
+export const values = <Obj>(obj: Obj) =>
+  Object.values(obj as any) as Obj[keyof Obj][];

@@ -1,1 +1,5 @@
-export { customFaker, sanityConfigToFaker } from "./internal";
+export {
+  customFaker,
+  sanityConfigToFaker,
+  sanityDocumentsFaker,
+} from "./internal";

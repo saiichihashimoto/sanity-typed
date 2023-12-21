@@ -1,4 +1,4 @@
-import { flow, pick, reduce, values } from "lodash/fp";
+import { flow, identity, pick, reduce } from "lodash/fp";
 import type { CustomValidator, CustomValidatorResult, Schema } from "sanity";
 import type { IsNumericLiteral, IsStringLiteral } from "type-fest";
 import { z } from "zod";
@@ -20,7 +20,7 @@ import type {
   MaybeTitledListValue,
   TypeDefinition,
 } from "@sanity-typed/types/src/internal";
-import { ternary } from "@sanity-typed/utils";
+import { ternary, values } from "@sanity-typed/utils";
 import type { MaybeArray, Negate } from "@sanity-typed/utils";
 
 type SchemaTypeDefinition<
@@ -2403,23 +2403,17 @@ export const sanityDocumentsZod = <
     NonNullable<ConfigBase<TTypeDefinition, any>["schema"]>["types"]
   >;
 
-  return zodUnion(
-    flow(
-      (zodsInner: Zods) => zodsInner,
-      pick(
-        Array.isArray(types)
-          ? [
-              "sanity.fileAsset",
-              "sanity.imageAsset",
-              ...types
-                .filter(({ type }) => type === "document")
-                .map(({ name }) => name),
-            ]
-          : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
-            (undefined as never)
-      ),
-      values
-    )(zods) as Zods[DocumentValues<InferSchemaValues<TConfig>>["_type"] &
-      keyof Zods][]
-  );
+  const documentTypes: (DocumentValues<InferSchemaValues<TConfig>>["_type"] &
+    keyof Zods)[] = Array.isArray(types)
+    ? [
+        "sanity.fileAsset",
+        "sanity.imageAsset",
+        ...types
+          .filter(({ type }) => type === "document")
+          .map(({ name }) => name),
+      ]
+    : // TODO https://www.sanity.io/docs/configuration#1ed5d17ef21e
+      (undefined as never);
+
+  return zodUnion(flow(identity<Zods>, pick(documentTypes), values)(zods));
 };

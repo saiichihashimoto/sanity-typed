@@ -9,7 +9,7 @@ import { sanityDocumentsZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";
 
 describe("documentZods", () => {
-  it("builds parser for union of only sanity documents", () => {
+  it("builds parser for union of sanity documents including implicit ones", () => {
     const config = defineConfig({
       dataset: "dataset",
       projectId: "projectId",

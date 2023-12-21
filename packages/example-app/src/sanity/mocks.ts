@@ -1,7 +1,7 @@
 import { base, en } from "@faker-js/faker";
 import config from "sanity.config";
 
-import { sanityConfigToFaker } from "@sanity-typed/faker";
+import { sanityConfigToFaker, sanityDocumentsFaker } from "@sanity-typed/faker";
 
 export const getMockDataset = () => {
   const sanityFaker = sanityConfigToFaker(config, {
@@ -13,11 +13,10 @@ export const getMockDataset = () => {
    *  }
    */
 
-  return [
-    sanityFaker.product(),
-    sanityFaker.product(),
-    sanityFaker.product(),
-    sanityFaker.product(),
-    sanityFaker.product(),
-  ];
+  const documentsFaker = sanityDocumentsFaker(config, sanityFaker);
+  /**
+   *  typeof documentsFaker === () => SanityValues[keyof SanityValues][]
+   */
+
+  return documentsFaker();
 };

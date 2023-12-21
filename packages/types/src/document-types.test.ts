@@ -6,7 +6,7 @@ import { defineConfig, defineField, defineType } from ".";
 import type { DocumentValues, InferSchemaValues } from ".";
 
 describe("type DocumentValues", () => {
-  it("infers union of sanity documents and, including implicit ones", () => {
+  it("infers union of sanity documents, including implicit ones", () => {
     const config = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
