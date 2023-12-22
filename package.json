@@ -49,7 +49,7 @@
     "eslint-plugin-react": "7.33.2",
     "eslint-plugin-react-hooks": "4.6.0",
     "eslint-plugin-typescript-sort-keys": "3.1.0",
-    "eslint-plugin-unicorn": "49.0.0",
+    "eslint-plugin-unicorn": "50.0.1",
     "husky": "8.0.3",
     "imagemin-lint-staged": "0.5.1",
     "is-ci": "3.0.1",
