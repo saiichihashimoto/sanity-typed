@@ -398,6 +398,7 @@ const referenceFaker =
   });
 
 const regexFaker = (regex: RegExp) => {
+  // TODO https://github.com/saiichihashimoto/sanity-typed/issues/613
   const randexp = new RandExp(regex);
 
   return (faker: Faker) => {

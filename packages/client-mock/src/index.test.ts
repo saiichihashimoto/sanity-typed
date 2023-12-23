@@ -290,7 +290,9 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
         dataset: [],
-      })({}).listen("*");
+      })({})
+        // TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+        .listen("*");
 
       expectType<typeof result>().toStrictEqual<
         Observable<
@@ -304,7 +306,9 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
         dataset: [],
-      })({}).listen("*", {}, {});
+      })({})
+        // TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+        .listen("*", {}, {});
 
       expectType<typeof result>().toStrictEqual<
         Observable<
