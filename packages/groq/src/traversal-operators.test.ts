@@ -505,11 +505,11 @@ describe("traversal operators", () => {
       WritableDeep<typeof expectedTree>
     >();
 
-    // TODO https://github.com/sanity-io/groq-js/issues/146
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/146
     expect(result).toStrictEqual(expectedResult);
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedResult>

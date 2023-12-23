@@ -10,10 +10,10 @@ import type { ExecuteQuery, Parse } from ".";
 import type { ScopeFromPartialContext } from "./internal";
 
 describe("portable text extension", () => {
-  // TODO https://github.com/sanity-io/groq-js/issues/142
   it.failing("pt(false)", async () => {
     const query = "pt(false)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/142
     const tree = parse(query);
 
     const expectedTree = {
@@ -45,6 +45,7 @@ describe("portable text extension", () => {
   it.failing("pt($param) (with PortableTextBlock)", async () => {
     const query = "pt($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/142
     const tree = parse(query);
 
     const expectedTree = {
@@ -95,6 +96,7 @@ describe("portable text extension", () => {
   it.failing("pt($param) (with PortableTextBlock[])", async () => {
     const query = "pt($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/142
     const tree = parse(query);
 
     const expectedTree = {
@@ -161,6 +163,7 @@ describe("portable text extension", () => {
   it.failing("global::pt($param) (with PortableTextBlock[])", async () => {
     const query = "global::pt($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/142
     const tree = parse(query);
 
     const expectedTree = {

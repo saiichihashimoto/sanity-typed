@@ -8,7 +8,6 @@ import type { ExecuteQuery, Parse } from ".";
 import type { ScopeFromPartialContext } from "./internal";
 
 describe("delta", () => {
-  // TODO https://github.com/sanity-io/groq-js/issues/160
   it("delta::changedAny(title) (without delta)", async () => {
     const query = "delta::changedAny(title)";
 
@@ -33,6 +32,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -69,6 +69,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -110,6 +111,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -151,6 +153,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -192,6 +195,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -233,6 +237,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -274,6 +279,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -315,6 +321,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -346,6 +353,7 @@ describe("delta", () => {
   it.failing("delta::changedAny(title.(description))", async () => {
     const query = "delta::changedAny(title.(description))";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const tree = parse(query, { mode: "delta" });
 
     const expectedTree = {
@@ -389,6 +397,7 @@ describe("delta", () => {
     async () => {
       const query = "delta::changedAny(title.(description,description2))";
 
+      // TODO https://github.com/sanity-io/groq-js/issues/160
       const tree = parse(query, { mode: "delta" });
 
       const expectedTree = {
@@ -454,6 +463,7 @@ describe("delta", () => {
         type: "FuncCall",
       } as const;
 
+      // TODO https://github.com/sanity-io/groq-js/issues/160
       expect(tree).toStrictEqual({
         ...expectedTree,
         func: expect.any(Function),
@@ -491,6 +501,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -532,6 +543,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -573,6 +585,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -614,6 +627,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -655,6 +669,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -696,6 +711,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -737,6 +753,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     expect(tree).toStrictEqual({
       ...expectedTree,
       func: expect.any(Function),
@@ -768,6 +785,7 @@ describe("delta", () => {
   it.failing("delta::changedOnly(title.(description))", async () => {
     const query = "delta::changedOnly(title.(description))";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const tree = parse(query, { mode: "delta" });
 
     const expectedTree = {
@@ -811,6 +829,7 @@ describe("delta", () => {
     async () => {
       const query = "delta::changedOnly(title.(description,description2))";
 
+      // TODO https://github.com/sanity-io/groq-js/issues/160
       const tree = parse(query, { mode: "delta" });
 
       const expectedTree = {
