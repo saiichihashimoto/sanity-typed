@@ -28,7 +28,7 @@ describe("reference", () => {
               of: [
                 defineArrayMember({
                   type: "reference",
-                  to: [{ type: "other" as const }],
+                  to: [{ type: "other" }],
                 }),
               ],
             }),
@@ -66,7 +66,7 @@ describe("reference", () => {
                 defineArrayMember({
                   name: "foo",
                   type: "reference",
-                  to: [{ type: "other" as const }],
+                  to: [{ type: "other" }],
                 }),
               ],
             }),
@@ -104,7 +104,7 @@ describe("reference", () => {
                 defineArrayMember({
                   type: "reference",
                   weak: true,
-                  to: [{ type: "other" as const }],
+                  to: [{ type: "other" }],
                 }),
               ],
             }),
@@ -146,7 +146,7 @@ describe("reference", () => {
                   name: "bar",
                   type: "reference",
                   validation: (Rule) => Rule.required(),
-                  to: [{ type: "other" as const }],
+                  to: [{ type: "other" }],
                 }),
               ],
             }),
@@ -186,7 +186,7 @@ describe("reference", () => {
                   type: "reference",
                   weak: true,
                   validation: (Rule) => Rule.required(),
-                  to: [{ type: "other" as const }],
+                  to: [{ type: "other" }],
                 }),
               ],
             }),
@@ -223,7 +223,7 @@ describe("reference", () => {
             defineType({
               name: "foo",
               type: "reference",
-              to: [{ type: "other" as const }],
+              to: [{ type: "other" }],
             }),
           ],
         },
@@ -252,7 +252,7 @@ describe("reference", () => {
             defineType({
               name: "foo",
               type: "reference",
-              to: [{ type: "other" as const }],
+              to: [{ type: "other" }],
             }),
             defineType({
               name: "bar",
@@ -295,7 +295,7 @@ describe("reference", () => {
               name: "foo",
               type: "reference",
               weak: true,
-              to: [{ type: "other" as const }],
+              to: [{ type: "other" }],
             }),
           ],
         },
@@ -328,7 +328,7 @@ describe("reference", () => {
               name: "foo",
               type: "reference",
               weak: true,
-              to: [{ type: "other" as const }],
+              to: [{ type: "other" }],
               validation: (Rule) =>
                 Rule.custom(() => "fail for no reason").custom(
                   enableZod((value) => !value?._weak || "value can't be _weak")

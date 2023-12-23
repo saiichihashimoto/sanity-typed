@@ -171,8 +171,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   defineArrayMember({
                     type: "block",
                     styles: [
-                      { title: "Foo", value: "foo" as const },
-                      { title: "Bar", value: "bar" as const },
+                      { title: "Foo", value: "foo" },
+                      { title: "Bar", value: "bar" },
                     ],
                   }),
                 ],
@@ -208,8 +208,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   defineArrayMember({
                     type: "block",
                     lists: [
-                      { title: "Foo", value: "foo" as const },
-                      { title: "Bar", value: "bar" as const },
+                      { title: "Foo", value: "foo" },
+                      { title: "Bar", value: "bar" },
                     ],
                   }),
                 ],
@@ -246,8 +246,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     type: "block",
                     marks: {
                       decorators: [
-                        { title: "Foo", value: "foo" as const },
-                        { title: "Bar", value: "bar" as const },
+                        { title: "Foo", value: "foo" },
+                        { title: "Bar", value: "bar" },
                       ],
                     },
                   }),
@@ -292,7 +292,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                             defineField({
                               name: "reference",
                               type: "reference",
-                              to: [{ type: "post" as const }],
+                              to: [{ type: "post" }],
                             }),
                           ],
                         }),
@@ -458,8 +458,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 name: "foo",
                 type: "block",
                 styles: [
-                  { title: "Foo", value: "foo" as const },
-                  { title: "Bar", value: "bar" as const },
+                  { title: "Foo", value: "foo" },
+                  { title: "Bar", value: "bar" },
                 ],
               }),
             ],
@@ -490,8 +490,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 name: "foo",
                 type: "block",
                 lists: [
-                  { title: "Foo", value: "foo" as const },
-                  { title: "Bar", value: "bar" as const },
+                  { title: "Foo", value: "foo" },
+                  { title: "Bar", value: "bar" },
                 ],
               }),
             ],
@@ -523,8 +523,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 type: "block",
                 marks: {
                   decorators: [
-                    { title: "Foo", value: "foo" as const },
-                    { title: "Bar", value: "bar" as const },
+                    { title: "Foo", value: "foo" },
+                    { title: "Bar", value: "bar" },
                   ],
                 },
               }),
@@ -564,7 +564,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                         defineField({
                           name: "reference",
                           type: "reference",
-                          to: [{ type: "post" as const }],
+                          to: [{ type: "post" }],
                         }),
                       ],
                     }),
@@ -608,7 +608,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     {
                       ...({} as { [decorator]: BlockMarkDecoratorDefault }),
                       _key: "key",
-                      _type: "span" as const,
+                      _type: "span",
                       marks: ["mark"],
                       text: "foo",
                     },
@@ -632,7 +632,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           InferSchemaValues<typeof config>["foo"]
         >();
         expect(fake).toHaveProperty("children", [
-          { _key: "key", _type: "span" as const, marks: ["mark"], text: "foo" },
+          { _key: "key", _type: "span", marks: ["mark"], text: "foo" },
         ]);
       });
     });

@@ -200,8 +200,8 @@ describe("block", () => {
                 defineArrayMember({
                   type: "block",
                   styles: [
-                    { title: "Foo", value: "foo" as const },
-                    { title: "Bar", value: "bar" as const },
+                    { title: "Foo", value: "foo" },
+                    { title: "Bar", value: "bar" },
                   ],
                 }),
               ],
@@ -244,8 +244,8 @@ describe("block", () => {
                 defineArrayMember({
                   type: "block",
                   lists: [
-                    { title: "Foo", value: "foo" as const },
-                    { title: "Bar", value: "bar" as const },
+                    { title: "Foo", value: "foo" },
+                    { title: "Bar", value: "bar" },
                   ],
                 }),
               ],
@@ -289,8 +289,8 @@ describe("block", () => {
                   type: "block",
                   marks: {
                     decorators: [
-                      { title: "Foo", value: "foo" as const },
-                      { title: "Bar", value: "bar" as const },
+                      { title: "Foo", value: "foo" },
+                      { title: "Bar", value: "bar" },
                     ],
                   },
                 }),
@@ -341,7 +341,7 @@ describe("block", () => {
                           defineField({
                             name: "reference",
                             type: "reference",
-                            to: [{ type: "post" as const }],
+                            to: [{ type: "post" }],
                           }),
                         ],
                       }),
@@ -538,8 +538,8 @@ describe("block", () => {
               name: "foo",
               type: "block",
               styles: [
-                { title: "Foo", value: "foo" as const },
-                { title: "Bar", value: "bar" as const },
+                { title: "Foo", value: "foo" },
+                { title: "Bar", value: "bar" },
               ],
             }),
           ],
@@ -574,8 +574,8 @@ describe("block", () => {
               name: "foo",
               type: "block",
               lists: [
-                { title: "Foo", value: "foo" as const },
-                { title: "Bar", value: "bar" as const },
+                { title: "Foo", value: "foo" },
+                { title: "Bar", value: "bar" },
               ],
             }),
           ],
@@ -611,8 +611,8 @@ describe("block", () => {
               type: "block",
               marks: {
                 decorators: [
-                  { title: "Foo", value: "foo" as const },
-                  { title: "Bar", value: "bar" as const },
+                  { title: "Foo", value: "foo" },
+                  { title: "Bar", value: "bar" },
                 ],
               },
             }),
@@ -655,7 +655,7 @@ describe("block", () => {
                       defineField({
                         name: "reference",
                         type: "reference",
-                        to: [{ type: "post" as const }],
+                        to: [{ type: "post" }],
                       }),
                     ],
                   }),

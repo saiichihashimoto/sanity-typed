@@ -94,7 +94,7 @@ describe("specific issues", () => {
                 of: [
                   defineArrayMember({
                     type: "reference",
-                    to: [{ type: "project" as const }],
+                    to: [{ type: "project" }],
                   }),
                 ],
               }),

@@ -559,8 +559,8 @@ describe("toHTML", () => {
                 type: "block",
                 marks: {
                   decorators: [
-                    { title: "Strong", value: "strong" as const },
-                    { title: "Foo", value: "foo" as const },
+                    { title: "Strong", value: "strong" },
+                    { title: "Foo", value: "foo" },
                   ],
                 },
               }),
@@ -922,8 +922,8 @@ describe("toHTML", () => {
               defineArrayMember({
                 type: "block",
                 styles: [
-                  { title: "Normal", value: "normal" as const },
-                  { title: "Foo", value: "foo" as const },
+                  { title: "Normal", value: "normal" },
+                  { title: "Foo", value: "foo" },
                 ],
               }),
             ],
@@ -1157,8 +1157,8 @@ describe("toHTML", () => {
               defineArrayMember({
                 type: "block",
                 lists: [
-                  { title: "Bullet", value: "bullet" as const },
-                  { title: "Foo", value: "foo" as const },
+                  { title: "Bullet", value: "bullet" },
+                  { title: "Foo", value: "foo" },
                 ],
               }),
             ],

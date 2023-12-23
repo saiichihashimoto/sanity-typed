@@ -1569,7 +1569,7 @@ const fileFieldsFaker = (
     defineType({
       name: "sanity.fileAsset",
       type: "reference",
-      to: [{ type: "sanity.fileAsset" as const }],
+      to: [{ type: "sanity.fileAsset" }],
     }),
     referencedIdFaker
   );
@@ -1649,7 +1649,7 @@ const imageFieldsFaker = (
     defineType({
       name: "sanity.imageAsset",
       type: "reference",
-      to: [{ type: "sanity.imageAsset" as const }],
+      to: [{ type: "sanity.imageAsset" }],
     }),
     referencedIdFaker
   );

@@ -30,7 +30,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 of: [
                   defineArrayMember({
                     type: "reference",
-                    to: [{ type: "other" as const }],
+                    to: [{ type: "other" }],
                   }),
                 ],
               }),
@@ -65,7 +65,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   defineArrayMember({
                     name: "foo",
                     type: "reference",
-                    to: [{ type: "other" as const }],
+                    to: [{ type: "other" }],
                   }),
                 ],
               }),
@@ -100,7 +100,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   defineArrayMember({
                     type: "reference",
                     weak: true,
-                    to: [{ type: "other" as const }],
+                    to: [{ type: "other" }],
                   }),
                 ],
               }),
@@ -138,7 +138,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     name: "bar",
                     type: "reference",
                     validation: (Rule) => Rule.required(),
-                    to: [{ type: "other" as const }],
+                    to: [{ type: "other" }],
                   }),
                 ],
               }),
@@ -175,7 +175,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     type: "reference",
                     weak: true,
                     validation: (Rule) => Rule.required(),
-                    to: [{ type: "other" as const }],
+                    to: [{ type: "other" }],
                   }),
                 ],
               }),
@@ -208,7 +208,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "reference",
-                to: [{ type: "other" as const }],
+                to: [{ type: "other" }],
               }),
             ],
           },
@@ -237,7 +237,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "reference",
-                to: [{ type: "other" as const }],
+                to: [{ type: "other" }],
               }),
               defineType({
                 name: "bar",
@@ -277,7 +277,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 name: "foo",
                 type: "reference",
                 weak: true,
-                to: [{ type: "other" as const }],
+                to: [{ type: "other" }],
               }),
             ],
           },
@@ -309,7 +309,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 defineType({
                   name: "foo",
                   type: "reference",
-                  to: [{ type: "other" as const }],
+                  to: [{ type: "other" }],
                 }),
                 (faker, previous) => ({
                   ...previous,

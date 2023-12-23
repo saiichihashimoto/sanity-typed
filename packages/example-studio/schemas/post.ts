@@ -22,17 +22,17 @@ export const post = defineType({
           type: "block",
           of: [defineArrayMember({ type: "file" })],
           styles: [
-            { title: "Normal", value: "normal" as const },
-            { title: "Foo", value: "foo" as const },
+            { title: "Normal", value: "normal" },
+            { title: "Foo", value: "foo" },
           ],
           lists: [
-            { title: "Bullet", value: "bullet" as const },
-            { title: "Bar", value: "bar" as const },
+            { title: "Bullet", value: "bullet" },
+            { title: "Bar", value: "bar" },
           ],
           marks: {
             decorators: [
-              { title: "Strong", value: "strong" as const },
-              { title: "Baz", value: "baz" as const },
+              { title: "Strong", value: "strong" },
+              { title: "Baz", value: "baz" },
             ],
             annotations: [
               defineArrayMember({

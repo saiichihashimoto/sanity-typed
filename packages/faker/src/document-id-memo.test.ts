@@ -27,7 +27,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
             defineType({
               name: "bar",
               type: "reference",
-              to: [{ type: "foo" as const }],
+              to: [{ type: "foo" }],
             }),
           ],
         },
@@ -90,7 +90,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
             defineType({
               name: "bar",
               type: "reference",
-              to: [{ type: "foo" as const }],
+              to: [{ type: "foo" }],
             }),
           ],
         },
@@ -136,7 +136,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
             defineType({
               name: "bar",
               type: "reference",
-              to: [{ type: "foo" as const }],
+              to: [{ type: "foo" }],
             }),
           ],
         },
