@@ -63,7 +63,7 @@
     "tsup": "8.0.1",
     "turbo": "1.11.2",
     "type-fest": "4.8.3",
-    "typescript": "5.2.2"
+    "typescript": "5.3.3"
   },
   "engines": {
     "node": "^18.17.0"
