@@ -5,14 +5,12 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": [
-        "**",
-        "!.next/**",
-        "!.sanity/**",
-        "!.turbo/**",
+        "!.*/**",
         "!**/*.md",
         "!dist/**",
         "!node_modules/**",
-        "!src/**/*.test.*"
+        "!src/**/*.test.*",
+        "**"
       ],
       "outputs": ["dist/**"]
     },
