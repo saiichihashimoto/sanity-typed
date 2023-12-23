@@ -269,7 +269,12 @@ jobs:
       - run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }} -- ${{ matrix.package }}/src
   test:
     name: Test
+    if: always()
     needs: test-package
     runs-on: ubuntu-latest
     steps:
-      - run: echo done
+      # https://github.com/github/docs/discussions/30170#discussion-5886646
+      - if: ${{ needs.test-package.result != 'success' }}
+        run: |
+          echo "${{ toJSON(needs.test-package) }}"
+          exit 1
