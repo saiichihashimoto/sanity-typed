@@ -34,7 +34,7 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "npm run build -- --clean"
+    "dev": "npm run build -- --no-clean"
   },
   "dependencies": {
     "@sanity-typed/client": "0.0.0-development"
