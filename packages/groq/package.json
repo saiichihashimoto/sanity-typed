@@ -31,7 +31,7 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "npm run build -- --clean"
+    "dev": "npm run build -- --no-clean"
   },
   "dependencies": {
     "@portabletext-typed/types": "0.0.0-development",
