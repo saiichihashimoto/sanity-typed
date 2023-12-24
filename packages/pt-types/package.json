@@ -16,7 +16,7 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "npm run build -- --clean"
+    "dev": "npm run build -- --no-clean"
   },
   "dependencies": {
     "type-fest": "4.8.3"
