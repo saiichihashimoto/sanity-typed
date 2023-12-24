@@ -18,10 +18,10 @@ import type { ExecuteQuery, Geo, Parse } from ".";
 import type { ScopeFromPartialContext } from "./internal";
 
 describe("geojson", () => {
-  // TODO https://github.com/sanity-io/groq-js/issues/141
   it.failing("geo(false)", async () => {
     const query = "geo(false)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -53,6 +53,7 @@ describe("geojson", () => {
   it.failing("geo($param) (with Position)", async () => {
     const query = "geo($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -91,6 +92,7 @@ describe("geojson", () => {
   it.failing("geo($param) (with Point)", async () => {
     const query = "geo($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -129,6 +131,7 @@ describe("geojson", () => {
   it.failing("geo($param) (with MultiPoint)", async () => {
     const query = "geo($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -167,6 +170,7 @@ describe("geojson", () => {
   it.failing("geo($param) (with LineString)", async () => {
     const query = "geo($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -205,6 +209,7 @@ describe("geojson", () => {
   it.failing("geo($param) (with MultiLineString)", async () => {
     const query = "geo($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -243,6 +248,7 @@ describe("geojson", () => {
   it.failing("geo($param) (with Polygon)", async () => {
     const query = "geo($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -281,6 +287,7 @@ describe("geojson", () => {
   it.failing("geo($param) (with MultiPolygon)", async () => {
     const query = "geo($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -319,6 +326,7 @@ describe("geojson", () => {
   it.failing("geo($param) (with GeometryCollection)", async () => {
     const query = "geo($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -357,6 +365,7 @@ describe("geojson", () => {
   it.failing("global::geo($param) (with GeometryCollection)", async () => {
     const query = "global::geo($param)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -395,6 +404,7 @@ describe("geojson", () => {
   it.failing("geo::contains($param1,$param2)", async () => {
     const query = "geo::contains($param1,$param2)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -436,6 +446,7 @@ describe("geojson", () => {
   it.failing("geo::intersects($param1,$param2)", async () => {
     const query = "geo::intersects($param1,$param2)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {
@@ -477,6 +488,7 @@ describe("geojson", () => {
   it.failing("geo::distance($param1,$param2)", async () => {
     const query = "geo::distance($param1,$param2)";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/141
     const tree = parse(query);
 
     const expectedTree = {

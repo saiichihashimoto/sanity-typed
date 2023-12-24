@@ -635,6 +635,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
 
         const zods = sanityConfigToZods(config);
 
+        // TODO https://github.com/saiichihashimoto/sanity-typed/issues/613
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
         expectType<typeof fake>().toStrictEqual<
           InferSchemaValues<typeof config>["foo"]
@@ -665,6 +666,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
 
         const zods = sanityConfigToZods(config);
 
+        // TODO https://github.com/saiichihashimoto/sanity-typed/issues/613
         expect(zods.foo.parse(fake)).toStrictEqual(fake);
         expectType<typeof fake>().toStrictEqual<
           InferSchemaValues<typeof config>["foo"]

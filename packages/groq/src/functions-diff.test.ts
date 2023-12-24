@@ -33,6 +33,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -68,6 +69,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -81,6 +83,7 @@ describe("diff", () => {
   it.failing("diff::changedAny(foo,bar,(title,description))", async () => {
     const query = "diff::changedAny(foo,bar,(title,description))";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const tree = parse(query);
 
     const expectedTree = {
@@ -138,6 +141,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -173,6 +177,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -208,6 +213,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -243,6 +249,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -256,6 +263,7 @@ describe("diff", () => {
   it.failing("diff::changedAny(foo,bar,title.(description))", async () => {
     const query = "diff::changedAny(foo,bar,title.(description))";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const tree = parse(query);
 
     const expectedTree = {
@@ -294,6 +302,7 @@ describe("diff", () => {
       const query =
         "diff::changedAny(foo,bar,title.(description,description2))";
 
+      // TODO https://github.com/sanity-io/groq-js/issues/160
       const tree = parse(query);
 
       const expectedTree = {
@@ -352,6 +361,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -387,6 +397,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -400,6 +411,7 @@ describe("diff", () => {
   it.failing("diff::changedOnly(foo,bar,(title,description))", async () => {
     const query = "diff::changedOnly(foo,bar,(title,description))";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const tree = parse(query);
 
     const expectedTree = {
@@ -457,6 +469,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -492,6 +505,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -527,6 +541,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -562,6 +577,7 @@ describe("diff", () => {
       WritableDeep<typeof expectedTree>
     >();
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const result = await (await evaluate(tree)).get();
 
     const expectedResult = false as boolean;
@@ -575,6 +591,7 @@ describe("diff", () => {
   it.failing("diff::changedOnly(foo,bar,title.(description))", async () => {
     const query = "diff::changedOnly(foo,bar,title.(description))";
 
+    // TODO https://github.com/sanity-io/groq-js/issues/160
     const tree = parse(query);
 
     const expectedTree = {
@@ -613,6 +630,7 @@ describe("diff", () => {
       const query =
         "diff::changedOnly(foo,bar,title.(description,description2))";
 
+      // TODO https://github.com/sanity-io/groq-js/issues/160
       const tree = parse(query);
 
       const expectedTree = {
