@@ -19,7 +19,7 @@
     "dev": "npm run build -- --no-clean"
   },
   "dependencies": {
-    "type-fest": "4.8.3"
+    "type-fest": "4.9.0"
   },
   "devDependencies": {
     "@portabletext/types": "2.0.8",
