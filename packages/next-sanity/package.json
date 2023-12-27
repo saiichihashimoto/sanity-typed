@@ -32,7 +32,7 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "npm run build -- --clean"
+    "dev": "npm run build -- --no-clean"
   },
   "dependencies": {
     "@sanity-typed/client": "0.0.0-development",
@@ -43,7 +43,7 @@
     "@saiichihashimoto/test-utils": "1.0.2",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "next-sanity": "7.0.4",
-    "type-fest": "4.8.3"
+    "type-fest": "4.9.0"
   },
   "peerDependencies": {
     "next-sanity": "^7.0.4"

@@ -34,7 +34,7 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "npm run build -- --clean"
+    "dev": "npm run build -- --no-clean"
   },
   "dependencies": {
     "@sanity-typed/client": "0.0.0-development"
@@ -44,7 +44,7 @@
     "@saiichihashimoto/test-utils": "1.0.2",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity/preview-kit": "5.0.6",
-    "type-fest": "4.8.3"
+    "type-fest": "4.9.0"
   },
   "peerDependencies": {
     "@sanity/preview-kit": "^5.0.6"

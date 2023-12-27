@@ -29,7 +29,7 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "npm run build -- --clean"
+    "dev": "npm run build -- --no-clean"
   },
   "dependencies": {
     "@faker-js/faker": "8.3.1",
@@ -38,7 +38,7 @@
     "@sanity-typed/types": "0.0.0-development",
     "@sanity/diff-match-patch": "3.1.1",
     "lodash": "4.17.21",
-    "type-fest": "4.8.3"
+    "type-fest": "4.9.0"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
