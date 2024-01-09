@@ -42,7 +42,7 @@
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.2",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "next-sanity": "7.0.6",
+    "next-sanity": "7.0.7",
     "type-fest": "4.9.0"
   },
   "peerDependencies": {
