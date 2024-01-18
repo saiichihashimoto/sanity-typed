@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
-import { DateTime, evaluate, parse } from "groq-js";
-import type { GroqFunction, Path } from "groq-js";
+import { DateTime, Path, evaluate, parse } from "groq-js";
+import type { GroqFunction } from "groq-js";
 import type { WritableDeep } from "type-fest";
 
 import type { ExecuteQuery, Parse } from ".";
@@ -9,10 +9,6 @@ import type {
   ScopeFromPartialContext,
   ScopeFromPartialScope,
 } from "./internal";
-
-// TODO https://github.com/sanity-io/groq-js/pull/159
-const newPath = async (pattern: string): Promise<Path> =>
-  (await evaluate(parse(`path("${pattern}")`))).get();
 
 describe("global", () => {
   it("after() (without delta)", async () => {
@@ -1970,7 +1966,7 @@ describe("global", () => {
 
     const result = await (await evaluate(tree)).get();
 
-    const expectedResult = await newPath("a");
+    const expectedResult = new Path("a");
 
     expect(result).toStrictEqual(expectedResult);
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<
@@ -2001,7 +1997,7 @@ describe("global", () => {
 
     const result = await (await evaluate(tree)).get();
 
-    const expectedResult = await newPath("a.*");
+    const expectedResult = new Path("a.*");
 
     expect(result).toStrictEqual(expectedResult);
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<
@@ -2032,7 +2028,7 @@ describe("global", () => {
 
     const result = await (await evaluate(tree)).get();
 
-    const expectedResult = await newPath("a.**");
+    const expectedResult = new Path("a.**");
 
     expect(result).toStrictEqual(expectedResult);
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<
