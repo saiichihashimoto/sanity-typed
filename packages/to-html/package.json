@@ -41,6 +41,7 @@
     "@sanity-typed/utils": "0.0.0-development"
   },
   "peerDependencies": {
-    "@portabletext/to-html": "^2.0.5"
+    "@portabletext/to-html": "^2.0.5",
+    "typescript": "5.1.3 || 5.1.5 || 5.1.6 || 5.2.2"
   }
 }
