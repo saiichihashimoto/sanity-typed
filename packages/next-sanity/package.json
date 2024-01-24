@@ -46,6 +46,7 @@
     "type-fest": "4.9.0"
   },
   "peerDependencies": {
-    "next-sanity": "^7.0.4"
+    "next-sanity": "^7.0.4",
+    "typescript": "5.1.3 || 5.1.5 || 5.1.6 || 5.2.2"
   }
 }
