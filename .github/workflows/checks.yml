@@ -32,7 +32,12 @@ jobs:
           key: node-modules-${{ hashFiles('package-lock.json') }}
       - if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
-      - run: npm ls --package-lock-only
+      - run: npm install --ignore-scripts
+      - run: |
+          if [[ $(git status --porcelain) != "" ]]; then
+            git --no-pager diff --color --text HEAD
+            exit 1
+          fi
   build:
     name: Build
     needs: install-node-modules
