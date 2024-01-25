@@ -1,9 +1,7 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 import type {
-  ClientConfig,
-  ClientPerspective,
-  RequestFetchOptions,
+  InitializedClientConfig,
   SanityAssetDocument,
 } from "@sanity/client";
 import type { Observable } from "rxjs";
@@ -24,39 +22,10 @@ describe("createStegaClient", () => {
     const exec = () =>
       createStegaClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>()({});
+      }>({});
 
     expectType<ReturnType<typeof exec>>().toEqual<
-      SanityStegaClient<
-        { [key: string]: never },
-        AnySanityDocument & { _type: "foo"; foo: string }
-      >
-    >();
-  });
-
-  it("adds _originalId to documents when perspective is `previewDrafts`", () => {
-    const exec = () =>
-      createStegaClient<{
-        foo: AnySanityDocument & { _type: "foo"; foo: string };
-        qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({
-        perspective: "previewDrafts",
-      });
-
-    expectType<ReturnType<typeof exec>>().toEqual<
-      SanityStegaClient<
-        {
-          perspective: "previewDrafts";
-        },
-        | (AnySanityDocument & {
-            _originalId: string;
-            _type: "foo";
-          })
-        | (AnySanityDocument & {
-            _originalId: string;
-            _type: "qux";
-          })
-      >
+      SanityStegaClient<AnySanityDocument & { _type: "foo"; foo: string }>
     >();
   });
 
@@ -65,12 +34,12 @@ describe("createStegaClient", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({});
+        }>({});
 
       const execClone = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).clone();
+        }>({}).clone();
 
       expectType<ReturnType<typeof execClone>>().toEqual<
         ReturnType<typeof exec>
@@ -81,42 +50,21 @@ describe("createStegaClient", () => {
   describe("config", () => {
     it("returns the config with more", () => {
       const exec = () =>
-        createStegaClient()({
+        createStegaClient({
           dataset: "dataset",
           projectId: "projectId",
         }).config();
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<{
-        allowReconfigure?: boolean;
-        apiHost: string;
-        apiVersion: string;
-        cdnUrl: string;
-        dataset: "dataset";
-        fetch?: RequestFetchOptions | boolean;
-        ignoreBrowserTokenWarning?: boolean;
-        isDefaultApi: boolean;
-        maxRetries?: number;
-        perspective?: ClientPerspective;
-        projectId: "projectId";
-        proxy?: string;
-        requestTagPrefix?: string;
-        requester?: Required<ClientConfig>["requester"];
-        resultSourceMap?: boolean | "withKeyArraySelector";
-        retryDelay?: (attemptNumber: number) => number;
-        timeout?: number;
-        token?: string;
-        url: string;
-        useCdn: boolean;
-        useProjectHostname: boolean;
-        withCredentials?: boolean;
-      }>();
+      expectType<
+        ReturnType<typeof exec>
+      >().toStrictEqual<InitializedClientConfig>();
     });
 
     it("returns the altered type", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "newProjectId",
         });
@@ -124,7 +72,7 @@ describe("createStegaClient", () => {
       const execWithConfig = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "projectId",
         }).config({
@@ -142,7 +90,7 @@ describe("createStegaClient", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "newProjectId",
         });
@@ -150,7 +98,7 @@ describe("createStegaClient", () => {
       const execWithConfig = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "projectId",
         }).withConfig({
@@ -168,7 +116,7 @@ describe("createStegaClient", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).fetch("*");
+        }>({}).fetch("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<(AnySanityDocument & { _type: "foo"; foo: string })[]>
@@ -180,34 +128,23 @@ describe("createStegaClient", () => {
         createStegaClient<{
           bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).fetch("*");
+        }>({}).fetch("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<(AnySanityDocument & { _type: "foo"; foo: string })[]>
       >();
     });
 
-    it("uses the client in queries", () => {
-      const exec = () =>
-        createStegaClient()({
-          projectId: "projectId",
-        }).fetch("sanity::projectId()");
-
-      expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<"projectId">
-      >();
-    });
-
     it("uses the params in queries", () => {
       const exec = () =>
-        createStegaClient()({}).fetch("$param", { param: "foo" });
+        createStegaClient({}).fetch("$param", { param: "foo" });
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<Promise<"foo">>();
     });
 
     it("returns RawQueryResponse", () => {
       const exec = () =>
-        createStegaClient()({}).fetch("5", undefined, {
+        createStegaClient({}).fetch("5", undefined, {
           filterResponse: false,
         });
 
@@ -222,7 +159,7 @@ describe("createStegaClient", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).listen("*");
+        }>({}).listen("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -235,7 +172,7 @@ describe("createStegaClient", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).listen("*", {}, {});
+        }>({}).listen("*", {}, {});
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -251,7 +188,7 @@ describe("createStegaClient", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).getDocument("id");
+        }>({}).getDocument("id");
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Promise<
@@ -277,7 +214,7 @@ describe("createStegaClient", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).getDocuments(["id", "id2"]);
+        }>({}).getDocuments(["id", "id2"]);
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Promise<
@@ -320,7 +257,7 @@ describe("createStegaClient", () => {
         const client = createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({});
+        }>({});
 
         expectType<Parameters<typeof client.create>[0]>().toEqual<
           | Omit<
@@ -354,7 +291,7 @@ describe("createStegaClient", () => {
         const client = createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({});
+        }>({});
 
         expectType<Parameters<typeof client.createOrReplace>[0]>().toEqual<
           | Omit<
@@ -382,7 +319,7 @@ describe("createStegaClient", () => {
         const client = createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({});
+        }>({});
 
         expectType<Parameters<typeof client.createIfNotExists>[0]>().toEqual<
           | Omit<
@@ -414,7 +351,7 @@ describe("createStegaClient", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).delete("id");
+        }>({}).delete("id");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<
@@ -432,7 +369,7 @@ describe("createStegaClient", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .patch("id")
           .commit();
 
@@ -450,7 +387,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .set({ foo: "bar" })
             .commit();
@@ -465,7 +402,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", { set: { foo: "bar" } })
             .commit();
 
@@ -481,7 +418,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .setIfMissing({ foo: "bar" })
             .commit();
@@ -496,7 +433,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", { setIfMissing: { foo: "bar" } })
             .commit();
 
@@ -512,7 +449,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .diffMatchPatch({ foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" })
             .commit();
@@ -527,7 +464,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", {
               diffMatchPatch: { foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" },
             })
@@ -545,7 +482,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .unset(["foo"])
             .commit();
@@ -560,7 +497,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", { unset: ["foo"] })
             .commit();
 
@@ -576,7 +513,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .inc({ foo: 1 })
             .commit();
@@ -591,7 +528,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", { inc: { foo: 1 } })
             .commit();
 
@@ -607,7 +544,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .dec({ foo: 1 })
             .commit();
@@ -622,7 +559,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", { dec: { foo: 1 } })
             .commit();
 
@@ -645,7 +582,7 @@ describe("createStegaClient", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .patch("id")
           .set({ foo: "bar" })
           .reset()
@@ -668,7 +605,7 @@ describe("createStegaClient", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .transaction()
           .commit();
 
@@ -681,7 +618,7 @@ describe("createStegaClient", () => {
           const transaction = createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).transaction();
+          }>({}).transaction();
 
           expectType<Parameters<typeof transaction.create>[0]>().toEqual<
             | Omit<
@@ -713,7 +650,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction([{ create: { _type: "foo", foo: "foo" } }])
             .commit();
 
@@ -729,7 +666,7 @@ describe("createStegaClient", () => {
           const transaction = createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).transaction();
+          }>({}).transaction();
 
           expectType<
             Parameters<typeof transaction.createOrReplace>[0]
@@ -759,7 +696,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction([
               { createOrReplace: { _type: "foo", _id: "id", foo: "foo" } },
             ])
@@ -777,7 +714,7 @@ describe("createStegaClient", () => {
           const transaction = createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).transaction();
+          }>({}).transaction();
 
           expectType<
             Parameters<typeof transaction.createIfNotExists>[0]
@@ -807,7 +744,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction([
               { createIfNotExists: { _type: "foo", _id: "id", foo: "foo" } },
             ])
@@ -825,7 +762,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction()
             .delete("id")
             .commit();
@@ -844,7 +781,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction([{ delete: { id: "id" } }])
             .commit();
 
@@ -864,7 +801,7 @@ describe("createStegaClient", () => {
           const client = createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({});
+          }>({});
 
           return client
             .transaction()
@@ -882,7 +819,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction()
             .patch("id", (patch) => patch.set({ foo: "foo" }))
             .commit();
@@ -897,7 +834,7 @@ describe("createStegaClient", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction([{ patch: { id: "id", set: { foo: "foo" } } }])
             .commit();
 
@@ -913,7 +850,7 @@ describe("createStegaClient", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .transaction()
           .create({ _type: "foo", foo: "foo" })
           .reset()
@@ -929,7 +866,7 @@ describe("createStegaClient", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).mutate([]);
+        }>({}).mutate([]);
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<
@@ -944,7 +881,7 @@ describe("createStegaClient", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).mutate([
+        }>({}).mutate([
           {
             create: {
               _type: "foo",
@@ -965,7 +902,7 @@ describe("createStegaClient", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).mutate(new Patch("id").set({ foo: "bar" }));
+        }>({}).mutate(new Patch("id").set({ foo: "bar" }));
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<AnySanityDocument & { _type: "foo"; foo: string }>
@@ -977,7 +914,7 @@ describe("createStegaClient", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).mutate(new Transaction().create({ _type: "foo", foo: "foo" }));
+        }>({}).mutate(new Transaction().create({ _type: "foo", foo: "foo" }));
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<AnySanityDocument & { _type: "foo"; foo: string }>
