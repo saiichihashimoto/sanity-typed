@@ -40,7 +40,7 @@
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.2",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@sanity/client": "6.11.1"
+    "@sanity/client": "6.11.3"
   },
   "peerDependencies": {
     "@sanity/client": "^6.1.7",
