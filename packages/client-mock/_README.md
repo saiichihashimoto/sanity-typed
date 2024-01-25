@@ -46,11 +46,15 @@ Depending on your tree-shaking setup, you'll want to swap between the real clien
 
 #### No more `createClient<SanityValues>()(config)`
 
-Removing the double function signature from `createClient`:
+Removing the double function signature from `createClient` and renaming `dataset` to `documents`:
 
 ```diff
-- const client = createClient<SanityValues>()({
+- const client = createClient<SanityValues>({
+-   dataset: [/* ... */],
+- })({
 + const client = createClient<SanityValues>({
++ documents: [/* ... */],
+  dataset: "production",
   // ...
 });
 ```

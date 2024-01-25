@@ -266,11 +266,15 @@ People will sometimes create a repo with their issue. _Please_ open a PR with a 
 
 #### No more `createClient<SanityValues>()(config)`
 
-Removing the double function signature from `createClient`:
+Removing the double function signature from `createClient` and renaming `dataset` to `documents`:
 
 ```diff
-- const client = createClient<SanityValues>()({
+- const client = createClient<SanityValues>({
+-   dataset: [/* ... */],
+- })({
 + const client = createClient<SanityValues>({
++ documents: [/* ... */],
+  dataset: "production",
   // ...
 });
 ```

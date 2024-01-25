@@ -38,7 +38,7 @@ npm install sanity @sanity-typed/client
 
 ## Usage
 
-Use `createClient` exactly as you would from [`@sanity/client`](https://github.com/sanity-io/client) with a minor change for proper type inference.
+Use `createClient` exactly as you would from [`@sanity/client`](https://github.com/sanity-io/client).
 
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
 ```product.ts```:
@@ -180,7 +180,6 @@ const client = createClient({
   // ...
 });
 
-// Same function signature as the typed `createClient`
 const typedClient = castToTyped<SanityValues>()(client);
 
 // Also, if you need the config in the client (eg. for queries using $param),
