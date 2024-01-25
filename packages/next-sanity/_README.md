@@ -32,3 +32,4 @@ Use `createClient` exactly as you would from [`@sanity-typed/client`](../client)
 
 @[:markdown](../../docs/considerations/types-vs-content-lake.md)
 @[:markdown](../../docs/considerations/evaluate-type-flakiness.md)
+@[:markdown](../../docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md)
