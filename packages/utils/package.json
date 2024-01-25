@@ -11,7 +11,7 @@
   "types": "src/index.ts",
   "dependencies": {
     "lodash": "4.17.21",
-    "type-fest": "4.9.0"
+    "type-fest": "4.10.1"
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development"
