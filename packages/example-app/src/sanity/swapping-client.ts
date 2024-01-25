@@ -5,16 +5,16 @@ import { createClient as createMockClient } from "@sanity-typed/client-mock";
 
 import { getMockDataset } from "./mocks";
 
-const createClient = process.env.VERCEL
-  ? createLiveClient<SanityValues>()
-  : createMockClient<SanityValues>({ dataset: getMockDataset() });
-
-export const client = createClient({
+const config = {
   projectId: "59t1ed5o",
   dataset: "production",
   useCdn: true,
   apiVersion: "2023-05-23",
-});
+};
+
+export const client = process.env.VERCEL
+  ? createLiveClient<SanityValues>(config)
+  : createMockClient<SanityValues>({ ...config, documents: getMockDataset() });
 
 export const makeTypedQuery = async () =>
   client.fetch('*[_type=="product"]{_id,productName,tags}');
