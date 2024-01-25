@@ -10,7 +10,7 @@ import type {
   BasePatch,
   ClientConfig,
   FilteredResponseQueryOptions,
-  InitializedClientConfig as InitializedClientConfigNative,
+  InitializedClientConfig,
   ListenEvent as ListenEventNative,
   ListenOptions,
   MultipleMutationResult,
@@ -238,7 +238,7 @@ export const Patch = PatchNative as unknown as new <
   TDocument extends AnySanityDocument,
   TAttrs extends Partial<TDocument>,
   TKeys extends TDocument extends never ? never : (keyof TDocument)[],
-  TClient extends SanityClient<any, TDocument> | undefined = undefined
+  TClient extends SanityClient<TDocument> | undefined = undefined
 >(
   idOrSelection: PatchSelection,
   operations?: PatchOperations<TDocument, TAttrs, TKeys>,
@@ -261,7 +261,7 @@ export const ObservablePatch = ObservablePatchNative as unknown as new <
   TDocument extends AnySanityDocument,
   TAttrs extends Partial<TDocument>,
   TKeys extends TDocument extends never ? never : (keyof TDocument)[],
-  TClient extends SanityClient<any, TDocument> | undefined = undefined
+  TClient extends SanityClient<TDocument> | undefined = undefined
 >(
   idOrSelection: PatchSelection,
   operations?: PatchOperations<TDocument, TAttrs, TKeys>,
@@ -431,7 +431,7 @@ export type MutationDoc<
 
 export const Transaction = TransactionNative as unknown as new <
   TDocument extends AnySanityDocument,
-  TClient extends SanityClient<any, TDocument> | undefined = undefined
+  TClient extends SanityClient<TDocument> | undefined = undefined
 >(
   operations?: Mutation<TDocument, any>[],
   client?: TClient,
@@ -446,7 +446,7 @@ export const Transaction = TransactionNative as unknown as new <
 export const ObservableTransaction =
   ObservableTransactionNative as unknown as new <
     TDocument extends AnySanityDocument,
-    TClient extends SanityClient<any, TDocument> | undefined = undefined
+    TClient extends SanityClient<TDocument> | undefined = undefined
   >(
     operations?: Mutation<TDocument, any>[],
     client?: TClient,
@@ -457,11 +457,6 @@ export const ObservableTransaction =
     false,
     undefined extends TClient ? false : true
   >;
-
-export type InitializedClientConfig<TClientConfig extends ClientConfig> = Merge<
-  InitializedClientConfigNative,
-  TClientConfig
->;
 
 export type MutationEvent<TDocument extends AnySanityDocument> = Merge<
   MutationEventNative,
@@ -497,7 +492,7 @@ export type GetDocuments<
   [index in keyof Ids]: (TDocument & { _id: Ids[index] }) | null;
 };
 
-type OverrideSanityClient<
+export type OverrideSanityClient<
   TSanityClient,
   TClientConfig extends ClientConfig,
   TDocument extends AnySanityDocument,
@@ -518,7 +513,7 @@ type OverrideSanityClient<
     >(
       newConfig?: NewConfig
     ) => NewConfig extends undefined
-      ? InitializedClientConfig<WritableDeep<TClientConfig>>
+      ? InitializedClientConfig
       : OverrideSanityClient<
           TSanityClient,
           Merge<TClientConfig, NewConfig>,
@@ -735,14 +730,6 @@ type OverrideSanityClient<
   }
 >;
 
-export type SanityValuesToDocumentUnion<
-  SanityValues extends { [type: string]: any },
-  TClientConfig extends ClientConfig
-> = DocumentValues<SanityValues> &
-  (TClientConfig extends { perspective: "previewDrafts" }
-    ? { _originalId: string }
-    : unknown);
-
 export type ObservableSanityClient<
   TClientConfig extends ClientConfig,
   TDocument extends AnySanityDocument
@@ -755,63 +742,47 @@ export type ObservableSanityClient<
   false
 >;
 
-export type SanityClient<
-  TClientConfig extends ClientConfig,
-  TDocument extends AnySanityDocument
-> = OverrideSanityClient<
-  SanityClientNative,
-  TClientConfig,
-  TDocument,
-  ObservableSanityClient<TClientConfig, TDocument>,
-  true
->;
+export type SanityClient<TDocument extends AnySanityDocument> =
+  OverrideSanityClient<
+    SanityClientNative,
+    ClientConfig,
+    TDocument,
+    ObservableSanityClient<ClientConfig, TDocument>,
+    true
+  >;
 
-/**
- * Unfortunately, this has to have a very weird function signature due to this typescript issue:
- * https://github.com/microsoft/TypeScript/issues/10571
- */
-export const createClient =
-  <SanityValues extends { [type: string]: any }>() =>
-  <const TClientConfig extends ClientConfig>(config: TClientConfig) =>
-    createClientNative(config) as unknown as SanityClient<
-      TClientConfig,
-      SanityValuesToDocumentUnion<SanityValues, TClientConfig>
-    >;
+export const createClient = <SanityValues extends { [type: string]: any }>(
+  config: ClientConfig
+) =>
+  createClientNative(config) as unknown as SanityClient<
+    DocumentValues<SanityValues>
+  >;
 
-export type ObservableSanityStegaClient<
-  TClientConfig extends ClientConfig,
-  TDocument extends AnySanityDocument
-> = OverrideSanityClient<
-  ObservableSanityStegaClientNative,
-  TClientConfig,
-  TDocument,
-  // TODO
-  any,
-  false
->;
+export type ObservableSanityStegaClient<TDocument extends AnySanityDocument> =
+  OverrideSanityClient<
+    ObservableSanityStegaClientNative,
+    ClientStegaConfig,
+    TDocument,
+    // TODO
+    any,
+    false
+  >;
 
-export type SanityStegaClient<
-  TClientConfig extends ClientConfig,
-  TDocument extends AnySanityDocument
-> = OverrideSanityClient<
-  SanityStegaClientNative,
-  TClientConfig,
-  TDocument,
-  ObservableSanityStegaClient<TClientConfig, TDocument>,
-  true
->;
+export type SanityStegaClient<TDocument extends AnySanityDocument> =
+  OverrideSanityClient<
+    SanityStegaClientNative,
+    ClientStegaConfig,
+    TDocument,
+    ObservableSanityStegaClient<TDocument>,
+    true
+  >;
 
-/**
- * Unfortunately, this has to have a very weird function signature due to this typescript issue:
- * https://github.com/microsoft/TypeScript/issues/10571
- */
-export const createStegaClient =
-  <SanityValues extends { [type: string]: any }>() =>
-  <const TClientConfig extends ClientStegaConfig>(config: TClientConfig) =>
-    createStegaClientNative(config) as unknown as SanityClient<
-      TClientConfig,
-      SanityValuesToDocumentUnion<SanityValues, TClientConfig>
-    >;
+export const createStegaClient = <SanityValues extends { [type: string]: any }>(
+  config: ClientStegaConfig
+) =>
+  createStegaClientNative(config) as unknown as SanityClient<
+    DocumentValues<SanityValues>
+  >;
 
 export const castToTyped =
   <SanityValues extends { [type: string]: any } = never>(
@@ -824,20 +795,9 @@ export const castToTyped =
           }
         ]
   ) =>
-  <
-    TClient extends SanityClientNative | SanityStegaClientNative,
-    const TClientConfig extends ClientConfig
-  >(
-    untyped: TClient,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- not actually used
-    config?: TClientConfig
+  <TClient extends SanityClientNative | SanityStegaClientNative>(
+    untyped: TClient
   ) =>
     untyped as unknown as TClient extends SanityStegaClientNative
-      ? SanityStegaClient<
-          TClientConfig,
-          SanityValuesToDocumentUnion<SanityValues, TClientConfig>
-        >
-      : SanityClient<
-          TClientConfig,
-          SanityValuesToDocumentUnion<SanityValues, TClientConfig>
-        >;
+      ? SanityStegaClient<DocumentValues<SanityValues>>
+      : SanityClient<DocumentValues<SanityValues>>;

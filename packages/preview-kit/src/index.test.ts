@@ -1,9 +1,7 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 import type {
-  ClientConfig,
-  ClientPerspective,
-  RequestFetchOptions,
+  InitializedClientConfig,
   SanityAssetDocument,
 } from "@sanity/client";
 import type { Observable } from "rxjs";
@@ -14,7 +12,6 @@ import type {
   ListenEvent,
   MutationEvent,
   RawQueryResponse,
-  SanityClient,
   SanityStegaClient,
 } from "@sanity-typed/client";
 import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
@@ -26,56 +23,10 @@ describe("createClient", () => {
     const exec = () =>
       createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>()({});
+      }>({});
 
     expectType<ReturnType<typeof exec>>().toEqual<
-      | SanityClient<
-          { [key: string]: never },
-          AnySanityDocument & { _type: "foo"; foo: string }
-        >
-      | SanityStegaClient<
-          { [key: string]: never },
-          AnySanityDocument & { _type: "foo"; foo: string }
-        >
-    >();
-  });
-
-  it("adds _originalId to documents when perspective is `previewDrafts`", () => {
-    const exec = () =>
-      createClient<{
-        foo: AnySanityDocument & { _type: "foo"; foo: string };
-        qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({
-        perspective: "previewDrafts",
-      });
-
-    expectType<ReturnType<typeof exec>>().toEqual<
-      | SanityClient<
-          {
-            perspective: "previewDrafts";
-          },
-          | (AnySanityDocument & {
-              _originalId: string;
-              _type: "foo";
-            })
-          | (AnySanityDocument & {
-              _originalId: string;
-              _type: "qux";
-            })
-        >
-      | SanityStegaClient<
-          {
-            perspective: "previewDrafts";
-          },
-          | (AnySanityDocument & {
-              _originalId: string;
-              _type: "foo";
-            })
-          | (AnySanityDocument & {
-              _originalId: string;
-              _type: "qux";
-            })
-        >
+      SanityStegaClient<AnySanityDocument & { _type: "foo"; foo: string }>
     >();
   });
 
@@ -84,12 +35,12 @@ describe("createClient", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({});
+        }>({});
 
       const execClone = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).clone();
+        }>({}).clone();
 
       expectType<ReturnType<typeof execClone>>().toEqual<
         ReturnType<typeof exec>
@@ -100,42 +51,21 @@ describe("createClient", () => {
   describe("config", () => {
     it("returns the config with more", () => {
       const exec = () =>
-        createClient()({
+        createClient({
           dataset: "dataset",
           projectId: "projectId",
         }).config();
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<{
-        allowReconfigure?: boolean;
-        apiHost: string;
-        apiVersion: string;
-        cdnUrl: string;
-        dataset: "dataset";
-        fetch?: RequestFetchOptions | boolean;
-        ignoreBrowserTokenWarning?: boolean;
-        isDefaultApi: boolean;
-        maxRetries?: number;
-        perspective?: ClientPerspective;
-        projectId: "projectId";
-        proxy?: string;
-        requestTagPrefix?: string;
-        requester?: Required<ClientConfig>["requester"];
-        resultSourceMap?: boolean | "withKeyArraySelector";
-        retryDelay?: (attemptNumber: number) => number;
-        timeout?: number;
-        token?: string;
-        url: string;
-        useCdn: boolean;
-        useProjectHostname: boolean;
-        withCredentials?: boolean;
-      }>();
+      expectType<
+        ReturnType<typeof exec>
+      >().toStrictEqual<InitializedClientConfig>();
     });
 
     it("returns the altered type", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "newProjectId",
         });
@@ -143,7 +73,7 @@ describe("createClient", () => {
       const execWithConfig = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "projectId",
         }).config({
@@ -161,7 +91,7 @@ describe("createClient", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "newProjectId",
         });
@@ -169,7 +99,7 @@ describe("createClient", () => {
       const execWithConfig = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "projectId",
         }).withConfig({
@@ -187,7 +117,7 @@ describe("createClient", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).fetch("*");
+        }>({}).fetch("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<(AnySanityDocument & { _type: "foo"; foo: string })[]>
@@ -199,33 +129,22 @@ describe("createClient", () => {
         createClient<{
           bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).fetch("*");
+        }>({}).fetch("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<(AnySanityDocument & { _type: "foo"; foo: string })[]>
       >();
     });
 
-    it("uses the client in queries", () => {
-      const exec = () =>
-        createClient()({
-          projectId: "projectId",
-        }).fetch("sanity::projectId()");
-
-      expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Promise<"projectId">
-      >();
-    });
-
     it("uses the params in queries", () => {
-      const exec = () => createClient()({}).fetch("$param", { param: "foo" });
+      const exec = () => createClient({}).fetch("$param", { param: "foo" });
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<Promise<"foo">>();
     });
 
     it("returns RawQueryResponse", () => {
       const exec = () =>
-        createClient()({}).fetch("5", undefined, { filterResponse: false });
+        createClient({}).fetch("5", undefined, { filterResponse: false });
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<RawQueryResponse<5, "5">>
@@ -238,7 +157,7 @@ describe("createClient", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).listen("*");
+        }>({}).listen("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -251,7 +170,7 @@ describe("createClient", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).listen("*", {}, {});
+        }>({}).listen("*", {}, {});
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -267,7 +186,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).getDocument("id");
+        }>({}).getDocument("id");
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Promise<
@@ -293,7 +212,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).getDocuments(["id", "id2"]);
+        }>({}).getDocuments(["id", "id2"]);
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Promise<
@@ -336,7 +255,7 @@ describe("createClient", () => {
         const client = createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({});
+        }>({});
 
         expectType<Parameters<typeof client.create>[0]>().toEqual<
           | Omit<
@@ -370,7 +289,7 @@ describe("createClient", () => {
         const client = createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({});
+        }>({});
 
         expectType<Parameters<typeof client.createOrReplace>[0]>().toEqual<
           | Omit<
@@ -398,7 +317,7 @@ describe("createClient", () => {
         const client = createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({});
+        }>({});
 
         expectType<Parameters<typeof client.createIfNotExists>[0]>().toEqual<
           | Omit<
@@ -430,7 +349,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).delete("id");
+        }>({}).delete("id");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<
@@ -448,7 +367,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .patch("id")
           .commit();
 
@@ -466,7 +385,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .set({ foo: "bar" })
             .commit();
@@ -481,7 +400,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", { set: { foo: "bar" } })
             .commit();
 
@@ -497,7 +416,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .setIfMissing({ foo: "bar" })
             .commit();
@@ -512,7 +431,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", { setIfMissing: { foo: "bar" } })
             .commit();
 
@@ -528,7 +447,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .diffMatchPatch({ foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" })
             .commit();
@@ -543,7 +462,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", {
               diffMatchPatch: { foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" },
             })
@@ -561,7 +480,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .unset(["foo"])
             .commit();
@@ -576,7 +495,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", { unset: ["foo"] })
             .commit();
 
@@ -592,7 +511,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .inc({ foo: 1 })
             .commit();
@@ -607,7 +526,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", { inc: { foo: 1 } })
             .commit();
 
@@ -623,7 +542,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id")
             .dec({ foo: 1 })
             .commit();
@@ -638,7 +557,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .patch("id", { dec: { foo: 1 } })
             .commit();
 
@@ -661,7 +580,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .patch("id")
           .set({ foo: "bar" })
           .reset()
@@ -684,7 +603,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .transaction()
           .commit();
 
@@ -697,7 +616,7 @@ describe("createClient", () => {
           const transaction = createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).transaction();
+          }>({}).transaction();
 
           expectType<Parameters<typeof transaction.create>[0]>().toEqual<
             | Omit<
@@ -729,7 +648,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction([{ create: { _type: "foo", foo: "foo" } }])
             .commit();
 
@@ -745,7 +664,7 @@ describe("createClient", () => {
           const transaction = createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).transaction();
+          }>({}).transaction();
 
           expectType<
             Parameters<typeof transaction.createOrReplace>[0]
@@ -775,7 +694,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction([
               { createOrReplace: { _type: "foo", _id: "id", foo: "foo" } },
             ])
@@ -793,7 +712,7 @@ describe("createClient", () => {
           const transaction = createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).transaction();
+          }>({}).transaction();
 
           expectType<
             Parameters<typeof transaction.createIfNotExists>[0]
@@ -823,7 +742,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction([
               { createIfNotExists: { _type: "foo", _id: "id", foo: "foo" } },
             ])
@@ -841,7 +760,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction()
             .delete("id")
             .commit();
@@ -860,7 +779,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction([{ delete: { id: "id" } }])
             .commit();
 
@@ -880,7 +799,7 @@ describe("createClient", () => {
           const client = createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({});
+          }>({});
 
           return client
             .transaction()
@@ -898,7 +817,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction()
             .patch("id", (patch) => patch.set({ foo: "foo" }))
             .commit();
@@ -913,7 +832,7 @@ describe("createClient", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .transaction([{ patch: { id: "id", set: { foo: "foo" } } }])
             .commit();
 
@@ -929,7 +848,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .transaction()
           .create({ _type: "foo", foo: "foo" })
           .reset()
@@ -945,7 +864,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).mutate([]);
+        }>({}).mutate([]);
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<
@@ -960,7 +879,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).mutate([
+        }>({}).mutate([
           {
             create: {
               _type: "foo",
@@ -981,7 +900,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).mutate(new Patch("id").set({ foo: "bar" }));
+        }>({}).mutate(new Patch("id").set({ foo: "bar" }));
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<AnySanityDocument & { _type: "foo"; foo: string }>
@@ -993,7 +912,7 @@ describe("createClient", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).mutate(new Transaction().create({ _type: "foo", foo: "foo" }));
+        }>({}).mutate(new Transaction().create({ _type: "foo", foo: "foo" }));
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Promise<AnySanityDocument & { _type: "foo"; foo: string }>

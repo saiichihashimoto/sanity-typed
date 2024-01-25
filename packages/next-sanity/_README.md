@@ -33,3 +33,20 @@ Use `createClient` exactly as you would from [`@sanity-typed/client`](../client)
 @[:markdown](../../docs/considerations/types-vs-content-lake.md)
 @[:markdown](../../docs/considerations/evaluate-type-flakiness.md)
 @[:markdown](../../docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md)
+
+## Breaking Changes
+
+### 1 to 2
+
+#### No more `createClient<SanityValues>()(config)`
+
+Removing the double function signature from `createClient`:
+
+```diff
+- const client = createClient<SanityValues>()({
++ const client = createClient<SanityValues>({
+  // ...
+});
+```
+
+We no longer derive types from your config values. Most of the types weren't significant, but the main loss will be `_originalId` when the `perspective` was `"previewDrafts"`.

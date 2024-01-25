@@ -1,7 +1,6 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 import { createClient as createClientNative } from "@sanity/client";
-import type { ClientConfig } from "@sanity/client";
 import { createClient as createStegaClientNative } from "@sanity/client/stega";
 
 import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
@@ -27,7 +26,7 @@ describe("interoperability", () => {
         };
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          SanityClient<ClientConfig, never>
+          SanityClient<never>
         >();
       });
 
@@ -46,7 +45,7 @@ describe("interoperability", () => {
         };
 
         expectType<ReturnType<typeof exec>>().toEqual<
-          SanityClient<ClientConfig, AnySanityDocument & { _type: "foo" }>
+          SanityClient<AnySanityDocument & { _type: "foo" }>
         >();
       });
 
@@ -58,24 +57,14 @@ describe("interoperability", () => {
             createClientNative({
               dataset: "dataset",
               projectId: "projectId",
-            }),
-            {
-              dataset: "dataset",
-              projectId: "projectId",
-            }
+            })
           );
 
           return client;
         };
 
         expectType<ReturnType<typeof exec>>().toEqual<
-          SanityClient<
-            {
-              dataset: "dataset";
-              projectId: "projectId";
-            },
-            AnySanityDocument & { _type: "foo" }
-          >
+          SanityClient<AnySanityDocument & { _type: "foo" }>
         >();
       });
     });
@@ -96,7 +85,7 @@ describe("interoperability", () => {
         };
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          SanityStegaClient<ClientConfig, never>
+          SanityStegaClient<never>
         >();
       });
 
@@ -115,7 +104,7 @@ describe("interoperability", () => {
         };
 
         expectType<ReturnType<typeof exec>>().toEqual<
-          SanityStegaClient<ClientConfig, AnySanityDocument & { _type: "foo" }>
+          SanityStegaClient<AnySanityDocument & { _type: "foo" }>
         >();
       });
 
@@ -127,24 +116,14 @@ describe("interoperability", () => {
             createStegaClientNative({
               dataset: "dataset",
               projectId: "projectId",
-            }),
-            {
-              dataset: "dataset",
-              projectId: "projectId",
-            }
+            })
           );
 
           return client;
         };
 
         expectType<ReturnType<typeof exec>>().toEqual<
-          SanityStegaClient<
-            {
-              dataset: "dataset";
-              projectId: "projectId";
-            },
-            AnySanityDocument & { _type: "foo" }
-          >
+          SanityStegaClient<AnySanityDocument & { _type: "foo" }>
         >();
       });
     });
