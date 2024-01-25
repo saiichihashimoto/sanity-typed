@@ -275,7 +275,7 @@ Removing the double function signature from `createClient`:
 });
 ```
 
-This removes any typing that would have come from specific config values. Most of the types weren't significant, but the main loss will be `_originalId` when the `perspective` was `"previewDrafts"`.
+We no longer derive types from your config values. Most of the types weren't significant, but the main loss will be `_originalId` when the `perspective` was `"previewDrafts"`.
 
 ## Alternatives
 
