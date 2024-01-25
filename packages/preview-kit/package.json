@@ -44,7 +44,7 @@
     "@saiichihashimoto/test-utils": "1.0.2",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity/preview-kit": "5.0.11",
-    "type-fest": "4.9.0"
+    "type-fest": "4.10.1"
   },
   "peerDependencies": {
     "@sanity/preview-kit": "^5.0.6",
