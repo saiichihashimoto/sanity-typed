@@ -3,9 +3,8 @@ import type { SanityValues } from "sanity.config";
 // import { createClient } from "@sanity/client";
 import { createClient } from "@sanity-typed/client";
 
-/** Small change using createClient */
 // export const client = createClient({
-export const client = createClient<SanityValues>()({
+export const client = createClient<SanityValues>({
   projectId: "59t1ed5o",
   dataset: "production",
   useCdn: true,

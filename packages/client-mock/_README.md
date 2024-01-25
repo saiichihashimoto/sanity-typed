@@ -35,6 +35,32 @@ Depending on your tree-shaking setup, you'll want to swap between the real clien
 @[typescript](../example-app/src/sanity/mocks.ts)
 @[typescript](../example-app/src/sanity/swapping-client.ts)
 
+## Considerations
+
+@[:markdown](../../docs/considerations/evaluate-type-flakiness.md)
+@[:markdown](../../docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md)
+
+## Breaking Changes
+
+### 1 to 2
+
+#### No more `createClient<SanityValues>()(config)`
+
+Removing the double function signature from `createClient` and renaming `dataset` to `documents`:
+
+```diff
+- const client = createClient<SanityValues>({
+-   dataset: [/* ... */],
+- })({
++ const client = createClient<SanityValues>({
++ documents: [/* ... */],
+  dataset: "production",
+  // ...
+});
+```
+
+We no longer derive types from your config values. Most of the types weren't significant, but the main loss will be `_originalId` when the `perspective` was `"previewDrafts"`.
+
 ## Alternatives
 
 - [`fake-sanity-client`](https://www.npmjs.com/package/fake-sanity-client)

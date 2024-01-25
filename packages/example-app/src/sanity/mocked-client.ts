@@ -3,10 +3,9 @@ import type { SanityValues } from "sanity.config";
 // import { createClient } from "@sanity-typed/client";
 import { createClient } from "@sanity-typed/client-mock";
 
-/** Small change using createClient */
 // export const client = createClient({
 export const client = createClient<SanityValues>({
-  dataset: [
+  documents: [
     {
       _createdAt: "2011-12-15T03:57:59.213Z",
       _id: "id",
@@ -25,7 +24,8 @@ export const client = createClient<SanityValues>({
     },
     // ...
   ],
-})({
+
+  // ...@sanity/client options
   projectId: "59t1ed5o",
   dataset: "production",
   useCdn: true,
