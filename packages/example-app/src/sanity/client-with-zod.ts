@@ -4,7 +4,7 @@ import type { SanityValues } from "sanity.config";
 import { createClient } from "@sanity-typed/client";
 import { sanityConfigToZods } from "@sanity-typed/zod";
 
-export const client = createClient<SanityValues>()({
+export const client = createClient<SanityValues>({
   projectId: "59t1ed5o",
   dataset: "production",
   useCdn: true,
