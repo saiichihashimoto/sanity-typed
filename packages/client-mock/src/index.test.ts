@@ -2,9 +2,7 @@ import { faker } from "@faker-js/faker";
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 import type {
-  ClientConfig,
-  ClientPerspective,
-  RequestFetchOptions,
+  InitializedClientConfig,
   SanityAssetDocument,
 } from "@sanity/client";
 import type { Observable } from "rxjs";
@@ -29,41 +27,11 @@ describe("createClient", () => {
     const client = createClient<{
       foo: AnySanityDocument & { _type: "foo"; foo: string };
     }>({
-      dataset: [],
-    })({});
-
-    expectType<typeof client>().toEqual<
-      SanityClient<
-        { [key: string]: never },
-        AnySanityDocument & { _type: "foo"; foo: string }
-      >
-    >();
-  });
-
-  it("adds _originalId to documents when perspective is `previewDrafts`", () => {
-    const client = createClient<{
-      foo: AnySanityDocument & { _type: "foo"; foo: string };
-      qux: AnySanityDocument & { _type: "qux"; qux: number };
-    }>({
-      dataset: [],
-    })({
-      perspective: "previewDrafts",
+      documents: [],
     });
 
     expectType<typeof client>().toEqual<
-      SanityClient<
-        {
-          perspective: "previewDrafts";
-        },
-        | (AnySanityDocument & {
-            _originalId: string;
-            _type: "foo";
-          })
-        | (AnySanityDocument & {
-            _originalId: string;
-            _type: "qux";
-          })
-      >
+      SanityClient<AnySanityDocument & { _type: "foo"; foo: string }>
     >();
   });
 
@@ -72,14 +40,14 @@ describe("createClient", () => {
       const client = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
-        dataset: [],
-      })({});
+        documents: [],
+      });
 
       const clientClone = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
-        dataset: [],
-      })({}).clone();
+        documents: [],
+      }).clone();
 
       expectType<typeof clientClone>().toEqual<typeof client>();
     });
@@ -88,41 +56,18 @@ describe("createClient", () => {
   describe("config", () => {
     it("returns the config with more", () => {
       const config = createClient({
-        dataset: [],
-      })({
+        documents: [],
         dataset: "dataset",
         projectId: "projectId",
       }).config();
 
-      expectType<typeof config>().toStrictEqual<{
-        allowReconfigure?: boolean;
-        apiHost: string;
-        apiVersion: string;
-        cdnUrl: string;
-        dataset: "dataset";
-        fetch?: RequestFetchOptions | boolean;
-        ignoreBrowserTokenWarning?: boolean;
-        isDefaultApi: boolean;
-        maxRetries?: number;
-        perspective?: ClientPerspective;
-        projectId: "projectId";
-        proxy?: string;
-        requestTagPrefix?: string;
-        requester?: Required<ClientConfig>["requester"];
-        resultSourceMap?: boolean | "withKeyArraySelector";
-        retryDelay?: (attemptNumber: number) => number;
-        timeout?: number;
-        token?: string;
-        url: string;
-        useCdn: boolean;
-        useProjectHostname: boolean;
-        withCredentials?: boolean;
-      }>();
+      expectType<typeof config>().toStrictEqual<InitializedClientConfig>();
       expect(config).toStrictEqual({
         apiHost: "apiHost",
         apiVersion: "apiVersion",
         cdnUrl: "internal, don't use",
         dataset: "dataset",
+        documents: [],
         isDefaultApi: true,
         projectId: "projectId",
         url: "internal, don't use",
@@ -135,8 +80,7 @@ describe("createClient", () => {
       const client = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
-        dataset: [],
-      })({
+        documents: [],
         dataset: "dataset",
         projectId: "newProjectId",
       });
@@ -144,8 +88,7 @@ describe("createClient", () => {
       const clientWithConfig = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
-        dataset: [],
-      })({
+        documents: [],
         dataset: "dataset",
         projectId: "projectId",
       }).config({
@@ -162,8 +105,7 @@ describe("createClient", () => {
       const client = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
-        dataset: [],
-      })({
+        documents: [],
         dataset: "dataset",
         projectId: "newProjectId",
       });
@@ -171,8 +113,7 @@ describe("createClient", () => {
       const clientWithConfig = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
-        dataset: [],
-      })({
+        documents: [],
         dataset: "dataset",
         projectId: "projectId",
       }).withConfig({
@@ -189,7 +130,7 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
-        dataset: [
+        documents: [
           {
             _createdAt: "_createdAt",
             _id: "id",
@@ -199,7 +140,7 @@ describe("createClient", () => {
             foo: "foo",
           },
         ],
-      })({}).fetch("*");
+      }).fetch("*");
 
       expectType<typeof result>().toStrictEqual<
         (AnySanityDocument & { _type: "foo"; foo: string })[]
@@ -221,7 +162,7 @@ describe("createClient", () => {
         bar: { _type: "bar"; bar: "bar" };
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
-        dataset: [
+        documents: [
           {
             _createdAt: "_createdAt",
             _id: "id",
@@ -231,7 +172,7 @@ describe("createClient", () => {
             foo: "foo",
           },
         ],
-      })({}).fetch("*");
+      }).fetch("*");
 
       expectType<typeof result>().toStrictEqual<
         (AnySanityDocument & { _type: "foo"; foo: string })[]
@@ -248,21 +189,10 @@ describe("createClient", () => {
       ]);
     });
 
-    it("uses the client in queries", async () => {
-      const result = await createClient({
-        dataset: [],
-      })({
-        projectId: "projectId",
-      }).fetch("sanity::projectId()");
-
-      expectType<typeof result>().toStrictEqual<"projectId">();
-      expect(result).toBe("projectId");
-    });
-
     it("uses the params in queries", async () => {
       const result = await createClient({
-        dataset: [],
-      })({}).fetch("$param", { param: "foo" });
+        documents: [],
+      }).fetch("$param", { param: "foo" });
 
       expectType<typeof result>().toStrictEqual<"foo">();
       expect(result).toBe("foo");
@@ -270,8 +200,8 @@ describe("createClient", () => {
 
     it("returns RawQueryResponse", async () => {
       const result = await createClient({
-        dataset: [],
-      })({}).fetch("5", undefined, {
+        documents: [],
+      }).fetch("5", undefined, {
         filterResponse: false,
       });
 
@@ -289,8 +219,8 @@ describe("createClient", () => {
       const result = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
-        dataset: [],
-      })({})
+        documents: [],
+      })
         // TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
         .listen("*");
 
@@ -305,8 +235,8 @@ describe("createClient", () => {
       const result = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
       }>({
-        dataset: [],
-      })({})
+        documents: [],
+      })
         // TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
         .listen("*", {}, {});
 
@@ -324,7 +254,7 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [
+        documents: [
           {
             _createdAt: "_createdAt",
             _id: "id",
@@ -342,7 +272,7 @@ describe("createClient", () => {
             qux: 1,
           },
         ],
-      })({}).getDocument("id");
+      }).getDocument("id");
 
       expectType<typeof result>().toEqual<
         | (AnySanityDocument & {
@@ -374,7 +304,7 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [
+        documents: [
           {
             _createdAt: "_createdAt",
             _id: "id",
@@ -392,7 +322,7 @@ describe("createClient", () => {
             qux: 1,
           },
         ],
-      })({}).getDocuments(["id", "id2"]);
+      }).getDocuments(["id", "id2"]);
 
       expectType<typeof result>().toEqual<
         [
@@ -451,8 +381,8 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [],
-      })({}).create({ _type: "foo", foo: "foo" });
+        documents: [],
+      }).create({ _type: "foo", foo: "foo" });
 
       expectType<typeof result>().toStrictEqual<
         AnySanityDocument & { _type: "foo"; foo: string }
@@ -474,7 +404,7 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [
+        documents: [
           {
             _createdAt: "_createdAt",
             _id: "id",
@@ -484,7 +414,7 @@ describe("createClient", () => {
             foo: "foo",
           },
         ],
-      })({}).createOrReplace({ _type: "foo", _id: "id", foo: "foo" });
+      }).createOrReplace({ _type: "foo", _id: "id", foo: "foo" });
 
       expectType<typeof result>().toStrictEqual<
         AnySanityDocument & { _type: "foo"; foo: string }
@@ -506,7 +436,7 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [
+        documents: [
           {
             _createdAt: "_createdAt",
             _id: "id",
@@ -516,7 +446,7 @@ describe("createClient", () => {
             foo: "foo",
           },
         ],
-      })({}).createIfNotExists({
+      }).createIfNotExists({
         _type: "foo",
         _id: "id",
         foo: "foo",
@@ -542,7 +472,7 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [
+        documents: [
           {
             _createdAt: "_createdAt",
             _id: "id",
@@ -552,7 +482,7 @@ describe("createClient", () => {
             foo: "foo",
           },
         ],
-      })({}).delete("id");
+      }).delete("id");
 
       expectType<typeof result>().toStrictEqual<
         | SanityAssetDocument
@@ -576,7 +506,7 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [
+        documents: [
           {
             _createdAt: "_createdAt",
             _id: "id",
@@ -594,7 +524,7 @@ describe("createClient", () => {
             qux: 1,
           },
         ],
-      })({})
+      })
         .patch("id")
         .commit();
 
@@ -618,7 +548,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -636,7 +566,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id")
           .set({ foo: "bar" })
           .commit();
@@ -659,7 +589,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -677,7 +607,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id", { set: { foo: "bar" } })
           .commit();
 
@@ -701,7 +631,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -719,7 +649,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id")
           .setIfMissing({ foo: "bar" })
           .commit();
@@ -742,7 +672,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -760,7 +690,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id", { setIfMissing: { foo: "bar" } })
           .commit();
 
@@ -784,7 +714,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -802,7 +732,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id")
           .diffMatchPatch({ foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" })
           .commit();
@@ -825,7 +755,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -843,7 +773,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id", {
             diffMatchPatch: { foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" },
           })
@@ -869,7 +799,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo?: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -887,7 +817,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id")
           .unset(["foo"])
           .commit();
@@ -909,7 +839,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo?: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -927,7 +857,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id", { unset: ["foo"] })
           .commit();
 
@@ -950,7 +880,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: number };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -968,7 +898,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id")
           .inc({ foo: 1 })
           .commit();
@@ -991,7 +921,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: number };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1009,7 +939,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id", { inc: { foo: 1 } })
           .commit();
 
@@ -1033,7 +963,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: number };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1051,7 +981,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id")
           .dec({ foo: 1 })
           .commit();
@@ -1074,7 +1004,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: number };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1092,7 +1022,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .patch("id", { dec: { foo: 1 } })
           .commit();
 
@@ -1123,7 +1053,7 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [
+        documents: [
           {
             _createdAt: "_createdAt",
             _id: "id",
@@ -1141,7 +1071,7 @@ describe("createClient", () => {
             qux: 1,
           },
         ],
-      })({})
+      })
         .patch("id")
         .set({ foo: "bar" })
         .reset()
@@ -1170,8 +1100,8 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [],
-      })({})
+        documents: [],
+      })
         .transaction()
         .commit();
 
@@ -1185,8 +1115,8 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [],
-        })({})
+          documents: [],
+        })
           .transaction()
           .create({ _type: "foo", foo: "foo" })
           .commit();
@@ -1209,8 +1139,8 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [],
-        })({})
+          documents: [],
+        })
           .transaction([{ create: { _type: "foo", foo: "foo" } }])
           .commit();
 
@@ -1234,7 +1164,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1244,7 +1174,7 @@ describe("createClient", () => {
               foo: "foo",
             },
           ],
-        })({})
+        })
           .transaction()
           .createOrReplace({ _type: "foo", _id: "id", foo: "foo" })
           .commit();
@@ -1267,7 +1197,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1277,7 +1207,7 @@ describe("createClient", () => {
               foo: "foo",
             },
           ],
-        })({})
+        })
           .transaction([
             { createOrReplace: { _type: "foo", _id: "id", foo: "foo" } },
           ])
@@ -1303,7 +1233,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1313,7 +1243,7 @@ describe("createClient", () => {
               foo: "foo",
             },
           ],
-        })({})
+        })
           .transaction()
           .createIfNotExists({ _type: "foo", _id: "id", foo: "foo" })
           .commit();
@@ -1336,7 +1266,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1346,7 +1276,7 @@ describe("createClient", () => {
               foo: "foo",
             },
           ],
-        })({})
+        })
           .transaction([
             { createIfNotExists: { _type: "foo", _id: "id", foo: "foo" } },
           ])
@@ -1372,7 +1302,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1382,7 +1312,7 @@ describe("createClient", () => {
               foo: "foo",
             },
           ],
-        })({})
+        })
           .transaction()
           .delete("id")
           .commit();
@@ -1407,7 +1337,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1417,7 +1347,7 @@ describe("createClient", () => {
               foo: "foo",
             },
           ],
-        })({})
+        })
           .transaction([{ delete: { id: "id" } }])
           .commit();
 
@@ -1443,7 +1373,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1461,7 +1391,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({});
+        });
 
         const result = await client
           .transaction()
@@ -1486,7 +1416,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1504,7 +1434,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .transaction()
           .patch("id", (patch) => patch.set({ foo: "bar" }))
           .commit();
@@ -1527,7 +1457,7 @@ describe("createClient", () => {
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
         }>({
-          dataset: [
+          documents: [
             {
               _createdAt: "_createdAt",
               _id: "id",
@@ -1545,7 +1475,7 @@ describe("createClient", () => {
               qux: 1,
             },
           ],
-        })({})
+        })
           .transaction([{ patch: { id: "id", set: { foo: "bar" } } }])
           .commit();
 
@@ -1569,8 +1499,8 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [],
-      })({})
+        documents: [],
+      })
         .transaction()
         .create({ _type: "foo", foo: "foo" })
         .reset()
@@ -1587,8 +1517,8 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [],
-      })({}).mutate([]);
+        documents: [],
+      }).mutate([]);
 
       expectType<typeof result>().toStrictEqual<// @ts-expect-error -- TODO
       undefined>();
@@ -1600,8 +1530,8 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [],
-      })({}).mutate([
+        documents: [],
+      }).mutate([
         {
           create: {
             _type: "foo",
@@ -1630,7 +1560,7 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [
+        documents: [
           {
             _createdAt: "_createdAt",
             _id: "id",
@@ -1648,7 +1578,7 @@ describe("createClient", () => {
             qux: 1,
           },
         ],
-      })({}).mutate(new Patch("id").set({ foo: "bar" }));
+      }).mutate(new Patch("id").set({ foo: "bar" }));
 
       expectType<typeof result>().toStrictEqual<
         AnySanityDocument & { _type: "foo"; foo: string }
@@ -1668,8 +1598,8 @@ describe("createClient", () => {
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
       }>({
-        dataset: [],
-      })({}).mutate(new Transaction().create({ _type: "foo", foo: "foo" }));
+        documents: [],
+      }).mutate(new Transaction().create({ _type: "foo", foo: "foo" }));
 
       expectType<typeof result>().toStrictEqual<
         AnySanityDocument & { _type: "foo"; foo: string }

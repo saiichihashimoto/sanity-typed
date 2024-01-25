@@ -1,9 +1,7 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 import type {
-  ClientConfig,
-  ClientPerspective,
-  RequestFetchOptions,
+  InitializedClientConfig,
   SanityAssetDocument,
 } from "@sanity/client";
 import type { Observable } from "rxjs";
@@ -12,51 +10,20 @@ import type { SetOptional } from "type-fest";
 import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
 import { ObservablePatch, ObservableTransaction, createStegaClient } from ".";
-import type {
-  ListenEvent,
-  MutationEvent,
-  ObservableSanityStegaClient,
-  RawQueryResponse,
-} from ".";
+import type { ListenEvent, MutationEvent, RawQueryResponse } from ".";
 
 describe("stega observable", () => {
-  it("adds _originalId to documents when perspective is `previewDrafts`", () => {
-    const exec = () =>
-      createStegaClient<{
-        foo: AnySanityDocument & { _type: "foo"; foo: string };
-        qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({
-        perspective: "previewDrafts",
-      }).observable;
-
-    expectType<ReturnType<typeof exec>>().toEqual<
-      ObservableSanityStegaClient<
-        {
-          perspective: "previewDrafts";
-        },
-        | (AnySanityDocument & {
-            _originalId: string;
-            _type: "foo";
-          })
-        | (AnySanityDocument & {
-            _originalId: string;
-            _type: "qux";
-          })
-      >
-    >();
-  });
-
   describe("clone", () => {
     it("returns the same type", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable;
+        }>({}).observable;
 
       const execClone = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable.clone();
+        }>({}).observable.clone();
 
       expectType<ReturnType<typeof execClone>>().toEqual<
         ReturnType<typeof exec>
@@ -67,42 +34,21 @@ describe("stega observable", () => {
   describe("config", () => {
     it("returns the config with more", () => {
       const exec = () =>
-        createStegaClient()({
+        createStegaClient({
           dataset: "dataset",
           projectId: "projectId",
         }).observable.config();
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<{
-        allowReconfigure?: boolean;
-        apiHost: string;
-        apiVersion: string;
-        cdnUrl: string;
-        dataset: "dataset";
-        fetch?: RequestFetchOptions | boolean;
-        ignoreBrowserTokenWarning?: boolean;
-        isDefaultApi: boolean;
-        maxRetries?: number;
-        perspective?: ClientPerspective;
-        projectId: "projectId";
-        proxy?: string;
-        requestTagPrefix?: string;
-        requester?: Required<ClientConfig>["requester"];
-        resultSourceMap?: boolean | "withKeyArraySelector";
-        retryDelay?: (attemptNumber: number) => number;
-        timeout?: number;
-        token?: string;
-        url: string;
-        useCdn: boolean;
-        useProjectHostname: boolean;
-        withCredentials?: boolean;
-      }>();
+      expectType<
+        ReturnType<typeof exec>
+      >().toStrictEqual<InitializedClientConfig>();
     });
 
     it("returns the altered type", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "newProjectId",
         }).observable;
@@ -110,7 +56,7 @@ describe("stega observable", () => {
       const execWithConfig = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "projectId",
         }).observable.config({
@@ -128,7 +74,7 @@ describe("stega observable", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "newProjectId",
         }).observable;
@@ -136,7 +82,7 @@ describe("stega observable", () => {
       const execWithConfig = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "projectId",
         }).observable.withConfig({
@@ -154,7 +100,7 @@ describe("stega observable", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable.fetch("*");
+        }>({}).observable.fetch("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<(AnySanityDocument & { _type: "foo"; foo: string })[]>
@@ -166,34 +112,23 @@ describe("stega observable", () => {
         createStegaClient<{
           bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable.fetch("*");
+        }>({}).observable.fetch("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<(AnySanityDocument & { _type: "foo"; foo: string })[]>
       >();
     });
 
-    it("uses the client in queries", () => {
-      const exec = () =>
-        createStegaClient()({
-          projectId: "projectId",
-        }).observable.fetch("sanity::projectId()");
-
-      expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Observable<"projectId">
-      >();
-    });
-
     it("uses the params in queries", () => {
       const exec = () =>
-        createStegaClient()({}).observable.fetch("$param", { param: "foo" });
+        createStegaClient({}).observable.fetch("$param", { param: "foo" });
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<Observable<"foo">>();
     });
 
     it("returns RawQueryResponse", () => {
       const exec = () =>
-        createStegaClient()({}).observable.fetch("5", undefined, {
+        createStegaClient({}).observable.fetch("5", undefined, {
           filterResponse: false,
         });
 
@@ -208,7 +143,7 @@ describe("stega observable", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable.listen("*");
+        }>({}).observable.listen("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -221,7 +156,7 @@ describe("stega observable", () => {
       const exec = () =>
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable.listen("*", {}, {});
+        }>({}).observable.listen("*", {}, {});
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -237,7 +172,7 @@ describe("stega observable", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.getDocument("id");
+        }>({}).observable.getDocument("id");
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Observable<
@@ -263,7 +198,7 @@ describe("stega observable", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.getDocuments(["id", "id2"]);
+        }>({}).observable.getDocuments(["id", "id2"]);
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Observable<
@@ -306,7 +241,7 @@ describe("stega observable", () => {
         const client = createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable;
+        }>({}).observable;
 
         expectType<Parameters<typeof client.create>[0]>().toEqual<
           | Omit<
@@ -340,7 +275,7 @@ describe("stega observable", () => {
         const client = createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable;
+        }>({}).observable;
 
         expectType<Parameters<typeof client.createOrReplace>[0]>().toEqual<
           | Omit<
@@ -368,7 +303,7 @@ describe("stega observable", () => {
         const client = createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable;
+        }>({}).observable;
 
         expectType<Parameters<typeof client.createIfNotExists>[0]>().toEqual<
           | Omit<
@@ -400,7 +335,7 @@ describe("stega observable", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.delete("id");
+        }>({}).observable.delete("id");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -418,7 +353,7 @@ describe("stega observable", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .observable.patch("id")
           .commit();
 
@@ -436,7 +371,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .set({ foo: "bar" })
             .commit();
@@ -451,7 +386,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", { set: { foo: "bar" } })
             .commit();
 
@@ -467,7 +402,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .setIfMissing({ foo: "bar" })
             .commit();
@@ -482,7 +417,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", { setIfMissing: { foo: "bar" } })
             .commit();
 
@@ -498,7 +433,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .diffMatchPatch({ foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" })
             .commit();
@@ -513,7 +448,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", {
               diffMatchPatch: { foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" },
             })
@@ -531,7 +466,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .unset(["foo"])
             .commit();
@@ -546,7 +481,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", { unset: ["foo"] })
             .commit();
 
@@ -562,7 +497,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .inc({ foo: 1 })
             .commit();
@@ -577,7 +512,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", { inc: { foo: 1 } })
             .commit();
 
@@ -593,7 +528,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .dec({ foo: 1 })
             .commit();
@@ -608,7 +543,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", { dec: { foo: 1 } })
             .commit();
 
@@ -631,7 +566,7 @@ describe("stega observable", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .observable.patch("id")
           .set({ foo: "bar" })
           .reset()
@@ -654,7 +589,7 @@ describe("stega observable", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .observable.transaction()
           .commit();
 
@@ -669,7 +604,7 @@ describe("stega observable", () => {
           const transaction = createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).observable.transaction();
+          }>({}).observable.transaction();
 
           expectType<Parameters<typeof transaction.create>[0]>().toEqual<
             | Omit<
@@ -701,7 +636,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction([{ create: { _type: "foo", foo: "foo" } }])
             .commit();
 
@@ -717,7 +652,7 @@ describe("stega observable", () => {
           const transaction = createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).observable.transaction();
+          }>({}).observable.transaction();
 
           expectType<
             Parameters<typeof transaction.createOrReplace>[0]
@@ -747,7 +682,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction([
               { createOrReplace: { _type: "foo", _id: "id", foo: "foo" } },
             ])
@@ -765,7 +700,7 @@ describe("stega observable", () => {
           const transaction = createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).observable.transaction();
+          }>({}).observable.transaction();
 
           expectType<
             Parameters<typeof transaction.createIfNotExists>[0]
@@ -795,7 +730,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction([
               { createIfNotExists: { _type: "foo", _id: "id", foo: "foo" } },
             ])
@@ -813,7 +748,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction()
             .delete("id")
             .commit();
@@ -832,7 +767,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction([{ delete: { id: "id" } }])
             .commit();
 
@@ -852,7 +787,7 @@ describe("stega observable", () => {
           const client = createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).observable;
+          }>({}).observable;
 
           return client
             .transaction()
@@ -870,7 +805,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction()
             .patch("id", (patch) => patch.set({ foo: "foo" }))
             .commit();
@@ -885,7 +820,7 @@ describe("stega observable", () => {
           createStegaClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction([
               { patch: { id: "id", set: { foo: "foo" } } },
             ])
@@ -903,7 +838,7 @@ describe("stega observable", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .observable.transaction()
           .create({ _type: "foo", foo: "foo" })
           .reset()
@@ -921,7 +856,7 @@ describe("stega observable", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.mutate([]);
+        }>({}).observable.mutate([]);
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -936,9 +871,7 @@ describe("stega observable", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.mutate(
-          new ObservablePatch("id").set({ foo: "bar" })
-        );
+        }>({}).observable.mutate(new ObservablePatch("id").set({ foo: "bar" }));
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<AnySanityDocument & { _type: "foo"; foo: string }>
@@ -950,7 +883,7 @@ describe("stega observable", () => {
         createStegaClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.mutate(
+        }>({}).observable.mutate(
           new ObservableTransaction().create({ _type: "foo", foo: "foo" })
         );
 
