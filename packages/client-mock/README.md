@@ -21,6 +21,9 @@ Mock [@sanity-typed/client](../client) for local development and testing
 - [Considerations](#considerations)
   - [GROQ Query results changes in seemingly breaking ways](#groq-query-results-changes-in-seemingly-breaking-ways)
   - [`Type instantiation is excessively deep and possibly infinite`](#type-instantiation-is-excessively-deep-and-possibly-infinite)
+- [Breaking Changes](#breaking-changes)
+  - [1 to 2](#1-to-2)
+    - [No more `createClient<SanityValues>()(config)`](#no-more-createclientsanityvaluesconfig)
 - [Alternatives](#alternatives)
 
 ## Install
@@ -133,10 +136,9 @@ import type { SanityValues } from "sanity.config";
 // import { createClient } from "@sanity-typed/client";
 import { createClient } from "@sanity-typed/client-mock";
 
-/** Small change using createClient */
 // export const client = createClient({
 export const client = createClient<SanityValues>({
-  dataset: [
+  documents: [
     {
       _createdAt: "2011-12-15T03:57:59.213Z",
       _id: "id",
@@ -155,7 +157,8 @@ export const client = createClient<SanityValues>({
     },
     // ...
   ],
-})({
+
+  // ...@sanity/client options
   projectId: "59t1ed5o",
   dataset: "production",
   useCdn: true,
@@ -220,16 +223,16 @@ import { createClient as createMockClient } from "@sanity-typed/client-mock";
 
 import { getMockDataset } from "./mocks";
 
-const createClient = process.env.VERCEL
-  ? createLiveClient<SanityValues>()
-  : createMockClient<SanityValues>({ dataset: getMockDataset() });
-
-export const client = createClient({
+const config = {
   projectId: "59t1ed5o",
   dataset: "production",
   useCdn: true,
   apiVersion: "2023-05-23",
-});
+};
+
+export const client = process.env.VERCEL
+  ? createLiveClient<SanityValues>(config)
+  : createMockClient<SanityValues>({ ...config, documents: getMockDataset() });
 
 export const makeTypedQuery = async () =>
   client.fetch('*[_type=="product"]{_id,productName,tags}');
@@ -256,6 +259,27 @@ You might run into the dreaded `Type instantiation is excessively deep and possi
 
 People will sometimes create a repo with their issue. _Please_ open a PR with a minimal test instead. Without a PR there will be no tests reflecting your issue and it may appear again in a regression. Forking a github repo to make a PR is a more welcome way to contribute to an open source library.
 <!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md -->
+
+## Breaking Changes
+
+### 1 to 2
+
+#### No more `createClient<SanityValues>()(config)`
+
+Removing the double function signature from `createClient` and renaming `dataset` to `documents`:
+
+```diff
+- const client = createClient<SanityValues>({
+-   dataset: [/* ... */],
+- })({
++ const client = createClient<SanityValues>({
++ documents: [/* ... */],
+  dataset: "production",
+  // ...
+});
+```
+
+We no longer derive types from your config values. Most of the types weren't significant, but the main loss will be `_originalId` when the `perspective` was `"previewDrafts"`.
 
 ## Alternatives
 

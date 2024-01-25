@@ -24,6 +24,8 @@
   - [GROQ Query results changes in seemingly breaking ways](#groq-query-results-changes-in-seemingly-breaking-ways)
   - [`Type instantiation is excessively deep and possibly infinite`](#type-instantiation-is-excessively-deep-and-possibly-infinite)
 - [Breaking Changes](#breaking-changes)
+  - [2 to 3](#2-to-3)
+    - [No more `createClient<SanityValues>()(config)`](#no-more-createclientsanityvaluesconfig)
   - [1 to 2](#1-to-2)
     - [Removal of `castFromTyped`](#removal-of-castfromtyped)
 - [Alternatives](#alternatives)
@@ -36,7 +38,7 @@ npm install sanity @sanity-typed/client
 
 ## Usage
 
-Use `createClient` exactly as you would from [`@sanity/client`](https://github.com/sanity-io/client) with a minor change for proper type inference.
+Use `createClient` exactly as you would from [`@sanity/client`](https://github.com/sanity-io/client).
 
 <!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
 ```product.ts```:
@@ -138,9 +140,8 @@ import type { SanityValues } from "sanity.config";
 // import { createClient } from "@sanity/client";
 import { createClient } from "@sanity-typed/client";
 
-/** Small change using createClient */
 // export const client = createClient({
-export const client = createClient<SanityValues>()({
+export const client = createClient<SanityValues>({
   projectId: "59t1ed5o",
   dataset: "production",
   useCdn: true,
@@ -164,8 +165,6 @@ export const makeTypedQuery = async () =>
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/client.ts -->
 
-The `createClient<SanityValues>()(config)` syntax is due to having to infer one generic (the config shape) while explicitly providing the Sanity Values' type, [which can't be done in the same generics](https://github.com/microsoft/TypeScript/issues/10571).
-
 ## Typing an untyped client (and vice versa)
 
 Sometimes, you'll have a preconfigured client from a separate library that you will still want typed results from. A `castToTyped` function is provided to do just that.
@@ -181,7 +180,6 @@ const client = createClient({
   // ...
 });
 
-// Same function signature as the typed `createClient`
 const typedClient = castToTyped<SanityValues>()(client);
 
 // Also, if you need the config in the client (eg. for queries using $param),
@@ -220,7 +218,7 @@ import { createClient } from "@sanity-typed/client";
 
 import type { SanityValues } from "./sanity.config";
 
-const client = createClient<SanityValues>()({
+const client = createClient<SanityValues>({
   // ...
 });
 
@@ -284,6 +282,21 @@ People will sometimes create a repo with their issue. _Please_ open a PR with a 
 <!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md -->
 
 ## Breaking Changes
+
+### 2 to 3
+
+#### No more `createClient<SanityValues>()(config)`
+
+Removing the double function signature from `createClient`:
+
+```diff
+- const client = createClient<SanityValues>()({
++ const client = createClient<SanityValues>({
+  // ...
+});
+```
+
+We no longer derive types from your config values. Most of the types weren't significant, but the main loss will be `_originalId` when the `perspective` was `"previewDrafts"`.
 
 ### 1 to 2
 

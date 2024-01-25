@@ -20,6 +20,9 @@
   - [Types match config but not actual documents](#types-match-config-but-not-actual-documents)
   - [GROQ Query results changes in seemingly breaking ways](#groq-query-results-changes-in-seemingly-breaking-ways)
   - [`Type instantiation is excessively deep and possibly infinite`](#type-instantiation-is-excessively-deep-and-possibly-infinite)
+- [Breaking Changes](#breaking-changes)
+  - [1 to 2](#1-to-2)
+    - [No more `createClient<SanityValues>()(config)`](#no-more-createclientsanityvaluesconfig)
 
 ## Install
 
@@ -131,9 +134,8 @@ import type { SanityValues } from "sanity.config";
 // import { createClient } from "next-sanity";
 import { createClient } from "@sanity-typed/next-sanity";
 
-/** Small change using createClient */
 // export const client = createClient({
-export const client = createClient<SanityValues>()({
+export const client = createClient<SanityValues>({
   // ...base config options
   projectId: "59t1ed5o",
   dataset: "production",
@@ -213,4 +215,21 @@ You might run into the dreaded `Type instantiation is excessively deep and possi
 
 People will sometimes create a repo with their issue. _Please_ open a PR with a minimal test instead. Without a PR there will be no tests reflecting your issue and it may appear again in a regression. Forking a github repo to make a PR is a more welcome way to contribute to an open source library.
 <!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md -->
+
+## Breaking Changes
+
+### 1 to 2
+
+#### No more `createClient<SanityValues>()(config)`
+
+Removing the double function signature from `createClient`:
+
+```diff
+- const client = createClient<SanityValues>()({
++ const client = createClient<SanityValues>({
+  // ...
+});
+```
+
+We no longer derive types from your config values. Most of the types weren't significant, but the main loss will be `_originalId` when the `perspective` was `"previewDrafts"`.
 <!-- <<<<<< END GENERATED FILE (include): SOURCE packages/next-sanity/_README.md -->

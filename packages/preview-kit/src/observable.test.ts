@@ -1,9 +1,7 @@
 import { describe, it } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 import type {
-  ClientConfig,
-  ClientPerspective,
-  RequestFetchOptions,
+  InitializedClientConfig,
   SanityAssetDocument,
 } from "@sanity/client";
 import type { Observable } from "rxjs";
@@ -13,8 +11,6 @@ import { ObservablePatch, ObservableTransaction } from "@sanity-typed/client";
 import type {
   ListenEvent,
   MutationEvent,
-  ObservableSanityClient,
-  ObservableSanityStegaClient,
   RawQueryResponse,
 } from "@sanity-typed/client";
 import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
@@ -22,56 +18,17 @@ import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 import { createClient } from ".";
 
 describe("observable", () => {
-  it("adds _originalId to documents when perspective is `previewDrafts`", () => {
-    const exec = () =>
-      createClient<{
-        foo: AnySanityDocument & { _type: "foo"; foo: string };
-        qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>()({
-        perspective: "previewDrafts",
-      }).observable;
-
-    expectType<ReturnType<typeof exec>>().toEqual<
-      | ObservableSanityClient<
-          {
-            perspective: "previewDrafts";
-          },
-          | (AnySanityDocument & {
-              _originalId: string;
-              _type: "foo";
-            })
-          | (AnySanityDocument & {
-              _originalId: string;
-              _type: "qux";
-            })
-        >
-      | ObservableSanityStegaClient<
-          {
-            perspective: "previewDrafts";
-          },
-          | (AnySanityDocument & {
-              _originalId: string;
-              _type: "foo";
-            })
-          | (AnySanityDocument & {
-              _originalId: string;
-              _type: "qux";
-            })
-        >
-    >();
-  });
-
   describe("clone", () => {
     it("returns the same type", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable;
+        }>({}).observable;
 
       const execClone = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable.clone();
+        }>({}).observable.clone();
 
       expectType<ReturnType<typeof execClone>>().toEqual<
         ReturnType<typeof exec>
@@ -82,42 +39,21 @@ describe("observable", () => {
   describe("config", () => {
     it("returns the config with more", () => {
       const exec = () =>
-        createClient()({
+        createClient({
           dataset: "dataset",
           projectId: "projectId",
         }).observable.config();
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<{
-        allowReconfigure?: boolean;
-        apiHost: string;
-        apiVersion: string;
-        cdnUrl: string;
-        dataset: "dataset";
-        fetch?: RequestFetchOptions | boolean;
-        ignoreBrowserTokenWarning?: boolean;
-        isDefaultApi: boolean;
-        maxRetries?: number;
-        perspective?: ClientPerspective;
-        projectId: "projectId";
-        proxy?: string;
-        requestTagPrefix?: string;
-        requester?: Required<ClientConfig>["requester"];
-        resultSourceMap?: boolean | "withKeyArraySelector";
-        retryDelay?: (attemptNumber: number) => number;
-        timeout?: number;
-        token?: string;
-        url: string;
-        useCdn: boolean;
-        useProjectHostname: boolean;
-        withCredentials?: boolean;
-      }>();
+      expectType<
+        ReturnType<typeof exec>
+      >().toStrictEqual<InitializedClientConfig>();
     });
 
     it("returns the altered type", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "newProjectId",
         }).observable;
@@ -125,7 +61,7 @@ describe("observable", () => {
       const execWithConfig = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "projectId",
         }).observable.config({
@@ -143,7 +79,7 @@ describe("observable", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "newProjectId",
         }).observable;
@@ -151,7 +87,7 @@ describe("observable", () => {
       const execWithConfig = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({
+        }>({
           dataset: "dataset",
           projectId: "projectId",
         }).observable.withConfig({
@@ -169,7 +105,7 @@ describe("observable", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable.fetch("*");
+        }>({}).observable.fetch("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<(AnySanityDocument & { _type: "foo"; foo: string })[]>
@@ -181,34 +117,23 @@ describe("observable", () => {
         createClient<{
           bar: { _type: "bar"; bar: "bar" };
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable.fetch("*");
+        }>({}).observable.fetch("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<(AnySanityDocument & { _type: "foo"; foo: string })[]>
       >();
     });
 
-    it("uses the client in queries", () => {
-      const exec = () =>
-        createClient()({
-          projectId: "projectId",
-        }).observable.fetch("sanity::projectId()");
-
-      expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Observable<"projectId">
-      >();
-    });
-
     it("uses the params in queries", () => {
       const exec = () =>
-        createClient()({}).observable.fetch("$param", { param: "foo" });
+        createClient({}).observable.fetch("$param", { param: "foo" });
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<Observable<"foo">>();
     });
 
     it("returns RawQueryResponse", () => {
       const exec = () =>
-        createClient()({}).observable.fetch("5", undefined, {
+        createClient({}).observable.fetch("5", undefined, {
           filterResponse: false,
         });
 
@@ -223,7 +148,7 @@ describe("observable", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable.listen("*");
+        }>({}).observable.listen("*");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -236,7 +161,7 @@ describe("observable", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>()({}).observable.listen("*", {}, {});
+        }>({}).observable.listen("*", {}, {});
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -252,7 +177,7 @@ describe("observable", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.getDocument("id");
+        }>({}).observable.getDocument("id");
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Observable<
@@ -278,7 +203,7 @@ describe("observable", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.getDocuments(["id", "id2"]);
+        }>({}).observable.getDocuments(["id", "id2"]);
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Observable<
@@ -321,7 +246,7 @@ describe("observable", () => {
         const client = createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable;
+        }>({}).observable;
 
         expectType<Parameters<typeof client.create>[0]>().toEqual<
           | Omit<
@@ -355,7 +280,7 @@ describe("observable", () => {
         const client = createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable;
+        }>({}).observable;
 
         expectType<Parameters<typeof client.createOrReplace>[0]>().toEqual<
           | Omit<
@@ -383,7 +308,7 @@ describe("observable", () => {
         const client = createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable;
+        }>({}).observable;
 
         expectType<Parameters<typeof client.createIfNotExists>[0]>().toEqual<
           | Omit<
@@ -415,7 +340,7 @@ describe("observable", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.delete("id");
+        }>({}).observable.delete("id");
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -433,7 +358,7 @@ describe("observable", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .observable.patch("id")
           .commit();
 
@@ -451,7 +376,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .set({ foo: "bar" })
             .commit();
@@ -466,7 +391,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", { set: { foo: "bar" } })
             .commit();
 
@@ -482,7 +407,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .setIfMissing({ foo: "bar" })
             .commit();
@@ -497,7 +422,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", { setIfMissing: { foo: "bar" } })
             .commit();
 
@@ -513,7 +438,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .diffMatchPatch({ foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" })
             .commit();
@@ -528,7 +453,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", {
               diffMatchPatch: { foo: "@@ -1,3 +1,3 @@\n-foo\n+bar\n" },
             })
@@ -546,7 +471,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .unset(["foo"])
             .commit();
@@ -561,7 +486,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo?: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", { unset: ["foo"] })
             .commit();
 
@@ -577,7 +502,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .inc({ foo: 1 })
             .commit();
@@ -592,7 +517,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", { inc: { foo: 1 } })
             .commit();
 
@@ -608,7 +533,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id")
             .dec({ foo: 1 })
             .commit();
@@ -623,7 +548,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: number };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.patch("id", { dec: { foo: 1 } })
             .commit();
 
@@ -646,7 +571,7 @@ describe("observable", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .observable.patch("id")
           .set({ foo: "bar" })
           .reset()
@@ -669,7 +594,7 @@ describe("observable", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .observable.transaction()
           .commit();
 
@@ -684,7 +609,7 @@ describe("observable", () => {
           const transaction = createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).observable.transaction();
+          }>({}).observable.transaction();
 
           expectType<Parameters<typeof transaction.create>[0]>().toEqual<
             | Omit<
@@ -716,7 +641,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction([{ create: { _type: "foo", foo: "foo" } }])
             .commit();
 
@@ -732,7 +657,7 @@ describe("observable", () => {
           const transaction = createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).observable.transaction();
+          }>({}).observable.transaction();
 
           expectType<
             Parameters<typeof transaction.createOrReplace>[0]
@@ -762,7 +687,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction([
               { createOrReplace: { _type: "foo", _id: "id", foo: "foo" } },
             ])
@@ -780,7 +705,7 @@ describe("observable", () => {
           const transaction = createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).observable.transaction();
+          }>({}).observable.transaction();
 
           expectType<
             Parameters<typeof transaction.createIfNotExists>[0]
@@ -810,7 +735,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction([
               { createIfNotExists: { _type: "foo", _id: "id", foo: "foo" } },
             ])
@@ -828,7 +753,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction()
             .delete("id")
             .commit();
@@ -847,7 +772,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction([{ delete: { id: "id" } }])
             .commit();
 
@@ -867,7 +792,7 @@ describe("observable", () => {
           const client = createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({}).observable;
+          }>({}).observable;
 
           return client
             .transaction()
@@ -885,7 +810,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction()
             .patch("id", (patch) => patch.set({ foo: "foo" }))
             .commit();
@@ -900,7 +825,7 @@ describe("observable", () => {
           createClient<{
             foo: AnySanityDocument & { _type: "foo"; foo: string };
             qux: AnySanityDocument & { _type: "qux"; qux: number };
-          }>()({})
+          }>({})
             .observable.transaction([
               { patch: { id: "id", set: { foo: "foo" } } },
             ])
@@ -918,7 +843,7 @@ describe("observable", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({})
+        }>({})
           .observable.transaction()
           .create({ _type: "foo", foo: "foo" })
           .reset()
@@ -936,7 +861,7 @@ describe("observable", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.mutate([]);
+        }>({}).observable.mutate([]);
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<
@@ -951,9 +876,7 @@ describe("observable", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.mutate(
-          new ObservablePatch("id").set({ foo: "bar" })
-        );
+        }>({}).observable.mutate(new ObservablePatch("id").set({ foo: "bar" }));
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
         Observable<AnySanityDocument & { _type: "foo"; foo: string }>
@@ -965,7 +888,7 @@ describe("observable", () => {
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>()({}).observable.mutate(
+        }>({}).observable.mutate(
           new ObservableTransaction().create({ _type: "foo", foo: "foo" })
         );
 
