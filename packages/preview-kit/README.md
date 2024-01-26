@@ -16,6 +16,7 @@
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
+- [Usage with `groqd` (actually `groq-builder`)](#usage-with-groqd-actually-groq-builder)
 - [Considerations](#considerations)
   - [Types match config but not actual documents](#types-match-config-but-not-actual-documents)
   - [GROQ Query results changes in seemingly breaking ways](#groq-query-results-changes-in-seemingly-breaking-ways)
@@ -163,6 +164,63 @@ export const makeTypedQuery = async () =>
  */
 ```
 <!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/preview-kit-client.ts -->
+
+<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE /Users/shayan/Workspace/docs/usage-with-groqd.md -->
+## Usage with `groqd` (actually `groq-builder`)
+
+[@scottrippey](https://github.com/scottrippey) is working on an amazing typed [`groqd`](https://formidable.com/open-source/groqd/) called [`groq-builder`](https://github.com/FormidableLabs/groqd/tree/main/packages/groq-builder), a schema-aware, strongly-typed GROQ query builder with auto-completion and type-checking for your GROQ queries. When given a function, `fetch` will provide a GROQ builder for your use:
+
+```bash
+npm install groq-builder
+```
+
+<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/client-with-groq-builder.ts -->
+```client-with-groq-builder.ts```:
+```typescript
+import type { SanityValues } from "sanity.config";
+
+import { createClient } from "@sanity-typed/client";
+
+export const client = createClient<SanityValues>({
+  projectId: "59t1ed5o",
+  dataset: "production",
+  useCdn: true,
+  apiVersion: "2023-05-23",
+});
+
+export const makeTypedQuery = async () =>
+  /** No need for createGroqBuilder, `q` is already typed! */
+  client.fetch((q) =>
+    q.star
+      .filterByType("product")
+      .project({ _id: true, productName: true, tags: true })
+  );
+/**
+ *  typeof makeTypedQuery === () => Promise<{
+ *    _id: string;
+ *    productName: string;
+ *    tags: {
+ *      _key: string;
+ *      _type: "tag";
+ *      label?: string;
+ *      value?: string;
+ *    }[] | null;
+ *  }[]>
+ */
+```
+<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/client-with-groq-builder.ts -->
+
+It will use the returned `query` and `parse` directly so you get typed results and runtime validation.
+
+Deciding between using `groq-builder` or directly typed queries is your decision! There are pros or cons to consider:
+
+- Typescript isn't optimized for parsing strings the way [`@sanity-typed/groq`](../packages/groq) does, which can run into strange errors. Meanwhile, a builder is typescript-first, allowing for complex structures without any issues.
+- Runtime validation is amazing! It was something [I considered and abandoned](https://github.com/saiichihashimoto/sanity-typed/issues/306) so it's great to have a solution.
+- The way `@sanity-typed/groq` had to be written, it can't do any auto-completion in IDEs like `groq-builder` can. There was no way around this. Typed objects and methods are going to be superior to parsing a string. Again, typescript wasn't made for it.
+- There _is_ something to be said for writing queries in their native syntax with less layers between. Writing GROQ queries directly lets you concern yourself only with their documentation, especially when issues arise.
+- I'm not 100% certain that `groq-builder` handles all GROQ operations.
+- `groq-builder` is currently in beta. You'll need to reference [`groqd`'s documentation](https://formidable.com/open-source/groqd/) and sometimes they don't match 1-to-1.
+<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE /Users/shayan/Workspace/docs/usage-with-groqd.md -->
 
 ## Considerations
 
