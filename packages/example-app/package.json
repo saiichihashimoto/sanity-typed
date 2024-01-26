@@ -16,7 +16,7 @@
     "dev": "next dev"
   },
   "dependencies": {
-    "@faker-js/faker": "8.3.1",
+    "@faker-js/faker": "8.4.0",
     "@portabletext-typed/react": "0.0.0-development",
     "@portabletext-typed/to-html": "0.0.0-development",
     "@sanity-typed/client": "0.0.0-development",
