@@ -237,9 +237,8 @@ jobs:
           echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(.taskId | sub("@portabletext-typed/types"; "pt-types") | sub("@portabletext-typed/"; "") | sub("@sanity-typed/"; "") | sub("#build"; ""))')" >> $GITHUB_OUTPUT
 
       - id: set-typescript-versions
-        # Get ranges from peerDependencies
         run: |
-          npx semver --range "5.1.3 || 5.1.5 || 5.1.6 || 5.2.2" $(npm view typescript versions | sed "s/'/\"/g" | jq --raw-output '. | join(" ")') | jq --raw-input --slurp --compact-output '. | rtrimstr("\n") | split("\n") | tostring' | jq --raw-output '. |= "typescript-versions=" + .' >> $GITHUB_OUTPUT
+          npx semver --range "$(cat packages/*/package.json | jq --raw-output --slurp '. | map(.peerDependencies.typescript | select( . != null )) | join(" || ")')" $(npm view typescript versions | sed "s/'/\"/g" | jq --raw-output '. | join(" ")') | jq --raw-input --slurp --compact-output '. | rtrimstr("\n") | split("\n") | tostring' | jq --raw-output '. |= "typescript-versions=" + .' >> $GITHUB_OUTPUT
   test-package:
     name: Test
     needs: [install-node-modules, test-matrix]
