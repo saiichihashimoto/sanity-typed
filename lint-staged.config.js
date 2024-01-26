@@ -16,7 +16,7 @@ const config = {
   "{.prettier*,package.json}": () => [`${prettierCmd} .`, "git add ."],
   "_README.md": (filenames) =>
     filenames.flatMap((filename) => [
-      `bundle exec markdown_helper include ${filename} ${path.resolve(
+      `bundle exec markdown_helper include --pristine ${filename} ${path.resolve(
         path.dirname(filename),
         path.basename(filename).slice(1)
       )}`,

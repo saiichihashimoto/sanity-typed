@@ -9,6 +9,10 @@ import type {
   UnfilteredResponseQueryOptions,
 } from "@sanity/client";
 import { applyPatches, parsePatch } from "@sanity/diff-match-patch";
+import type {
+  GroqBuilder,
+  createGroqBuilder as createGroqBuilderType,
+} from "groq-builder";
 import { flow, identity, omit } from "lodash/fp";
 import type { SetOptional, WritableDeep } from "type-fest";
 
@@ -30,7 +34,7 @@ import type {
   MutationOptions,
 } from "@sanity-typed/client/src/internal";
 import { evaluate, parse } from "@sanity-typed/groq-js";
-import type { DocumentValues } from "@sanity-typed/types";
+import type { DocumentValues, referenced } from "@sanity-typed/types";
 import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 import { reduceAcc } from "@sanity-typed/utils";
 
@@ -63,6 +67,32 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
   const datasetById = new Map<string, TDocument>(
     config.documents.map((doc) => [doc._id, doc] as [string, TDocument])
   );
+
+  let clientQ:
+    | GroqBuilder<
+        never,
+        {
+          documentTypes: DocumentValues<SanityValues>;
+          referenceSymbol: typeof referenced;
+        }
+      >
+    | undefined;
+
+  try {
+    const {
+      createGroqBuilder,
+      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, unicorn/prefer-module -- Optional Dependency
+    } = require("groq-builder") as {
+      createGroqBuilder: typeof createGroqBuilderType;
+    };
+
+    clientQ = createGroqBuilder<{
+      documentTypes: DocumentValues<SanityValues>;
+      referenceSymbol: typeof referenced;
+    }>();
+  } catch {
+    /* empty */
+  }
 
   const client: SanityClient<DocumentValues<SanityValues>> = {
     ...({} as Pick<
@@ -112,26 +142,59 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
       const TQueryParams extends { [param: string]: unknown },
       const TOptions extends
         | FilteredResponseQueryOptions
-        | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions
+        | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions,
+      const TResult = never
     >(
-      query: TQuery,
+      queryOrBuilder:
+        | TQuery
+        | ((
+            q: GroqBuilder<
+              never,
+              {
+                documentTypes: DocumentValues<SanityValues>;
+                referenceSymbol: typeof referenced;
+              }
+            >
+          ) => GroqBuilder<
+            TResult,
+            {
+              documentTypes: DocumentValues<SanityValues>;
+              referenceSymbol: typeof referenced;
+            }
+          >),
       params?: TQueryParams,
       options?: TOptions
     ) => {
       const start = performance.now();
-      // @ts-expect-error -- TODO
-      const result = await (
-        await evaluate(
-          // @ts-expect-error -- TODO
-          parse(query),
-          {
-            params,
-            dataset: [...datasetById.values()],
+      if (typeof queryOrBuilder !== "string" && !clientQ) {
+        throw new TypeError(
+          "Cannot pass a function to `fetch` unless `groq-query` is installed"
+        );
+      }
+
+      const built =
+        typeof queryOrBuilder === "string"
+          ? { query: queryOrBuilder, parse: (value: unknown) => value }
+          : queryOrBuilder(clientQ!);
+
+      const { query } = built;
+      const parseResult = built.parse.bind(built);
+
+      const result = parseResult(
+        // @ts-expect-error -- TODO
+        await (
+          await evaluate(
             // @ts-expect-error -- TODO
-            sanity: config,
-          }
-        )
-      ).get();
+            parse(query),
+            {
+              params,
+              dataset: [...datasetById.values()],
+              // @ts-expect-error -- TODO
+              sanity: config,
+            }
+          )
+        ).get()
+      );
       const end = performance.now();
 
       const { filterResponse = true } = options ?? {};

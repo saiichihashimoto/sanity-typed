@@ -1,4 +1,3 @@
-<!-- >>>>>> BEGIN GENERATED FILE (include): SOURCE packages/groq/_README.md -->
 # @sanity-typed/groq
 
 [![NPM Downloads](https://img.shields.io/npm/dw/@sanity-typed/groq?style=flat&logo=npm)](https://www.npmjs.com/package/@sanity-typed/groq)
@@ -120,12 +119,9 @@ Chances are, you don't need this package directly.
 
 ## Considerations
 
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/parse-type-flakiness.md -->
 ### The parsed tree changes in seemingly breaking ways
 
 `@sanity-typed/groq` attempts to type its parsed types as close as possible to [`groq-js`](https://github.com/sanity-io/groq-js)'s `parse` function output. Any fixes to match it more correctly won't be considered a major change and, if `groq-js` changes it's output in a version update, we're likely to match it. If you're using the parsed tree's types directly, this might cause your code to break. We don't consider this a breaking change because the intent of these groq libraries is to match the types of a groq query as closely as possible.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/parse-type-flakiness.md -->
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md -->
 ### `Type instantiation is excessively deep and possibly infinite`
 
 You might run into the dreaded `Type instantiation is excessively deep and possibly infinite` error when writing GROQ queries. This isn't [too uncommon with more complex GROQ queries](https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+instantiation+is%3Aclosed). Unfortunately, this isn't a completely avoidable problem, as typescript has limits on complexity and parsing types from a string is an inherently complex problem. A set of steps for a workaround:
@@ -137,7 +133,6 @@ You might run into the dreaded `Type instantiation is excessively deep and possi
 5. I'm one person and some of these issues are quite complex. Take a stab at fixing the bug! There's a ridiculous amount of tests so it's relatively safe to try things out.
 
 People will sometimes create a repo with their issue. _Please_ open a PR with a minimal test instead. Without a PR there will be no tests reflecting your issue and it may appear again in a regression. Forking a github repo to make a PR is a more welcome way to contribute to an open source library.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md -->
 
 ## Alternatives
 
@@ -146,4 +141,3 @@ People will sometimes create a repo with their issue. _Please_ open a PR with a 
 - [`sanity-typed-queries`](https://www.npmjs.com/package/sanity-generator)
 - [`@sanity-codegen/groq-codegen`](https://www.npmjs.com/package/@sanity-codegen/groq-codegen)
 - [`sanity-query-helper`](https://www.npmjs.com/package/sanity-query-helper)
-<!-- <<<<<< END GENERATED FILE (include): SOURCE packages/groq/_README.md -->
