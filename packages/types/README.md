@@ -1,4 +1,3 @@
-<!-- >>>>>> BEGIN GENERATED FILE (include): SOURCE packages/types/_README.md -->
 # @sanity-typed/types
 
 [![NPM Downloads](https://img.shields.io/npm/dw/@sanity-typed/types?style=flat&logo=npm)](https://www.npmjs.com/package/@sanity-typed/types)
@@ -47,7 +46,6 @@ npm install sanity @sanity-typed/types
 
 Use `defineConfig`, `defineType`, `defineField`, and `defineArrayMember` from this library exactly as you would from [`sanity`](https://www.sanity.io/docs/schema-field-types#e5642a3e8506). Then, use `InferSchemaValues` to get the typescript types!
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
 ```product.ts```:
 ```typescript
 // import { defineArrayMember, defineField, defineType } from "sanity";
@@ -87,8 +85,6 @@ export const product = defineType({
   ],
 });
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
 import { deskTool } from "sanity/desk";
@@ -138,7 +134,6 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *  }
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
 
 ## `DocumentValues`
 
@@ -286,7 +281,6 @@ const nav = defineType({
 
 ## Considerations
 
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/types-vs-content-lake.md -->
 ### Types match config but not actual documents
 
 As your sanity driven application grows over time, your config is likely to change. Keep in mind that you can only derive types of your current config, while documents in your Sanity Content Lake will have shapes from older configs. This can be a problem when adding new fields or changing the type of old fields, as the types won't can clash with the old documents.
@@ -316,7 +310,6 @@ type SanityValues =
 ```
 
 This can get unwieldy although, if you're diligent about data migrations of your old documents to your new types, you may be able to deprecate old configs and remove them from your codebase.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/types-vs-content-lake.md -->
 
 ## Breaking Changes
 
@@ -479,4 +472,3 @@ const product = defineType({
 - [`sanity-schema-builder`](https://www.npmjs.com/package/sanity-typed-schema)
 - [`@sanity-typed/schema-builder`](https://www.npmjs.com/package/@sanity-typed/schema-builder)
 - [`sanity-typed-schema-builder`](https://www.npmjs.com/package/sanity-typed-schema-builder)
-<!-- <<<<<< END GENERATED FILE (include): SOURCE packages/types/_README.md -->

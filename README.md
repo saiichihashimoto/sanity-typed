@@ -1,4 +1,3 @@
-<!-- >>>>>> BEGIN GENERATED FILE (include): SOURCE _README.md -->
 # @sanity-typed
 
 [![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/saiichihashimoto/sanity-typed?style=flat&logo=github)](https://github.com/saiichihashimoto/sanity-typed/pulls?q=is%3Apr+is%3Aclosed)
@@ -57,4 +56,3 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
 - [`@sanity-typed/preview-kit`](packages/preview-kit): [@sanity/preview-kit](https://github.com/sanity-io/preview-kit) with typed GROQ Results
 - [`@portabletext-typed/react`](packages/react): [@portabletext/react](https://github.com/portabletext/react) with typed arguments
 - [`@portabletext-typed/to-html`](packages/to-html): [@portabletext/to-html](https://github.com/portabletext/to-html) with typed arguments
-<!-- <<<<<< END GENERATED FILE (include): SOURCE _README.md -->

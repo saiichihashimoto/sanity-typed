@@ -28,6 +28,8 @@ Use `createClient` exactly as you would from [`@sanity-typed/client`](../client)
 @[typescript](../example-studio/sanity.config.ts)
 @[typescript](../example-app/src/sanity/preview-kit-client.ts)
 
+@[:markdown](../../docs/usage-with-groqd.md)
+
 ## Considerations
 
 @[:markdown](../../docs/considerations/types-vs-content-lake.md)

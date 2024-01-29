@@ -1,4 +1,3 @@
-<!-- >>>>>> BEGIN GENERATED FILE (include): SOURCE packages/pt-types/_README.md -->
 # @portabletext-typed/types
 
 [![NPM Downloads](https://img.shields.io/npm/dw/@portabletext-typed/types?style=flat&logo=npm)](https://www.npmjs.com/package/@portabletext-typed/types)
@@ -12,4 +11,3 @@
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
 [@portabletext/types](https://github.com/portabletext/types) with typed generics. Mostly internal for other packages in the monorepo.
-<!-- <<<<<< END GENERATED FILE (include): SOURCE packages/pt-types/_README.md -->
