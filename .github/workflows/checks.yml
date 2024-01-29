@@ -234,7 +234,7 @@ jobs:
 
       - id: set-packages
         run: |
-          echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(.taskId | sub("@portabletext-typed/types"; "pt-types") | sub("@portabletext-typed/"; "") | sub("@sanity-typed/"; "") | sub("#build"; ""))')" >> $GITHUB_OUTPUT
+          echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(select(.command != "<NONEXISTENT>")) | map(.taskId | sub("@portabletext-typed/types"; "pt-types") | sub("@portabletext-typed/"; "") | sub("@sanity-typed/"; "") | sub("#build"; ""))')" >> $GITHUB_OUTPUT
 
       - id: set-typescript-versions
         run: |
