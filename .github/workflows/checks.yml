@@ -209,12 +209,13 @@ jobs:
             git --no-pager diff --color --text HEAD
             exit 1
           fi
-  packages:
-    name: Packages
+  test-matrix:
+    name: Test Matrix
     needs: install-node-modules
     runs-on: ubuntu-latest
     outputs:
       packages: ${{ steps.set-packages.outputs.packages }}
+      typescript-versions: ${{ steps.set-typescript-versions.outputs.typescript-versions }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -234,16 +235,19 @@ jobs:
       - id: set-packages
         run: |
           echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(.taskId | sub("@portabletext-typed/types"; "pt-types") | sub("@portabletext-typed/"; "") | sub("@sanity-typed/"; "") | sub("#build"; ""))')" >> $GITHUB_OUTPUT
+
+      - id: set-typescript-versions
+        run: |
+          npx semver --range "$(cat packages/*/package.json | jq --raw-output --slurp '. | map(.peerDependencies.typescript | select( . != null )) | join(" || ")')" $(npm view typescript versions | sed "s/'/\"/g" | jq --raw-output '. | join(" ")') | jq --raw-input --slurp --compact-output '. | rtrimstr("\n") | split("\n") | tostring' | jq --raw-output '. |= "typescript-versions=" + .' >> $GITHUB_OUTPUT
   test-package:
     name: Test
-    needs: [install-node-modules, packages]
+    needs: [install-node-modules, test-matrix]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        package: ${{ fromJson(needs.packages.outputs.packages) }}
-        # TODO How do I autodetect this from peerDependencies
-        typescript-version: [5.1.3, 5.1.5, 5.1.6, 5.2.2, current]
+        package: ${{ fromJson(needs.test-matrix.outputs.packages) }}
+        typescript-version: ${{ fromJson(needs.test-matrix.outputs.typescript-versions) }}
     steps:
       - uses: actions/checkout@v4
         with:

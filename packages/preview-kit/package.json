@@ -44,10 +44,14 @@
     "@saiichihashimoto/test-utils": "1.0.2",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity/preview-kit": "5.0.13",
+    "groq-builder": "0.2.0",
     "type-fest": "4.10.1"
   },
   "peerDependencies": {
     "@sanity/preview-kit": "^5.0.6",
-    "typescript": "5.1.3 || 5.1.5 || 5.1.6 || 5.2.2 || 5.3.3"
+    "typescript": ">=5.1.3 <=5.3.3"
+  },
+  "optionalDependencies": {
+    "groq-builder": "^0.1.3"
   }
 }

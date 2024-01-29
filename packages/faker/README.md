@@ -1,4 +1,3 @@
-<!-- >>>>>> BEGIN GENERATED FILE (include): SOURCE packages/faker/_README.md -->
 # @sanity-typed/faker
 
 [![NPM Downloads](https://img.shields.io/npm/dw/@sanity-typed/faker?style=flat&logo=npm)](https://www.npmjs.com/package/@sanity-typed/faker)
@@ -33,7 +32,6 @@ npm install sanity @faker-js/faker @sanity-typed/faker
 
 ## Usage
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
 ```product.ts```:
 ```typescript
 // import { defineArrayMember, defineField, defineType } from "sanity";
@@ -73,8 +71,6 @@ export const product = defineType({
   ],
 });
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
 import { deskTool } from "sanity/desk";
@@ -124,8 +120,6 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *  }
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/mocks.ts -->
 ```mocks.ts```:
 ```typescript
 import { base, en } from "@faker-js/faker";
@@ -151,7 +145,6 @@ export const getMockDataset = () => {
   return documentsFaker();
 };
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/mocks.ts -->
 
 ## `sanityDocumentsFaker`
 
@@ -246,9 +239,6 @@ Be aware that, besides typing, no validations or checks are done on the custom m
 
 ## Considerations
 
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/config-in-runtime.md -->
 ### Config in Runtime
 
 `@sanity-typed/*` generally has the goal of only having effect to types and no runtime effects. This package is an exception. This means that you will have to import your sanity config to use this. While sanity v3 is better than v2 at having a standard build environment, you will have to handle any nuances, including having a much larger build.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/config-in-runtime.md -->
-<!-- <<<<<< END GENERATED FILE (include): SOURCE packages/faker/_README.md -->

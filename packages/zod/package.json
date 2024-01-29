@@ -50,7 +50,7 @@
   },
   "peerDependencies": {
     "sanity": "^3.12.0",
-    "typescript": "5.1.3 || 5.1.5 || 5.1.6 || 5.2.2 || 5.3.3",
+    "typescript": ">=5.1.3 <=5.3.3",
     "zod": "^3.21.4"
   },
   "engines": {

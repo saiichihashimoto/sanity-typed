@@ -562,10 +562,8 @@ const urlZod = <
         return zod.superRefine((value, ctx) => {
           /* eslint-disable fp/no-unused-expression -- zod.superRefine */
 
-          // eslint-disable-next-line fp/no-let -- using new URL
           let url: URL;
           try {
-            // eslint-disable-next-line fp/no-mutation -- using new URL
             url = allowRelative ? new URL(value, DUMMY_ORIGIN) : new URL(value);
           } catch {
             ctx.addIssue({
@@ -620,7 +618,6 @@ export const enableZod = <T>(customValidator: CustomValidator<T>) => {
   const clonedValidator = ((...args: Parameters<CustomValidator<T>>) =>
     customValidator(...args)) as CustomValidator<T> & { [zodEnabled]: true };
 
-  // eslint-disable-next-line fp/no-mutation -- Mutation
   clonedValidator[zodEnabled] = true;
 
   return clonedValidator;
