@@ -151,6 +151,8 @@
         "ignore": ["eslint-enable"]
       }
     ],
+    "fp/no-let": "off",
+    "fp/no-mutation": "off",
     "fp/no-nil": "off",
     "fp/no-rest-parameters": "off",
     "fp/no-throw": "off",
@@ -165,8 +167,7 @@
     "import/no-extraneous-dependencies": [
       "error",
       {
-        "devDependencies": false,
-        "peerDependencies": true
+        "devDependencies": false
       }
     ],
     "import/no-mutable-exports": "error",
@@ -376,13 +377,13 @@
       },
       "rules": {
         "id-length": "off",
+        "@typescript-eslint/consistent-type-imports": "off",
         "@typescript-eslint/promise-function-async": "off",
         "fp/no-unused-expression": "off",
         "import/no-extraneous-dependencies": [
           "error",
           {
-            "devDependencies": true,
-            "peerDependencies": true
+            "devDependencies": true
           }
         ],
         "jest/consistent-test-it": [
@@ -444,8 +445,7 @@
         "import/no-extraneous-dependencies": [
           "error",
           {
-            "devDependencies": true,
-            "peerDependencies": true
+            "devDependencies": true
           }
         ]
       }
