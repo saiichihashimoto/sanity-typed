@@ -1,4 +1,3 @@
-<!-- >>>>>> BEGIN GENERATED FILE (include): SOURCE packages/groq-js/_README.md -->
 # @sanity-typed/groq-js
 
 [![NPM Downloads](https://img.shields.io/npm/dw/@sanity-typed/groq-js?style=flat&logo=npm)](https://www.npmjs.com/package/@sanity-typed/groq-js)
@@ -34,7 +33,6 @@ Use `parse` and `evaluate` exactly as you would from [`groq-js`](https://github.
 
 Typically, this isn't used directly, but via [`@sanity-typed/client-mock`'s](../client-mock) methods that produce groq results. But it can be done directly:
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/your-typed-groq-js.ts -->
 ```your-typed-groq-js.ts```:
 ```typescript
 // import { evaluate, parse } from "groq-js";
@@ -100,7 +98,6 @@ const result = await value.get();
  *  }]
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/your-typed-groq-js.ts -->
 
 ## Considerations
 
@@ -112,7 +109,6 @@ You can also use [your typed schema](../types) to keep parity with the types [yo
 npm install sanity groq-js @sanity-typed/types @sanity-typed/groq-js
 ```
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
 ```product.ts```:
 ```typescript
 // import { defineArrayMember, defineField, defineType } from "sanity";
@@ -152,8 +148,6 @@ export const product = defineType({
   ],
 });
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
 import { deskTool } from "sanity/desk";
@@ -203,8 +197,6 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *  }
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE docs/your-typed-groq-js-with-sanity-types.ts -->
 ```your-typed-groq-js-with-sanity-types.ts```:
 ```typescript
 // import { evaluate, parse } from "groq-js";
@@ -244,20 +236,14 @@ const result = await value.get();
 // This resembles the types you'd receive from @sanity-typed/client,
 // which wouldn't be statically aware of `"Some Cool Product"` either.
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE docs/your-typed-groq-js-with-sanity-types.ts -->
 
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/parse-type-flakiness.md -->
 ### The parsed tree changes in seemingly breaking ways
 
 `@sanity-typed/groq` attempts to type its parsed types as close as possible to [`groq-js`](https://github.com/sanity-io/groq-js)'s `parse` function output. Any fixes to match it more correctly won't be considered a major change and, if `groq-js` changes it's output in a version update, we're likely to match it. If you're using the parsed tree's types directly, this might cause your code to break. We don't consider this a breaking change because the intent of these groq libraries is to match the types of a groq query as closely as possible.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/parse-type-flakiness.md -->
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/evaluate-type-flakiness.md -->
 ### GROQ Query results changes in seemingly breaking ways
 
 Similar to [parsing](#the-parsed-tree-changes-in-seemingly-breaking-ways), evaluating groq queries will attempt to match how sanity actually evaluates queries. Again, any fixes to match that or changes to groq evaluation will likely not be considered a major change but, rather, a bug fix.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/evaluate-type-flakiness.md -->
 
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md -->
 ### `Type instantiation is excessively deep and possibly infinite`
 
 You might run into the dreaded `Type instantiation is excessively deep and possibly infinite` error when writing GROQ queries. This isn't [too uncommon with more complex GROQ queries](https://github.com/saiichihashimoto/sanity-typed/issues?q=is%3Aissue+instantiation+is%3Aclosed). Unfortunately, this isn't a completely avoidable problem, as typescript has limits on complexity and parsing types from a string is an inherently complex problem. A set of steps for a workaround:
@@ -269,5 +255,3 @@ You might run into the dreaded `Type instantiation is excessively deep and possi
 5. I'm one person and some of these issues are quite complex. Take a stab at fixing the bug! There's a ridiculous amount of tests so it's relatively safe to try things out.
 
 People will sometimes create a repo with their issue. _Please_ open a PR with a minimal test instead. Without a PR there will be no tests reflecting your issue and it may appear again in a regression. Forking a github repo to make a PR is a more welcome way to contribute to an open source library.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md -->
-<!-- <<<<<< END GENERATED FILE (include): SOURCE packages/groq-js/_README.md -->
