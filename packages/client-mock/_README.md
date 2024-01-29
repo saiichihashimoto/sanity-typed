@@ -40,6 +40,7 @@ Depending on your tree-shaking setup, you'll want to swap between the real clien
 ## Considerations
 
 @[:markdown](../../docs/considerations/evaluate-type-flakiness.md)
+@[:markdown](../../docs/considerations/typescript-errors-in-ides.md)
 @[:markdown](../../docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md)
 
 ## Breaking Changes
