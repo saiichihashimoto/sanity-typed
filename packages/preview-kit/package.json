@@ -37,7 +37,8 @@
     "dev": "npm run build -- --no-clean"
   },
   "dependencies": {
-    "@sanity-typed/client": "0.0.0-development"
+    "@sanity-typed/client": "0.0.0-development",
+    "lodash": "4.17.21"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
