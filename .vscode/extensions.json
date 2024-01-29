@@ -3,7 +3,6 @@
     "bengreenier.vscode-node-readme",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "ms-vscode.vscode-typescript-next",
     "paulshen.paul-typescript-toolkit"
   ]
 }

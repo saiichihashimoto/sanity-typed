@@ -114,6 +114,7 @@ Chances are, you don't need this package directly.
 ## Considerations
 
 @[:markdown](../../docs/considerations/parse-type-flakiness.md)
+@[:markdown](../../docs/considerations/typescript-errors-in-ides.md)
 @[:markdown](../../docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md)
 
 ## Alternatives
