@@ -45,7 +45,7 @@
     "@sanity-typed/utils": "0.0.0-development",
     "@sanity/client": "6.11.3",
     "@types/geojson": "7946.0.13",
-    "groq-js": "1.4.0"
+    "groq-js": "1.4.1"
   },
   "peerDependencies": {
     "@sanity/client": "^6.1.7",
