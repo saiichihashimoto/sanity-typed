@@ -402,7 +402,6 @@ const regexFaker = (regex: RegExp) => {
   const randexp = new RandExp(regex);
 
   return (faker: Faker) => {
-    // eslint-disable-next-line fp/no-mutation -- https://www.npmjs.com/package/randexp#custom-prng
     randexp.randInt = (min: number, max: number) =>
       faker.number.int({ min, max });
 
@@ -2693,15 +2692,10 @@ const sanityConfigToFakerInner = <const TConfig extends ConfigBase<any, any>>(
 };
 
 const counter = <Fn extends (index: number) => any>(fn: Fn) => {
-  // eslint-disable-next-line fp/no-let -- Mutable
   let count = -1;
 
   // eslint-disable-next-line no-return-assign -- Mutable
-  return () =>
-    fn(
-      // eslint-disable-next-line fp/no-mutation -- Mutable
-      (count += 1)
-    ) as ReturnType<Fn>;
+  return () => fn((count += 1)) as ReturnType<Fn>;
 };
 
 export const sanityConfigToFakerTyped = <
@@ -2726,14 +2720,12 @@ export const sanityConfigToFakerTyped = <
       return documentIdUndefined;
     }
 
-    // eslint-disable-next-line fp/no-mutation -- Mutable
     documentIdFakerMemos[type] =
       documentIdFakerMemos[type] ??
       instantiateFaker(faker, seed)(`.${type}._id`)(
         (faker: Faker, index: number) => {
           // eslint-disable-next-line fp/no-loops -- Mutable
           while ((documentIdMemos[type]?.length ?? 0) <= index) {
-            // eslint-disable-next-line fp/no-mutation -- Mutable
             documentIdMemos[type] = [
               ...(documentIdMemos[type] ?? []),
               faker.string.uuid(),

@@ -33,6 +33,11 @@ import type {
   ObservableSanityStegaClient as ObservableSanityStegaClientNative,
   SanityStegaClient as SanityStegaClientNative,
 } from "@sanity/client/stega";
+import type {
+  GroqBuilder,
+  createGroqBuilder as createGroqBuilderType,
+  makeSafeQueryRunner as makeSafeQueryRunnerType,
+} from "groq-builder";
 import type { Observable } from "rxjs";
 import type {
   Except,
@@ -43,7 +48,7 @@ import type {
 } from "type-fest";
 
 import type { ExecuteQuery, RootScope } from "@sanity-typed/groq";
-import type { DocumentValues } from "@sanity-typed/types";
+import type { DocumentValues, referenced } from "@sanity-typed/types";
 import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
 // HACK Couldn't use type-fest's Merge >=3.0.0
@@ -572,24 +577,43 @@ export type OverrideSanityClient<
       const TQueryParams extends { [param: string]: unknown },
       const TOptions extends
         | FilteredResponseQueryOptions
-        | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions
+        | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions,
+      const TResult = never
     >(
-      query: TQuery,
+      query:
+        | TQuery
+        | ((
+            q: GroqBuilder<
+              never,
+              {
+                documentTypes: TDocument;
+                referenceSymbol: typeof referenced;
+              }
+            >
+          ) => GroqBuilder<
+            TResult,
+            {
+              documentTypes: TDocument;
+              referenceSymbol: typeof referenced;
+            }
+          >),
       params?: TQueryParams,
       options?: TOptions
     ) => PromiseOrObservable<
       TIsPromise,
       MaybeRawQueryResponse<
-        ExecuteQuery<
-          TQuery,
-          RootScope<{
-            client: WritableDeep<TClientConfig>;
-            dataset: (TDocument extends never ? never : TDocument)[];
-            delta: { after: null; before: null };
-            identity: string;
-            parameters: NonNullable<TQueryParams>;
-          }>
-        >,
+        IsNever<TResult> extends true
+          ? ExecuteQuery<
+              TQuery,
+              RootScope<{
+                client: WritableDeep<TClientConfig>;
+                dataset: (TDocument extends never ? never : TDocument)[];
+                delta: { after: null; before: null };
+                identity: string;
+                parameters: NonNullable<TQueryParams>;
+              }>
+            >
+          : TResult,
         TQuery,
         TOptions
       >
@@ -753,10 +777,93 @@ export type SanityClient<TDocument extends AnySanityDocument> =
 
 export const createClient = <SanityValues extends { [type: string]: any }>(
   config: ClientConfig
-) =>
-  createClientNative(config) as unknown as SanityClient<
+) => {
+  const client = createClientNative(config) as unknown as SanityClient<
     DocumentValues<SanityValues>
   >;
+
+  let clientQ: GroqBuilder<
+    never,
+    {
+      documentTypes: DocumentValues<SanityValues>;
+      referenceSymbol: typeof referenced;
+    }
+  >;
+  let runBuilderQuery:
+    | ReturnType<
+        typeof makeSafeQueryRunnerType<
+          (query: string, params: any, options: any) => Promise<any>
+        >
+      >
+    | undefined;
+
+  try {
+    const {
+      createGroqBuilder,
+      makeSafeQueryRunner,
+      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, unicorn/prefer-module -- Optional Dependency
+    } = require("groq-builder") as {
+      createGroqBuilder: typeof createGroqBuilderType;
+      makeSafeQueryRunner: typeof makeSafeQueryRunnerType;
+    };
+
+    clientQ = createGroqBuilder<{
+      documentTypes: DocumentValues<SanityValues>;
+      referenceSymbol: typeof referenced;
+    }>();
+
+    runBuilderQuery = makeSafeQueryRunner(
+      async (query, params: any, options: any) =>
+        client.fetch(query, params, options)
+    );
+  } catch {
+    /* empty */
+  }
+
+  return {
+    ...client,
+    fetch: async <
+      const TQuery extends string,
+      const TQueryParams extends { [param: string]: unknown },
+      const TOptions extends
+        | FilteredResponseQueryOptions
+        | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions,
+      const TResult = never
+    >(
+      query:
+        | TQuery
+        | ((
+            q: GroqBuilder<
+              never,
+              {
+                documentTypes: DocumentValues<SanityValues>;
+                referenceSymbol: typeof referenced;
+              }
+            >
+          ) => GroqBuilder<
+            TResult,
+            {
+              documentTypes: DocumentValues<SanityValues>;
+              referenceSymbol: typeof referenced;
+            }
+          >),
+      params?: TQueryParams,
+      options?: TOptions
+    ) => {
+      if (typeof query === "string") {
+        return client.fetch(query, params, options as any) as any;
+      }
+
+      if (!runBuilderQuery) {
+        throw new TypeError(
+          "Cannot pass a function to `fetch` unless `groq-query` is installed"
+        );
+      }
+
+      return runBuilderQuery(query(clientQ), params, options) as any;
+    },
+  } as unknown as SanityClient<DocumentValues<SanityValues>>;
+};
 
 export type ObservableSanityStegaClient<TDocument extends AnySanityDocument> =
   OverrideSanityClient<

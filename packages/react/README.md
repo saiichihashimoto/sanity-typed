@@ -1,4 +1,3 @@
-<!-- >>>>>> BEGIN GENERATED FILE (include): SOURCE packages/react/_README.md -->
 # @portabletext-typed/react
 
 [![NPM Downloads](https://img.shields.io/npm/dw/@portabletext-typed/react?style=flat&logo=npm)](https://www.npmjs.com/package/@portabletext-typed/react)
@@ -27,7 +26,6 @@ npm install @portabletext/react @portabletext-typed/react
 
 After using [@sanity-typed/types](../types) and [@sanity-typed/client](../client) and you have typed blocks, use `PortableText` from this library as you would from [`@portabletext/react`](https://github.com/portabletext/react) to get fully typed arguments!
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/post.ts -->
 ```post.ts```:
 ```typescript
 // import { defineArrayMember, defineField, defineType } from "sanity";
@@ -99,8 +97,6 @@ export const post = defineType({
   ],
 });
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/post.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-app/src/pages/with-portabletext-react.tsx -->
 ```with-portabletext-react.tsx```:
 ```typescript
 import type { InferGetStaticPropsType } from "next";
@@ -219,5 +215,3 @@ const Index = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => (
 
 export default Index;
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/pages/with-portabletext-react.tsx -->
-<!-- <<<<<< END GENERATED FILE (include): SOURCE packages/react/_README.md -->

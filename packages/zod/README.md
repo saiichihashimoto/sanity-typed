@@ -1,4 +1,3 @@
-<!-- >>>>>> BEGIN GENERATED FILE (include): SOURCE packages/zod/_README.md -->
 # @sanity-typed/zod
 
 [![NPM Downloads](https://img.shields.io/npm/dw/@sanity-typed/zod?style=flat&logo=npm)](https://www.npmjs.com/package/@sanity-typed/zod)
@@ -32,7 +31,6 @@ npm install sanity zod @sanity-typed/zod
 
 ## Usage
 
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
 ```product.ts```:
 ```typescript
 // import { defineArrayMember, defineField, defineType } from "sanity";
@@ -72,8 +70,6 @@ export const product = defineType({
   ],
 });
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/schemas/product.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
 ```sanity.config.ts```:
 ```typescript
 import { deskTool } from "sanity/desk";
@@ -123,8 +119,6 @@ export type SanityValues = InferSchemaValues<typeof config>;
  *  }
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-studio/sanity.config.ts -->
-<!-- >>>>>> BEGIN INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/client-with-zod.ts -->
 ```client-with-zod.ts```:
 ```typescript
 import config from "sanity.config";
@@ -169,7 +163,6 @@ export const makeTypedQuery = async () => {
  *  }[]>
  */
 ```
-<!-- <<<<<< END INCLUDED FILE (typescript): SOURCE packages/example-app/src/sanity/client-with-zod.ts -->
 
 ## `sanityDocumentsZod`
 
@@ -245,12 +238,9 @@ expect(() =>
 
 ## Considerations
 
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/config-in-runtime.md -->
 ### Config in Runtime
 
 `@sanity-typed/*` generally has the goal of only having effect to types and no runtime effects. This package is an exception. This means that you will have to import your sanity config to use this. While sanity v3 is better than v2 at having a standard build environment, you will have to handle any nuances, including having a much larger build.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/config-in-runtime.md -->
-<!-- >>>>>> BEGIN INCLUDED FILE (markdown): SOURCE docs/considerations/types-vs-content-lake.md -->
 ### Types match config but not actual documents
 
 As your sanity driven application grows over time, your config is likely to change. Keep in mind that you can only derive types of your current config, while documents in your Sanity Content Lake will have shapes from older configs. This can be a problem when adding new fields or changing the type of old fields, as the types won't can clash with the old documents.
@@ -280,5 +270,3 @@ type SanityValues =
 ```
 
 This can get unwieldy although, if you're diligent about data migrations of your old documents to your new types, you may be able to deprecate old configs and remove them from your codebase.
-<!-- <<<<<< END INCLUDED FILE (markdown): SOURCE docs/considerations/types-vs-content-lake.md -->
-<!-- <<<<<< END GENERATED FILE (include): SOURCE packages/zod/_README.md -->

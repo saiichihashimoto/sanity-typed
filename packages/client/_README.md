@@ -30,6 +30,8 @@ Use `createClient` exactly as you would from [`@sanity/client`](https://github.c
 @[typescript](../example-studio/sanity.config.ts)
 @[typescript](../example-app/src/sanity/client.ts)
 
+@[:markdown](../../docs/usage-with-groqd.md)
+
 ## Typing an untyped client (and vice versa)
 
 Sometimes, you'll have a preconfigured client from a separate library that you will still want typed results from. A `castToTyped` function is provided to do just that.
