@@ -427,7 +427,7 @@ describe("block", () => {
               name: "foo",
               type: "object",
               fields: [
-                // @ts-expect-error -- blocks can't be fields https://www.sanity.io/docs/block-type
+                // @ts-expect-error EXPECTED blocks can't be fields https://www.sanity.io/docs/block-type
                 defineField({
                   name: "bar",
                   type: "block",

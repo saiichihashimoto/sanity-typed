@@ -16,11 +16,11 @@ describe("global", () => {
 
     expect(() => parse(query)).toThrow("Undefined function: after");
     expectType<Parse<typeof query>>()
-      // @ts-expect-error -- TODO Parse doesn't care about mode: "delta"
+      // @ts-expect-error TODO Parse doesn't care about mode: "delta"
       .toStrictEqual<never>();
 
     expectType<ExecuteQuery<typeof query>>()
-      // @ts-expect-error -- TODO Parse doesn't care about mode: "delta"
+      // @ts-expect-error TODO Parse doesn't care about mode: "delta"
       .toStrictEqual<never>();
   });
 
@@ -139,11 +139,11 @@ describe("global", () => {
 
     expect(() => parse(query)).toThrow("Undefined function: before");
     expectType<Parse<typeof query>>()
-      // @ts-expect-error -- TODO Parse doesn't care about mode: "delta"
+      // @ts-expect-error TODO Parse doesn't care about mode: "delta"
       .toStrictEqual<never>();
 
     expectType<ExecuteQuery<typeof query>>()
-      // @ts-expect-error -- TODO Parse doesn't care about mode: "delta"
+      // @ts-expect-error TODO Parse doesn't care about mode: "delta"
       .toStrictEqual<never>();
   });
 

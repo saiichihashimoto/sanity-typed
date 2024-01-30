@@ -180,15 +180,15 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
       );
 
       const result = parseResult(
-        // @ts-expect-error -- TODO
+        // @ts-expect-error TODO Not sure
         await (
           await evaluate(
-            // @ts-expect-error -- TODO
+            // @ts-expect-error TODO Not sure
             parse(query),
             {
               params,
               dataset: [...datasetById.values()],
-              // @ts-expect-error -- TODO
+              // @ts-expect-error TODO Not sure
               sanity: config,
             }
           )
@@ -199,7 +199,7 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
       const { filterResponse = true } = options ?? {};
 
       return !filterResponse
-        ? // @ts-expect-error -- TODO
+        ? // @ts-expect-error TODO Not sure
           { result, query, ms: end - start }
         : result;
     },
@@ -406,7 +406,7 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
         "patch" in operations ? operations.patch : operations.serialize();
 
       const previousDoc = datasetById.get(
-        // @ts-expect-error -- TODO
+        // @ts-expect-error TODO Not sure
         patchOperation.id as string
       )!;
 
