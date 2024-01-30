@@ -32,10 +32,7 @@ const getLocalDeps = async (
         dep.startsWith("@portabletext-typed/")
     )
     .map((dep) =>
-      dep
-        .replace("@sanity-typed/", "")
-        .replace("@portabletext-typed/types", "pt-types")
-        .replace("@portabletext-typed/", "")
+      dep.replace("@sanity-typed/", "").replace("@portabletext-typed/", "pt-")
     );
 
   return [
