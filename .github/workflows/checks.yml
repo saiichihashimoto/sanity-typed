@@ -75,9 +75,9 @@ jobs:
           HASH_GROQ=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/groq#build\")) | .hash")
           HASH_NEXT_SANITY=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/next-sanity#build\")) | .hash")
           HASH_PREVIEW_KIT=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/preview-kit#build\")) | .hash")
+          HASH_PT_REACT=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@portabletext-typed/react#build\")) | .hash")
+          HASH_PT_TO_HTML=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@portabletext-typed/to-html#build\")) | .hash")
           HASH_PT_TYPES=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@portabletext-typed/types#build\")) | .hash")
-          HASH_REACT=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@portabletext-typed/react#build\")) | .hash")
-          HASH_TO_HTML=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@portabletext-typed/to-html#build\")) | .hash")
           HASH_TYPES=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/types#build\")) | .hash")
           HASH_ZOD=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"@sanity-typed/zod#build\")) | .hash")
           echo "HASH_CLIENT_MOCK=$HASH_CLIENT_MOCK" >> $GITHUB_ENV
@@ -89,9 +89,9 @@ jobs:
           echo "HASH_GROQ=$HASH_GROQ" >> $GITHUB_ENV
           echo "HASH_NEXT_SANITY=$HASH_NEXT_SANITY" >> $GITHUB_ENV
           echo "HASH_PREVIEW_KIT=$HASH_PREVIEW_KIT" >> $GITHUB_ENV
+          echo "HASH_PT_REACT=$HASH_PT_REACT" >> $GITHUB_ENV
+          echo "HASH_PT_TO_HTML=$HASH_PT_TO_HTML" >> $GITHUB_ENV
           echo "HASH_PT_TYPES=$HASH_PT_TYPES" >> $GITHUB_ENV
-          echo "HASH_REACT=$HASH_REACT" >> $GITHUB_ENV
-          echo "HASH_TO_HTML=$HASH_TO_HTML" >> $GITHUB_ENV
           echo "HASH_TYPES=$HASH_TYPES" >> $GITHUB_ENV
           echo "HASH_ZOD=$HASH_ZOD" >> $GITHUB_ENV
       - uses: actions/cache@v4
@@ -132,16 +132,16 @@ jobs:
           key: turbo-cache-${{ env.HASH_PREVIEW_KIT }}
       - uses: actions/cache@v4
         with:
+          path: node_modules/.cache/turbo/${{ env.HASH_PT_REACT }}*
+          key: turbo-cache-${{ env.HASH_PT_REACT }}
+      - uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/turbo/${{ env.HASH_PT_TO_HTML }}*
+          key: turbo-cache-${{ env.HASH_PT_TO_HTML }}
+      - uses: actions/cache@v4
+        with:
           path: node_modules/.cache/turbo/${{ env.HASH_PT_TYPES }}*
           key: turbo-cache-${{ env.HASH_PT_TYPES }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_REACT }}*
-          key: turbo-cache-${{ env.HASH_REACT }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_TO_HTML }}*
-          key: turbo-cache-${{ env.HASH_TO_HTML }}
       - uses: actions/cache@v4
         with:
           path: node_modules/.cache/turbo/${{ env.HASH_TYPES }}*
@@ -234,7 +234,7 @@ jobs:
 
       - id: set-packages
         run: |
-          echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(select(.command != "<NONEXISTENT>")) | map(.taskId | sub("@portabletext-typed/types"; "pt-types") | sub("@portabletext-typed/"; "") | sub("@sanity-typed/"; "") | sub("#build"; ""))')" >> $GITHUB_OUTPUT
+          echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(select(.command != "<NONEXISTENT>")) | map(.taskId | sub("@portabletext-typed/"; "pt-") | sub("@sanity-typed/"; "") | sub("#build"; ""))')" >> $GITHUB_OUTPUT
 
       - id: set-typescript-versions
         run: |

@@ -23,6 +23,8 @@ Generate Mock Data from Sanity Schemas
 - [Custom Mocks](#custom-mocks)
 - [Considerations](#considerations)
   - [Config in Runtime](#config-in-runtime)
+  - [Typescript Errors in IDEs](#typescript-errors-in-ides)
+    - [VSCode](#vscode)
 
 ## Install
 
@@ -242,3 +244,12 @@ Be aware that, besides typing, no validations or checks are done on the custom m
 ### Config in Runtime
 
 `@sanity-typed/*` generally has the goal of only having effect to types and no runtime effects. This package is an exception. This means that you will have to import your sanity config to use this. While sanity v3 is better than v2 at having a standard build environment, you will have to handle any nuances, including having a much larger build.
+### Typescript Errors in IDEs
+
+Often you'll run into an issue where you get typescript errors in your IDE but, when building workspace (either you studio or app using types), there are no errors. This only occurs because your IDE is using a different version of typescript than the one in your workspace. A few debugging steps:
+
+#### VSCode
+
+- The [`JavaScript and TypeScript Nightly` extension (identifier `ms-vscode.vscode-typescript-next`)](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next) creates issues here by design. It will always attempt to use the newest version of typescript instead of your workspace's version. I ended up uninstalling it.
+- [Check that VSCode is actually using your workspace's version](https://code.visualstudio.com/docs/typescript/typescript-compiling#_compiler-versus-language-service) even if you've [defined the workspace version in `.vscode/settings.json`](https://code.visualstudio.com/docs/typescript/typescript-compiling#_using-the-workspace-version-of-typescript). Use `TypeScript: Select TypeScript Version` to explictly pick the workspace version.
+- Open any typescript file and you can [see which version is being used in the status bar](https://code.visualstudio.com/docs/typescript/typescript-compiling#_compiler-versus-language-service). Please check this (and provide a screenshot confirming this) before creating an issue. Spending hours debugging your issue ony to find that you're not using your workspace's version is very frustrating.

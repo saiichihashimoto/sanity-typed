@@ -100,6 +100,7 @@ export default untypedClient;
 
 @[:markdown](../../docs/considerations/types-vs-content-lake.md)
 @[:markdown](../../docs/considerations/evaluate-type-flakiness.md)
+@[:markdown](../../docs/considerations/typescript-errors-in-ides.md)
 @[:markdown](../../docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md)
 
 ## Breaking Changes
