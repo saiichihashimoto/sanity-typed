@@ -2877,7 +2877,7 @@ describe("field depth test", () => {
       },
     });
 
-    // @ts-expect-error -- Excessive stack depth comparing types
+    // @ts-expect-error EXPECTED Excessive stack depth comparing types
     expectType<InferSchemaValues<typeof config>["foo"]>().toStrictEqual<{
       _type: "foo";
       foo: {

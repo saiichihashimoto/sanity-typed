@@ -835,7 +835,7 @@ describe("precedence and associativity", () => {
 
         expect(result).toStrictEqual(expectedResult);
         expectType<ExecuteQuery<typeof query>>()
-          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/333
+          // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/333
           .toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 
@@ -1236,7 +1236,7 @@ describe("precedence and associativity", () => {
 
         expect(result).toStrictEqual(expectedResult);
         expectType<ExecuteQuery<typeof query>>()
-          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/333
+          // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/333
           .toStrictEqual<WritableDeep<typeof expectedTree>>();
       });
 
@@ -1788,7 +1788,7 @@ describe("precedence and associativity", () => {
 
         expect(result).toStrictEqual(expectedResult);
         expectType<ExecuteQuery<typeof query>>()
-          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/333
+          // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/333
           .toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
 

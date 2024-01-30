@@ -761,7 +761,7 @@ const membersFaker = <
   const memberFaker = (faker: Faker, index: number) =>
     faker.helpers.arrayElement(memberFakers)(index);
 
-  // @ts-expect-error -- TODO Why is this typed incorrectly
+  // @ts-expect-error TODO Why is this typed incorrectly
   return unique
     ? (
         faker: Faker,

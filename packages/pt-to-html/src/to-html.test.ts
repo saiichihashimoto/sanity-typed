@@ -174,21 +174,21 @@ describe("toHTML", () => {
     ];
 
     expect(
-      // @ts-expect-error -- toHTML requires options
+      // @ts-expect-error EXPECTED toHTML requires options
       toHTML(blocks)
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(
         blocks,
-        // @ts-expect-error -- toHTML requires options.components
+        // @ts-expect-error EXPECTED toHTML requires options.components
         {}
       )
     ).toStrictEqual(toHTMLNative(blocks, {}));
 
     expect(
       toHTML(blocks, {
-        // @ts-expect-error -- toHTML requires options.components.types
+        // @ts-expect-error EXPECTED toHTML requires options.components.types
         components: {},
       })
     ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
@@ -196,7 +196,7 @@ describe("toHTML", () => {
     expect(
       toHTML(blocks, {
         components: {
-          // @ts-expect-error -- toHTML requires options.components.types.slug
+          // @ts-expect-error EXPECTED toHTML requires options.components.types.slug
           types: {},
         },
       })
@@ -212,7 +212,7 @@ describe("toHTML", () => {
       toHTML(blocks, {
         components: {
           types: {
-            // @ts-expect-error -- toHTML requires options.components.types.slug
+            // @ts-expect-error EXPECTED toHTML requires options.components.types.slug
             foo: () => "foo",
           },
         },
@@ -312,21 +312,21 @@ describe("toHTML", () => {
     ];
 
     expect(
-      // @ts-expect-error -- toHTML requires options
+      // @ts-expect-error EXPECTED toHTML requires options
       toHTML(blocks)
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(
         blocks,
-        // @ts-expect-error -- toHTML requires options.components
+        // @ts-expect-error EXPECTED toHTML requires options.components
         {}
       )
     ).toStrictEqual(toHTMLNative(blocks, {}));
 
     expect(
       toHTML(blocks, {
-        // @ts-expect-error -- toHTML requires options.components.types
+        // @ts-expect-error EXPECTED toHTML requires options.components.types
         components: {},
       })
     ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
@@ -334,7 +334,7 @@ describe("toHTML", () => {
     expect(
       toHTML(blocks, {
         components: {
-          // @ts-expect-error -- toHTML requires options.components.types.slug
+          // @ts-expect-error EXPECTED toHTML requires options.components.types.slug
           types: {},
         },
       })
@@ -350,7 +350,7 @@ describe("toHTML", () => {
       toHTML(blocks, {
         components: {
           types: {
-            // @ts-expect-error -- toHTML requires options.components.types.slug
+            // @ts-expect-error EXPECTED toHTML requires options.components.types.slug
             foo: () => "foo",
           },
         },
@@ -458,21 +458,21 @@ describe("toHTML", () => {
     ];
 
     expect(
-      // @ts-expect-error -- toHTML requires options
+      // @ts-expect-error EXPECTED toHTML requires options
       toHTML(blocks)
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(
         blocks,
-        // @ts-expect-error -- toHTML requires options.components
+        // @ts-expect-error EXPECTED toHTML requires options.components
         {}
       )
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(blocks, {
-        // @ts-expect-error -- toHTML requires options.components.types
+        // @ts-expect-error EXPECTED toHTML requires options.components.types
         components: {},
       })
     ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
@@ -480,7 +480,7 @@ describe("toHTML", () => {
     expect(
       toHTML(blocks, {
         components: {
-          // @ts-expect-error -- toHTML requires options.components.types.slug
+          // @ts-expect-error EXPECTED toHTML requires options.components.types.slug
           types: {},
         },
       })
@@ -496,7 +496,7 @@ describe("toHTML", () => {
       toHTML(blocks, {
         components: {
           types: {
-            // @ts-expect-error -- toHTML requires options.components.types.slug
+            // @ts-expect-error EXPECTED toHTML requires options.components.types.slug
             foo: () => "foo",
           },
         },
@@ -596,21 +596,21 @@ describe("toHTML", () => {
     ];
 
     expect(
-      // @ts-expect-error -- toHTML requires options
+      // @ts-expect-error EXPECTED toHTML requires options
       toHTML(blocks)
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(
         blocks,
-        // @ts-expect-error -- toHTML requires options.components
+        // @ts-expect-error EXPECTED toHTML requires options.components
         {}
       )
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(blocks, {
-        // @ts-expect-error -- toHTML requires options.components.marks
+        // @ts-expect-error EXPECTED toHTML requires options.components.marks
         components: {},
       })
     ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
@@ -618,7 +618,7 @@ describe("toHTML", () => {
     expect(
       toHTML(blocks, {
         components: {
-          // @ts-expect-error -- toHTML requires options.components.marks.foo
+          // @ts-expect-error EXPECTED toHTML requires options.components.marks.foo
           marks: {},
         },
       })
@@ -634,7 +634,7 @@ describe("toHTML", () => {
       toHTML(blocks, {
         components: {
           marks: {
-            // @ts-expect-error -- toHTML requires options.components.marks.foo
+            // @ts-expect-error EXPECTED toHTML requires options.components.marks.foo
             bar: () => "bar",
           },
         },
@@ -686,7 +686,7 @@ describe("toHTML", () => {
 
               return `<i>${children}</i>`;
             },
-            // @ts-expect-error -- Unless they're not provided
+            // @ts-expect-error EXPECTED Unless they're not provided
             underline: ({ children }) => `<code>${children}</code>`,
           },
         },
@@ -787,21 +787,21 @@ describe("toHTML", () => {
     ];
 
     expect(
-      // @ts-expect-error -- toHTML requires options
+      // @ts-expect-error EXPECTED toHTML requires options
       toHTML(blocks)
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(
         blocks,
-        // @ts-expect-error -- toHTML requires options.components
+        // @ts-expect-error EXPECTED toHTML requires options.components
         {}
       )
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(blocks, {
-        // @ts-expect-error -- toHTML requires options.components.marks
+        // @ts-expect-error EXPECTED toHTML requires options.components.marks
         components: {},
       })
     ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
@@ -809,7 +809,7 @@ describe("toHTML", () => {
     expect(
       toHTML(blocks, {
         components: {
-          // @ts-expect-error -- toHTML requires options.components.marks.foo
+          // @ts-expect-error EXPECTED toHTML requires options.components.marks.foo
           marks: {},
         },
       })
@@ -825,7 +825,7 @@ describe("toHTML", () => {
       toHTML(blocks, {
         components: {
           marks: {
-            // @ts-expect-error -- toHTML requires options.components.marks.foo
+            // @ts-expect-error EXPECTED toHTML requires options.components.marks.foo
             bar: () => "bar",
           },
         },
@@ -980,21 +980,21 @@ describe("toHTML", () => {
     ];
 
     expect(
-      // @ts-expect-error -- toHTML requires options
+      // @ts-expect-error EXPECTED toHTML requires options
       toHTML(blocks)
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(
         blocks,
-        // @ts-expect-error -- toHTML requires options.components
+        // @ts-expect-error EXPECTED toHTML requires options.components
         {}
       )
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(blocks, {
-        // @ts-expect-error -- toHTML requires options.components.block
+        // @ts-expect-error EXPECTED toHTML requires options.components.block
         components: {},
       })
     ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
@@ -1002,7 +1002,7 @@ describe("toHTML", () => {
     expect(
       toHTML(blocks, {
         components: {
-          // @ts-expect-error -- toHTML requires options.components.block.foo
+          // @ts-expect-error EXPECTED toHTML requires options.components.block.foo
           block: {},
         },
       })
@@ -1018,7 +1018,7 @@ describe("toHTML", () => {
       toHTML(blocks, {
         components: {
           block: {
-            // @ts-expect-error -- toHTML requires options.components.block.foo
+            // @ts-expect-error EXPECTED toHTML requires options.components.block.foo
             bar: () => "bar",
           },
         },
@@ -1090,7 +1090,7 @@ describe("toHTML", () => {
 
               return `<div>${children}</div>`;
             },
-            // @ts-expect-error -- Unless they're not provided
+            // @ts-expect-error EXPECTED Unless they're not provided
             h1: ({ children }) => `<h2>${children}</h2>`,
           },
         },
@@ -1217,21 +1217,21 @@ describe("toHTML", () => {
     ];
 
     expect(
-      // @ts-expect-error -- toHTML requires options
+      // @ts-expect-error EXPECTED toHTML requires options
       toHTML(blocks)
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(
         blocks,
-        // @ts-expect-error -- toHTML requires options.components
+        // @ts-expect-error EXPECTED toHTML requires options.components
         {}
       )
     ).toStrictEqual(toHTMLNative(blocks));
 
     expect(
       toHTML(blocks, {
-        // @ts-expect-error -- toHTML requires options.components.block
+        // @ts-expect-error EXPECTED toHTML requires options.components.block
         components: {},
       })
     ).toStrictEqual(toHTMLNative(blocks, { components: {} }));
@@ -1239,7 +1239,7 @@ describe("toHTML", () => {
     expect(
       toHTML(blocks, {
         components: {
-          // @ts-expect-error -- toHTML requires options.components.block.foo
+          // @ts-expect-error EXPECTED toHTML requires options.components.block.foo
           list: {},
         },
       })
@@ -1255,11 +1255,11 @@ describe("toHTML", () => {
       toHTML(blocks, {
         components: {
           list: {
-            // @ts-expect-error -- toHTML requires options.components.block.foo
+            // @ts-expect-error EXPECTED toHTML requires options.components.block.foo
             bar: () => "bar",
           },
           listItem: {
-            // @ts-expect-error -- listItem is optional, but it will type with the correct keys
+            // @ts-expect-error EXPECTED listItem is optional, but it will type with the correct keys
             bar: () => "bar",
           },
         },
@@ -1337,14 +1337,14 @@ describe("toHTML", () => {
 
               return `<ol>${children}</ol>`;
             },
-            // @ts-expect-error -- Unless they're not provided
+            // @ts-expect-error EXPECTED Unless they're not provided
             number: ({ children }) => `<ul>${children}</ul>`,
           },
           listItem: {
             foo: ({ children }) => `<span>${children}</span>`,
             // Retyping defaults is fine
             bullet: ({ children }) => `<b>${children}</b>`,
-            // @ts-expect-error -- Unless they're not provided
+            // @ts-expect-error EXPECTED Unless they're not provided
             number: ({ children }) => `<i>${children}</i>`,
           },
         },
