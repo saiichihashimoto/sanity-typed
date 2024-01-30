@@ -4,8 +4,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@portabletext-typed/*": ["../*/src"],
-      "@portabletext-typed/types": ["../pt-types/src"],
+      "@portabletext-typed/*": ["../pt-*/src"],
       "@sanity-typed/*": ["../*/src"]
     }
   },

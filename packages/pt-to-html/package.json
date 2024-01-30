@@ -13,7 +13,7 @@
     "realtime",
     "content"
   ],
-  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/to-html",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/pt-to-html",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {

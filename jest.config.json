@@ -10,8 +10,7 @@
   "verbose": true,
   "modulePaths": ["."],
   "moduleNameMapper": {
-    "^@portabletext-typed/types$": "<rootDir>/packages/pt-types/src",
-    "^@portabletext-typed/([^/]*)$": "<rootDir>/packages/$1/src",
+    "^@portabletext-typed/([^/]*)$": "<rootDir>/packages/pt-$1/src",
     "^@sanity-typed/([^/]*)$": "<rootDir>/packages/$1/src"
   }
 }

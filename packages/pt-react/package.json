@@ -13,7 +13,7 @@
     "realtime",
     "content"
   ],
-  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/react",
+  "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/pt-react",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
   "repository": "github:saiichihashimoto/sanity-typed",
   "funding": {
