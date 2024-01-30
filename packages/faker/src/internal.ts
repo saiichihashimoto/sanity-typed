@@ -115,7 +115,7 @@ const constantFakers = {
     lng: faker.location.longitude(),
     ...(faker.datatype.boolean()
       ? {}
-      : { alt: faker.number.float({ min: 0, max: 10000, precision: 0.001 }) }),
+      : { alt: faker.number.float({ min: 0, max: 10000, fractionDigits: 3 }) }),
   }),
   slug: (faker: Faker) => ({
     _type: "slug" as const,
@@ -256,7 +256,7 @@ const numberFaker = <
     ...(!traversal.negative?.length ? [] : [-epsilon])
   );
 
-  const precision = traversal.precision
+  const fractionDigits = traversal.precision
     ?.map(([limit]) => limit)
     .filter((limit): limit is number => typeof limit === "number")
     .map((limit) => limit)?.[0];
@@ -305,7 +305,7 @@ const numberFaker = <
             faker.number.float({
               min,
               max,
-              precision: precision === undefined ? undefined : 10 ** -precision,
+              fractionDigits,
             })
   );
 };

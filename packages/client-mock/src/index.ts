@@ -13,7 +13,7 @@ import type {
   GroqBuilder,
   createGroqBuilder as createGroqBuilderType,
 } from "groq-builder";
-import { flow, identity, omit } from "lodash/fp";
+import { bindAll, flow, identity, omit } from "lodash/fp";
 import type { SetOptional, WritableDeep } from "type-fest";
 
 import {
@@ -172,13 +172,12 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
         );
       }
 
-      const built =
+      const { query, parse: parseResult } = bindAll(
+        ["parse"],
         typeof queryOrBuilder === "string"
           ? { query: queryOrBuilder, parse: (value: unknown) => value }
-          : queryOrBuilder(clientQ!);
-
-      const { query } = built;
-      const parseResult = built.parse.bind(built);
+          : queryOrBuilder(clientQ!)
+      );
 
       const result = parseResult(
         // @ts-expect-error -- TODO

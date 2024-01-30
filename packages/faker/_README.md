@@ -122,3 +122,4 @@ Be aware that, besides typing, no validations or checks are done on the custom m
 ## Considerations
 
 @[:markdown](../../docs/considerations/config-in-runtime.md)
+@[:markdown](../../docs/considerations/typescript-errors-in-ides.md)

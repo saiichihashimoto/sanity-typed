@@ -104,3 +104,4 @@ expect(() =>
 
 @[:markdown](../../docs/considerations/config-in-runtime.md)
 @[:markdown](../../docs/considerations/types-vs-content-lake.md)
+@[:markdown](../../docs/considerations/typescript-errors-in-ides.md)

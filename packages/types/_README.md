@@ -176,6 +176,7 @@ const nav = defineType({
 ## Considerations
 
 @[:markdown](../../docs/considerations/types-vs-content-lake.md)
+@[:markdown](../../docs/considerations/typescript-errors-in-ides.md)
 
 ## Breaking Changes
 

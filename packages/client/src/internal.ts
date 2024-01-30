@@ -36,8 +36,8 @@ import type {
 import type {
   GroqBuilder,
   createGroqBuilder as createGroqBuilderType,
-  makeSafeQueryRunner as makeSafeQueryRunnerType,
 } from "groq-builder";
+import { bindAll } from "lodash/fp";
 import type { Observable } from "rxjs";
 import type {
   Except,
@@ -782,40 +782,28 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
     DocumentValues<SanityValues>
   >;
 
-  let clientQ: GroqBuilder<
-    never,
-    {
-      documentTypes: DocumentValues<SanityValues>;
-      referenceSymbol: typeof referenced;
-    }
-  >;
-  let runBuilderQuery:
-    | ReturnType<
-        typeof makeSafeQueryRunnerType<
-          (query: string, params: any, options: any) => Promise<any>
-        >
+  let clientQ:
+    | GroqBuilder<
+        never,
+        {
+          documentTypes: DocumentValues<SanityValues>;
+          referenceSymbol: typeof referenced;
+        }
       >
     | undefined;
 
   try {
     const {
       createGroqBuilder,
-      makeSafeQueryRunner,
       // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, unicorn/prefer-module -- Optional Dependency
     } = require("groq-builder") as {
       createGroqBuilder: typeof createGroqBuilderType;
-      makeSafeQueryRunner: typeof makeSafeQueryRunnerType;
     };
 
     clientQ = createGroqBuilder<{
       documentTypes: DocumentValues<SanityValues>;
       referenceSymbol: typeof referenced;
     }>();
-
-    runBuilderQuery = makeSafeQueryRunner(
-      async (query, params: any, options: any) =>
-        client.fetch(query, params, options)
-    );
   } catch {
     /* empty */
   }
@@ -830,7 +818,7 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
         | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions,
       const TResult = never
     >(
-      query:
+      queryOrBuilder:
         | TQuery
         | ((
             q: GroqBuilder<
@@ -850,17 +838,20 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
       params?: TQueryParams,
       options?: TOptions
     ) => {
-      if (typeof query === "string") {
-        return client.fetch(query, params, options as any) as any;
-      }
-
-      if (!runBuilderQuery) {
+      if (typeof queryOrBuilder !== "string" && !clientQ) {
         throw new TypeError(
           "Cannot pass a function to `fetch` unless `groq-query` is installed"
         );
       }
 
-      return runBuilderQuery(query(clientQ), params, options) as any;
+      const { query, parse } = bindAll(
+        ["parse"],
+        typeof queryOrBuilder === "string"
+          ? { query: queryOrBuilder, parse: (value: unknown) => value }
+          : queryOrBuilder(clientQ!)
+      );
+
+      return parse(client.fetch(query, params, options as any)) as any;
     },
   } as unknown as SanityClient<DocumentValues<SanityValues>>;
 };
