@@ -283,7 +283,7 @@
           "error",
           {
             "ts-expect-error": {
-              "descriptionFormat": "^ -- .+$"
+              "descriptionFormat": "^ (TODO|FIXME|EXPECTED) .+$"
             }
           }
         ],
