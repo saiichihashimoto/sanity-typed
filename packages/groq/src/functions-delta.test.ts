@@ -13,7 +13,7 @@ describe("delta", () => {
 
     expect(() => parse(query)).toThrow("Undefined function: changedAny");
     expectType<Parse<typeof query>>()
-      // @ts-expect-error -- TODO Parse doesn't care about mode: "delta"
+      // @ts-expect-error TODO Parse doesn't care about mode: "delta"
       .toStrictEqual<never>();
 
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();
@@ -442,7 +442,7 @@ describe("delta", () => {
 
     expect(() => parse(query)).toThrow("Undefined function: changedOnly");
     expectType<Parse<typeof query>>()
-      // @ts-expect-error -- TODO Parse doesn't care about mode: "delta"
+      // @ts-expect-error TODO Parse doesn't care about mode: "delta"
       .toStrictEqual<never>();
 
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<never>();

@@ -858,7 +858,7 @@ describe("observable", () => {
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+          // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
           Observable<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });

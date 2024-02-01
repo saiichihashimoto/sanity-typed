@@ -16,7 +16,7 @@ describe("array", () => {
               name: "foo",
               type: "array",
               of: [
-                // @ts-expect-error -- arrays can't be children of arrays https://www.sanity.io/docs/array-type#fNBIr84P
+                // @ts-expect-error EXPECTED arrays can't be children of arrays https://www.sanity.io/docs/array-type#fNBIr84P
                 defineArrayMember({
                   type: "array",
                   of: [],

@@ -340,7 +340,7 @@ export type StringDefinition<
     TStringValue,
     RewriteValue<
       TStringValue,
-      // @ts-expect-error -- IDK
+      // @ts-expect-error TODO not sure why RegexRule causes an error
       RegexRule<StringRule>
     >
   > & {
@@ -358,7 +358,7 @@ export type TextDefinition<TRequired extends boolean> = MergeOld<
   DefinitionBase<
     TRequired,
     string,
-    // @ts-expect-error -- IDK
+    // @ts-expect-error TODO not sure why RegexRule causes an error
     RegexRule<TextRule>
   >
 >;
@@ -805,7 +805,7 @@ export type ArrayMemberDefinition<
                       : IsStringLiteral<TName> extends false
                       ? Value
                       : Omit<Value, "_type"> & { _type: TName },
-                    // @ts-expect-error -- TODO Doesn't match the rule for some reason
+                    // @ts-expect-error TODO Doesn't match the rule for some reason
                     RewriteValue<
                       IsPlainObject<Value> extends false
                         ? Value

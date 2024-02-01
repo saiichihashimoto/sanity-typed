@@ -837,7 +837,7 @@ describe("createClient", () => {
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+          // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
           Promise<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });
@@ -883,14 +883,14 @@ describe("createClient", () => {
           {
             create: {
               _type: "foo",
-              // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+              // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
               foo: "foo",
             },
           },
         ]);
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+        // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
         Promise<AnySanityDocument & { _type: "foo"; foo: string }>
       >();
     });

@@ -14,7 +14,7 @@ describe("interoperability", () => {
       it("is a typescript error without SanityValues", () => {
         const exec = () => {
           const client =
-            // @ts-expect-error -- castToTyped needs an explicit type
+            // @ts-expect-error EXPECTED castToTyped needs an explicit type
             castToTyped()(
               createClientNative({
                 dataset: "dataset",
@@ -73,7 +73,7 @@ describe("interoperability", () => {
       it("is a typescript error without SanityValues", () => {
         const exec = () => {
           const client =
-            // @ts-expect-error -- castToTyped needs an explicit type
+            // @ts-expect-error EXPECTED castToTyped needs an explicit type
             castToTyped()(
               createStegaClientNative({
                 dataset: "dataset",
