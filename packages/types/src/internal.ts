@@ -501,7 +501,7 @@ export type ObjectDefinition<
     ObjectValue<TFieldDefinition>,
     RewriteValue<ObjectValue<TFieldDefinition>, ObjectRule>
   > & {
-    fields: TupleOfLength<TFieldDefinition, 1>;
+    fields: TFieldDefinition[];
   }
 >;
 
@@ -543,7 +543,7 @@ export type DocumentDefinition<
     SanityDocument<TFieldDefinition>,
     DocumentRule<TFieldDefinition>
   > & {
-    fields: TupleOfLength<TFieldDefinition, 1>;
+    fields: TFieldDefinition[];
   }
 >;
 
