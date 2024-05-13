@@ -991,21 +991,24 @@ export type FieldDefinition<
         }[IntrinsicTypeName],
         { type: TType }
       >
-    : TypeAliasDefinition<
-        TType,
-        TAlias,
-        TNumberValue,
-        TStringValue,
-        TReferenced,
-        TReferenceWeak,
-        TBlockStyle,
-        TBlockListItem,
-        TBlockMarkDecorator,
-        TBlockMarkAnnotation,
-        THotspot,
-        TFieldDefinition,
-        TMemberDefinition,
-        TRequired
+    : Omit<
+        TypeAliasDefinition<
+          TType,
+          TAlias,
+          TNumberValue,
+          TStringValue,
+          TReferenced,
+          TReferenceWeak,
+          TBlockStyle,
+          TBlockListItem,
+          TBlockMarkDecorator,
+          TBlockMarkAnnotation,
+          THotspot,
+          TFieldDefinition,
+          TMemberDefinition,
+          TRequired
+        >,
+        "TODO why does this fail without the omit? we're clearly not using it"
       >) & {
     name: TName;
     [required]?: TRequired;
