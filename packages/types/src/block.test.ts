@@ -414,6 +414,225 @@ describe("block", () => {
           | "normal";
       }>();
     });
+
+    it("infers style from readonly list", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  styles: [
+                    { title: "Foo", value: "foo" },
+                    { title: "Bar", value: "bar" },
+                  ] as const,
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "block";
+        children: {
+          _key: string;
+          _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
+          marks: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: "bullet" | "number";
+        markDefs: never[];
+        style: "bar" | "foo";
+      }>();
+    });
+
+    it("infers listItem from readonly list", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  lists: [
+                    { title: "Foo", value: "foo" },
+                    { title: "Bar", value: "bar" },
+                  ] as const,
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "block";
+        children: {
+          _key: string;
+          _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
+          marks: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: "bar" | "foo";
+        markDefs: never[];
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+      }>();
+    });
+
+    it("infers decorator from readonly list", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  marks: {
+                    decorators: [
+                      { title: "Foo", value: "foo" },
+                      { title: "Bar", value: "bar" },
+                    ] as const,
+                  },
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "block";
+        children: {
+          _key: string;
+          _type: "span";
+          [decorator]: "bar" | "foo";
+          marks: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: "bullet" | "number";
+        markDefs: never[];
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+      }>();
+    });
+
+    it("infers markDefs from readonly list", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  marks: {
+                    annotations: [
+                      defineArrayMember({
+                        name: "internalLink",
+                        type: "object",
+                        fields: [
+                          defineField({
+                            name: "reference",
+                            type: "reference",
+                            to: [{ type: "post" }] as const,
+                          }),
+                        ],
+                      }),
+                    ],
+                  },
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _type: "block";
+        children: {
+          _key: string;
+          _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
+          marks: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: "bullet" | "number";
+        markDefs: {
+          _key: string;
+          _type: "internalLink";
+          reference?: ReferenceValue<"post", false>;
+        }[];
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+      }>();
+    });
   });
 
   describe("defineField", () => {
@@ -769,6 +988,201 @@ describe("block", () => {
                         name: "reference",
                         type: "reference",
                         to: [{ type: "post" as const }],
+                      }),
+                    ],
+                  }),
+                ],
+              },
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        children: {
+          _key: string;
+          _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
+          marks: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: "bullet" | "number";
+        markDefs: {
+          _key: string;
+          _type: "internalLink";
+          reference?: ReferenceValue<"post", false>;
+        }[];
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+      }>();
+    });
+
+    it("infers style from readonly list", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              styles: [
+                { title: "Foo", value: "foo" },
+                { title: "Bar", value: "bar" },
+              ] as const,
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        children: {
+          _key: string;
+          _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
+          marks: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: "bullet" | "number";
+        markDefs: never[];
+        style: "bar" | "foo";
+      }>();
+    });
+
+    it("infers listItem from readonly list", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              lists: [
+                { title: "Foo", value: "foo" },
+                { title: "Bar", value: "bar" },
+              ] as const,
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        children: {
+          _key: string;
+          _type: "span";
+          [decorator]:
+            | "code"
+            | "em"
+            | "strike-through"
+            | "strike"
+            | "strong"
+            | "underline";
+          marks: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: "bar" | "foo";
+        markDefs: never[];
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+      }>();
+    });
+
+    it("infers decorator from readonly list", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              marks: {
+                decorators: [
+                  { title: "Foo", value: "foo" },
+                  { title: "Bar", value: "bar" },
+                ] as const,
+              },
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _type: "foo";
+        children: {
+          _key: string;
+          _type: "span";
+          [decorator]: "bar" | "foo";
+          marks: string[];
+          text: string;
+        }[];
+        level?: number;
+        listItem?: "bullet" | "number";
+        markDefs: never[];
+        style:
+          | "blockquote"
+          | "h1"
+          | "h2"
+          | "h3"
+          | "h4"
+          | "h5"
+          | "h6"
+          | "normal";
+      }>();
+    });
+
+    it("infers markDefs from readonly list", async () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "block",
+              marks: {
+                annotations: [
+                  defineArrayMember({
+                    name: "internalLink",
+                    type: "object",
+                    fields: [
+                      defineField({
+                        name: "reference",
+                        type: "reference",
+                        to: [{ type: "post" }] as const,
                       }),
                     ],
                   }),

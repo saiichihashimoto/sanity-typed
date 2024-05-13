@@ -14,6 +14,26 @@ export const isPlainObject = <T>(value: T) =>
 
 export type MaybeArray<T> = T | T[];
 
+export type ReadonlyTupleOfLength<
+  T,
+  Min extends number = number,
+  Max extends number = number,
+  Result extends T[] = []
+> = Result["length"] extends Min
+  ? IsNumericLiteral<Max> extends false
+    ? readonly [...Result, ...T[]]
+    : Result["length"] extends Max
+    ? Result
+    :
+        | ReadonlyTupleOfLength<
+            T,
+            [T, ...Result]["length"] & number,
+            Max,
+            [T, ...Result]
+          >
+        | Result
+  : ReadonlyTupleOfLength<T, Min, Max, [T, ...Result]>;
+
 export type TupleOfLength<
   T,
   Min extends number = number,
