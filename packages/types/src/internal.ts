@@ -90,6 +90,7 @@ import type {
 import type {
   IsPlainObject,
   MaybeArray,
+  ReadonlyTupleOfLength,
   TupleOfLength,
 } from "@sanity-typed/utils";
 
@@ -287,7 +288,9 @@ export type ReferenceDefinition<
     ReferenceValue<TReferenced, TReferenceWeak>,
     RewriteValue<ReferenceValue<TReferenced, TReferenceWeak>, ReferenceRule>
   > & {
-    to: TupleOfLength<TypeReference<TReferenced>, 1>;
+    to:
+      | ReadonlyTupleOfLength<TypeReference<TReferenced>, 1>
+      | TupleOfLength<TypeReference<TReferenced>, 1>;
     weak?: TReferenceWeak;
   }
 >;
@@ -438,34 +441,40 @@ export type BlockDefinition<
       BlockRule
     >
   > & {
-    lists?: BlockListDefinition<
-      TBlockListItem &
-        (IsStringLiteral<TBlockListItem> extends false
-          ? {
-              [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-            }
-          : unknown)
-    >[];
-    marks?: Omit<BlockMarksDefinition, "annotations" | "decorators"> & {
-      annotations?: TBlockMarkAnnotation[];
-      decorators?: BlockDecoratorDefinition<
-        TBlockMarkDecorator &
-          (IsStringLiteral<TBlockMarkDecorator> extends false
+    lists?: ReadonlyArray<
+      BlockListDefinition<
+        TBlockListItem &
+          (IsStringLiteral<TBlockListItem> extends false
             ? {
                 [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
               }
             : unknown)
-      >[];
+      >
+    >;
+    marks?: Omit<BlockMarksDefinition, "annotations" | "decorators"> & {
+      annotations?: TBlockMarkAnnotation[];
+      decorators?: ReadonlyArray<
+        BlockDecoratorDefinition<
+          TBlockMarkDecorator &
+            (IsStringLiteral<TBlockMarkDecorator> extends false
+              ? {
+                  [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+                }
+              : unknown)
+        >
+      >;
     };
     of?: TupleOfLength<TMemberDefinition, 1>;
-    styles?: BlockStyleDefinition<
-      TBlockStyle &
-        (IsStringLiteral<TBlockStyle> extends false
-          ? {
-              [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-            }
-          : unknown)
-    >[];
+    styles?: ReadonlyArray<
+      BlockStyleDefinition<
+        TBlockStyle &
+          (IsStringLiteral<TBlockStyle> extends false
+            ? {
+                [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+              }
+            : unknown)
+      >
+    >;
   }
 >;
 

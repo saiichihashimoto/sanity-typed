@@ -35,6 +35,34 @@ describe("reference", () => {
       }>();
     });
 
+    it("infers ReferenceValue from readonly list", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "reference",
+                  to: [{ type: "other" }] as const,
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
+        _key: string;
+        _ref: string;
+        _type: "reference";
+        [referenced]: "other";
+      }>();
+    });
+
     it("overwrites `_type` with `name`", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -132,6 +160,37 @@ describe("reference", () => {
       }>();
     });
 
+    it("infers ReferenceValue from readonly list", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "bar",
+                  type: "reference",
+                  validation: (Rule) => Rule.required(),
+                  to: [{ type: "other" }] as const,
+                }),
+              ],
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["foo"]["bar"]
+      >().toStrictEqual<{
+        _ref: string;
+        _type: "reference";
+        [referenced]: "other";
+      }>();
+    });
+
     it("adds weak fields", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -185,6 +244,28 @@ describe("reference", () => {
               name: "foo",
               type: "reference",
               to: [{ type: "other" as const }],
+            }),
+          ],
+        },
+      });
+
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _ref: string;
+        _type: "foo";
+        [referenced]: "other";
+      }>();
+    });
+
+    it("infers ReferenceValue from readonly list", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "reference",
+              to: [{ type: "other" }] as const,
             }),
           ],
         },
