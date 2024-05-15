@@ -93,6 +93,46 @@ describe("<alias>", () => {
       }>();
     });
 
+    it("allows group and fieldset", () => {
+      const config = defineConfig({
+        dataset: "dataset",
+        projectId: "projectId",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "document",
+              fields: [
+                defineField({
+                  name: "bar",
+                  group: "test-group",
+                  fieldset: "test-fieldset",
+                  type: "bar",
+                  validation: (Rule) => Rule.required(),
+                }),
+              ],
+            }),
+            defineType({
+              name: "bar",
+              type: "string",
+            }),
+          ],
+        },
+      });
+
+      expectType<
+        InferSchemaValues<typeof config>["bar"]
+      >().toStrictEqual<string>();
+      expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar: string;
+      }>();
+    });
+
     it("infers cyclical type value", () => {
       const config = defineConfig({
         dataset: "dataset",
@@ -375,6 +415,44 @@ describe("<alias>", () => {
           _type: "bar";
           baz: boolean;
         };
+      }>();
+    });
+
+    it("allows group and fieldset", () => {
+      const plugin = definePlugin({
+        name: "plugin",
+        schema: {
+          types: [
+            defineType({
+              name: "foo",
+              type: "document",
+              fields: [
+                defineField({
+                  name: "bar",
+                  group: "test-group",
+                  fieldset: "test-fieldset",
+                  type: "bar",
+                }),
+              ],
+            }),
+            defineType({
+              name: "bar",
+              type: "string",
+            }),
+          ],
+        },
+      })();
+
+      expectType<
+        InferSchemaValues<typeof plugin>["bar"]
+      >().toStrictEqual<string>();
+      expectType<InferSchemaValues<typeof plugin>["foo"]>().toEqual<{
+        _createdAt: string;
+        _id: string;
+        _rev: string;
+        _type: "foo";
+        _updatedAt: string;
+        bar?: string;
       }>();
     });
 
