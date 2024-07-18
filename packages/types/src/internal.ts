@@ -384,7 +384,7 @@ export type ArrayDefinition<
     InferRawValue<TMemberDefinition>[],
     ArrayRule<InferRawValue<TMemberDefinition>[]>
   > & {
-    of: TupleOfLength<TMemberDefinition, 1>;
+    of: TMemberDefinition[];
   }
 >;
 
