@@ -22,7 +22,7 @@
     "type-fest": "4.10.1"
   },
   "devDependencies": {
-    "@portabletext/types": "2.0.8",
+    "@portabletext/types": "2.0.13",
     "@sanity-typed/tsconfig": "0.0.0-development"
   },
   "peerDependencies": {
