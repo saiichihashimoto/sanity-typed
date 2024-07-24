@@ -1,5 +1,10 @@
 import { flow, identity, pick } from "lodash/fp";
-import type { CustomValidator, CustomValidatorResult, Schema } from "sanity";
+import type {
+  CustomValidator,
+  CustomValidatorResult,
+  LocaleSource,
+  Schema,
+} from "sanity";
 import type { IsNumericLiteral, IsStringLiteral } from "type-fest";
 import { z } from "zod";
 
@@ -639,6 +644,10 @@ const customValidationZod = <T>(
               getDocumentExists: () => {
                 throw new Error("zod can't provide getDocumentExists");
               },
+              // TODO ctx.environment
+              environment: "studio",
+              // TODO ctx.i18n
+              i18n: {} as LocaleSource,
               // TODO ctx.schema
               schema: {} as Schema,
               // TODO ctx.document
@@ -647,15 +656,27 @@ const customValidationZod = <T>(
               // TODO ctx.type
             });
 
-            const handleResult = (result: CustomValidatorResult) =>
-              result === true
+            const handleResult = (result: CustomValidatorResult) => {
+              if (Array.isArray(result)) {
+                return reduceAcc(result, (prev: undefined, err) => {
+                  // eslint-disable-next-line fp/no-unused-expression -- EXPECTED
+                  ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: err.message,
+                  });
+
+                  return undefined;
+                })(undefined);
+              }
+
+              return result === true
                 ? undefined
                 : ctx.addIssue({
                     code: z.ZodIssueCode.custom,
-                    ...(typeof result === "string"
-                      ? { message: result }
-                      : { message: result.message, paths: result.paths }),
+                    message:
+                      typeof result === "string" ? result : result.message,
                   });
+            };
 
             return validation instanceof Promise
               ? // eslint-disable-next-line promise/prefer-await-to-then -- Could be not a promise
