@@ -26,7 +26,7 @@ describe("interoperability", () => {
         };
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          SanityClient<never>
+          SanityStegaClient<never>
         >();
       });
 
