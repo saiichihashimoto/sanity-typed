@@ -41,7 +41,7 @@
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.0.2",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@sanity/client": "6.11.3",
+    "@sanity/client": "6.21.2",
     "groq-builder": "0.2.0"
   },
   "peerDependencies": {
