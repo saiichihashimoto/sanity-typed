@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.0.3
+      - uses: actions/setup-node@v4.0.4
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -52,7 +52,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: actions/setup-node@v4.0.3
+      - uses: actions/setup-node@v4.0.4
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -180,7 +180,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.0.3
+      - uses: actions/setup-node@v4.0.4
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -220,7 +220,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.0.3
+      - uses: actions/setup-node@v4.0.4
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -252,7 +252,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.0.3
+      - uses: actions/setup-node@v4.0.4
         with:
           node-version-file: "package.json"
           cache: "npm"
