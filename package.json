@@ -67,6 +67,6 @@
   },
   "packageManager": "npm@8.19.4",
   "engines": {
-    "node": "^18.17.0"
+    "node": "^18.17.0 || ^20.16.0"
   }
 }
