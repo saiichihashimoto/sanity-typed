@@ -12,7 +12,7 @@ import type {
   ListenEvent,
   MutationEvent,
   RawQueryResponse,
-  SanityStegaClient,
+  SanityClient,
 } from "@sanity-typed/client";
 import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
@@ -26,7 +26,7 @@ describe("createClient", () => {
       }>({});
 
     expectType<ReturnType<typeof exec>>().toEqual<
-      SanityStegaClient<AnySanityDocument & { _type: "foo"; foo: string }>
+      SanityClient<AnySanityDocument & { _type: "foo"; foo: string }>
     >();
   });
 
