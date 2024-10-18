@@ -1,12 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["tsup.config.ts"],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": [
         "!.*/**",
-        "!**/*.md",
+        "!*/**/*.md",
         "!dist/**",
         "!node_modules/**",
         "!src/**/*.test.*",
