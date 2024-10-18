@@ -27,12 +27,6 @@ import type {
   SingleMutationResult,
   UnfilteredResponseQueryOptions,
 } from "@sanity/client";
-import { createClient as createStegaClientNative } from "@sanity/client/stega";
-import type {
-  ClientStegaConfig,
-  ObservableSanityStegaClient as ObservableSanityStegaClientNative,
-  SanityStegaClient as SanityStegaClientNative,
-} from "@sanity/client/stega";
 import type {
   GroqBuilder,
   createGroqBuilder as createGroqBuilderType,
@@ -856,32 +850,6 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
   } as unknown as SanityClient<DocumentValues<SanityValues>>;
 };
 
-export type ObservableSanityStegaClient<TDocument extends AnySanityDocument> =
-  OverrideSanityClient<
-    ObservableSanityStegaClientNative,
-    ClientStegaConfig,
-    TDocument,
-    // TODO
-    any,
-    false
-  >;
-
-export type SanityStegaClient<TDocument extends AnySanityDocument> =
-  OverrideSanityClient<
-    SanityStegaClientNative,
-    ClientStegaConfig,
-    TDocument,
-    ObservableSanityStegaClient<TDocument>,
-    true
-  >;
-
-export const createStegaClient = <SanityValues extends { [type: string]: any }>(
-  config: ClientStegaConfig
-) =>
-  createStegaClientNative(config) as unknown as SanityClient<
-    DocumentValues<SanityValues>
-  >;
-
 export const castToTyped =
   <SanityValues extends { [type: string]: any } = never>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- not actually used
@@ -893,9 +861,5 @@ export const castToTyped =
           }
         ]
   ) =>
-  <TClient extends SanityClientNative | SanityStegaClientNative>(
-    untyped: TClient
-  ) =>
-    untyped as unknown as TClient extends SanityStegaClientNative
-      ? SanityStegaClient<DocumentValues<SanityValues>>
-      : SanityClient<DocumentValues<SanityValues>>;
+  <TClient extends SanityClientNative>(untyped: TClient) =>
+    untyped as unknown as SanityClient<DocumentValues<SanityValues>>;
