@@ -24,5 +24,6 @@ updates:
           - "@portabletext/*"
       sanity:
         patterns:
-          - "sanity"
           - "@sanity/*"
+          - "next-sanity"
+          - "sanity"
