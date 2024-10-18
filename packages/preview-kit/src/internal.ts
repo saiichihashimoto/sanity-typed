@@ -10,13 +10,13 @@ import type {
 } from "groq-builder";
 import { bindAll } from "lodash/fp";
 
-import type { SanityStegaClient } from "@sanity-typed/client";
+import type { SanityClient } from "@sanity-typed/client";
 import type { DocumentValues, referenced } from "@sanity-typed/types";
 
 export const createClient = <SanityValues extends { [type: string]: any }>(
   config: PreviewKitClientConfig
 ) => {
-  const client = createClientNative(config) as unknown as SanityStegaClient<
+  const client = createClientNative(config) as unknown as SanityClient<
     DocumentValues<SanityValues>
   >;
 
@@ -91,5 +91,5 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
 
       return parse(client.fetch(query, params, options as any)) as any;
     },
-  } as SanityStegaClient<DocumentValues<SanityValues>>;
+  } as SanityClient<DocumentValues<SanityValues>>;
 };

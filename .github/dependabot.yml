@@ -18,3 +18,11 @@ updates:
       - "dependabot"
     open-pull-requests-limit: 1
     versioning-strategy: increase
+    groups:
+      portabletext:
+        patterns:
+          - "@portabletext/*"
+      sanity:
+        patterns:
+          - "sanity"
+          - "@sanity/*"

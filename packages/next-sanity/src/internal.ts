@@ -10,12 +10,11 @@ import type {
 } from "next-sanity";
 import { createClient as createClientNative } from "next-sanity";
 
-import type { SanityStegaClient } from "@sanity-typed/client";
+import type { SanityClient } from "@sanity-typed/client";
 import type { DocumentValues, referenced } from "@sanity-typed/types";
 import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 
-export type SanityClient<TDocument extends AnySanityDocument> =
-  SanityStegaClient<TDocument>;
+export type { SanityClient } from "@sanity-typed/client";
 
 export type ObservableSanityClient<TDocument extends AnySanityDocument> =
   SanityClient<TDocument>["observable"];
