@@ -644,6 +644,7 @@ const customValidationZod = <T>(
               getDocumentExists: () => {
                 throw new Error("zod can't provide getDocumentExists");
               },
+              environment: "studio",
               // TODO ctx.i18n
               i18n: {} as LocaleSource,
               // TODO ctx.schema
