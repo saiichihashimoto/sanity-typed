@@ -65,6 +65,7 @@
     "type-fest": "4.10.1",
     "typescript": "5.2.2"
   },
+  "packageManager": "npm@8.19.4",
   "engines": {
     "node": "^18.17.0"
   }
