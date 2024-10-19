@@ -12,7 +12,7 @@
         "!src/**/*.test.*",
         "**"
       ],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", ".next/**"]
     },
     "dev": {
       "persistent": true
