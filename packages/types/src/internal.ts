@@ -53,7 +53,9 @@ import type {
   ReferenceDefinition as ReferenceDefinitionNative,
   ReferenceRule,
   ReferenceValue as ReferenceValueNative,
-  RuleDef,
+  RuleDef, // @ts-expect-error TODO Until sanity exports ScheduledPublishingPluginOptions, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO Until sanity exports ScheduledPublishingPluginOptions, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+  ScheduledPublishingPluginOptions,
   SchemaPluginOptions as SchemaPluginOptionsNative,
   SlugDefinition as SlugDefinitionNative,
   SlugRule,
@@ -95,7 +97,7 @@ import type {
 } from "@sanity-typed/utils";
 
 // HACK Couldn't use type-fest's Merge >=3.0.0
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- When did this show up?
+ 
 type Merge_<FirstType, SecondType> = Except<
   FirstType,
   Extract<keyof FirstType, keyof SecondType>
@@ -1289,7 +1291,20 @@ type WorkspaceOptions<
   TPluginOptions extends PluginOptions<any, any>
 > = MergeOld<
   WorkspaceOptionsNative,
-  ConfigBase<TTypeDefinition, TPluginOptions>
+  ConfigBase<TTypeDefinition, TPluginOptions> & {
+    // TODO Until sanity exports ScheduledPublishingPluginOptions, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+    scheduledPublishing?: {
+      /**
+       * Whether scheduled publishing is enabled for this workspace.
+       */
+      enabled: boolean;
+      /**
+       * Date format to use for input fields. This must be a valid `date-fns` {@link https://date-fns.org/docs/format | formatted string}.
+       * @defaultValue 'dd/MM/yyyy HH:mm' make sure to specify minutes and hours if you are specifying a custom format
+       */
+      inputDateTimeFormat?: string;
+    };
+  }
 >;
 
 export type Config<
