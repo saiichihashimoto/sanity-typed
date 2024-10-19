@@ -57,7 +57,7 @@ describe("number", () => {
                 defineArrayMember({
                   type: "number",
                   options: {
-                    list: [1, { title: "Two", value: 2 }],
+                    list: [1 as const, { title: "Two", value: 2 as const }],
                   },
                 }),
               ],
@@ -129,7 +129,7 @@ describe("number", () => {
                   type: "number",
                   validation: (Rule) => Rule.required(),
                   options: {
-                    list: [1, { title: "Two", value: 2 }],
+                    list: [1 as const, { title: "Two", value: 2 as const }],
                   },
                 }),
               ],
@@ -189,7 +189,7 @@ describe("number", () => {
               name: "foo",
               type: "number",
               options: {
-                list: [1, { title: "Two", value: 2 }],
+                list: [1 as const, { title: "Two", value: 2 as const }],
               },
             }),
           ],

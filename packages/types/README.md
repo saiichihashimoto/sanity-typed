@@ -26,6 +26,8 @@ Infer Sanity Document Types from Sanity Schemas
   - [Typescript Errors in IDEs](#typescript-errors-in-ides)
     - [VSCode](#vscode)
 - [Breaking Changes](#breaking-changes)
+  - [6 to 7](#6-to-7)
+    - [Most options require `as const`](#most-options-require-as-const)
   - [5 to 6](#5-to-6)
     - [Block fields require `as const`](#block-fields-require-as-const)
   - [4 to 5](#4-to-5)
@@ -323,6 +325,12 @@ Often you'll run into an issue where you get typescript errors in your IDE but, 
 - Open any typescript file and you can [see which version is being used in the status bar](https://code.visualstudio.com/docs/typescript/typescript-compiling#_compiler-versus-language-service). Please check this (and provide a screenshot confirming this) before creating an issue. Spending hours debugging your issue ony to find that you're not using your workspace's version is very frustrating.
 
 ## Breaking Changes
+
+### 6 to 7
+
+#### Most options require `as const`
+
+String, Number, and String options now require `as const` for correct types. Essentially, any option that has an effect on the output type needs an `as const` as of `typescript@5.3.2`.
 
 ### 5 to 6
 

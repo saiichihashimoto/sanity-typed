@@ -180,6 +180,12 @@ const nav = defineType({
 
 ## Breaking Changes
 
+### 6 to 7
+
+#### Most options require `as const`
+
+String, Number, and String options now require `as const` for correct types. Essentially, any option that has an effect on the output type needs an `as const` as of `typescript@5.3.2`.
+
 ### 5 to 6
 
 #### Block fields require `as const`

@@ -583,7 +583,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 name: "foo",
                 type: "image",
                 options: {
-                  hotspot: true,
+                  hotspot: true as const,
                 },
               }),
             ],

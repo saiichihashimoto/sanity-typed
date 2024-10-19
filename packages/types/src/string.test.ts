@@ -145,7 +145,7 @@ describe("string", () => {
               name: "foo",
               type: "string",
               options: {
-                list: ["foo", { title: "Bar", value: "bar" }],
+                list: ["foo" as const, { title: "Bar", value: "bar" as const }],
               },
             }),
           ],

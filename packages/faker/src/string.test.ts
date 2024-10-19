@@ -64,7 +64,10 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   defineArrayMember({
                     type: "string",
                     options: {
-                      list: ["foo", { title: "Bar", value: "bar" }],
+                      list: [
+                        "foo" as const,
+                        { title: "Bar", value: "bar" as const },
+                      ],
                     },
                   }),
                 ],
@@ -139,7 +142,10 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     type: "string",
                     validation: (Rule) => Rule.required(),
                     options: {
-                      list: ["foo", { title: "Bar", value: "bar" }],
+                      list: [
+                        "foo" as const,
+                        { title: "Bar", value: "bar" as const },
+                      ],
                     },
                   }),
                 ],
@@ -202,7 +208,10 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 name: "foo",
                 type: "string",
                 options: {
-                  list: ["foo", { title: "Bar", value: "bar" }],
+                  list: [
+                    "foo" as const,
+                    { title: "Bar", value: "bar" as const },
+                  ],
                 },
               }),
             ],

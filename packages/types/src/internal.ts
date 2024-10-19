@@ -72,6 +72,8 @@ import type {
 } from "sanity";
 import type {
   Except,
+  IsBooleanLiteral,
+  IsNumericLiteral,
   IsStringLiteral,
   Merge,
   OmitIndexSignature,
@@ -231,7 +233,12 @@ export type NumberDefinition<
     options?: MergeOld<
       NumberOptions,
       {
-        list?: MaybeTitledListValue<TNumberValue>[];
+        list?: MaybeTitledListValue<TNumberValue>[] &
+          (IsNumericLiteral<TNumberValue> extends false
+            ? {
+                [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+              }
+            : unknown);
       }
     >;
   }
@@ -350,7 +357,12 @@ export type StringDefinition<
     options?: MergeOld<
       StringOptions,
       {
-        list?: MaybeTitledListValue<TStringValue>[];
+        list?: MaybeTitledListValue<TStringValue>[] &
+          (IsStringLiteral<TStringValue> extends false
+            ? {
+                [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+              }
+            : unknown);
       }
     >;
   }
@@ -627,7 +639,12 @@ export type ImageDefinition<
     options?: MergeOld<
       ImageOptions,
       {
-        hotspot?: THotspot;
+        hotspot?: THotspot &
+          (IsBooleanLiteral<THotspot> extends false
+            ? {
+                [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+              }
+            : unknown);
       }
     >;
   }
@@ -889,10 +906,10 @@ export type ArrayMemberDefinition<
 export const makeDefineArrayMember =
   <AllowArrays extends boolean>() =>
   <
-    TType extends string,
-    TName extends string,
-    TAlias extends IntrinsicTypeName,
-    TStrict extends StrictDefinition,
+    const TType extends string,
+    const TName extends string,
+    const TAlias extends IntrinsicTypeName,
+    const TStrict extends StrictDefinition,
     const TNumberValue extends number,
     const TStringValue extends string,
     const TReferenced extends string,
@@ -900,15 +917,15 @@ export const makeDefineArrayMember =
     const TBlockStyle extends string = BlockStyleDefault,
     const TBlockListItem extends string = BlockListItemDefault,
     const TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
-    TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
       name?: string;
     } = never,
     const THotspot extends boolean = false,
-    TFieldDefinition extends DefinitionBase<any, any, any> & {
+    const TFieldDefinition extends DefinitionBase<any, any, any> & {
       name: string;
       [required]?: boolean;
     } = never,
-    TMemberDefinition extends DefinitionBase<any, any, any> & {
+    const TMemberDefinition extends DefinitionBase<any, any, any> & {
       name?: string;
     } = never
   >(
@@ -1017,10 +1034,10 @@ export type FieldDefinition<
   };
 
 export const defineField = <
-  TType extends string,
-  TName extends string,
-  TAlias extends IntrinsicTypeName,
-  TStrict extends StrictDefinition,
+  const TType extends string,
+  const TName extends string,
+  const TAlias extends IntrinsicTypeName,
+  const TStrict extends StrictDefinition,
   const TNumberValue extends number,
   const TStringValue extends string,
   const TReferenced extends string,
@@ -1028,18 +1045,18 @@ export const defineField = <
   const TBlockStyle extends string = BlockStyleDefault,
   const TBlockListItem extends string = BlockListItemDefault,
   const TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
-  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+  const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never,
   const THotspot extends boolean = false,
-  TFieldDefinition extends DefinitionBase<any, any, any> & {
+  const TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   } = never,
-  TMemberDefinition extends DefinitionBase<any, any, any> & {
+  const TMemberDefinition extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never,
-  TRequired extends boolean = false
+  const TRequired extends boolean = false
 >(
   schemaField: FieldDefinition<
     TType,
@@ -1130,10 +1147,10 @@ export type TypeDefinition<
   };
 
 export const defineType = <
-  TType extends string,
-  TName extends string,
-  TAlias extends IntrinsicTypeName,
-  TStrict extends StrictDefinition,
+  const TType extends string,
+  const TName extends string,
+  const TAlias extends IntrinsicTypeName,
+  const TStrict extends StrictDefinition,
   const TNumberValue extends number,
   const TStringValue extends string,
   const TReferenced extends string,
@@ -1141,15 +1158,15 @@ export const defineType = <
   const TBlockStyle extends string = BlockStyleDefault,
   const TBlockListItem extends string = BlockListItemDefault,
   const TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
-  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+  const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never,
   const THotspot extends boolean = false,
-  TFieldDefinition extends DefinitionBase<any, any, any> & {
+  const TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   } = never,
-  TMemberDefinition extends DefinitionBase<any, any, any> & {
+  const TMemberDefinition extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never
 >(

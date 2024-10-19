@@ -64,7 +64,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   defineArrayMember({
                     type: "number",
                     options: {
-                      list: [1, { title: "Two", value: 2 }],
+                      list: [1 as const, { title: "Two", value: 2 as const }],
                     },
                   }),
                 ],
@@ -139,7 +139,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     type: "number",
                     validation: (Rule) => Rule.required(),
                     options: {
-                      list: [1, { title: "Two", value: 2 }],
+                      list: [1 as const, { title: "Two", value: 2 as const }],
                     },
                   }),
                 ],
@@ -202,7 +202,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 name: "foo",
                 type: "number",
                 options: {
-                  list: [1, { title: "Two", value: 2 }],
+                  list: [1 as const, { title: "Two", value: 2 as const }],
                 },
               }),
             ],

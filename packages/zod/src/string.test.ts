@@ -57,7 +57,10 @@ describe("string", () => {
                 defineArrayMember({
                   type: "string",
                   options: {
-                    list: ["foo", { title: "Bar", value: "bar" }],
+                    list: [
+                      "foo" as const,
+                      { title: "Bar", value: "bar" as const },
+                    ],
                   },
                 }),
               ],
@@ -129,7 +132,10 @@ describe("string", () => {
                   type: "string",
                   validation: (Rule) => Rule.required(),
                   options: {
-                    list: ["foo", { title: "Bar", value: "bar" }],
+                    list: [
+                      "foo" as const,
+                      { title: "Bar", value: "bar" as const },
+                    ],
                   },
                 }),
               ],
@@ -189,7 +195,7 @@ describe("string", () => {
               name: "foo",
               type: "string",
               options: {
-                list: ["foo", { title: "Bar", value: "bar" }],
+                list: ["foo" as const, { title: "Bar", value: "bar" as const }],
               },
             }),
           ],

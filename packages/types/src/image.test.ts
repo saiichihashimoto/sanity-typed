@@ -454,7 +454,7 @@ describe("image", () => {
               name: "foo",
               type: "image",
               options: {
-                hotspot: true,
+                hotspot: true as const,
               },
             }),
           ],
