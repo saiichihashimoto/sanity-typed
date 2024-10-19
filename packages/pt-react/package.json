@@ -39,8 +39,8 @@
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "peerDependencies": {
     "@portabletext/react": "^3.0.11",

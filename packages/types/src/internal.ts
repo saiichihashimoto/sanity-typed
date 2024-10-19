@@ -7,7 +7,9 @@ import {
 } from "sanity";
 import type {
   ArrayDefinition as ArrayDefinitionNative,
-  ArrayRule,
+  ArrayRule, // @ts-expect-error TODO Until sanity exports BetaFeatures, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO Until sanity exports BetaFeatures, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+  BetaFeatures as BetaFeaturesNative,
   BlockDecoratorDefinition as BlockDecoratorDefinitionNative,
   BlockDefinition as BlockDefinitionNative,
   BlockListDefinition as BlockListDefinitionNative,
@@ -97,7 +99,7 @@ import type {
 } from "@sanity-typed/utils";
 
 // HACK Couldn't use type-fest's Merge >=3.0.0
- 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- When did this show up?
 type Merge_<FirstType, SecondType> = Except<
   FirstType,
   Extract<keyof FirstType, keyof SecondType>
@@ -1219,6 +1221,21 @@ export type ConfigBase<
   >;
 };
 
+// TODO Until sanity exports BetaFeatures, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+type BetaFeatures = {
+  /**
+   * @beta
+   * @hidden
+   * @deprecated beta feature is no longer available.
+   * */
+  treeArrayEditing?: {
+    /**
+     * @deprecated beta feature is no longer available.
+     */
+    enabled: boolean;
+  };
+};
+
 export type PluginOptions<
   TTypeDefinition extends TypeDefinition<
     any,
@@ -1239,7 +1256,9 @@ export type PluginOptions<
   >,
   TPluginOptions extends PluginOptions<any, any>
 > = ConfigBase<TTypeDefinition, TPluginOptions> &
-  Omit<PluginOptionsNative, "plugins" | "schema">;
+  Omit<PluginOptionsNative, "beta" | "plugins" | "schema"> & {
+    beta?: BetaFeatures;
+  };
 
 export const definePlugin = <
   TTypeDefinition extends TypeDefinition<
@@ -1290,8 +1309,9 @@ type WorkspaceOptions<
   >,
   TPluginOptions extends PluginOptions<any, any>
 > = MergeOld<
-  WorkspaceOptionsNative,
+  Omit<WorkspaceOptionsNative, "beta">,
   ConfigBase<TTypeDefinition, TPluginOptions> & {
+    beta?: BetaFeatures;
     // TODO Until sanity exports ScheduledPublishingPluginOptions, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
     scheduledPublishing?: {
       /**
