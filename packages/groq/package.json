@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
-    "@saiichihashimoto/test-utils": "1.0.2",
+    "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
     "@sanity/client": "6.22.2",

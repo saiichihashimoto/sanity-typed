@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
-    "@saiichihashimoto/test-utils": "1.0.2",
+    "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "groq-builder": "0.2.0",
     "next-sanity": "9.5.5",
