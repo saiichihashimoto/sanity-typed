@@ -1,5 +1,6 @@
 **/.next/**
 **/.sanity/**
+**/.turbo/**
 **/dist/**
 *lock.json
 .husky/**
