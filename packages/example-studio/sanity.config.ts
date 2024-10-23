@@ -1,4 +1,4 @@
-import { deskTool } from "sanity/desk";
+import { structureTool } from "sanity/structure";
 
 // import { defineConfig } from "sanity";
 import { defineConfig } from "@sanity-typed/types";
@@ -11,7 +11,7 @@ import { product } from "./schemas/product";
 const config = defineConfig({
   projectId: "59t1ed5o",
   dataset: "production",
-  plugins: [deskTool()],
+  plugins: [structureTool()],
   schema: {
     types: [
       product,

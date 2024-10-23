@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@cspell/eslint-plugin": "8.3.2",
+    "@eslint-community/eslint-plugin-eslint-comments": "4.4.0",
     "@jest/types": "29.6.3",
     "@standard-configs/prettier-plugin": "1.0.12",
     "@total-typescript/ts-reset": "0.5.1",
@@ -37,7 +38,6 @@
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "9.1.0",
     "eslint-import-resolver-typescript": "3.6.1",
-    "eslint-plugin-eslint-comments": "3.2.0",
     "eslint-plugin-fp": "2.3.0",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-jest": "27.6.3",
