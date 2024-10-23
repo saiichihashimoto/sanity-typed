@@ -211,7 +211,7 @@ jobs:
           fi
   test-matrix:
     name: Test Matrix
-    needs: install-node-modules
+    needs: [install-node-modules, build]
     runs-on: ubuntu-latest
     outputs:
       packages: ${{ steps.set-packages.outputs.packages }}

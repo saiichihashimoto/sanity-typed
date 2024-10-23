@@ -59,6 +59,7 @@ export const evaluate = <
     timestamp?: Date;
   } = {}
 ) =>
+  // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
   evaluateNative(node, options) as MaybePromiseLike<
     StaticOrStreamValue<
       Evaluate<
