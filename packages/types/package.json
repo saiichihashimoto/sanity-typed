@@ -37,7 +37,7 @@
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
-    "sanity": "3.62.0"
+    "sanity": "3.62.2"
   },
   "peerDependencies": {
     "sanity": "^3.25.0",
