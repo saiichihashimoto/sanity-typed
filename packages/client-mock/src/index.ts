@@ -287,7 +287,7 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
       operations?: TMutations
     ) =>
       new Transaction(operations, client as any) as TransactionType<
-        {
+        AnySanityDocument[] & {
           [index in keyof TMutations]: MutationDoc<
             TDocument,
             TMutations[index]

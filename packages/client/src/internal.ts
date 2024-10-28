@@ -729,7 +729,7 @@ export type OverrideSanityClient<
     >(
       operations?: TMutations
     ) => TransactionType<
-      {
+      AnySanityDocument[] & {
         [index in keyof TMutations]: MutationDoc<TDocument, TMutations[index]>;
       },
       TDocument,
