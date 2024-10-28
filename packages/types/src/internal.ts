@@ -445,40 +445,13 @@ export type BlockDefinition<
       BlockRule
     >
   > & {
-    lists?: ReadonlyArray<
-      BlockListDefinition<
-        TBlockListItem &
-          (IsStringLiteral<TBlockListItem> extends false
-            ? {
-                [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-              }
-            : unknown)
-      >
-    >;
+    lists?: ReadonlyArray<BlockListDefinition<TBlockListItem>>;
     marks?: Omit<BlockMarksDefinition, "annotations" | "decorators"> & {
       annotations?: TBlockMarkAnnotation[];
-      decorators?: ReadonlyArray<
-        BlockDecoratorDefinition<
-          TBlockMarkDecorator &
-            (IsStringLiteral<TBlockMarkDecorator> extends false
-              ? {
-                  [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-                }
-              : unknown)
-        >
-      >;
+      decorators?: ReadonlyArray<BlockDecoratorDefinition<TBlockMarkDecorator>>;
     };
     of?: TupleOfLength<TMemberDefinition, 1>;
-    styles?: ReadonlyArray<
-      BlockStyleDefinition<
-        TBlockStyle &
-          (IsStringLiteral<TBlockStyle> extends false
-            ? {
-                [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-              }
-            : unknown)
-      >
-    >;
+    styles?: ReadonlyArray<BlockStyleDefinition<TBlockStyle>>;
   }
 >;
 
