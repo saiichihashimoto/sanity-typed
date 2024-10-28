@@ -180,6 +180,10 @@ const nav = defineType({
 
 ## Breaking Changes
 
+### 6 no longer needs `as const`
+
+Besides for references, `as const` is no longer needed for some of the types. While it will still type string literals when possible, it won't be required. You'll still need `as const` if you actually want the literal types, but it was breaking too many valid workflows to require it.
+
 ### 5 to 6
 
 #### Block fields require `as const`

@@ -148,7 +148,7 @@ describe("data types", () => {
 
     const result = await (await evaluate(tree)).get();
 
-    const expectedResult = "double quoted string" as const;
+    const expectedResult = "double quoted string";
 
     expect(result).toStrictEqual(expectedResult);
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<
@@ -209,7 +209,7 @@ describe("data types", () => {
 
     const result = await (await evaluate(tree)).get();
 
-    const expectedResult = "single quoted string" as const;
+    const expectedResult = "single quoted string";
 
     expect(result).toStrictEqual(expectedResult);
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<
@@ -234,7 +234,7 @@ describe("data types", () => {
 
     const result = await (await evaluate(tree)).get();
 
-    const expectedResult = "single' 'quoted' 'string" as const;
+    const expectedResult = "single' 'quoted' 'string";
 
     expect(result).toStrictEqual(expectedResult);
     expectType<ExecuteQuery<typeof query>>().toStrictEqual<
