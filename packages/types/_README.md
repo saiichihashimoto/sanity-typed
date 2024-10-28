@@ -180,7 +180,15 @@ const nav = defineType({
 
 ## Breaking Changes
 
-### 6 no longer needs `as const`
+### 6 to 7
+
+#### `as const` needed for certain types to infer correctly
+
+Like mentioned in [6 no longer forces `as const`](#6-no-longer-forces-as-const), `as const` is no required anywhere excent for references (otherwise they wouldn't reference correctly), but you will still want them in many places. Literals where it narrows the type are the usual candidates (ie string and number lists). But there are a few others, ie `options.hotspot` for the image type needs it to be typed as `true` to infer the hotspot fields. Due to typescript quirks, sometimes you'll need to add `true as const` for it to infer correctly.
+
+Until we get a proper understanding on how we can force typescript to infer the literals, we won't enforce it anywhere except for references. This is because it's a convenience everywhere else; references are rarely what you want without it.
+
+### 6 no longer forces `as const`
 
 Besides for references, `as const` is no longer needed for some of the types. While it will still type string literals when possible, it won't be required. You'll still need `as const` if you actually want the literal types, but it was breaking too many valid workflows to require it.
 
