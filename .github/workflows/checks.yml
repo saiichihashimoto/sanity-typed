@@ -211,8 +211,7 @@ jobs:
           fi
   test-matrix:
     name: Test Matrix
-    # Since test-package federates out so much, let's not waste minutes if it won't build
-    needs: [install-node-modules, build]
+    needs: install-node-modules
     runs-on: ubuntu-latest
     outputs:
       packages: ${{ steps.set-packages.outputs.packages }}
