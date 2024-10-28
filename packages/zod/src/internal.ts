@@ -251,6 +251,7 @@ const numberZod = <
         (schemaType.options!.list! as MaybeTitledListValue<TNumberValue>[]).map(
           (maybeTitledListValue) =>
             z.literal(
+              // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
               typeof maybeTitledListValue === "number"
                 ? maybeTitledListValue
                 : (
