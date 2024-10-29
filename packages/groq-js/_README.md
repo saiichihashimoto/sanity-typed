@@ -28,6 +28,14 @@ Typically, this isn't used directly, but via [`@sanity-typed/client-mock`'s](../
 
 @[typescript](../../docs/your-typed-groq-js.ts)
 
+## Breaking Changes
+
+### 1 to 2
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.
+
 ## Considerations
 
 ### Using your derived types

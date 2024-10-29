@@ -15,6 +15,9 @@
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
+- [Breaking Changes](#breaking-changes)
+  - [1 to 2](#1-to-2)
+    - [Typescript version from 5.4.2 <= x <= 5.6.3](#typescript-version-from-542--x--563)
 - [Considerations](#considerations)
   - [Using your derived types](#using-your-derived-types)
   - [The parsed tree changes in seemingly breaking ways](#the-parsed-tree-changes-in-seemingly-breaking-ways)
@@ -101,6 +104,14 @@ const result = await value.get();
  */
 ```
 
+## Breaking Changes
+
+### 1 to 2
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.
+
 ## Considerations
 
 ### Using your derived types
@@ -152,7 +163,7 @@ export const product = defineType({
 ```
 ```sanity.config.ts```:
 ```typescript
-import { deskTool } from "sanity/desk";
+import { structureTool } from "sanity/structure";
 
 // import { defineConfig } from "sanity";
 import { defineConfig } from "@sanity-typed/types";
@@ -165,7 +176,7 @@ import { product } from "./schemas/product";
 const config = defineConfig({
   projectId: "59t1ed5o",
   dataset: "production",
-  plugins: [deskTool()],
+  plugins: [structureTool()],
   schema: {
     types: [
       product,

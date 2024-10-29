@@ -624,9 +624,7 @@ describe("observable", () => {
           .observable.transaction()
           .commit();
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<
-        Observable<undefined>
-      >();
+      expectType<ReturnType<typeof exec>>().toStrictEqual<Observable<never>>();
     });
 
     describe("create", () => {
@@ -804,9 +802,9 @@ describe("observable", () => {
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
           Observable<
-            | SanityAssetDocument
             | (AnySanityDocument & { _type: "foo"; foo: string })
             | (AnySanityDocument & { _type: "qux"; qux: number })
+            | (AnySanityDocument & SanityAssetDocument)
           >
         >();
       });

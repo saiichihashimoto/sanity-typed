@@ -1,18 +1,18 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["tsup.config.ts"],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": [
         "!.*/**",
-        "!**/*.md",
+        "!*/**/*.md",
         "!dist/**",
         "!node_modules/**",
         "!src/**/*.test.*",
         "**"
       ],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", ".next/**"]
     },
     "dev": {
       "persistent": true

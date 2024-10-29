@@ -1105,7 +1105,7 @@ describe("createClient", () => {
         .transaction()
         .commit();
 
-      expectType<typeof result>().toStrictEqual<undefined>();
+      expectType<typeof result>().toStrictEqual<never>();
       expect(result).toBeUndefined();
     });
 
@@ -1352,9 +1352,9 @@ describe("createClient", () => {
           .commit();
 
         expectType<typeof result>().toStrictEqual<
-          | SanityAssetDocument
           | (AnySanityDocument & { _type: "foo"; foo: string })
           | (AnySanityDocument & { _type: "qux"; qux: number })
+          | (AnySanityDocument & SanityAssetDocument)
         >();
         expect(result).toStrictEqual({
           _createdAt: "_createdAt",

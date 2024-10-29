@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.0.4
+      - uses: actions/setup-node@v4.1.0
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -52,7 +52,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: actions/setup-node@v4.0.4
+      - uses: actions/setup-node@v4.1.0
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -94,78 +94,139 @@ jobs:
           echo "HASH_PT_TYPES=$HASH_PT_TYPES" >> $GITHUB_ENV
           echo "HASH_TYPES=$HASH_TYPES" >> $GITHUB_ENV
           echo "HASH_ZOD=$HASH_ZOD" >> $GITHUB_ENV
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_CLIENT_MOCK }}*
-          key: turbo-cache-${{ env.HASH_CLIENT_MOCK }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_CLIENT }}*
-          key: turbo-cache-${{ env.HASH_CLIENT }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_EXAMPLE_APP }}*
-          key: turbo-cache-${{ env.HASH_EXAMPLE_APP }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_EXAMPLE_STUDIO }}*
-          key: turbo-cache-${{ env.HASH_EXAMPLE_STUDIO }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_FAKER }}*
-          key: turbo-cache-${{ env.HASH_FAKER }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_GROQ_JS }}*
-          key: turbo-cache-${{ env.HASH_GROQ_JS }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_GROQ }}*
-          key: turbo-cache-${{ env.HASH_GROQ }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_NEXT_SANITY }}*
-          key: turbo-cache-${{ env.HASH_NEXT_SANITY }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_PREVIEW_KIT }}*
-          key: turbo-cache-${{ env.HASH_PREVIEW_KIT }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_PT_REACT }}*
-          key: turbo-cache-${{ env.HASH_PT_REACT }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_PT_TO_HTML }}*
-          key: turbo-cache-${{ env.HASH_PT_TO_HTML }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_PT_TYPES }}*
-          key: turbo-cache-${{ env.HASH_PT_TYPES }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_TYPES }}*
-          key: turbo-cache-${{ env.HASH_TYPES }}
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo/${{ env.HASH_ZOD }}*
-          key: turbo-cache-${{ env.HASH_ZOD }}
 
-      - if: ${{ github.ref == 'refs/heads/main' }}
-        uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v4
         with:
-          path: node_modules/.cache/turbo
-          key: turbo-cache-all-${{ github.sha }}
+          path: .turbo/cache/${{ env.HASH_CLIENT_MOCK }}*
+          key: turbo-cache-${{ env.HASH_CLIENT_MOCK }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_CLIENT }}*
+          key: turbo-cache-${{ env.HASH_CLIENT }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_EXAMPLE_APP }}*
+          key: turbo-cache-${{ env.HASH_EXAMPLE_APP }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_EXAMPLE_STUDIO }}*
+          key: turbo-cache-${{ env.HASH_EXAMPLE_STUDIO }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_FAKER }}*
+          key: turbo-cache-${{ env.HASH_FAKER }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_GROQ_JS }}*
+          key: turbo-cache-${{ env.HASH_GROQ_JS }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_GROQ }}*
+          key: turbo-cache-${{ env.HASH_GROQ }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_NEXT_SANITY }}*
+          key: turbo-cache-${{ env.HASH_NEXT_SANITY }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_PREVIEW_KIT }}*
+          key: turbo-cache-${{ env.HASH_PREVIEW_KIT }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_PT_REACT }}*
+          key: turbo-cache-${{ env.HASH_PT_REACT }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_PT_TO_HTML }}*
+          key: turbo-cache-${{ env.HASH_PT_TO_HTML }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_PT_TYPES }}*
+          key: turbo-cache-${{ env.HASH_PT_TYPES }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_TYPES }}*
+          key: turbo-cache-${{ env.HASH_TYPES }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_ZOD }}*
+          key: turbo-cache-${{ env.HASH_ZOD }}
 
       - env:
           NODE_OPTIONS: "--max_old_space_size=4096"
         run: npm run build
 
-      - if: ${{ github.ref == 'refs/heads/main' }}
+      # Whether or not npm run build fails, we want to save the cache when we can
+      - if: always()
         uses: actions/cache/save@v4
         with:
-          path: node_modules/.cache/turbo
-          key: turbo-cache-all-${{ github.sha }}
+          path: .turbo/cache/${{ env.HASH_CLIENT_MOCK }}*
+          key: turbo-cache-${{ env.HASH_CLIENT_MOCK }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_CLIENT }}*
+          key: turbo-cache-${{ env.HASH_CLIENT }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_EXAMPLE_APP }}*
+          key: turbo-cache-${{ env.HASH_EXAMPLE_APP }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_EXAMPLE_STUDIO }}*
+          key: turbo-cache-${{ env.HASH_EXAMPLE_STUDIO }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_FAKER }}*
+          key: turbo-cache-${{ env.HASH_FAKER }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_GROQ_JS }}*
+          key: turbo-cache-${{ env.HASH_GROQ_JS }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_GROQ }}*
+          key: turbo-cache-${{ env.HASH_GROQ }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_NEXT_SANITY }}*
+          key: turbo-cache-${{ env.HASH_NEXT_SANITY }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_PREVIEW_KIT }}*
+          key: turbo-cache-${{ env.HASH_PREVIEW_KIT }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_PT_REACT }}*
+          key: turbo-cache-${{ env.HASH_PT_REACT }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_PT_TO_HTML }}*
+          key: turbo-cache-${{ env.HASH_PT_TO_HTML }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_PT_TYPES }}*
+          key: turbo-cache-${{ env.HASH_PT_TYPES }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_TYPES }}*
+          key: turbo-cache-${{ env.HASH_TYPES }}
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH_ZOD }}*
+          key: turbo-cache-${{ env.HASH_ZOD }}
 
       - run: npm config set workspaces-update false
       - env:
@@ -180,7 +241,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.0.4
+      - uses: actions/setup-node@v4.1.0
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -220,7 +281,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.0.4
+      - uses: actions/setup-node@v4.1.0
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -252,7 +313,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.0.4
+      - uses: actions/setup-node@v4.1.0
         with:
           node-version-file: "package.json"
           cache: "npm"

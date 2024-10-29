@@ -1513,7 +1513,7 @@ describe("operators", () => {
 
       const result = await (await evaluate(tree)).get();
 
-      const expectedResult = "foobar" as const;
+      const expectedResult = "foobar";
 
       expect(result).toStrictEqual(expectedResult);
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<

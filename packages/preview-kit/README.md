@@ -23,6 +23,8 @@
     - [VSCode](#vscode)
   - [`Type instantiation is excessively deep and possibly infinite`](#type-instantiation-is-excessively-deep-and-possibly-infinite)
 - [Breaking Changes](#breaking-changes)
+  - [2 to 3](#2-to-3)
+    - [Typescript version from 5.4.2 <= x <= 5.6.3](#typescript-version-from-542--x--563)
   - [1 to 2](#1-to-2)
     - [No more `createClient<SanityValues>()(config)`](#no-more-createclientsanityvaluesconfig)
 
@@ -77,7 +79,7 @@ export const product = defineType({
 ```
 ```sanity.config.ts```:
 ```typescript
-import { deskTool } from "sanity/desk";
+import { structureTool } from "sanity/structure";
 
 // import { defineConfig } from "sanity";
 import { defineConfig } from "@sanity-typed/types";
@@ -90,7 +92,7 @@ import { product } from "./schemas/product";
 const config = defineConfig({
   projectId: "59t1ed5o",
   dataset: "production",
-  plugins: [deskTool()],
+  plugins: [structureTool()],
   schema: {
     types: [
       product,
@@ -271,6 +273,12 @@ You might run into the dreaded `Type instantiation is excessively deep and possi
 People will sometimes create a repo with their issue. _Please_ open a PR with a minimal test instead. Without a PR there will be no tests reflecting your issue and it may appear again in a regression. Forking a github repo to make a PR is a more welcome way to contribute to an open source library.
 
 ## Breaking Changes
+
+### 2 to 3
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.
 
 ### 1 to 2
 

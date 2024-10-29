@@ -17,13 +17,13 @@
   },
   "dependencies": {
     "@sanity-typed/types": "0.0.0-development",
-    "sanity": "3.24.1",
-    "styled-components": "6.1.8"
+    "sanity": "3.62.2",
+    "styled-components": "6.1.13"
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development"
   },
   "peerDependencies": {
-    "typescript": "5.1.3 || 5.1.5 || 5.1.6 || 5.2.2"
+    "typescript": "5.4.2 || 5.4.3 || 5.4.4 || 5.4.5 || 5.5.2 || 5.5.3 || 5.5.4 || 5.6.2 || 5.6.3"
   }
 }

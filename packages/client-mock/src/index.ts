@@ -57,7 +57,9 @@ const isTransaction = <
   transaction instanceof Transaction ||
   transaction instanceof ObservableTransaction;
 
-export const createClient = <SanityValues extends { [type: string]: any }>(
+export const createClient = <
+  const SanityValues extends { [type: string]: any }
+>(
   config: ClientConfig & {
     documents: DocumentValues<SanityValues>[];
   }
@@ -287,7 +289,7 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
       operations?: TMutations
     ) =>
       new Transaction(operations, client as any) as TransactionType<
-        {
+        AnySanityDocument[] & {
           [index in keyof TMutations]: MutationDoc<
             TDocument,
             TMutations[index]
