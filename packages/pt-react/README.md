@@ -15,6 +15,9 @@
 ## Page Contents
 - [Install](#install)
 - [Usage](#usage)
+- [Breaking Changes](#breaking-changes)
+  - [1 to 2](#1-to-2)
+    - [Typescript version from 5.4.2 <= x <= 5.6.3](#typescript-version-from-542--x--563)
 
 ## Install
 
@@ -215,3 +218,11 @@ const Index = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => (
 
 export default Index;
 ```
+
+## Breaking Changes
+
+### 1 to 2
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.

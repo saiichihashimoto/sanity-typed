@@ -26,6 +26,8 @@
     - [VSCode](#vscode)
   - [`Type instantiation is excessively deep and possibly infinite`](#type-instantiation-is-excessively-deep-and-possibly-infinite)
 - [Breaking Changes](#breaking-changes)
+  - [3 to 4](#3-to-4)
+    - [Typescript version from 5.4.2 <= x <= 5.6.3](#typescript-version-from-542--x--563)
   - [2 to 3](#2-to-3)
     - [No more `createClient<SanityValues>()(config)`](#no-more-createclientsanityvaluesconfig)
   - [1 to 2](#1-to-2)
@@ -336,6 +338,12 @@ You might run into the dreaded `Type instantiation is excessively deep and possi
 People will sometimes create a repo with their issue. _Please_ open a PR with a minimal test instead. Without a PR there will be no tests reflecting your issue and it may appear again in a regression. Forking a github repo to make a PR is a more welcome way to contribute to an open source library.
 
 ## Breaking Changes
+
+### 3 to 4
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.
 
 ### 2 to 3
 

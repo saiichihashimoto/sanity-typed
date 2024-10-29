@@ -13,7 +13,9 @@ import { bindAll } from "lodash/fp";
 import type { SanityClient } from "@sanity-typed/client";
 import type { DocumentValues, referenced } from "@sanity-typed/types";
 
-export const createClient = <SanityValues extends { [type: string]: any }>(
+export const createClient = <
+  const SanityValues extends { [type: string]: any }
+>(
   config: PreviewKitClientConfig
 ) => {
   const client = createClientNative(config) as unknown as SanityClient<
