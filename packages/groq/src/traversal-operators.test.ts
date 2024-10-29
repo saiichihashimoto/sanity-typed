@@ -1265,7 +1265,7 @@ describe("traversal operators", () => {
 
     const result = await (await evaluate(tree, { dataset, params })).get();
 
-    const expectedResult = "foo" as const;
+    const expectedResult = "foo";
 
     expect(result).toStrictEqual(expectedResult);
     expectType<

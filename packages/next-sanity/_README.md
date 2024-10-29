@@ -39,6 +39,12 @@ Use `createClient` exactly as you would from [`@sanity-typed/client`](../client)
 
 ## Breaking Changes
 
+### 2 to 3
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.
+
 ### 1 to 2
 
 #### No more `createClient<SanityValues>()(config)`

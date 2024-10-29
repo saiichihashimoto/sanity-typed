@@ -105,3 +105,11 @@ expect(() =>
 @[:markdown](../../docs/considerations/config-in-runtime.md)
 @[:markdown](../../docs/considerations/types-vs-content-lake.md)
 @[:markdown](../../docs/considerations/typescript-errors-in-ides.md)
+
+## Breaking Changes
+
+### 2 to 3
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.

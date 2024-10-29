@@ -26,3 +26,11 @@ After using [@sanity-typed/types](../types) and [@sanity-typed/client](../client
 
 @[typescript](../example-studio/schemas/post.ts)
 @[typescript](../example-app/src/pages/with-portabletext-react.tsx)
+
+## Breaking Changes
+
+### 1 to 2
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.

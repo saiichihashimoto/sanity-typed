@@ -26,6 +26,10 @@ Infer Sanity Document Types from Sanity Schemas
   - [Typescript Errors in IDEs](#typescript-errors-in-ides)
     - [VSCode](#vscode)
 - [Breaking Changes](#breaking-changes)
+  - [6 to 7](#6-to-7)
+    - [Typescript version from 5.4.2 <= x <= 5.6.3](#typescript-version-from-542--x--563)
+    - [`as const` needed for certain types to infer correctly](#as-const-needed-for-certain-types-to-infer-correctly)
+  - [6 no longer forces `as const`](#6-no-longer-forces-as-const)
   - [5 to 6](#5-to-6)
     - [Block fields require `as const`](#block-fields-require-as-const)
   - [4 to 5](#4-to-5)
@@ -89,7 +93,7 @@ export const product = defineType({
 ```
 ```sanity.config.ts```:
 ```typescript
-import { deskTool } from "sanity/desk";
+import { structureTool } from "sanity/structure";
 
 // import { defineConfig } from "sanity";
 import { defineConfig } from "@sanity-typed/types";
@@ -102,7 +106,7 @@ import { product } from "./schemas/product";
 const config = defineConfig({
   projectId: "59t1ed5o",
   dataset: "production",
-  plugins: [deskTool()],
+  plugins: [structureTool()],
   schema: {
     types: [
       product,
@@ -323,6 +327,22 @@ Often you'll run into an issue where you get typescript errors in your IDE but, 
 - Open any typescript file and you can [see which version is being used in the status bar](https://code.visualstudio.com/docs/typescript/typescript-compiling#_compiler-versus-language-service). Please check this (and provide a screenshot confirming this) before creating an issue. Spending hours debugging your issue ony to find that you're not using your workspace's version is very frustrating.
 
 ## Breaking Changes
+
+### 6 to 7
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.
+
+#### `as const` needed for certain types to infer correctly
+
+Like mentioned in [6 no longer forces `as const`](#6-no-longer-forces-as-const), `as const` is no required anywhere excent for references (otherwise they wouldn't reference correctly), but you will still want them in many places. Literals where it narrows the type are the usual candidates (ie string and number lists). But there are a few others, ie `options.hotspot` for the image type needs it to be typed as `true` to infer the hotspot fields. Due to typescript quirks, sometimes you'll need to add `true as const` for it to infer correctly.
+
+Until we get a proper understanding on how we can force typescript to infer the literals, we won't enforce it anywhere except for references. This is because it's a convenience everywhere else; references are rarely what you want without it.
+
+### 6 no longer forces `as const`
+
+Besides for references, `as const` is no longer needed for some of the types. While it will still type string literals when possible, it won't be required. You'll still need `as const` if you actually want the literal types, but it was breaking too many valid workflows to require it.
 
 ### 5 to 6
 

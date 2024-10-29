@@ -117,6 +117,14 @@ Chances are, you don't need this package directly.
 @[:markdown](../../docs/considerations/typescript-errors-in-ides.md)
 @[:markdown](../../docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md)
 
+## Breaking Changes
+
+### 1 to 2
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.
+
 ## Alternatives
 
 - [`@sanity-codegen/cli`](https://www.npmjs.com/package/@sanity-codegen/cli)

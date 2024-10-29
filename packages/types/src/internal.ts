@@ -7,7 +7,9 @@ import {
 } from "sanity";
 import type {
   ArrayDefinition as ArrayDefinitionNative,
-  ArrayRule,
+  ArrayRule, // @ts-expect-error TODO Until sanity exports BetaFeatures, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO Until sanity exports BetaFeatures, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+  BetaFeatures as BetaFeaturesNative,
   BlockDecoratorDefinition as BlockDecoratorDefinitionNative,
   BlockDefinition as BlockDefinitionNative,
   BlockListDefinition as BlockListDefinitionNative,
@@ -53,7 +55,9 @@ import type {
   ReferenceDefinition as ReferenceDefinitionNative,
   ReferenceRule,
   ReferenceValue as ReferenceValueNative,
-  RuleDef,
+  RuleDef, // @ts-expect-error TODO Until sanity exports ScheduledPublishingPluginOptions, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO Until sanity exports ScheduledPublishingPluginOptions, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+  ScheduledPublishingPluginOptions,
   SchemaPluginOptions as SchemaPluginOptionsNative,
   SlugDefinition as SlugDefinitionNative,
   SlugRule,
@@ -441,40 +445,13 @@ export type BlockDefinition<
       BlockRule
     >
   > & {
-    lists?: ReadonlyArray<
-      BlockListDefinition<
-        TBlockListItem &
-          (IsStringLiteral<TBlockListItem> extends false
-            ? {
-                [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-              }
-            : unknown)
-      >
-    >;
+    lists?: ReadonlyArray<BlockListDefinition<TBlockListItem>>;
     marks?: Omit<BlockMarksDefinition, "annotations" | "decorators"> & {
       annotations?: TBlockMarkAnnotation[];
-      decorators?: ReadonlyArray<
-        BlockDecoratorDefinition<
-          TBlockMarkDecorator &
-            (IsStringLiteral<TBlockMarkDecorator> extends false
-              ? {
-                  [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-                }
-              : unknown)
-        >
-      >;
+      decorators?: ReadonlyArray<BlockDecoratorDefinition<TBlockMarkDecorator>>;
     };
     of?: TupleOfLength<TMemberDefinition, 1>;
-    styles?: ReadonlyArray<
-      BlockStyleDefinition<
-        TBlockStyle &
-          (IsStringLiteral<TBlockStyle> extends false
-            ? {
-                [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-              }
-            : unknown)
-      >
-    >;
+    styles?: ReadonlyArray<BlockStyleDefinition<TBlockStyle>>;
   }
 >;
 
@@ -887,12 +864,12 @@ export type ArrayMemberDefinition<
 // https://www.sanity.io/docs/array-type#fNBIr84P
 // But we give an option to do so, only so we can test the depth limit
 export const makeDefineArrayMember =
-  <AllowArrays extends boolean>() =>
+  <const AllowArrays extends boolean>() =>
   <
-    TType extends string,
-    TName extends string,
-    TAlias extends IntrinsicTypeName,
-    TStrict extends StrictDefinition,
+    const TType extends string,
+    const TName extends string,
+    const TAlias extends IntrinsicTypeName,
+    const TStrict extends StrictDefinition,
     const TNumberValue extends number,
     const TStringValue extends string,
     const TReferenced extends string,
@@ -900,15 +877,15 @@ export const makeDefineArrayMember =
     const TBlockStyle extends string = BlockStyleDefault,
     const TBlockListItem extends string = BlockListItemDefault,
     const TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
-    TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+    const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
       name?: string;
     } = never,
     const THotspot extends boolean = false,
-    TFieldDefinition extends DefinitionBase<any, any, any> & {
+    const TFieldDefinition extends DefinitionBase<any, any, any> & {
       name: string;
       [required]?: boolean;
     } = never,
-    TMemberDefinition extends DefinitionBase<any, any, any> & {
+    const TMemberDefinition extends DefinitionBase<any, any, any> & {
       name?: string;
     } = never
   >(
@@ -1017,10 +994,10 @@ export type FieldDefinition<
   };
 
 export const defineField = <
-  TType extends string,
-  TName extends string,
-  TAlias extends IntrinsicTypeName,
-  TStrict extends StrictDefinition,
+  const TType extends string,
+  const TName extends string,
+  const TAlias extends IntrinsicTypeName,
+  const TStrict extends StrictDefinition,
   const TNumberValue extends number,
   const TStringValue extends string,
   const TReferenced extends string,
@@ -1028,18 +1005,18 @@ export const defineField = <
   const TBlockStyle extends string = BlockStyleDefault,
   const TBlockListItem extends string = BlockListItemDefault,
   const TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
-  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+  const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never,
   const THotspot extends boolean = false,
-  TFieldDefinition extends DefinitionBase<any, any, any> & {
+  const TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   } = never,
-  TMemberDefinition extends DefinitionBase<any, any, any> & {
+  const TMemberDefinition extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never,
-  TRequired extends boolean = false
+  const TRequired extends boolean = false
 >(
   schemaField: FieldDefinition<
     TType,
@@ -1130,10 +1107,10 @@ export type TypeDefinition<
   };
 
 export const defineType = <
-  TType extends string,
-  TName extends string,
-  TAlias extends IntrinsicTypeName,
-  TStrict extends StrictDefinition,
+  const TType extends string,
+  const TName extends string,
+  const TAlias extends IntrinsicTypeName,
+  const TStrict extends StrictDefinition,
   const TNumberValue extends number,
   const TStringValue extends string,
   const TReferenced extends string,
@@ -1141,15 +1118,15 @@ export const defineType = <
   const TBlockStyle extends string = BlockStyleDefault,
   const TBlockListItem extends string = BlockListItemDefault,
   const TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
-  TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
+  const TBlockMarkAnnotation extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never,
   const THotspot extends boolean = false,
-  TFieldDefinition extends DefinitionBase<any, any, any> & {
+  const TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   } = never,
-  TMemberDefinition extends DefinitionBase<any, any, any> & {
+  const TMemberDefinition extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never
 >(
@@ -1217,6 +1194,21 @@ export type ConfigBase<
   >;
 };
 
+// TODO Until sanity exports BetaFeatures, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+type BetaFeatures = {
+  /**
+   * @beta
+   * @hidden
+   * @deprecated beta feature is no longer available.
+   * */
+  treeArrayEditing?: {
+    /**
+     * @deprecated beta feature is no longer available.
+     */
+    enabled: boolean;
+  };
+};
+
 export type PluginOptions<
   TTypeDefinition extends TypeDefinition<
     any,
@@ -1237,7 +1229,9 @@ export type PluginOptions<
   >,
   TPluginOptions extends PluginOptions<any, any>
 > = ConfigBase<TTypeDefinition, TPluginOptions> &
-  Omit<PluginOptionsNative, "plugins" | "schema">;
+  Omit<PluginOptionsNative, "beta" | "plugins" | "schema"> & {
+    beta?: BetaFeatures;
+  };
 
 export const definePlugin = <
   TTypeDefinition extends TypeDefinition<
@@ -1288,8 +1282,22 @@ type WorkspaceOptions<
   >,
   TPluginOptions extends PluginOptions<any, any>
 > = MergeOld<
-  WorkspaceOptionsNative,
-  ConfigBase<TTypeDefinition, TPluginOptions>
+  Omit<WorkspaceOptionsNative, "beta">,
+  ConfigBase<TTypeDefinition, TPluginOptions> & {
+    beta?: BetaFeatures;
+    // TODO Until sanity exports ScheduledPublishingPluginOptions, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+    scheduledPublishing?: {
+      /**
+       * Whether scheduled publishing is enabled for this workspace.
+       */
+      enabled: boolean;
+      /**
+       * Date format to use for input fields. This must be a valid `date-fns` {@link https://date-fns.org/docs/format | formatted string}.
+       * @defaultValue 'dd/MM/yyyy HH:mm' make sure to specify minutes and hours if you are specifying a custom format
+       */
+      inputDateTimeFormat?: string;
+    };
+  }
 >;
 
 export type Config<
