@@ -231,32 +231,26 @@ export type PortableTextProps<
 };
 
 export const PortableText = <
-  TItem extends { _type: string },
-  TBlock extends Extract<TItem, PortableTextBlock<any, any, any, any, any>>,
-  TBlockMarkDecorator extends Extract<
-    TBlock["children"][number],
-    PortableTextSpan<any>
-  >[typeof decorator],
-  TMarkDef extends TBlock["markDefs"][number],
-  TChildSibling extends Exclude<
-    TBlock["children"][number],
-    PortableTextSpan<any>
-  >,
-  TBlockStyle extends TBlock["style"],
-  TBlockListItem extends NonNullable<TBlock["listItem"]>,
-  TSibling extends Exclude<
-    IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
+  const TItem extends { _type: string },
+  const TBlock extends Extract<
+    TItem,
     PortableTextBlock<any, any, any, any, any>
   >
 >(
   props: PortableTextProps<
     TItem,
-    TBlock,
-    TBlockMarkDecorator,
-    TMarkDef,
-    TChildSibling,
-    TBlockStyle,
-    TBlockListItem,
-    TSibling
+    Extract<TItem, PortableTextBlock<any, any, any, any, any>>,
+    Extract<
+      TBlock["children"][number],
+      PortableTextSpan<any>
+    >[typeof decorator],
+    TBlock["markDefs"][number],
+    Exclude<TBlock["children"][number], PortableTextSpan<any>>,
+    TBlock["style"],
+    NonNullable<TBlock["listItem"]>,
+    Exclude<
+      IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
+      PortableTextBlock<any, any, any, any, any>
+    >
   >
 ) => PortableTextNative(props as any);
