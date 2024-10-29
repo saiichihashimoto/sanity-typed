@@ -27,6 +27,7 @@ Infer Sanity Document Types from Sanity Schemas
     - [VSCode](#vscode)
 - [Breaking Changes](#breaking-changes)
   - [6 to 7](#6-to-7)
+    - [Typescript version from 5.4.2 <= x <= 5.6.3](#typescript-version-from-542--x--563)
     - [`as const` needed for certain types to infer correctly](#as-const-needed-for-certain-types-to-infer-correctly)
   - [6 no longer forces `as const`](#6-no-longer-forces-as-const)
   - [5 to 6](#5-to-6)
@@ -328,6 +329,10 @@ Often you'll run into an issue where you get typescript errors in your IDE but, 
 ## Breaking Changes
 
 ### 6 to 7
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.
 
 #### `as const` needed for certain types to infer correctly
 

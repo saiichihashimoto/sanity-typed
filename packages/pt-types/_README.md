@@ -11,3 +11,11 @@
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/saiichihashimoto?style=flat&logo=githubsponsors)](https://github.com/sponsors/saiichihashimoto)
 
 [@portabletext/types](https://github.com/portabletext/types) with typed generics. Mostly internal for other packages in the monorepo.
+
+## Breaking Changes
+
+### 1 to 2
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.

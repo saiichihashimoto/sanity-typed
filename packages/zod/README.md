@@ -24,6 +24,9 @@ Generate [Zod](https://zod.dev) Schemas from Sanity Schemas
   - [Types match config but not actual documents](#types-match-config-but-not-actual-documents)
   - [Typescript Errors in IDEs](#typescript-errors-in-ides)
     - [VSCode](#vscode)
+- [Breaking Changes](#breaking-changes)
+  - [2 to 3](#2-to-3)
+    - [Typescript version from 5.4.2 <= x <= 5.6.3](#typescript-version-from-542--x--563)
 
 ## Install
 
@@ -281,3 +284,11 @@ Often you'll run into an issue where you get typescript errors in your IDE but, 
 - The [`JavaScript and TypeScript Nightly` extension (identifier `ms-vscode.vscode-typescript-next`)](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next) creates issues here by design. It will always attempt to use the newest version of typescript instead of your workspace's version. I ended up uninstalling it.
 - [Check that VSCode is actually using your workspace's version](https://code.visualstudio.com/docs/typescript/typescript-compiling#_compiler-versus-language-service) even if you've [defined the workspace version in `.vscode/settings.json`](https://code.visualstudio.com/docs/typescript/typescript-compiling#_using-the-workspace-version-of-typescript). Use `TypeScript: Select TypeScript Version` to explictly pick the workspace version.
 - Open any typescript file and you can [see which version is being used in the status bar](https://code.visualstudio.com/docs/typescript/typescript-compiling#_compiler-versus-language-service). Please check this (and provide a screenshot confirming this) before creating an issue. Spending hours debugging your issue ony to find that you're not using your workspace's version is very frustrating.
+
+## Breaking Changes
+
+### 2 to 3
+
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.

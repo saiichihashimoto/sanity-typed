@@ -182,6 +182,10 @@ const nav = defineType({
 
 ### 6 to 7
 
+#### Typescript version from 5.4.2 <= x <= 5.6.3
+
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.
+
 #### `as const` needed for certain types to infer correctly
 
 Like mentioned in [6 no longer forces `as const`](#6-no-longer-forces-as-const), `as const` is no required anywhere excent for references (otherwise they wouldn't reference correctly), but you will still want them in many places. Literals where it narrows the type are the usual candidates (ie string and number lists). But there are a few others, ie `options.hotspot` for the image type needs it to be typed as `true` to infer the hotspot fields. Due to typescript quirks, sometimes you'll need to add `true as const` for it to infer correctly.
