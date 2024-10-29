@@ -606,7 +606,7 @@ describe("createClient", () => {
           .transaction()
           .commit();
 
-      expectType<ReturnType<typeof exec>>().toStrictEqual<Promise<undefined>>();
+      expectType<ReturnType<typeof exec>>().toStrictEqual<Promise<never>>();
     });
 
     describe("create", () => {
@@ -784,9 +784,9 @@ describe("createClient", () => {
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
           Promise<
-            | SanityAssetDocument
             | (AnySanityDocument & { _type: "foo"; foo: string })
             | (AnySanityDocument & { _type: "qux"; qux: number })
+            | (AnySanityDocument & SanityAssetDocument)
           >
         >();
       });

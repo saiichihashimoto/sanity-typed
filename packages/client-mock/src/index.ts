@@ -57,7 +57,9 @@ const isTransaction = <
   transaction instanceof Transaction ||
   transaction instanceof ObservableTransaction;
 
-export const createClient = <SanityValues extends { [type: string]: any }>(
+export const createClient = <
+  const SanityValues extends { [type: string]: any }
+>(
   config: ClientConfig & {
     documents: DocumentValues<SanityValues>[];
   }

@@ -19,7 +19,9 @@ export type { SanityClient } from "@sanity-typed/client";
 export type ObservableSanityClient<TDocument extends AnySanityDocument> =
   SanityClient<TDocument>["observable"];
 
-export const createClient = <SanityValues extends { [type: string]: any }>(
+export const createClient = <
+  const SanityValues extends { [type: string]: any }
+>(
   config: ClientConfig
 ) => {
   const client = createClientNative(config) as unknown as SanityClient<

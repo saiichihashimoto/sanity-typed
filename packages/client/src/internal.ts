@@ -234,10 +234,10 @@ export type PatchType<
 >;
 
 export const Patch = PatchNative as unknown as new <
-  TDocument extends AnySanityDocument,
-  TAttrs extends Partial<TDocument>,
-  TKeys extends TDocument extends never ? never : (keyof TDocument)[],
-  TClient extends SanityClient<TDocument> | undefined = undefined
+  const TDocument extends AnySanityDocument,
+  const TAttrs extends Partial<TDocument>,
+  const TKeys extends TDocument extends never ? never : (keyof TDocument)[],
+  const TClient extends SanityClient<TDocument> | undefined = undefined
 >(
   idOrSelection: PatchSelection,
   operations?: PatchOperations<TDocument, TAttrs, TKeys>,
@@ -257,10 +257,10 @@ export const Patch = PatchNative as unknown as new <
 >;
 
 export const ObservablePatch = ObservablePatchNative as unknown as new <
-  TDocument extends AnySanityDocument,
-  TAttrs extends Partial<TDocument>,
-  TKeys extends TDocument extends never ? never : (keyof TDocument)[],
-  TClient extends SanityClient<TDocument> | undefined = undefined
+  const TDocument extends AnySanityDocument,
+  const TAttrs extends Partial<TDocument>,
+  const TKeys extends TDocument extends never ? never : (keyof TDocument)[],
+  const TClient extends SanityClient<TDocument> | undefined = undefined
 >(
   idOrSelection: PatchSelection,
   operations?: PatchOperations<TDocument, TAttrs, TKeys>,
@@ -429,8 +429,8 @@ export type MutationDoc<
   : never;
 
 export const Transaction = TransactionNative as unknown as new <
-  TDocument extends AnySanityDocument,
-  TClient extends SanityClient<TDocument> | undefined = undefined
+  const TDocument extends AnySanityDocument,
+  const TClient extends SanityClient<TDocument> | undefined = undefined
 >(
   operations?: Mutation<TDocument, any>[],
   client?: TClient,
@@ -444,8 +444,8 @@ export const Transaction = TransactionNative as unknown as new <
 
 export const ObservableTransaction =
   ObservableTransactionNative as unknown as new <
-    TDocument extends AnySanityDocument,
-    TClient extends SanityClient<TDocument> | undefined = undefined
+    const TDocument extends AnySanityDocument,
+    const TClient extends SanityClient<TDocument> | undefined = undefined
   >(
     operations?: Mutation<TDocument, any>[],
     client?: TClient,
@@ -769,7 +769,9 @@ export type SanityClient<TDocument extends AnySanityDocument> =
     true
   >;
 
-export const createClient = <SanityValues extends { [type: string]: any }>(
+export const createClient = <
+  const SanityValues extends { [type: string]: any }
+>(
   config: ClientConfig
 ) => {
   const client = createClientNative(config) as unknown as SanityClient<
@@ -851,7 +853,7 @@ export const createClient = <SanityValues extends { [type: string]: any }>(
 };
 
 export const castToTyped =
-  <SanityValues extends { [type: string]: any } = never>(
+  <const SanityValues extends { [type: string]: any } = never>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- not actually used
     ...args: IsNever<SanityValues> extends false
       ? []
@@ -861,5 +863,5 @@ export const castToTyped =
           }
         ]
   ) =>
-  <TClient extends SanityClientNative>(untyped: TClient) =>
+  <const TClient extends SanityClientNative>(untyped: TClient) =>
     untyped as unknown as SanityClient<DocumentValues<SanityValues>>;
