@@ -2450,7 +2450,7 @@ const assetFaker = (faker: Faker, mimeTypePrefix?: string) => {
   const mimeType = !mimeTypePrefix
     ? faker.system.mimeType()
     : faker.helpers.arrayElement(
-        Object.keys(faker.definitions.system.mimeTypes).filter((mimeType) =>
+        Object.keys(faker.definitions.system.mime_type).filter((mimeType) =>
           mimeType.startsWith(mimeTypePrefix)
         )
       );
