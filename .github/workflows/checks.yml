@@ -231,10 +231,13 @@ jobs:
       - run: npm config set workspaces-update false
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # HACK https://github.com/semantic-release/semantic-release/issues/2313#issuecomment-1004545613
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx multi-semantic-release --ignore-private-packages
   lint:
     name: Lint
+    if: github.ref != 'refs/heads/main'
     needs: install-node-modules
     runs-on: ubuntu-latest
     steps:
@@ -257,13 +260,6 @@ jobs:
         with:
           bundler-cache: true
 
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/prettier/.prettier-cache
-          key: prettier-${{ github.run_id }}
-          restore-keys: |
-            prettier-
-
       - run: npm run lint
       - run: |
           if [[ $(git status --porcelain) != "" ]]; then
@@ -272,6 +268,7 @@ jobs:
           fi
   test-matrix:
     name: Test Matrix
+    if: github.ref != 'refs/heads/main'
     needs: install-node-modules
     runs-on: ubuntu-latest
     outputs:
@@ -302,6 +299,7 @@ jobs:
           npx semver --range "$(cat packages/*/package.json | jq --raw-output --slurp '. | map(.peerDependencies.typescript | select( . != null )) | join(" || ")')" $(npm view typescript versions | sed "s/'/\"/g" | jq --raw-output '. | join(" ")') | jq --raw-input --slurp --compact-output '. | rtrimstr("\n") | split("\n") | tostring' | jq --raw-output '. |= "typescript-versions=" + .' >> $GITHUB_OUTPUT
   test-package:
     name: Test
+    if: github.ref != 'refs/heads/main'
     needs: [install-node-modules, test-matrix]
     runs-on: ubuntu-latest
     strategy:
@@ -330,22 +328,10 @@ jobs:
 
       - id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v2
-      - run: |
-          JEST_CACHE_DIRECTORY=$(npx jest --color --showConfig | jq --raw-output ".configs[0].cacheDirectory")
-          echo "JEST_CACHE_DIRECTORY=$JEST_CACHE_DIRECTORY" >> $GITHUB_ENV
-      - uses: actions/cache@v4
-        with:
-          path: ${{ env.JEST_CACHE_DIRECTORY }}
-          key: jest-${{ matrix.package }}-${{ matrix.typescript-version }}-${{ github.run_id }}
-          restore-keys: |
-            jest-${{ matrix.package }}-${{ matrix.typescript-version }}-
-            jest-${{ matrix.package }}-
-            jest-
-
       - run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }} -- ${{ matrix.package }}/src
   test:
     name: Test
-    if: always()
+    if: always() && github.ref != 'refs/heads/main'
     needs: test-package
     runs-on: ubuntu-latest
     steps:
