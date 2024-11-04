@@ -231,6 +231,8 @@ jobs:
       - run: npm config set workspaces-update false
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # HACK https://github.com/semantic-release/semantic-release/issues/2313#issuecomment-1004545613
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx multi-semantic-release --ignore-private-packages
   lint:
