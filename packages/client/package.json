@@ -35,7 +35,7 @@
     "@sanity-typed/groq": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
     "lodash": "4.17.21",
-    "type-fest": "4.10.1"
+    "type-fest": "4.26.1"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",

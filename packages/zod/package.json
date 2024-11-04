@@ -37,7 +37,7 @@
     "@portabletext-typed/types": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
     "lodash": "4.17.21",
-    "type-fest": "4.10.1"
+    "type-fest": "4.26.1"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
@@ -45,8 +45,8 @@
     "@sanity-typed/traverse-validation": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
-    "sanity": "3.62.2",
-    "zod": "3.22.4"
+    "sanity": "3.62.3",
+    "zod": "3.23.8"
   },
   "peerDependencies": {
     "sanity": "^3.25.0",
