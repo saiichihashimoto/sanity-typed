@@ -49,7 +49,7 @@
     "type-fest": "4.26.1"
   },
   "devDependencies": {
-    "@faker-js/faker": "9.1.0",
+    "@faker-js/faker": "9.2.0",
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/traverse-validation": "0.0.0-development",
