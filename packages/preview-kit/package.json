@@ -44,7 +44,7 @@
     "@jest/globals": "29.7.0",
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
-    "@sanity/preview-kit": "5.1.14",
+    "@sanity/preview-kit": "5.1.16",
     "groq-builder": "0.2.0",
     "type-fest": "4.26.1"
   },
