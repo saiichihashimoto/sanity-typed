@@ -57,7 +57,7 @@
     "lint-staged": "15.2.10",
     "multi-semantic-release": "3.0.2",
     "prettier": "2.8.8",
-    "prettier-plugin-sh": "0.12.8",
+    "prettier-plugin-sh": "0.14.0",
     "ts-jest": "29.2.5",
     "ts-node": "10.9.2",
     "tsup": "8.3.5",
