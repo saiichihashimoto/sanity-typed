@@ -61,7 +61,7 @@
     "ts-jest": "29.2.5",
     "ts-node": "10.9.2",
     "tsup": "8.3.5",
-    "turbo": "2.2.3",
+    "turbo": "2.3.1",
     "type-fest": "4.26.1",
     "typescript": "5.6.3"
   },
