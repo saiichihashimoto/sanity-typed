@@ -44,7 +44,7 @@
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "groq-builder": "0.2.0",
-    "next-sanity": "9.8.16",
+    "next-sanity": "9.8.17",
     "type-fest": "4.26.1"
   },
   "peerDependencies": {
