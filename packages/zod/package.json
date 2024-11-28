@@ -45,7 +45,7 @@
     "@sanity-typed/traverse-validation": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
-    "sanity": "3.65.0",
+    "sanity": "3.65.1",
     "zod": "3.23.8"
   },
   "peerDependencies": {
