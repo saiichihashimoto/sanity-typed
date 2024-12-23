@@ -992,6 +992,41 @@ describe("traversal operators", () => {
     >();
   });
 
+  it("null{key}", async () => {
+    const query = "null{key}";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      base: { type: "Value", value: null },
+      expr: {
+        attributes: [
+          {
+            name: "key",
+            type: "ObjectAttributeValue",
+            value: { name: "key", type: "AccessAttribute" },
+          },
+        ],
+        type: "Object",
+      },
+      type: "Projection",
+    } as const;
+
+    expect(tree).toStrictEqual(expectedTree);
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const result = await (await evaluate(tree)).get();
+
+    const expectedResult = null;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<ExecuteQuery<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedResult>
+    >();
+  });
+
   it('[{"key":"value"}]{key}', async () => {
     const query = '[{"key":"value"}]{key}';
 
