@@ -297,6 +297,39 @@ describe("traversal operators", () => {
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 
+  it("*[1] (unclear dataset)", async () => {
+    const query = "*[1]";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      base: { type: "Everything" },
+      index: 1,
+      type: "AccessElement",
+    } as const;
+
+    expect(tree).toStrictEqual(expectedTree);
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const dataset = [{ _type: "foo" as const }, { _type: "bar" as const }];
+
+    const result = await (await evaluate(tree, { dataset })).get();
+
+    const expectedResult = { _type: "bar" } as (typeof dataset)[number] | null;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        ScopeFromPartialContext<{
+          dataset: WritableDeep<typeof dataset>;
+        }>
+      >
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+  });
+
   it("[[[5]]][0][0][0]", async () => {
     const query = "[[[5]]][0][0][0]";
 
