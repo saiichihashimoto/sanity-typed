@@ -113,6 +113,138 @@ describe("operators", () => {
       >();
     });
 
+    it("$param&&true (boolean)", async () => {
+      const query = "$param&&true";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { name: "param", type: "Parameter" },
+        right: { type: "Value", value: true },
+        type: "And",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param: true as boolean } as const;
+
+      const result = await (await evaluate(tree, { params })).get();
+
+      const expectedResult = true;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<typeof expectedResult>();
+    });
+
+    it("$param&&false (boolean)", async () => {
+      const query = "$param&&false";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { name: "param", type: "Parameter" },
+        right: { type: "Value", value: false },
+        type: "And",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param: true as boolean } as const;
+
+      const result = await (await evaluate(tree, { params })).get();
+
+      const expectedResult = false;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<typeof expectedResult>();
+    });
+
+    it("true&&$param (boolean)", async () => {
+      const query = "true&&$param";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { type: "Value", value: true },
+        right: { name: "param", type: "Parameter" },
+        type: "And",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param: true as boolean } as const;
+
+      const result = await (await evaluate(tree, { params })).get();
+
+      const expectedResult = true;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<typeof expectedResult>();
+    });
+
+    it("false&&$param (boolean)", async () => {
+      const query = "false&&$param";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { type: "Value", value: false },
+        right: { name: "param", type: "Parameter" },
+        type: "And",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param: true as boolean } as const;
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = false;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<typeof expectedResult>();
+    });
+
     it('""&&false', async () => {
       const query = '""&&false';
 
@@ -347,6 +479,138 @@ describe("operators", () => {
       expectType<ExecuteQuery<typeof query>>().toStrictEqual<
         WritableDeep<typeof expectedResult>
       >();
+    });
+
+    it("$param||true (boolean)", async () => {
+      const query = "$param||true";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { name: "param", type: "Parameter" },
+        right: { type: "Value", value: true },
+        type: "Or",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param: true as boolean } as const;
+
+      const result = await (await evaluate(tree, { params })).get();
+
+      const expectedResult = true;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<typeof expectedResult>();
+    });
+
+    it("$param||false (boolean)", async () => {
+      const query = "$param||false";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { name: "param", type: "Parameter" },
+        right: { type: "Value", value: false },
+        type: "Or",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param: true as boolean } as const;
+
+      const result = await (await evaluate(tree, { params })).get();
+
+      const expectedResult = false;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<typeof expectedResult>();
+    });
+
+    it("true||$param (boolean)", async () => {
+      const query = "true||$param";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { type: "Value", value: true },
+        right: { name: "param", type: "Parameter" },
+        type: "Or",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param: true as boolean } as const;
+
+      const result = await (await evaluate(tree, { params })).get();
+
+      const expectedResult = true;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<typeof expectedResult>();
+    });
+
+    it("false||$param (boolean)", async () => {
+      const query = "false||$param";
+
+      const tree = parse(query);
+
+      const expectedTree = {
+        left: { type: "Value", value: false },
+        right: { name: "param", type: "Parameter" },
+        type: "Or",
+      } as const;
+
+      expect(tree).toStrictEqual(expectedTree);
+      expectType<Parse<typeof query>>().toStrictEqual<
+        WritableDeep<typeof expectedTree>
+      >();
+
+      const params = { param: true as boolean } as const;
+
+      const result = await (await evaluate(tree)).get();
+
+      const expectedResult = false;
+
+      expect(result).toStrictEqual(expectedResult);
+      expectType<
+        ExecuteQuery<
+          typeof query,
+          ScopeFromPartialContext<{
+            parameters: WritableDeep<typeof params>;
+          }>
+        >
+      >().toStrictEqual<typeof expectedResult>();
     });
 
     it('""||true', async () => {

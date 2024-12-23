@@ -1844,7 +1844,11 @@ type EvaluateBooleanOperator<
         stronger: infer TStronger;
         weaker: infer TWeaker;
       }
-      ? Evaluate<TLeft, TScope> extends TStronger
+      ? boolean extends Evaluate<TLeft, TScope>
+        ? Evaluate<TRight, TScope>
+        : boolean extends Evaluate<TRight, TScope>
+        ? Evaluate<TLeft, TScope>
+        : Evaluate<TLeft, TScope> extends TStronger
         ? TStronger
         : Evaluate<TRight, TScope> extends TStronger
         ? TStronger
