@@ -1,9 +1,16 @@
 {
+  "$schema": "https://json.schemastore.org/semantic-release.json",
   "branches": [
     "main",
     {
       "name": "alpha",
       "prerelease": true
     }
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semrel-extra/npm",
+    "@semantic-release/github"
   ]
 }
