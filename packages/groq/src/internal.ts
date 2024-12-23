@@ -1772,7 +1772,11 @@ type EvaluateAccessElement<
 > = TNode extends AccessElementNode
   ? Evaluate<TNode["base"], TScope> extends any[]
     ? TNode["index"] extends keyof Evaluate<TNode["base"], TScope>
-      ? Evaluate<TNode["base"], TScope>[TNode["index"]]
+      ?
+          | Evaluate<TNode["base"], TScope>[TNode["index"]]
+          | (Evaluate<TNode["base"], TScope> extends [any, ...any]
+              ? never
+              : null)
       : null
     : null
   : never;
