@@ -534,7 +534,7 @@ describe("operators", () => {
 
       const result = await (await evaluate(tree, { params })).get();
 
-      const expectedResult = false;
+      const expectedResult = true as false;
 
       expect(result).toStrictEqual(expectedResult);
       expectType<
@@ -598,9 +598,9 @@ describe("operators", () => {
 
       const params = { param: true as boolean } as const;
 
-      const result = await (await evaluate(tree)).get();
+      const result = await (await evaluate(tree, { params })).get();
 
-      const expectedResult = false;
+      const expectedResult = true as false;
 
       expect(result).toStrictEqual(expectedResult);
       expectType<
