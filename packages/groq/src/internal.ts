@@ -2327,10 +2327,12 @@ type EvaluateProjection<
   TNode extends ExprNode,
   TScope extends Scope<Context<any[], any>>
 > = TNode extends ProjectionNode
-  ? Evaluate<
-      TNode["expr"],
-      NestedScope<Evaluate<TNode["base"], TScope>, TScope>
-    >
+  ? Evaluate<TNode["base"], TScope> extends null
+    ? null
+    : Evaluate<
+        TNode["expr"],
+        NestedScope<Evaluate<TNode["base"], TScope>, TScope>
+      >
   : never;
 
 type EvaluateSelectAlternatives<
