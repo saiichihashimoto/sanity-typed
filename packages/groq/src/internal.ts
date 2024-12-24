@@ -1416,10 +1416,15 @@ type Dereference<
       | (Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10> extends never
           ? never
           : TIdentifier extends ""
-          ? {
-              base: Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>;
-              type: "Deref";
-            }
+          ? MaybeMap<
+              Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>,
+              {
+                base: MaybeMapBase<
+                  Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>
+                >;
+                type: "Deref";
+              }
+            >
           : Identifier<TIdentifier> extends never
           ? never
           : MaybeMap<

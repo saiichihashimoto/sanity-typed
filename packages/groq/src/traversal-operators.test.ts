@@ -1347,6 +1347,55 @@ describe("traversal operators", () => {
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 
+  it("$param[]->", async () => {
+    const query = "$param[]->";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      base: { base: { name: "param", type: "Parameter" }, type: "ArrayCoerce" },
+      expr: { base: { type: "This" }, type: "Deref" },
+      type: "Map",
+    } as const;
+
+    expect(tree).toStrictEqual(expectedTree);
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const params = {
+      param: [
+        { _type: "reference", _ref: "foo" },
+        { _type: "reference", _ref: "bar" },
+        { _type: "reference", _ref: "bar2" },
+      ],
+    } as const;
+
+    const dataset = [
+      { _id: "foo", _type: "foo", value: "foo" },
+      { _id: "bar", _type: "bar", value: "bar" },
+    ] as const;
+
+    const result = await (await evaluate(tree, { dataset, params })).get();
+
+    const expectedResult = [
+      { _id: "foo", _type: "foo", value: "foo" },
+      { _id: "bar", _type: "bar", value: "bar" },
+      null,
+    ] as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        ScopeFromPartialContext<{
+          dataset: WritableDeep<typeof dataset>;
+          parameters: WritableDeep<typeof params>;
+        }>
+      >
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+  });
+
   it("$param[]->value", async () => {
     const query = "$param[]->value";
 
@@ -1392,6 +1441,65 @@ describe("traversal operators", () => {
     const result = await (await evaluate(tree, { dataset, params })).get();
 
     const expectedResult = ["foo", "bar", null] as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        ScopeFromPartialContext<{
+          dataset: WritableDeep<typeof dataset>;
+          parameters: WritableDeep<typeof params>;
+        }>
+      >
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+  });
+
+  it("$param[]->{value}", async () => {
+    const query = "$param[]->{value}";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      base: { base: { name: "param", type: "Parameter" }, type: "ArrayCoerce" },
+      expr: {
+        base: { base: { type: "This" }, type: "Deref" },
+        expr: {
+          attributes: [
+            {
+              name: "value",
+              type: "ObjectAttributeValue",
+              value: { name: "value", type: "AccessAttribute" },
+            },
+          ],
+          type: "Object",
+        },
+        type: "Projection",
+      },
+      type: "Map",
+    } as const;
+
+    expect(tree).toStrictEqual(expectedTree);
+    // TODO The evaluations are equivalent, but the parse tree is not.
+    expectType<Parse<typeof query>>().not.toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const params = {
+      param: [
+        { _type: "reference", _ref: "foo" },
+        { _type: "reference", _ref: "bar" },
+        { _type: "reference", _ref: "bar2" },
+      ],
+    } as const;
+
+    const dataset = [
+      { _id: "foo", _type: "foo", value: "foo" },
+      { _id: "bar", _type: "bar", value: "bar" },
+    ] as const;
+
+    const result = await (await evaluate(tree, { dataset, params })).get();
+
+    const expectedResult = [{ value: "foo" }, { value: "bar" }, null] as const;
 
     expect(result).toStrictEqual(expectedResult);
     expectType<
@@ -1489,6 +1597,55 @@ describe("traversal operators", () => {
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 
+  it("$param[]-> (weak)", async () => {
+    const query = "$param[]->";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      base: { base: { name: "param", type: "Parameter" }, type: "ArrayCoerce" },
+      expr: { base: { type: "This" }, type: "Deref" },
+      type: "Map",
+    } as const;
+
+    expect(tree).toStrictEqual(expectedTree);
+    expectType<Parse<typeof query>>().toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const params = {
+      param: [
+        { _type: "reference", _ref: "foo", weak: true },
+        { _type: "reference", _ref: "bar", weak: true },
+        { _type: "reference", _ref: "foo2", weak: true },
+      ],
+    } as const;
+
+    const dataset = [
+      { _id: "foo", _type: "foo", value: "foo" },
+      { _id: "bar", _type: "bar", value: "bar" },
+    ] as const;
+
+    const result = await (await evaluate(tree, { dataset, params })).get();
+
+    const expectedResult = [
+      { _id: "foo", _type: "foo", value: "foo" },
+      { _id: "bar", _type: "bar", value: "bar" },
+      null,
+    ] as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        ScopeFromPartialContext<{
+          dataset: WritableDeep<typeof dataset>;
+          parameters: WritableDeep<typeof params>;
+        }>
+      >
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+  });
+
   it("$param[]->value (weak)", async () => {
     const query = "$param[]->value";
 
@@ -1534,6 +1691,65 @@ describe("traversal operators", () => {
     const result = await (await evaluate(tree, { dataset, params })).get();
 
     const expectedResult = ["foo", "bar", null] as const;
+
+    expect(result).toStrictEqual(expectedResult);
+    expectType<
+      ExecuteQuery<
+        typeof query,
+        ScopeFromPartialContext<{
+          dataset: WritableDeep<typeof dataset>;
+          parameters: WritableDeep<typeof params>;
+        }>
+      >
+    >().toStrictEqual<WritableDeep<typeof expectedResult>>();
+  });
+
+  it("$param[]->{value} (weak)", async () => {
+    const query = "$param[]->{value}";
+
+    const tree = parse(query);
+
+    const expectedTree = {
+      base: { base: { name: "param", type: "Parameter" }, type: "ArrayCoerce" },
+      expr: {
+        base: { base: { type: "This" }, type: "Deref" },
+        expr: {
+          attributes: [
+            {
+              name: "value",
+              type: "ObjectAttributeValue",
+              value: { name: "value", type: "AccessAttribute" },
+            },
+          ],
+          type: "Object",
+        },
+        type: "Projection",
+      },
+      type: "Map",
+    } as const;
+
+    expect(tree).toStrictEqual(expectedTree);
+    // TODO The evaluations are equivalent, but the parse tree is not.
+    expectType<Parse<typeof query>>().not.toStrictEqual<
+      WritableDeep<typeof expectedTree>
+    >();
+
+    const params = {
+      param: [
+        { _type: "reference", _ref: "foo", weak: true },
+        { _type: "reference", _ref: "bar", weak: true },
+        { _type: "reference", _ref: "foo2", weak: true },
+      ],
+    } as const;
+
+    const dataset = [
+      { _id: "foo", _type: "foo", value: "foo" },
+      { _id: "bar", _type: "bar", value: "bar" },
+    ] as const;
+
+    const result = await (await evaluate(tree, { dataset, params })).get();
+
+    const expectedResult = [{ value: "foo" }, { value: "bar" }, null] as const;
 
     expect(result).toStrictEqual(expectedResult);
     expectType<
