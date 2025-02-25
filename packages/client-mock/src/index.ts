@@ -38,6 +38,10 @@ import type { DocumentValues, referenced } from "@sanity-typed/types";
 import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 import { reduceAcc } from "@sanity-typed/utils";
 
+type MaybeFunction<T> = T | (() => T);
+
+type MaybePromise<T> = PromiseLike<T> | PromiseLike<T> | T;
+
 // const isPatch = (patch: unknown): patch is PatchType<any, any, any, any> =>
 //   patch instanceof Patch;
 
@@ -61,14 +65,19 @@ export const createClient = <
   const SanityValues extends { [type: string]: any }
 >(
   config: ClientConfig & {
-    documents: DocumentValues<SanityValues>[];
+    documents: MaybeFunction<MaybePromise<DocumentValues<SanityValues>[]>>;
   }
 ) => {
   type TDocument = DocumentValues<SanityValues>;
 
-  const datasetById = new Map<string, TDocument>(
-    config.documents.map((doc) => [doc._id, doc] as [string, TDocument])
-  );
+  const datasetByIdPromise = (async () =>
+    new Map<string, TDocument>(
+      (
+        await (typeof config.documents === "function"
+          ? config.documents()
+          : config.documents)
+      ).map((doc) => [doc._id, doc] as [string, TDocument])
+    ))();
 
   let clientQ:
     | GroqBuilder<
@@ -189,7 +198,7 @@ export const createClient = <
             parse(query),
             {
               params,
-              dataset: [...datasetById.values()],
+              dataset: [...(await datasetByIdPromise).values()],
               // @ts-expect-error TODO Not sure
               sanity: config,
             }
@@ -207,12 +216,15 @@ export const createClient = <
     },
     listen: {} as SanityClient<DocumentValues<SanityValues>>["listen"],
     getDocument: async <const TId extends string>(id: TId) =>
-      datasetById.get(id),
-    getDocuments: async <const TIds extends readonly string[]>(ids: TIds) =>
-      ids.map((id) => datasetById.get(id) ?? null) as GetDocuments<
+      (await datasetByIdPromise).get(id),
+    getDocuments: async <const TIds extends readonly string[]>(ids: TIds) => {
+      const datasetById = await datasetByIdPromise;
+
+      return ids.map((id) => datasetById.get(id) ?? null) as GetDocuments<
         TDocument,
         WritableDeep<TIds>
-      >,
+      >;
+    },
     create: async <
       Doc extends TDocument extends never
         ? never
@@ -329,6 +341,8 @@ export const createClient = <
       if (isTransaction(operations)) {
         return client.mutate(operations.serialize() as any, options);
       }
+
+      const datasetById = await datasetByIdPromise;
 
       if ("create" in operations) {
         const { create: document } = operations;
