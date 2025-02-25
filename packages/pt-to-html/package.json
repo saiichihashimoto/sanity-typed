@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
-    "@portabletext/to-html": "2.0.13",
+    "@portabletext/to-html": "2.0.14",
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
