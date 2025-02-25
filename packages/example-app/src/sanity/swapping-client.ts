@@ -14,7 +14,11 @@ const config = {
 
 export const client = process.env.VERCEL
   ? createLiveClient<SanityValues>(config)
-  : createMockClient<SanityValues>({ ...config, documents: getMockDataset() });
+  : createMockClient<SanityValues>({
+      ...config,
+      // This can be an array, a promise, or a function returning the array
+      documents: getMockDataset,
+    });
 
 export const makeTypedQuery = async () =>
   client.fetch('*[_type=="product"]{_id,productName,tags}');
