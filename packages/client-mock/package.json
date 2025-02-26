@@ -36,7 +36,7 @@
     "@sanity-typed/client": "0.0.0-development",
     "@sanity-typed/groq-js": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
-    "@sanity/diff-match-patch": "3.1.2",
+    "@sanity/diff-match-patch": "3.2.0",
     "lodash": "4.17.21",
     "type-fest": "4.30.2"
   },
@@ -45,7 +45,7 @@
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
-    "@sanity/client": "6.24.1",
+    "@sanity/client": "6.28.1",
     "groq-builder": "0.9.1"
   },
   "peerDependencies": {
