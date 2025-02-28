@@ -38,7 +38,8 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "npm run build -- --no-clean"
+    "dev": "npm run build -- --no-clean",
+    "test": "jest"
   },
   "dependencies": {
     "@portabletext-typed/types": "0.0.0-development",
@@ -51,11 +52,14 @@
   "devDependencies": {
     "@faker-js/faker": "9.2.0",
     "@jest/globals": "29.7.0",
+    "@jest/types": "29.6.3",
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/traverse-validation": "0.0.0-development",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
-    "@sanity-typed/zod": "0.0.0-development"
+    "@sanity-typed/zod": "0.0.0-development",
+    "jest": "29.7.0",
+    "ts-jest": "29.2.5"
   },
   "peerDependencies": {
     "@faker-js/faker": "^8.3.0",

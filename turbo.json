@@ -17,6 +17,10 @@
     },
     "dev": {
       "persistent": true
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "outputLogs": "new-only"
     }
   }
 }

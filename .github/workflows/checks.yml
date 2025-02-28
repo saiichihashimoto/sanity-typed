@@ -295,7 +295,7 @@ jobs:
           fi
   test-matrix:
     name: Test Matrix
-    if: github.ref != 'refs/heads/main'
+    if: always()
     needs: install-node-modules
     runs-on: ubuntu-latest
     outputs:
@@ -321,14 +321,14 @@ jobs:
 
       - id: set-packages
         run: |
-          echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(select(.command != "<NONEXISTENT>")) | map(.taskId | sub("@portabletext-typed/"; "pt-") | sub("@sanity-typed/"; "") | sub("#build"; ""))')" >> $GITHUB_OUTPUT
+          echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(select(.command != "<NONEXISTENT>")) | map(.taskId | sub("#build"; "")))" >> $GITHUB_OUTPUT
 
       - id: set-typescript-versions
         run: |
           npx semver --range "$(cat packages/*/package.json | jq --raw-output --slurp '. | map(.peerDependencies.typescript | select( . != null )) | join(" || ")')" $(npm view typescript versions | sed "s/'/\"/g" | jq --raw-output '. | join(" ")') | jq --raw-input --slurp --compact-output '. | rtrimstr("\n") | split("\n") | tostring' | jq --raw-output '. |= "typescript-versions=" + .' >> $GITHUB_OUTPUT
   test-package:
     name: Test
-    if: github.ref != 'refs/heads/main'
+    if: always()
     needs: [install-node-modules, test-matrix]
     runs-on: ubuntu-latest
     strategy:
@@ -357,12 +357,29 @@ jobs:
       - if: matrix.typescript-version != 'current'
         run: npm install --no-save typescript@${{ matrix.typescript-version }}
 
+      - run: |
+          DRY_RUN=$(npx turbo run test --filter=${{ matrix.package }} --only --dry=json)
+          HASH=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"${{ matrix.package }}#test\")) | .hash")
+          echo "HASH=$HASH" >> $GITHUB_ENV
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH }}*
+          key: turbo-cache-test-${{ matrix.typescript-version }}-${{ env.HASH }}
+
       - id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v2
-      - run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }} -- ${{ matrix.package }}/src
+      - run: npm test -- --filter=${{ matrix.package }} --only
+
+      # Whether or not npm run test fails, we want to save the cache when we can
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH }}*
+          key: turbo-cache-test-${{ matrix.typescript-version }}-${{ env.HASH }}
   test:
     name: Test
-    if: always() && github.ref != 'refs/heads/main'
+    if: always()
     needs: test-package
     runs-on: ubuntu-latest
     steps:
