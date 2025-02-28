@@ -31,7 +31,8 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "npm run build -- --no-clean"
+    "dev": "npm run build -- --no-clean",
+    "test": "jest"
   },
   "dependencies": {
     "@portabletext-typed/types": "0.0.0-development",
@@ -40,16 +41,19 @@
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
+    "@jest/types": "29.6.3",
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
     "@sanity/client": "6.28.2",
     "@types/geojson": "7946.0.14",
-    "groq-js": "1.14.0"
+    "groq-js": "1.14.0",
+    "jest": "29.7.0",
+    "ts-jest": "29.2.5"
   },
   "peerDependencies": {
     "@sanity/client": "^6.1.7",
     "@types/geojson": "^7946.0.10",
-    "typescript": "5.4.2 || 5.4.3 || 5.4.4 || 5.4.5 || 5.5.2 || 5.5.3 || 5.5.4 || 5.6.2 || 5.6.3"
+    "typescript": "5.7.2 || 5.7.3"
   }
 }

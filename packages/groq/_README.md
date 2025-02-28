@@ -119,11 +119,17 @@ Chances are, you don't need this package directly.
 
 ## Breaking Changes
 
+### 2 to 3
+
+#### Typescript version from 5.7.2 <= x <= 5.7.3
+
+The supported Typescript version is now 5.7.2 <= x <= 5.7.3. Older versions are no longer supported and newer versions will be added as we validate them.
+
 ### 1 to 2
 
 #### Typescript version from 5.4.2 <= x <= 5.6.3
 
-The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate them.
 
 ## Alternatives
 

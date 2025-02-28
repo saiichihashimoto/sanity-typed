@@ -1,4 +1,4 @@
-import { describe, it, jest } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import { expectType } from "@saiichihashimoto/test-utils";
 
 import type { AnySanityDocument } from "@sanity-typed/types/src/internal";

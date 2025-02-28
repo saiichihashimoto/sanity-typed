@@ -5,17 +5,23 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": [
+        "$TURBO_DEFAULT$",
+        "!LICENSE",
+        "!jest.config.ts",
         "!.*/**",
-        "!*/**/*.md",
-        "!dist/**",
-        "!node_modules/**",
-        "!src/**/*.test.*",
-        "**"
+        "!**/*.md",
+        "!src/**/*.test.*"
       ],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**"],
+      "outputLogs": "new-only"
     },
     "dev": {
       "persistent": true
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "inputs": ["$TURBO_DEFAULT$", "!LICENSE", "!.*/**", "!**/*.md"],
+      "outputLogs": "new-only"
     }
   }
 }

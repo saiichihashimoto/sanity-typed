@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { toHTML as toHTMLNative } from "@portabletext/to-html";
 import type { HtmlPortableTextList } from "@portabletext/to-html";
 import { expectType } from "@saiichihashimoto/test-utils";
