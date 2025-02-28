@@ -4,7 +4,14 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "!.*/**", "!*/**/*.md", "!src/**/*.test.*"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!LICENSE",
+        "!jest.config.ts",
+        "!.*/**",
+        "!**/*.md",
+        "!src/**/*.test.*"
+      ],
       "outputs": ["dist/**", ".next/**"],
       "outputLogs": "new-only"
     },
@@ -13,7 +20,7 @@
     },
     "test": {
       "dependsOn": ["^test"],
-      "inputs": ["$TURBO_DEFAULT$", "!.*/**", "!*/**/*.md"],
+      "inputs": ["$TURBO_DEFAULT$", "!LICENSE", "!.*/**", "!**/*.md"],
       "outputLogs": "new-only"
     }
   }
