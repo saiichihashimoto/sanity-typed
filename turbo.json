@@ -12,7 +12,8 @@
         "!src/**/*.test.*",
         "**"
       ],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**"],
+      "outputLogs": "new-only"
     },
     "dev": {
       "persistent": true

@@ -9,10 +9,10 @@ import type {
 } from "@portabletext/react";
 import type { ComponentType, ReactNode } from "react";
 import type {
-  Except,
   IsStringLiteral,
+  Merge,
   RequiredKeysOf,
-  Simplify,
+  SetRequired,
 } from "type-fest";
 
 import type {
@@ -21,23 +21,6 @@ import type {
   decorator,
 } from "@portabletext-typed/types";
 import type { MaybeArray } from "@sanity-typed/utils";
-
-// HACK Couldn't use type-fest's Merge >=3.0.0
-type MergeOld<FirstType, SecondType> = Except<
-  FirstType,
-  Extract<keyof FirstType, keyof SecondType>
-> &
-  SecondType;
-
-type SetRequired<
-  BaseType,
-  Keys extends keyof BaseType
-> = BaseType extends unknown
-  ? Simplify<
-      // HACK For whatever reason, React gets mad when we use Omit or Except, ie Omit<BaseType, Keys>
-      BaseType & Required<Pick<BaseType, Keys>>
-    >
-  : never;
 
 // https://github.com/portabletext/react-portabletext/blob/534fd4693b39cd1860a3c2c7c308df7bba534d24/src/components/marks.tsx#L15
 type BlockMarkDecoratorDefault =
@@ -100,7 +83,7 @@ export type PortableTextReactComponents<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
     PortableTextBlock<any, any, any, any, any>
   >
-> = MergeOld<
+> = Merge<
   Partial<PortableTextReactComponentsNative>,
   SetRequired<
     {
@@ -156,7 +139,7 @@ export type PortableTextReactComponents<
       >;
       types?: {
         [TType in TChildSibling | TSibling as TType["_type"]]: ComponentType<
-          MergeOld<
+          Merge<
             PortableTextTypeComponentProps<TType>,
             {
               isInline:
@@ -196,7 +179,7 @@ export type PortableTextProps<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
     PortableTextBlock<any, any, any, any, any>
   >
-> = MergeOld<
+> = Merge<
   Partial<Omit<PortableTextPropsNative<TItem>, "value">>,
   SetRequired<
     {

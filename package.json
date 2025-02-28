@@ -64,7 +64,7 @@
     "tsup": "8.4.0",
     "turbo": "2.4.4",
     "type-fest": "4.30.2",
-    "typescript": "5.6.3"
+    "typescript": "5.7.2"
   },
   "packageManager": "npm@10.9.0",
   "engines": {
