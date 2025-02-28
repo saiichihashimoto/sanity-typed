@@ -4,14 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "!.*/**",
-        "!*/**/*.md",
-        "!dist/**",
-        "!node_modules/**",
-        "!src/**/*.test.*",
-        "**"
-      ],
+      "inputs": ["$TURBO_DEFAULT$", "!.*/**", "!*/**/*.md", "!src/**/*.test.*"],
       "outputs": ["dist/**", ".next/**"],
       "outputLogs": "new-only"
     },
@@ -20,6 +13,7 @@
     },
     "test": {
       "dependsOn": ["^test"],
+      "inputs": ["$TURBO_DEFAULT$", "!.*/**", "!*/**/*.md"],
       "outputLogs": "new-only"
     }
   }
