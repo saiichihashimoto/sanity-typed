@@ -29,6 +29,8 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
       - if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
@@ -61,6 +63,8 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
           fail-on-cache-miss: true
 
@@ -253,6 +257,8 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
           fail-on-cache-miss: true
 
@@ -260,7 +266,28 @@ jobs:
         with:
           bundler-cache: true
 
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            .eslintcache
+            node_modules/.cache/prettier
+          key: lint-prettier-cache-${{ github.run_id }}
+          restore-keys: |
+            lint-prettier-cache-
+          enableCrossOsArchive: true
+
       - run: npm run lint
+
+      # Whether or not npm run lint fails, we want to save the cache when we can
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .eslintcache
+            node_modules/.cache/prettier
+          key: lint-prettier-cache-${{ github.run_id }}
+          enableCrossOsArchive: true
+
       - run: |
           if [[ $(git status --porcelain) != "" ]]; then
             git --no-pager diff --color --text HEAD
@@ -287,6 +314,8 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
           fail-on-cache-miss: true
 
@@ -320,6 +349,8 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
           fail-on-cache-miss: true
 
