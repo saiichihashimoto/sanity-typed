@@ -5,6 +5,7 @@ import { createClient } from "@sanity-typed/client-mock";
 
 // export const client = createClient({
 export const client = createClient<SanityValues>({
+  // This can be an array, a promise, or a function returning the array
   documents: [
     {
       _createdAt: "2011-12-15T03:57:59.213Z",

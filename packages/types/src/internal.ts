@@ -7,9 +7,8 @@ import {
 } from "sanity";
 import type {
   ArrayDefinition as ArrayDefinitionNative,
-  ArrayRule, // @ts-expect-error TODO Until sanity exports BetaFeatures, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO Until sanity exports BetaFeatures, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
-  BetaFeatures as BetaFeaturesNative,
+  ArrayRule,
+  BetaFeatures,
   BlockDecoratorDefinition as BlockDecoratorDefinitionNative,
   BlockDefinition as BlockDefinitionNative,
   BlockListDefinition as BlockListDefinitionNative,
@@ -55,8 +54,7 @@ import type {
   ReferenceDefinition as ReferenceDefinitionNative,
   ReferenceRule,
   ReferenceValue as ReferenceValueNative,
-  RuleDef, // @ts-expect-error TODO Until sanity exports ScheduledPublishingPluginOptions, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO Until sanity exports ScheduledPublishingPluginOptions, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
+  RuleDef,
   ScheduledPublishingPluginOptions,
   SchemaPluginOptions as SchemaPluginOptionsNative,
   SlugDefinition as SlugDefinitionNative,
@@ -1194,21 +1192,6 @@ export type ConfigBase<
   >;
 };
 
-// TODO Until sanity exports BetaFeatures, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
-type BetaFeatures = {
-  /**
-   * @beta
-   * @hidden
-   * @deprecated beta feature is no longer available.
-   * */
-  treeArrayEditing?: {
-    /**
-     * @deprecated beta feature is no longer available.
-     */
-    enabled: boolean;
-  };
-};
-
 export type PluginOptions<
   TTypeDefinition extends TypeDefinition<
     any,
@@ -1285,18 +1268,7 @@ type WorkspaceOptions<
   Omit<WorkspaceOptionsNative, "beta">,
   ConfigBase<TTypeDefinition, TPluginOptions> & {
     beta?: BetaFeatures;
-    // TODO Until sanity exports ScheduledPublishingPluginOptions, we'll get TS4023 https://github.com/sanity-io/sanity/issues/7637
-    scheduledPublishing?: {
-      /**
-       * Whether scheduled publishing is enabled for this workspace.
-       */
-      enabled: boolean;
-      /**
-       * Date format to use for input fields. This must be a valid `date-fns` {@link https://date-fns.org/docs/format | formatted string}.
-       * @defaultValue 'dd/MM/yyyy HH:mm' make sure to specify minutes and hours if you are specifying a custom format
-       */
-      inputDateTimeFormat?: string;
-    };
+    scheduledPublishing?: ScheduledPublishingPluginOptions;
   }
 >;
 

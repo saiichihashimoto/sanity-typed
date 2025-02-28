@@ -16,7 +16,7 @@
     "dev": "next dev"
   },
   "dependencies": {
-    "@faker-js/faker": "9.1.0",
+    "@faker-js/faker": "9.2.0",
     "@portabletext-typed/react": "0.0.0-development",
     "@portabletext-typed/to-html": "0.0.0-development",
     "@sanity-typed/client": "0.0.0-development",
@@ -26,9 +26,9 @@
     "@sanity-typed/next-sanity": "0.0.0-development",
     "@sanity-typed/preview-kit": "0.0.0-development",
     "@sanity-typed/zod": "0.0.0-development",
-    "@sanity/client": "6.22.2",
-    "groq-builder": "0.2.0",
-    "next": "14.0.4",
+    "@sanity/client": "6.28.1",
+    "groq-builder": "0.9.1",
+    "next": "15.1.3",
     "react": "18.3.1"
   },
   "devDependencies": {

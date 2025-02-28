@@ -298,6 +298,233 @@ describe("createClient", () => {
     });
   });
 
+  describe("documents", () => {
+    it("can be a promise", async () => {
+      const result = await createClient<{
+        foo: AnySanityDocument & { _type: "foo"; foo: string };
+        qux: AnySanityDocument & { _type: "qux"; qux: number };
+      }>({
+        documents: Promise.resolve([
+          {
+            _createdAt: "_createdAt",
+            _id: "id",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo",
+          },
+          {
+            _createdAt: "_createdAt",
+            _id: "id2",
+            _rev: "_rev",
+            _type: "qux",
+            _updatedAt: "_updatedAt",
+            qux: 1,
+          },
+        ]),
+      }).getDocuments(["id", "id2"]);
+
+      expectType<typeof result>().toEqual<
+        [
+          (
+            | (AnySanityDocument & {
+                _id: "id";
+                _type: "foo";
+                foo: string;
+              })
+            | (AnySanityDocument & {
+                _id: "id";
+                _type: "qux";
+                qux: number;
+              })
+            | null
+          ),
+          (
+            | (AnySanityDocument & {
+                _id: "id2";
+                _type: "foo";
+                foo: string;
+              })
+            | (AnySanityDocument & {
+                _id: "id2";
+                _type: "qux";
+                qux: number;
+              })
+            | null
+          )
+        ]
+      >();
+      expect(result).toStrictEqual([
+        {
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "_rev",
+          _type: "foo",
+          _updatedAt: "_updatedAt",
+          foo: "foo",
+        },
+        {
+          _createdAt: "_createdAt",
+          _id: "id2",
+          _rev: "_rev",
+          _type: "qux",
+          _updatedAt: "_updatedAt",
+          qux: 1,
+        },
+      ]);
+    });
+
+    it("can be a function", async () => {
+      const result = await createClient<{
+        foo: AnySanityDocument & { _type: "foo"; foo: string };
+        qux: AnySanityDocument & { _type: "qux"; qux: number };
+      }>({
+        documents: () => [
+          {
+            _createdAt: "_createdAt",
+            _id: "id",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo",
+          },
+          {
+            _createdAt: "_createdAt",
+            _id: "id2",
+            _rev: "_rev",
+            _type: "qux",
+            _updatedAt: "_updatedAt",
+            qux: 1,
+          },
+        ],
+      }).getDocuments(["id", "id2"]);
+
+      expectType<typeof result>().toEqual<
+        [
+          (
+            | (AnySanityDocument & {
+                _id: "id";
+                _type: "foo";
+                foo: string;
+              })
+            | (AnySanityDocument & {
+                _id: "id";
+                _type: "qux";
+                qux: number;
+              })
+            | null
+          ),
+          (
+            | (AnySanityDocument & {
+                _id: "id2";
+                _type: "foo";
+                foo: string;
+              })
+            | (AnySanityDocument & {
+                _id: "id2";
+                _type: "qux";
+                qux: number;
+              })
+            | null
+          )
+        ]
+      >();
+      expect(result).toStrictEqual([
+        {
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "_rev",
+          _type: "foo",
+          _updatedAt: "_updatedAt",
+          foo: "foo",
+        },
+        {
+          _createdAt: "_createdAt",
+          _id: "id2",
+          _rev: "_rev",
+          _type: "qux",
+          _updatedAt: "_updatedAt",
+          qux: 1,
+        },
+      ]);
+    });
+
+    it("can be a function returning a promise", async () => {
+      const result = await createClient<{
+        foo: AnySanityDocument & { _type: "foo"; foo: string };
+        qux: AnySanityDocument & { _type: "qux"; qux: number };
+      }>({
+        documents: async () => [
+          {
+            _createdAt: "_createdAt",
+            _id: "id",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo",
+          },
+          {
+            _createdAt: "_createdAt",
+            _id: "id2",
+            _rev: "_rev",
+            _type: "qux",
+            _updatedAt: "_updatedAt",
+            qux: 1,
+          },
+        ],
+      }).getDocuments(["id", "id2"]);
+
+      expectType<typeof result>().toEqual<
+        [
+          (
+            | (AnySanityDocument & {
+                _id: "id";
+                _type: "foo";
+                foo: string;
+              })
+            | (AnySanityDocument & {
+                _id: "id";
+                _type: "qux";
+                qux: number;
+              })
+            | null
+          ),
+          (
+            | (AnySanityDocument & {
+                _id: "id2";
+                _type: "foo";
+                foo: string;
+              })
+            | (AnySanityDocument & {
+                _id: "id2";
+                _type: "qux";
+                qux: number;
+              })
+            | null
+          )
+        ]
+      >();
+      expect(result).toStrictEqual([
+        {
+          _createdAt: "_createdAt",
+          _id: "id",
+          _rev: "_rev",
+          _type: "foo",
+          _updatedAt: "_updatedAt",
+          foo: "foo",
+        },
+        {
+          _createdAt: "_createdAt",
+          _id: "id2",
+          _rev: "_rev",
+          _type: "qux",
+          _updatedAt: "_updatedAt",
+          qux: 1,
+        },
+      ]);
+    });
+  });
+
   describe("getDocuments", () => {
     it("returns a tuple of a union of the documents or null", async () => {
       const result = await createClient<{

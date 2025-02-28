@@ -137,6 +137,7 @@ import { createClient } from "@sanity-typed/client-mock";
 
 // export const client = createClient({
 export const client = createClient<SanityValues>({
+  // This can be an array, a promise, or a function returning the array
   documents: [
     {
       _createdAt: "2011-12-15T03:57:59.213Z",
@@ -191,7 +192,7 @@ import config from "sanity.config";
 
 import { sanityConfigToFaker, sanityDocumentsFaker } from "@sanity-typed/faker";
 
-export const getMockDataset = () => {
+export const getMockDataset = async () => {
   const sanityFaker = sanityConfigToFaker(config, {
     faker: { locale: [en, base] },
   });
@@ -227,7 +228,11 @@ const config = {
 
 export const client = process.env.VERCEL
   ? createLiveClient<SanityValues>(config)
-  : createMockClient<SanityValues>({ ...config, documents: getMockDataset() });
+  : createMockClient<SanityValues>({
+      ...config,
+      // This can be an array, a promise, or a function returning the array
+      documents: getMockDataset,
+    });
 
 export const makeTypedQuery = async () =>
   client.fetch('*[_type=="product"]{_id,productName,tags}');

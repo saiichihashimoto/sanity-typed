@@ -70,7 +70,7 @@ type Simplify<AnyType> = SimplifyNative<AnyType> extends AnyType
   : AnyType;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Query-context
+ * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Query-context
  */
 type Context<Dataset extends any[], DeltaElement extends Dataset[number]> = {
   client: ClientConfig;
@@ -81,7 +81,7 @@ type Context<Dataset extends any[], DeltaElement extends Dataset[number]> = {
 };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Scope
+ * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Scope
  */
 type Scope<TContext extends Context<any[], any>> = {
   context: TContext;
@@ -90,7 +90,7 @@ type Scope<TContext extends Context<any[], any>> = {
 };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#NewNestedScope()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#NewNestedScope()
  */
 type NestedScope<Value, TScope extends Scope<Context<any[], any>>> = {
   context: TScope["context"];
@@ -168,7 +168,7 @@ export type Parse<TExpression extends string> = ParseInner<
 >;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Evaluate()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Evaluate()
  */
 export type Evaluate<
   TNode extends ExprNode,
@@ -178,9 +178,9 @@ export type Evaluate<
   EvaluateExpression<TNode, TScope>;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Boolean
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Null
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Number
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Boolean
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Null
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Number
  */
 type Primitives<TExpression extends string> = TExpression extends `+${number}`
   ? never
@@ -196,7 +196,7 @@ type Primitives<TExpression extends string> = TExpression extends `+${number}`
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SingleEscapeSequence
+ * @link https://spec.groq.dev/GROQ-1.revision1/#SingleEscapeSequence
  */
 type SingleEscapeSequence =
   | '"'
@@ -210,7 +210,7 @@ type SingleEscapeSequence =
   | "t";
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EscapeSequence
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EscapeSequence
  */
 type EscapeSequence = // TODO https://github.com/saiichihashimoto/sanity-typed/issues/331
   SingleEscapeSequence;
@@ -229,7 +229,7 @@ type IfStringHas<
 > = TString extends `${string}${THas}${string}` ? true : false;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#String
+ * @link https://spec.groq.dev/GROQ-1.revision1/#String
  */
 type StringType<TExpression extends string> =
   | (TExpression extends `'${infer TString}'`
@@ -264,7 +264,7 @@ type StringType<TExpression extends string> =
       : never);
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayElement
+ * @link https://spec.groq.dev/GROQ-1.revision1/#ArrayElement
  */
 type ArrayElement<TArrayElement extends string> =
   TArrayElement extends `...${infer TExpression}`
@@ -280,7 +280,7 @@ type ArrayElement<TArrayElement extends string> =
       };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayElements
+ * @link https://spec.groq.dev/GROQ-1.revision1/#ArrayElements
  */
 type ArrayElements<
   TArrayElements extends string,
@@ -305,7 +305,7 @@ type ArrayElements<
           : never);
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Array
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Array
  */
 type ArrayType<TExpression extends string> =
   TExpression extends `[${infer TArrayElements}]`
@@ -318,7 +318,7 @@ type ArrayType<TExpression extends string> =
     : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#DetermineName()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#DetermineName()
  */
 type DetermineName<TNode extends ExprNode> =
   | Extract<TNode, AccessAttributeNode>["name"]
@@ -334,7 +334,7 @@ type DetermineName<TNode extends ExprNode> =
       : never);
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ObjectAttribute
+ * @link https://spec.groq.dev/GROQ-1.revision1/#ObjectAttribute
  */
 type ObjectAttribute<TObjectAttribute extends string> =
   TObjectAttribute extends `...${infer TExpression}`
@@ -364,7 +364,7 @@ type ObjectAttribute<TObjectAttribute extends string> =
       };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ObjectAttributes
+ * @link https://spec.groq.dev/GROQ-1.revision1/#ObjectAttributes
  */
 type ObjectAttributes<
   TObjectAttributes extends string,
@@ -392,7 +392,7 @@ type ObjectAttributes<
           : never);
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Object
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Object
  */
 type ObjectType<TExpression extends string> =
   TExpression extends `{${infer TObjectAttributes}}`
@@ -402,7 +402,7 @@ type ObjectType<TExpression extends string> =
     : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Literal
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Literal
  */
 type Literal<TExpression extends string> =
   | ArrayType<TExpression>
@@ -411,7 +411,7 @@ type Literal<TExpression extends string> =
   | StringType<TExpression>;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#This
+ * @link https://spec.groq.dev/GROQ-1.revision1/#This
  */
 type This<TExpression extends string> = TExpression extends "@"
   ? { type: "This" }
@@ -458,7 +458,7 @@ type IdentifierRest<TIdentifierRest extends string> = TIdentifierRest extends ""
   : false;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Identifier
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Identifier
  */
 type Identifier<TIdentifier extends string> = TIdentifier extends `${
   | Alpha
@@ -469,7 +469,7 @@ type Identifier<TIdentifier extends string> = TIdentifier extends `${
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ThisAttribute
+ * @link https://spec.groq.dev/GROQ-1.revision1/#ThisAttribute
  */
 type ThisAttribute<TExpression extends string> = TExpression extends `${
   | boolean
@@ -481,14 +481,14 @@ type ThisAttribute<TExpression extends string> = TExpression extends `${
   : { name: TExpression; type: "AccessAttribute" };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Everything
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Everything
  */
 type Everything<TExpression extends string> = TExpression extends "*"
   ? { type: "Everything" }
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Parent
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Parent
  */
 type Parent<
   TExpression extends string,
@@ -500,7 +500,7 @@ type Parent<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-geo-type
+ * @link https://spec.groq.dev/GROQ-1.revision1/#sec-geo-type
  */
 export type Geo =
   | GeometryCollection
@@ -519,11 +519,11 @@ type Functions<
   TScope extends Scope<Context<any[], any>>
 > = {
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Array-namespace
+   * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Array-namespace
    */
   array: {
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_compact()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#array_compact()
      */
     compact: TArgs extends [infer TArr]
       ? TArr extends any[]
@@ -539,7 +539,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_join()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#array_join()
      */
     join: TArgs extends [infer TArr, infer TSep]
       ? TArr extends any[]
@@ -551,7 +551,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#array_unique()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#array_unique()
      */
     unique: TArgs extends [infer TArr]
       ? TArr extends any[]
@@ -571,20 +571,20 @@ type Functions<
       : never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Date-time-namespace
+   * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Date-time-namespace
    */
   dateTime: {
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#dateTime_now()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#dateTime_now()
      */
     now: TArgs extends [] ? DateTime : never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Delta-namespace
+   * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Delta-namespace
    */
   delta: {
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedAny()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#delta_changedAny()
      */
     changedAny: TArgs extends [infer TSelector]
       ? TSelector extends typeof ArbitrarySelectorValue
@@ -603,7 +603,7 @@ type Functions<
         : never
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_changedOnly()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#delta_changedOnly()
      */
     changedOnly: TArgs extends [infer TSelector]
       ? TSelector extends typeof ArbitrarySelectorValue
@@ -622,7 +622,7 @@ type Functions<
         : never
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#delta_operation()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#delta_operation()
      */
     operation: TArgs extends []
       ? TScope extends {
@@ -639,11 +639,11 @@ type Functions<
       : never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Diff-namespace
+   * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Diff-namespace
    */
   diff: {
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedAny()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#diff_changedAny()
      */
     changedAny: TArgs extends [any, any, infer TSelector]
       ? TSelector extends typeof ArbitrarySelectorValue
@@ -651,7 +651,7 @@ type Functions<
         : never
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#diff_changedOnly()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#diff_changedOnly()
      */
     changedOnly: TArgs extends [any, any, infer TSelector]
       ? TSelector extends typeof ArbitrarySelectorValue
@@ -660,11 +660,11 @@ type Functions<
       : never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Geography-Extension
+   * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Geography-Extension
    */
   geo: {
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_contains()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#geo_contains()
      */
     contains: TArgs extends [infer TFirst, infer TSecond]
       ? TFirst extends Geo
@@ -674,7 +674,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_distance()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#geo_distance()
      */
     distance: TArgs extends [infer TFirst, infer TSecond]
       ? TFirst extends Point
@@ -684,7 +684,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#geo_intersects()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#geo_intersects()
      */
     intersects: TArgs extends [infer TFirst, infer TSecond]
       ? TFirst extends Geo
@@ -695,15 +695,15 @@ type Functions<
       : never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Global-namespace
+   * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Global-namespace
    */
   global: {
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#boost()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#boost()
      */
     boost: never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_coalesce()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_coalesce()
      */
     coalesce: TArgs extends []
       ? null
@@ -713,7 +713,7 @@ type Functions<
         : THead
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_count()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_count()
      */
     count: TArgs extends [infer TBase]
       ? TBase extends any[]
@@ -721,7 +721,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_dateTime()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_dateTime()
      */
     dateTime: TArgs extends [infer TBase]
       ? TBase extends DateTime | string
@@ -729,7 +729,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_defined()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_defined()
      */
     defined: TArgs extends [infer TBase]
       ? TBase extends null
@@ -737,7 +737,7 @@ type Functions<
         : true
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_geo()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_geo()
      */
     geo: TArgs extends [infer TBase]
       ? TBase extends Geo
@@ -745,7 +745,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-identity-
+     * @link https://spec.groq.dev/GROQ-1.revision1/#sec-global-identity-
      */
     identity: TArgs extends []
       ? TScope extends { context: { identity: infer TIdentity } }
@@ -753,7 +753,7 @@ type Functions<
         : never
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_length()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_length()
      */
     length: TArgs extends [infer TBase]
       ? TBase extends any[] | string
@@ -761,7 +761,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_lower()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_lower()
      */
     lower: TArgs extends [infer TValue]
       ? TValue extends string
@@ -769,11 +769,11 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_now()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_now()
      */
     now: TArgs extends [] ? string : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-global-path-
+     * @link https://spec.groq.dev/GROQ-1.revision1/#sec-global-path-
      * @link https://www.sanity.io/docs/groq-functions#0ecd1b7eac78
      */
     path: TArgs extends (infer TBase)[]
@@ -782,7 +782,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_pt()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_pt()
      */
     pt: TArgs extends [infer TBase]
       ? TBase extends
@@ -792,7 +792,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_references()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_references()
      */
     references: TArgs extends (infer TElement)[]
       ? Extract<Exclude<TElement, []>, string[] | string> extends never
@@ -800,7 +800,7 @@ type Functions<
         : boolean
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_round()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_round()
      */
     round: TArgs extends [infer TNum, infer TPrecision] | [infer TNum]
       ? TNum extends number
@@ -812,7 +812,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_string()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_string()
      */
     string: TArgs extends [infer TVal]
       ? TVal extends boolean | number | string
@@ -820,7 +820,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_upper()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#global_upper()
      */
     upper: TArgs extends [infer TValue]
       ? TValue extends string
@@ -829,14 +829,14 @@ type Functions<
       : never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Math-namespace
+   * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Math-namespace
    */
   math: {
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_avg()
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_max()
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_min()
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#math_sum()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#math_avg()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#math_max()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#math_min()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#math_sum()
      */
     [mathFn in "avg" | "max" | "min" | "sum"]: TArgs extends [infer TArr]
       ? TArr extends null[] | []
@@ -851,11 +851,11 @@ type Functions<
       : never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-Portable-Text-Extension
+   * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Portable-Text-Extension
    */
   pt: {
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#pt_text()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#pt_text()
      */
     text: TArgs extends (infer TBase)[]
       ? TBase extends
@@ -881,11 +881,11 @@ type Functions<
       : never;
   };
   /**
-   * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#sec-String-namespace
+   * @link https://spec.groq.dev/GROQ-1.revision1/#sec-String-namespace
    */
   string: {
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_split()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#string_split()
      */
     split: TArgs extends [infer TStr, infer TSep]
       ? TStr extends string
@@ -895,7 +895,7 @@ type Functions<
         : null
       : never;
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#string_startsWith()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#string_startsWith()
      */
     startsWith: TArgs extends [infer TStr, infer TPrefix]
       ? TStr extends string
@@ -910,7 +910,7 @@ type Functions<
 };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Asc
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Asc
  */
 type Asc<TExpression extends string> = TExpression extends `${infer TBase} asc`
   ? ParseInner<TBase> extends never
@@ -922,7 +922,7 @@ type Asc<TExpression extends string> = TExpression extends `${infer TBase} asc`
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Desc
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Desc
  */
 type Desc<TExpression extends string> =
   TExpression extends `${infer TBase} desc`
@@ -935,7 +935,7 @@ type Desc<TExpression extends string> =
     : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Pair
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Pair
  */
 type Pair<TExpression extends string> =
   TExpression extends `${infer TCondition}=>${infer TValue}`
@@ -951,14 +951,14 @@ type Pair<TExpression extends string> =
     : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ConstantEvaluate()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#ConstantEvaluate()
  */
 type ConstantEvaluate<TNode extends ExprNode> =
   // HACK Not sure if giving a never scope works! https://github.com/sanity-io/groq-js/blob/main/src/evaluator/constantEvaluate.ts#L48
   Evaluate<TNode, never>;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SelectorTuple
+ * @link https://spec.groq.dev/GROQ-1.revision1/#SelectorTuple
  */
 type SelectorTupleInner<TExpression extends string> =
   TExpression extends `${infer TFirst},${infer TRest}`
@@ -970,7 +970,7 @@ type SelectorTupleInner<TExpression extends string> =
     : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Selector
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Selector
  */
 type Selector<TExpression extends string> =
   | (TExpression extends `(${infer TInnerExpression})`
@@ -1118,7 +1118,7 @@ type FunctionsToOtherNodes<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#FuncCall
+ * @link https://spec.groq.dev/GROQ-1.revision1/#FuncCall
  */
 type FuncCall<TExpression extends string> =
   TExpression extends `${infer TFuncFullName}(${infer TFuncCallArgs})`
@@ -1171,7 +1171,7 @@ type Parameter<TExpression extends string> =
     : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SimpleExpression
+ * @link https://spec.groq.dev/GROQ-1.revision1/#SimpleExpression
  */
 type SimpleExpression<TExpression extends string> =
   | Everything<TExpression>
@@ -1208,7 +1208,7 @@ type Level9 = Level8 | (OpCallNode & { op: "**" });
 type Level10 = Level9 | NotNode | PosNode;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Parenthesis
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Parenthesis
  */
 type Parenthesis<TExpression extends string> =
   TExpression extends `(${infer TInnerExpression})`
@@ -1218,7 +1218,7 @@ type Parenthesis<TExpression extends string> =
     : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ArrayPostfix
+ * @link https://spec.groq.dev/GROQ-1.revision1/#ArrayPostfix
  */
 type ArrayPostfix<TExpression extends string> =
   TExpression extends `${infer TBase}[]`
@@ -1258,7 +1258,7 @@ type MaybeMap<
   : TNode;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Range
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Range
  */
 type Range<TExpression extends string> = {
   [TOp in
@@ -1278,10 +1278,10 @@ type Range<TExpression extends string> = {
 }["..." | ".."];
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#SquareBracketTraversal
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#AttributeAccess
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ElementAccess
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Filter
+ * @link https://spec.groq.dev/GROQ-1.revision1/#SquareBracketTraversal
+ * @link https://spec.groq.dev/GROQ-1.revision1/#AttributeAccess
+ * @link https://spec.groq.dev/GROQ-1.revision1/#ElementAccess
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Filter
  */
 type SquareBracketTraversal<
   TExpression extends string,
@@ -1348,7 +1348,7 @@ type SquareBracketTraversal<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#AttributeAccess
+ * @link https://spec.groq.dev/GROQ-1.revision1/#AttributeAccess
  */
 type AttributeAccess<
   TExpression extends string,
@@ -1389,7 +1389,7 @@ type ProjectionInner<
     >;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Projection
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Projection
  */
 type Projection<
   TExpression extends string,
@@ -1405,7 +1405,7 @@ type Projection<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Dereference
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Dereference
  */
 type Dereference<
   TExpression extends string,
@@ -1416,10 +1416,15 @@ type Dereference<
       | (Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10> extends never
           ? never
           : TIdentifier extends ""
-          ? {
-              base: Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>;
-              type: "Deref";
-            }
+          ? MaybeMap<
+              Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>,
+              {
+                base: MaybeMapBase<
+                  Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>
+                >;
+                type: "Deref";
+              }
+            >
           : Identifier<TIdentifier> extends never
           ? never
           : MaybeMap<
@@ -1438,7 +1443,7 @@ type Dereference<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#TraversalExpression
+ * @link https://spec.groq.dev/GROQ-1.revision1/#TraversalExpression
  */
 type TraversalExpression<TExpression extends string> =
   | ArrayPostfix<TExpression>
@@ -1459,12 +1464,12 @@ type TupleToUnionArray<TArray extends any[]> = {
 type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
   global: {
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#order()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#order()
      */
     order: TArgs extends [] ? never : TupleToUnionArray<TBase>;
     // HACK As long as the args evaluate, we don't actually use them so... why bother evaluating boost at all?
     /**
-     * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#score()
+     * @link https://spec.groq.dev/GROQ-1.revision1/#score()
      */
     score: TArgs extends []
       ? never
@@ -1477,7 +1482,7 @@ type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
 };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#PipeFuncCall
+ * @link https://spec.groq.dev/GROQ-1.revision1/#PipeFuncCall
  */
 type PipeFuncCall<TExpression extends string> =
   TExpression extends `${infer TBase}|${infer TFuncFullName}(${infer TFuncCallArgs})`
@@ -1513,7 +1518,7 @@ type PipeFuncCall<TExpression extends string> =
     : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#CompoundExpression
+ * @link https://spec.groq.dev/GROQ-1.revision1/#CompoundExpression
  */
 type CompoundExpression<TExpression extends string> =
   | Parenthesis<TExpression>
@@ -1538,8 +1543,8 @@ type BooleanOperators = {
 };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#And
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Or
+ * @link https://spec.groq.dev/GROQ-1.revision1/#And
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Or
  */
 type BooleanOperator<
   TExpression extends string,
@@ -1582,9 +1587,9 @@ type PrefixOperators = {
 };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Not
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#UnaryPlus
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#UnaryMinus
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Not
+ * @link https://spec.groq.dev/GROQ-1.revision1/#UnaryPlus
+ * @link https://spec.groq.dev/GROQ-1.revision1/#UnaryMinus
  */
 type PrefixOperator<
   TExpression extends string,
@@ -1633,15 +1638,15 @@ type Operators = {
 };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Equality
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Comparison
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Match
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Plus
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Minus
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Star
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Slash
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Percent
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#StarStar
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Equality
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Comparison
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Match
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Plus
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Minus
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Star
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Slash
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Percent
+ * @link https://spec.groq.dev/GROQ-1.revision1/#StarStar
  */
 type OpCall<
   TExpression extends string,
@@ -1689,7 +1694,7 @@ type OpCall<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#In
+ * @link https://spec.groq.dev/GROQ-1.revision1/#In
  */
 
 type InOperator<
@@ -1718,7 +1723,7 @@ type InOperator<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#OperatorCall
+ * @link https://spec.groq.dev/GROQ-1.revision1/#OperatorCall
  */
 type OperatorCall<TExpression extends string> =
   | BooleanOperator<TExpression>
@@ -1727,7 +1732,7 @@ type OperatorCall<TExpression extends string> =
   | PrefixOperator<TExpression>;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#Expression
+ * @link https://spec.groq.dev/GROQ-1.revision1/#Expression
  */
 type Expression<TExpression extends string> =
   | CompoundExpression<TExpression>
@@ -1743,8 +1748,8 @@ type EvaluateBaseOrThis<
   : TScope["this"];
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateAttributeAccess()
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateThisAttribute()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateAttributeAccess()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateThisAttribute()
  */
 type EvaluateAccessAttribute<
   TNode extends ExprNode,
@@ -1764,7 +1769,7 @@ type EvaluateAccessAttribute<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateElementAccess()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateElementAccess()
  */
 type EvaluateAccessElement<
   TNode extends ExprNode,
@@ -1772,7 +1777,11 @@ type EvaluateAccessElement<
 > = TNode extends AccessElementNode
   ? Evaluate<TNode["base"], TScope> extends any[]
     ? TNode["index"] extends keyof Evaluate<TNode["base"], TScope>
-      ? Evaluate<TNode["base"], TScope>[TNode["index"]]
+      ?
+          | Evaluate<TNode["base"], TScope>[TNode["index"]]
+          | (Evaluate<TNode["base"], TScope> extends [any, ...any]
+              ? never
+              : null)
       : null
     : null
   : never;
@@ -1803,7 +1812,7 @@ type EvaluateArrayElements<
 }>;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateArray()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateArray()
  */
 type EvaluateArray<
   TNode extends ExprNode,
@@ -1813,7 +1822,7 @@ type EvaluateArray<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateArrayPostfix()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateArrayPostfix()
  */
 type EvaluateArrayPostfix<
   TNode extends ExprNode,
@@ -1825,8 +1834,8 @@ type EvaluateArrayPostfix<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateAnd()
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateOr()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateAnd()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateOr()
  */
 type EvaluateBooleanOperator<
   TNode extends ExprNode,
@@ -1844,7 +1853,11 @@ type EvaluateBooleanOperator<
         stronger: infer TStronger;
         weaker: infer TWeaker;
       }
-      ? Evaluate<TLeft, TScope> extends TStronger
+      ? boolean extends Evaluate<TLeft, TScope>
+        ? Evaluate<TRight, TScope>
+        : boolean extends Evaluate<TRight, TScope>
+        ? Evaluate<TLeft, TScope>
+        : Evaluate<TLeft, TScope> extends TStronger
         ? TStronger
         : Evaluate<TRight, TScope> extends TStronger
         ? TStronger
@@ -1858,7 +1871,7 @@ type EvaluateBooleanOperator<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateComparison()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateComparison()
  */
 type EvaluateComparison<TNode extends ExprNode> = TNode extends OpCallNode & {
   op: "<" | "<=" | ">" | ">=";
@@ -1867,8 +1880,8 @@ type EvaluateComparison<TNode extends ExprNode> = TNode extends OpCallNode & {
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_after()
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_before()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#global_after()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#global_before()
  */
 type EvaluateContext<
   TNode extends ExprNode,
@@ -1882,7 +1895,7 @@ type EvaluateContext<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateDereference()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateDereference()
  */
 type EvaluateDereference<
   TNode extends ExprNode,
@@ -1911,7 +1924,7 @@ type Not<TBoolean, Enabled extends boolean = true> = TBoolean extends boolean
   : null;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateEquality()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateEquality()
  */
 type EvaluateEquality<
   TNode extends ExprNode,
@@ -1931,7 +1944,7 @@ type EvaluateEquality<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateEverything()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateEverything()
  */
 type EvaluateEverything<
   TNode extends ExprNode,
@@ -1963,7 +1976,7 @@ type EvaluateFilterElements<
 }>;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateFilter()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateFilter()
  */
 type EvaluateFilter<
   TNode extends ExprNode,
@@ -1986,7 +1999,7 @@ type EvaluateFuncArgs<
 };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateFuncCall()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateFuncCall()
  */
 type EvaluateFuncCall<
   TNode extends ExprNode,
@@ -2011,7 +2024,7 @@ type EvaluateFuncCall<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateIn()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateIn()
  */
 type EvaluateIn<
   TNode extends ExprNode,
@@ -2032,7 +2045,7 @@ type EvaluateIn<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateIn()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateIn()
  */
 type EvaluateInRange<TNode extends ExprNode> = TNode extends InRangeNode
   ? boolean
@@ -2065,7 +2078,7 @@ type EvaluateMap<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateMatch()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateMatch()
  */
 type EvaluateMatch<
   TNode extends ExprNode,
@@ -2079,12 +2092,12 @@ type EvaluateMatch<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePlus()
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateMinus()
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateStar()
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateSlash()
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePercent()
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateStarStar()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluatePlus()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateMinus()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateStar()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateSlash()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluatePercent()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateStarStar()
  */
 type EvaluateMath<
   TNode extends ExprNode,
@@ -2152,7 +2165,7 @@ type EvaluateMath<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateNeg()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateNeg()
  */
 type EvaluateNeg<
   TNode extends ExprNode,
@@ -2174,7 +2187,7 @@ type EvaluateNeg<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateNot()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateNot()
  */
 type EvaluateNot<
   TNode extends ExprNode,
@@ -2220,7 +2233,7 @@ type EvaluateObjectAttributes<
     >;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateObject()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateObject()
  */
 type EvaluateObject<
   TNode extends ExprNode,
@@ -2240,7 +2253,7 @@ type EvaluateParameter<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateParent()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateParent()
  */
 type EvaluateParent<
   TNode extends ExprNode,
@@ -2261,7 +2274,7 @@ type EvaluateParent<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateParenthesis()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateParenthesis()
  */
 type EvaluateParenthesis<
   TNode extends ExprNode,
@@ -2269,7 +2282,7 @@ type EvaluateParenthesis<
 > = TNode extends GroupNode ? Evaluate<TNode["base"], TScope> : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePipeFuncCall()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluatePipeFuncCall()
  */
 type EvaluatePipeFuncCall<
   TNode extends ExprNode,
@@ -2301,7 +2314,7 @@ type EvaluatePipeFuncCall<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluatePos()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluatePos()
  */
 type EvaluatePos<
   TNode extends ExprNode,
@@ -2313,16 +2326,18 @@ type EvaluatePos<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateProjection()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateProjection()
  */
 type EvaluateProjection<
   TNode extends ExprNode,
   TScope extends Scope<Context<any[], any>>
 > = TNode extends ProjectionNode
-  ? Evaluate<
-      TNode["expr"],
-      NestedScope<Evaluate<TNode["base"], TScope>, TScope>
-    >
+  ? Evaluate<TNode["base"], TScope> extends null
+    ? null
+    : Evaluate<
+        TNode["expr"],
+        NestedScope<Evaluate<TNode["base"], TScope>, TScope>
+      >
   : never;
 
 type EvaluateSelectAlternatives<
@@ -2349,7 +2364,7 @@ type EvaluateSelectAlternatives<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#global_select()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#global_select()
  */
 type EvaluateSelect<
   TNode extends ExprNode,
@@ -2372,14 +2387,14 @@ type EvaluateSelect<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateSelector()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateSelector()
  */
 type EvaluateSelector<TNode extends ExprNode> = TNode extends SelectorNode
   ? typeof ArbitrarySelectorValue
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateSlice()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateSlice()
  */
 type EvaluateSlice<
   TNode extends ExprNode,
@@ -2392,7 +2407,7 @@ type EvaluateSlice<
   : never;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#EvaluateThis()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateThis()
  */
 type EvaluateThis<
   TNode extends ExprNode,
@@ -2438,7 +2453,7 @@ type EvaluateExpression<
   | EvaluateValue<TNode>;
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#NewRootScope()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#NewRootScope()
  */
 export type RootScope<TContext extends Context<any[], any>> = {
   context: TContext;
@@ -2447,7 +2462,7 @@ export type RootScope<TContext extends Context<any[], any>> = {
 };
 
 /**
- * @link https://sanity-io.github.io/GROQ/GROQ-1.revision1/#ExecuteQuery()
+ * @link https://spec.groq.dev/GROQ-1.revision1/#ExecuteQuery()
  */
 export type ExecuteQuery<
   TQuery extends string,
