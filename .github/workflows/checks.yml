@@ -375,7 +375,7 @@ jobs:
         run: npm install typescript@${{ matrix.typescript-version }}
 
       - run: |
-          DRY_RUN=$(npx turbo run test --filter=${{ matrix.package }} --only --dry=json)
+          DRY_RUN=$(npx turbo run test --filter=${{ matrix.package }} --dry=json)
           HASH=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"${{ matrix.package }}#test\")) | .hash")
           echo "HASH=$HASH" >> $GITHUB_ENV
 
@@ -386,7 +386,7 @@ jobs:
 
       - id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v2
-      - run: npm test -- --filter=${{ matrix.package }} --only
+      - run: npm test -- --filter=${{ matrix.package }}
 
       # Whether or not npm run test fails, we want to save the cache when we can
       - if: always()
