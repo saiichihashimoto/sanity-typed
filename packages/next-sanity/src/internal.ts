@@ -56,6 +56,24 @@ export const createClient = <
 
   return {
     ...client,
+    // HACK Destructured classes don't give their methods, do it explicitly
+    action: client.action.bind(client),
+    clone: client.clone.bind(client),
+    config: client.config.bind(client),
+    create: client.create.bind(client),
+    createIfNotExists: client.createIfNotExists.bind(client),
+    createOrReplace: client.createOrReplace.bind(client),
+    dataRequest: client.dataRequest.bind(client),
+    delete: client.delete.bind(client),
+    getDataUrl: client.getDataUrl.bind(client),
+    getDocument: client.getDocument.bind(client),
+    getDocuments: client.getDocuments.bind(client),
+    getUrl: client.getUrl.bind(client),
+    mutate: client.mutate.bind(client),
+    patch: client.patch.bind(client),
+    request: client.request.bind(client),
+    transaction: client.transaction.bind(client),
+    withConfig: client.withConfig.bind(client),
     fetch: async <
       const TQuery extends string,
       const TQueryParams extends { [param: string]: unknown },
