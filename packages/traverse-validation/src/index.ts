@@ -123,7 +123,6 @@ export const traverseValidation = <
         path: "",
         type: Symbol("TODO"),
       }),
-      // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- When did this show up?
     } as unknown as UnionToIntersection<
       GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
     > & {
@@ -138,7 +137,6 @@ export const traverseValidation = <
     Rule({})
   ) as
     | MaybeArray<
-        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- When did this show up?
         UnionToIntersection<
           GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
         > & {
