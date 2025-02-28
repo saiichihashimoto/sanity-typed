@@ -18,8 +18,12 @@
     "dev": {
       "persistent": true
     },
+    "for-test-to-depend-but-not-run": {
+      "dependsOn": ["^for-test-to-depend-but-not-run"],
+      "inputs": ["$TURBO_DEFAULT$", "!LICENSE", "!.*/**", "!**/*.md"]
+    },
     "test": {
-      "dependsOn": ["^test"],
+      "dependsOn": ["for-test-to-depend-but-not-run"],
       "inputs": ["$TURBO_DEFAULT$", "!LICENSE", "!.*/**", "!**/*.md"],
       "outputLogs": "new-only"
     }
