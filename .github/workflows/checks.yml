@@ -372,7 +372,7 @@ jobs:
           fail-on-cache-miss: true
 
       - if: matrix.typescript-version != 'current'
-        run: npm install --no-save typescript@${{ matrix.typescript-version }}
+        run: npm install typescript@${{ matrix.typescript-version }}
 
       - run: |
           DRY_RUN=$(npx turbo run test --filter=${{ matrix.package }} --only --dry=json)
