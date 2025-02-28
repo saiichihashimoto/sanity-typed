@@ -19,11 +19,24 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.2.0
+      # HACK If we can lookup the cache, then this entire job is unnecessary
+      - id: node-modules
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          lookup-only: true
+
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - id: node-modules
+      - if: steps.node-modules.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
           path: |
@@ -32,10 +45,14 @@ jobs:
             !node_modules/.cache
             !packages/*/node_modules/.cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            node-modules-
+
       - if: steps.node-modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
-      - run: npm install --ignore-scripts
-      - run: |
+        run: npm install
+
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        run: |
           if [[ $(git status --porcelain) != "" ]]; then
             git --no-pager diff --color --text HEAD
             exit 1
@@ -321,7 +338,7 @@ jobs:
 
       - id: set-packages
         run: |
-          echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(select(.command != "<NONEXISTENT>")) | map(.taskId | sub("#build"; "")))" >> $GITHUB_OUTPUT
+          echo "packages=$(npx turbo run test --dry=json | jq --compact-output '.tasks | map(select(.command != "<NONEXISTENT>")) | map(.taskId | sub("#test"; ""))')" >> $GITHUB_OUTPUT
 
       - id: set-typescript-versions
         run: |
