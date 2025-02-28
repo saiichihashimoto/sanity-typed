@@ -19,21 +19,40 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.2.0
+      # HACK If we can lookup the cache, then this entire job is unnecessary
+      - id: node-modules
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          lookup-only: true
+
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - id: node-modules
+      - if: steps.node-modules.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
           path: |
             node_modules
             packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            node-modules-
+
       - if: steps.node-modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
-      - run: npm install --ignore-scripts
-      - run: |
+        run: npm install
+
+      - if: steps.node-modules.outputs.cache-hit != 'true'
+        run: |
           if [[ $(git status --porcelain) != "" ]]; then
             git --no-pager diff --color --text HEAD
             exit 1
@@ -61,6 +80,8 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
           fail-on-cache-miss: true
 
@@ -237,7 +258,7 @@ jobs:
         run: npx multi-semantic-release --ignore-private-packages
   lint:
     name: Lint
-    if: github.ref != 'refs/heads/main'
+    if: always()
     needs: install-node-modules
     runs-on: ubuntu-latest
     steps:
@@ -253,6 +274,8 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
           fail-on-cache-miss: true
 
@@ -260,7 +283,28 @@ jobs:
         with:
           bundler-cache: true
 
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            .eslintcache
+            node_modules/.cache/prettier
+          key: lint-prettier-cache-${{ github.run_id }}
+          restore-keys: |
+            lint-prettier-cache-
+          enableCrossOsArchive: true
+
       - run: npm run lint
+
+      # Whether or not npm run lint fails, we want to save the cache when we can
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .eslintcache
+            node_modules/.cache/prettier
+          key: lint-prettier-cache-${{ github.run_id }}
+          enableCrossOsArchive: true
+
       - run: |
           if [[ $(git status --porcelain) != "" ]]; then
             git --no-pager diff --color --text HEAD
@@ -268,7 +312,7 @@ jobs:
           fi
   test-matrix:
     name: Test Matrix
-    if: github.ref != 'refs/heads/main'
+    if: always()
     needs: install-node-modules
     runs-on: ubuntu-latest
     outputs:
@@ -287,19 +331,21 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
           fail-on-cache-miss: true
 
       - id: set-packages
         run: |
-          echo "packages=$(npx turbo run build --dry=json | jq --compact-output '.tasks | map(select(.command != "<NONEXISTENT>")) | map(.taskId | sub("@portabletext-typed/"; "pt-") | sub("@sanity-typed/"; "") | sub("#build"; ""))')" >> $GITHUB_OUTPUT
+          echo "packages=$(npx turbo run test --dry=json | jq --compact-output '.tasks | map(select(.command != "<NONEXISTENT>")) | map(.taskId | sub("#test"; ""))')" >> $GITHUB_OUTPUT
 
       - id: set-typescript-versions
         run: |
           npx semver --range "$(cat packages/*/package.json | jq --raw-output --slurp '. | map(.peerDependencies.typescript | select( . != null )) | join(" || ")')" $(npm view typescript versions | sed "s/'/\"/g" | jq --raw-output '. | join(" ")') | jq --raw-input --slurp --compact-output '. | rtrimstr("\n") | split("\n") | tostring' | jq --raw-output '. |= "typescript-versions=" + .' >> $GITHUB_OUTPUT
   test-package:
     name: Test
-    if: github.ref != 'refs/heads/main'
+    if: always()
     needs: [install-node-modules, test-matrix]
     runs-on: ubuntu-latest
     strategy:
@@ -320,18 +366,37 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
+            !node_modules/.cache
+            !packages/*/node_modules/.cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
           fail-on-cache-miss: true
 
       - if: matrix.typescript-version != 'current'
-        run: npm install --no-save typescript@${{ matrix.typescript-version }}
+        run: npm install typescript@${{ matrix.typescript-version }}
+
+      - run: |
+          DRY_RUN=$(npx turbo run test --filter=${{ matrix.package }} --only --dry=json)
+          HASH=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"${{ matrix.package }}#test\")) | .hash")
+          echo "HASH=$HASH" >> $GITHUB_ENV
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache/${{ env.HASH }}*
+          key: turbo-cache-test-${{ matrix.typescript-version }}-${{ env.HASH }}
 
       - id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v2
-      - run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }} -- ${{ matrix.package }}/src
+      - run: npm test -- --filter=${{ matrix.package }} --only
+
+      # Whether or not npm run test fails, we want to save the cache when we can
+      - if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache/${{ env.HASH }}*
+          key: turbo-cache-test-${{ matrix.typescript-version }}-${{ env.HASH }}
   test:
     name: Test
-    if: always() && github.ref != 'refs/heads/main'
+    if: always()
     needs: test-package
     runs-on: ubuntu-latest
     steps:

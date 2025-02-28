@@ -24,6 +24,8 @@ Mock [@sanity-typed/client](../client) for local development and testing
     - [VSCode](#vscode)
   - [`Type instantiation is excessively deep and possibly infinite`](#type-instantiation-is-excessively-deep-and-possibly-infinite)
 - [Breaking Changes](#breaking-changes)
+  - [3 to 4](#3-to-4)
+    - [Typescript version from 5.7.2 <= x <= 5.7.3](#typescript-version-from-572--x--573)
   - [2 to 3](#2-to-3)
     - [Typescript version from 5.4.2 <= x <= 5.6.3](#typescript-version-from-542--x--563)
   - [1 to 2](#1-to-2)
@@ -321,11 +323,17 @@ People will sometimes create a repo with their issue. _Please_ open a PR with a 
 
 ## Breaking Changes
 
+### 3 to 4
+
+#### Typescript version from 5.7.2 <= x <= 5.7.3
+
+The supported Typescript version is now 5.7.2 <= x <= 5.7.3. Older versions are no longer supported and newer versions will be added as we validate them.
+
 ### 2 to 3
 
 #### Typescript version from 5.4.2 <= x <= 5.6.3
 
-The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate it.
+The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate them.
 
 ### 1 to 2
 
