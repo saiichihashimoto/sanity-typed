@@ -50,7 +50,7 @@
   },
   "peerDependencies": {
     "@sanity/client": "^6.1.7",
-    "typescript": "5.7.2"
+    "typescript": "5.7.2 || 5.7.3"
   },
   "optionalDependencies": {
     "groq-builder": "^0.9.1"

@@ -59,7 +59,7 @@
   },
   "peerDependencies": {
     "@faker-js/faker": "^8.3.0",
-    "typescript": "5.7.2"
+    "typescript": "5.7.2 || 5.7.3"
   },
   "engines": {
     "node": "^18.17.0 || ^20.18.0"

@@ -27,6 +27,6 @@
   },
   "peerDependencies": {
     "@portabletext/types": "^2.0.2",
-    "typescript": "5.7.2"
+    "typescript": "5.7.2 || 5.7.3"
   }
 }
