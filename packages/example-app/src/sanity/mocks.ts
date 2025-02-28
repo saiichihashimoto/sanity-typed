@@ -3,7 +3,7 @@ import config from "sanity.config";
 
 import { sanityConfigToFaker, sanityDocumentsFaker } from "@sanity-typed/faker";
 
-export const getMockDataset = () => {
+export const getMockDataset = async () => {
   const sanityFaker = sanityConfigToFaker(config, {
     faker: { locale: [en, base] },
   });

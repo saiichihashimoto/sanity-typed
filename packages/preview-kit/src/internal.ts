@@ -24,7 +24,7 @@ export const createClient = <
 
   let clientQ:
     | GroqBuilder<
-        never,
+        { [key in never]: never },
         {
           documentTypes: DocumentValues<SanityValues>;
           referenceSymbol: typeof referenced;
@@ -62,7 +62,7 @@ export const createClient = <
         | TQuery
         | ((
             q: GroqBuilder<
-              never,
+              { [key in never]: never },
               {
                 documentTypes: DocumentValues<SanityValues>;
                 referenceSymbol: typeof referenced;
