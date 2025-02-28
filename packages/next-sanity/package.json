@@ -53,7 +53,7 @@
   },
   "peerDependencies": {
     "next-sanity": "^7.0.4",
-    "typescript": "5.7.2 || 5.7.3"
+    "typescript": "5.7.2 || 5.7.3 || 5.8.2"
   },
   "optionalDependencies": {
     "groq-builder": "^0.9.1"
