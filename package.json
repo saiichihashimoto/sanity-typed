@@ -18,7 +18,7 @@
     "prepare": "is-ci || concurrently --timings --prefix-colors \"auto\" npm:prepare:*",
     "prepare:gem": "bundle install",
     "prepare:husky": "husky install",
-    "test": "turbo run test --color $(is-ci || echo '--continue')"
+    "test": "turbo run test --color $(is-ci || echo '--continue --concurrency 5')"
   },
   "dependencies": {
     "@cspell/eslint-plugin": "8.15.5",
