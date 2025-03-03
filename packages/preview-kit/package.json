@@ -54,7 +54,7 @@
   },
   "peerDependencies": {
     "@sanity/preview-kit": "^5.0.6",
-    "typescript": "5.7.2 || 5.7.3"
+    "typescript": "5.7.2 || 5.7.3 || 5.8.2"
   },
   "optionalDependencies": {
     "groq-builder": "^0.9.1"
