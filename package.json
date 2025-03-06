@@ -52,7 +52,7 @@
     "husky": "9.1.7",
     "imagemin-lint-staged": "0.5.1",
     "is-ci": "3.0.1",
-    "lint-staged": "15.2.11",
+    "lint-staged": "15.4.3",
     "multi-semantic-release": "3.0.2",
     "prettier": "2.8.8",
     "prettier-plugin-sh": "0.12.8",
