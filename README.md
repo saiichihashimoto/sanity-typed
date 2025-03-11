@@ -53,6 +53,6 @@ Completing [sanity](https://www.sanity.io/)'s developer experience with typescri
 ### Packages
 
 - [`@sanity-typed/next-sanity`](packages/next-sanity): [next-sanity](https://github.com/sanity-io/next-sanity) with typed GROQ Results
-- [`@sanity-typed/preview-kit`](packages/preview-kit): [@sanity/preview-kit](https://github.com/sanity-io/preview-kit) with typed GROQ Results
+- [`@sanity-typed/preview-kit`](packages/preview-kit): [@sanity/preview-kit](https://github.com/sanity-io/preview-kit) with typed GROQ Results (deprecated)
 - [`@portabletext-typed/react`](packages/pt-react): [@portabletext/react](https://github.com/portabletext/react) with typed arguments
 - [`@portabletext-typed/to-html`](packages/pt-to-html): [@portabletext/to-html](https://github.com/portabletext/to-html) with typed arguments
