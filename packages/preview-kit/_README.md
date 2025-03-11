@@ -12,56 +12,5 @@
 
 [@sanity/preview-kit](https://github.com/sanity-io/preview-kit) with typed GROQ Results
 
-@[:page_toc](## Page Contents)
-
-## Install
-
-```bash
-npm install @sanity/preview-kit @sanity-typed/preview-kit
-```
-
-## Usage
-
-Use `createClient` exactly as you would from [`@sanity-typed/client`](../client).
-
-@[typescript](../example-studio/schemas/product.ts)
-@[typescript](../example-studio/sanity.config.ts)
-@[typescript](../example-app/src/sanity/preview-kit-client.ts)
-
-@[:markdown](../../docs/usage-with-groqd.md)
-
-## Considerations
-
-@[:markdown](../../docs/considerations/types-vs-content-lake.md)
-@[:markdown](../../docs/considerations/evaluate-type-flakiness.md)
-@[:markdown](../../docs/considerations/typescript-errors-in-ides.md)
-@[:markdown](../../docs/considerations/type-instantiation-is-excessively-deep-and-possibly-infinite-query.md)
-
-## Breaking Changes
-
-### 3 to 4
-
-#### Typescript version from 5.7.2 <= x <= 5.7.3
-
-The supported Typescript version is now 5.7.2 <= x <= 5.7.3. Older versions are no longer supported and newer versions will be added as we validate them.
-
-### 2 to 3
-
-#### Typescript version from 5.4.2 <= x <= 5.6.3
-
-The supported Typescript version is now 5.4.2 <= x <= 5.6.3. Older versions are no longer supported and newer versions will be added as we validate them.
-
-### 1 to 2
-
-#### No more `createClient<SanityValues>()(config)`
-
-Removing the double function signature from `createClient`:
-
-```diff
-- const client = createClient<SanityValues>()({
-+ const client = createClient<SanityValues>({
-  // ...
-});
-```
-
-We no longer derive types from your config values. Most of the types weren't significant, but the main loss will be `_originalId` when the `perspective` was `"previewDrafts"`.
+> [!IMPORTANT]  
+> This package is not actively maintained, currently. Sanity has [subsumed their toolkit into other packages](https://www.npmjs.com/package/@sanity/preview-kit/v/6.0.0), so it isn't meaningful to re-export the client here. The last version of `@sanity-typed/preview-kit` before they subsumed it is `v4.0.0`, [the documentation is there](https://github.com/saiichihashimoto/sanity-typed/blob/%40sanity-typed/preview-kit%404.0.0/packages/preview-kit/README.md).
