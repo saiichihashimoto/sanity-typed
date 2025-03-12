@@ -44,7 +44,7 @@
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity/client": "6.28.3",
-    "groq-builder": "0.9.1",
+    "groq-builder": "0.10.0",
     "jest": "29.7.0",
     "ts-jest": "29.2.5"
   },
@@ -53,6 +53,6 @@
     "typescript": "5.7.2 || 5.7.3"
   },
   "optionalDependencies": {
-    "groq-builder": "^0.9.1"
+    "groq-builder": "^0.10.0"
   }
 }

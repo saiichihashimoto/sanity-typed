@@ -26,7 +26,7 @@
     "@sanity-typed/next-sanity": "0.0.0-development",
     "@sanity-typed/zod": "0.0.0-development",
     "@sanity/client": "6.28.3",
-    "groq-builder": "0.9.1",
+    "groq-builder": "0.10.0",
     "next": "15.1.3",
     "react": "19.0.0"
   },
