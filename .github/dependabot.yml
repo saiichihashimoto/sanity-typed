@@ -22,6 +22,12 @@ updates:
       portabletext:
         patterns:
           - "@portabletext/*"
+      react:
+        patterns:
+          - "@types/react-dom"
+          - "@types/react"
+          - "react-dom"
+          - "react"
       sanity:
         patterns:
           - "@sanity/*"
