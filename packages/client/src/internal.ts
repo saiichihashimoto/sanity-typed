@@ -29,7 +29,7 @@ import type {
 } from "@sanity/client";
 import type {
   GroqBuilder,
-  createGroqBuilder as createGroqBuilderType,
+  createGroqBuilderLite as createGroqBuilderType,
 } from "groq-builder";
 import { bindAll } from "lodash/fp";
 import type { Observable } from "rxjs";
