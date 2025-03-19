@@ -173,7 +173,7 @@ describe("specific issues", () => {
     }>();
   });
 
-  it("#589 object -> array -> block -> object -> field", async () => {
+  it("#589 object -> array -> block -> object -> field", () => {
     const config = defineConfig({
       dataset: "dataset",
       projectId: "projectId",
