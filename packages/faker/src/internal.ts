@@ -598,6 +598,7 @@ const instantiateFaker =
         fn(faker, index) as ReturnType<Fn>;
   };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- EXPECTED Used for it's type
 const instantiateFakerT = <Fn extends (faker: Faker, index: number) => any>(
   options: FakerOptions,
   seed: number,
@@ -626,6 +627,7 @@ const addType =
     );
   };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- EXPECTED Used for it's type
 const addTypeT = <
   const Type extends string | undefined,
   Fn extends (...args: any[]) => any

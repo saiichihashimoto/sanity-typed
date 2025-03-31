@@ -512,6 +512,7 @@ export type Geo =
   | Polygon
   | Position;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- EXPECTED Used for it's type
 declare const ArbitrarySelectorValue: unique symbol;
 
 type Functions<

@@ -791,7 +791,7 @@ export const createClient = <
   try {
     const {
       createGroqBuilder,
-      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, unicorn/prefer-module -- Optional Dependency
+      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, unicorn/prefer-module -- Optional Dependency
     } = require("groq-builder") as {
       createGroqBuilder: typeof createGroqBuilderType;
     };

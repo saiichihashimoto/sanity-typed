@@ -251,7 +251,7 @@ const numberZod = <
         (schemaType.options!.list! as MaybeTitledListValue<TNumberValue>[]).map(
           (maybeTitledListValue) =>
             z.literal(
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error -- HACK For whatever reason, this creates a ts-error only SOMETIMES
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- HACK For whatever reason, this creates a ts-error only SOMETIMES
               // @ts-ignore TODO Type instantiation is excessively deep and possibly infinite.
               typeof maybeTitledListValue === "number"
                 ? maybeTitledListValue
@@ -493,7 +493,7 @@ const stringZod = <
         (schemaType.options!.list! as MaybeTitledListValue<TStringValue>[]).map(
           (maybeTitledListValue) =>
             z.literal(
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error -- HACK For whatever reason, this creates a ts-error only SOMETIMES
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- HACK For whatever reason, this creates a ts-error only SOMETIMES
               // @ts-ignore TODO Type instantiation is excessively deep and possibly infinite.
               typeof maybeTitledListValue === "string"
                 ? maybeTitledListValue
