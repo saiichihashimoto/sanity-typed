@@ -45,7 +45,7 @@
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
-    "@sanity/client": "6.28.3",
+    "@sanity/client": "6.28.4",
     "@types/geojson": "7946.0.14",
     "groq-js": "1.14.0",
     "jest": "29.7.0",
