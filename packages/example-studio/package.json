@@ -18,7 +18,7 @@
   "dependencies": {
     "@sanity-typed/types": "0.0.0-development",
     "sanity": "3.82.0",
-    "styled-components": "6.1.13"
+    "styled-components": "6.1.17"
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development"
