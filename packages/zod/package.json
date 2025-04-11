@@ -48,7 +48,7 @@
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
     "jest": "29.7.0",
-    "sanity": "3.83.0",
+    "sanity": "3.84.0",
     "ts-jest": "29.2.5",
     "zod": "3.23.8"
   },
