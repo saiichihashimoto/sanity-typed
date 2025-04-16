@@ -50,7 +50,7 @@
     "jest": "29.7.0",
     "sanity": "3.85.1",
     "ts-jest": "29.2.5",
-    "zod": "3.23.8"
+    "zod": "3.24.2"
   },
   "peerDependencies": {
     "sanity": "^3.25.0",
