@@ -21,7 +21,7 @@
     "test": "turbo run test --color $(is-ci || echo '--continue --concurrency 5')"
   },
   "dependencies": {
-    "@cspell/eslint-plugin": "8.15.5",
+    "@cspell/eslint-plugin": "8.19.0",
     "@eslint-community/eslint-plugin-eslint-comments": "4.4.1",
     "@semrel-extra/npm": "1.2.2",
     "@standard-configs/prettier-plugin": "1.0.12",
