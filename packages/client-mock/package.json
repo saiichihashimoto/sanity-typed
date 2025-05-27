@@ -53,7 +53,7 @@
     "ts-jest": "29.2.5"
   },
   "peerDependencies": {
-    "@sanity/client": "^6.1.7",
+    "@sanity/client": "^6.1.7 || ^7.3.0",
     "typescript": "5.7.2 || 5.7.3"
   },
   "optionalDependencies": {
