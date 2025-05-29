@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@cspell/eslint-plugin": "8.19.0",
-    "@eslint-community/eslint-plugin-eslint-comments": "4.4.1",
+    "@eslint-community/eslint-plugin-eslint-comments": "4.5.0",
     "@semrel-extra/npm": "1.2.2",
     "@standard-configs/prettier-plugin": "1.0.12",
     "@total-typescript/ts-reset": "0.6.1",
