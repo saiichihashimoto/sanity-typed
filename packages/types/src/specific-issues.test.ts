@@ -151,7 +151,6 @@ describe("specific issues", () => {
             | "code"
             | "em"
             | "strike-through"
-            | "strike"
             | "strong"
             | "underline";
           marks: string[];
@@ -225,7 +224,6 @@ describe("specific issues", () => {
             | "code"
             | "em"
             | "strike-through"
-            | "strike"
             | "strong"
             | "underline";
           marks: string[];

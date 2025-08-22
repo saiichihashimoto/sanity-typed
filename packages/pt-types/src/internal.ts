@@ -7,9 +7,7 @@ import type { SetRequired } from "type-fest";
 export type BlockMarkDecoratorDefault =
   | "code"
   | "em"
-  // TODO https://github.com/sanity-io/sanity/issues/5344
   | "strike-through"
-  | "strike"
   | "strong"
   | "underline";
 
