@@ -198,6 +198,53 @@ describe("createClient", () => {
       expect(result).toBe("foo");
     });
 
+    it("uses the params in slices", async () => {
+      const result = await createClient<{
+        bar: { _type: "bar"; bar: "bar" };
+        foo: AnySanityDocument & { _type: "foo"; foo: string };
+      }>({
+        documents: [
+          {
+            _createdAt: "_createdAt",
+            _id: "id-1",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo"
+          },
+          {
+            _createdAt: "_createdAt",
+            _id: "id-2",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo"
+          },
+          {
+            _createdAt: "_createdAt",
+            _id: "id-3",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo"
+          }
+        ]
+      }).fetch("*[$start...$end]", { start: 1, end: 2 });
+
+      expectType<typeof result>().toStrictEqual<
+        (AnySanityDocument & { _type: "foo"; foo: string })[]>();
+      expect(result).toStrictEqual([
+        {
+          _createdAt: "_createdAt",
+          _id: "id-2",
+          _rev: "_rev",
+          _type: "foo",
+          _updatedAt: "_updatedAt",
+          foo: "foo"
+        }
+      ]);
+    });
+
     it("returns RawQueryResponse", async () => {
       const result = await createClient({
         documents: [],
