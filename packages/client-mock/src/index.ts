@@ -195,7 +195,7 @@ export const createClient = <
         await (
           await evaluate(
             // @ts-expect-error TODO Not sure
-            parse(query),
+            parse(query, { params }),
             {
               params,
               dataset: [...(await datasetByIdPromise).values()],
