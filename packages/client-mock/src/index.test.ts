@@ -210,7 +210,7 @@ describe("createClient", () => {
             _rev: "_rev",
             _type: "foo",
             _updatedAt: "_updatedAt",
-            foo: "foo"
+            foo: "foo",
           },
           {
             _createdAt: "_createdAt",
@@ -218,7 +218,7 @@ describe("createClient", () => {
             _rev: "_rev",
             _type: "foo",
             _updatedAt: "_updatedAt",
-            foo: "foo"
+            foo: "foo",
           },
           {
             _createdAt: "_createdAt",
@@ -226,13 +226,14 @@ describe("createClient", () => {
             _rev: "_rev",
             _type: "foo",
             _updatedAt: "_updatedAt",
-            foo: "foo"
-          }
-        ]
+            foo: "foo",
+          },
+        ],
       }).fetch("*[$start...$end]", { start: 1, end: 2 });
 
       expectType<typeof result>().toStrictEqual<
-        (AnySanityDocument & { _type: "foo"; foo: string })[]>();
+        (AnySanityDocument & { _type: "foo"; foo: string })[]
+      >();
       expect(result).toStrictEqual([
         {
           _createdAt: "_createdAt",
@@ -240,8 +241,8 @@ describe("createClient", () => {
           _rev: "_rev",
           _type: "foo",
           _updatedAt: "_updatedAt",
-          foo: "foo"
-        }
+          foo: "foo",
+        },
       ]);
     });
 
