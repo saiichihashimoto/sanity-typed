@@ -976,8 +976,6 @@ const spanFaker =
               () => "em",
               () => "code",
               () => "underline",
-              // TODO https://github.com/sanity-io/sanity/issues/5344
-              () => "strike",
               () => "strike-through",
             ]),
           ],
