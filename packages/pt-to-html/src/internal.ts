@@ -32,9 +32,7 @@ type MergeOld<FirstType, SecondType> = Except<
 type BlockMarkDecoratorDefault =
   | "code"
   | "em"
-  // TODO https://github.com/sanity-io/sanity/issues/5344
   | "strike-through"
-  | "strike"
   | "strong"
   | "underline";
 
