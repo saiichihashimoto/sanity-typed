@@ -3,5 +3,9 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.tsserver.enableTracing": false,
   "typescript.tsserver.maxTsServerMemory": 8192,
-  "typescript.tsserver.useSyntaxServer": "never"
+  "typescript.tsserver.useSyntaxServer": "never",
+  "workbench.editor.customLabels.patterns": {
+    "**/app/**/{layout,page,route}.{ts,tsx}": "${dirname}/${filename}.${extname}",
+    "**/index.{ts,tsx}": "${dirname}/index.${extname}"
+  }
 }
