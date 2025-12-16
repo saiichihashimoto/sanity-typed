@@ -72,7 +72,7 @@ type ArgsObject = {
 };
 
 export const traverseValidation = <
-  TSchemaType extends SchemaTypeDefinition<any>
+  TSchemaType extends SchemaTypeDefinition<any>,
 >({
   validation,
 }: TSchemaType) => {
@@ -119,15 +119,10 @@ export const traverseValidation = <
         Rule({ ...value, uppercase: [...(value.uppercase ?? []), args] }),
       uri: (...args: any[]) =>
         Rule({ ...value, uri: [...(value.uri ?? []), args] }),
-      valueOfField: () => ({
-        path: "",
-        type: Symbol("TODO"),
-      }),
+      valueOfField: () => ({ path: "", type: Symbol("TODO") }),
     } as unknown as UnionToIntersection<
       GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
-    > & {
-      value: ArgsObject;
-    };
+    > & { value: ArgsObject };
 
     return rule;
   };
@@ -139,9 +134,7 @@ export const traverseValidation = <
     | MaybeArray<
         UnionToIntersection<
           GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
-        > & {
-          value: ArgsObject;
-        }
+        > & { value: ArgsObject }
       >
     | undefined;
 

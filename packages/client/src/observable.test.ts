@@ -23,23 +23,13 @@ describe("observable", () => {
       createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>({
-        perspective: "previewDrafts",
-      }).observable;
+      }>({ perspective: "previewDrafts" }).observable;
 
     expectType<ReturnType<typeof exec>>().toEqual<
       ObservableSanityClient<
-        {
-          perspective: "previewDrafts";
-        },
-        | (AnySanityDocument & {
-            _originalId: string;
-            _type: "foo";
-          })
-        | (AnySanityDocument & {
-            _originalId: string;
-            _type: "qux";
-          })
+        { perspective: "previewDrafts" },
+        | (AnySanityDocument & { _originalId: string; _type: "foo" })
+        | (AnySanityDocument & { _originalId: string; _type: "qux" })
       >
     >();
   });
@@ -79,18 +69,12 @@ describe("observable", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>({
-          dataset: "dataset",
-          projectId: "newProjectId",
-        }).observable;
+        }>({ dataset: "dataset", projectId: "newProjectId" }).observable;
 
       const execWithConfig = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>({
-          dataset: "dataset",
-          projectId: "projectId",
-        }).observable.config({
+        }>({ dataset: "dataset", projectId: "projectId" }).observable.config({
           projectId: "newProjectId",
         });
 
@@ -105,10 +89,7 @@ describe("observable", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>({
-          dataset: "dataset",
-          projectId: "newProjectId",
-        }).observable;
+        }>({ dataset: "dataset", projectId: "newProjectId" }).observable;
 
       const execWithConfig = () =>
         createClient<{
@@ -116,9 +97,7 @@ describe("observable", () => {
         }>({
           dataset: "dataset",
           projectId: "projectId",
-        }).observable.withConfig({
-          projectId: "newProjectId",
-        });
+        }).observable.withConfig({ projectId: "newProjectId" });
 
       expectType<ReturnType<typeof execWithConfig>>().toEqual<
         ReturnType<typeof exec>
@@ -207,16 +186,8 @@ describe("observable", () => {
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Observable<
-          | (AnySanityDocument & {
-              _id: "id";
-              _type: "foo";
-              foo: string;
-            })
-          | (AnySanityDocument & {
-              _id: "id";
-              _type: "qux";
-              qux: number;
-            })
+          | (AnySanityDocument & { _id: "id"; _type: "foo"; foo: string })
+          | (AnySanityDocument & { _id: "id"; _type: "qux"; qux: number })
           | undefined
         >
       >();
@@ -235,31 +206,15 @@ describe("observable", () => {
         Observable<
           [
             (
-              | (AnySanityDocument & {
-                  _id: "id";
-                  _type: "foo";
-                  foo: string;
-                })
-              | (AnySanityDocument & {
-                  _id: "id";
-                  _type: "qux";
-                  qux: number;
-                })
+              | (AnySanityDocument & { _id: "id"; _type: "foo"; foo: string })
+              | (AnySanityDocument & { _id: "id"; _type: "qux"; qux: number })
               | null
             ),
             (
-              | (AnySanityDocument & {
-                  _id: "id2";
-                  _type: "foo";
-                  foo: string;
-                })
-              | (AnySanityDocument & {
-                  _id: "id2";
-                  _type: "qux";
-                  qux: number;
-                })
+              | (AnySanityDocument & { _id: "id2"; _type: "foo"; foo: string })
+              | (AnySanityDocument & { _id: "id2"; _type: "qux"; qux: number })
               | null
-            )
+            ),
           ]
         >
       >();

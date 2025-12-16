@@ -1,8 +1,5 @@
 {
-  "search.exclude": {
-    "**/README.md": true,
-    "package-lock.json": true
-  },
+  "search.exclude": { "**/README.md": true, "package-lock.json": true },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.tsserver.enableTracing": false,
   "typescript.tsserver.maxTsServerMemory": 8192,

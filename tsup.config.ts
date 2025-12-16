@@ -14,22 +14,17 @@ const getLocalDeps = async (
   done.add(packagePath);
 
   const { dependencies = {}, devDependencies = {} } = JSON.parse(
-    await readFile(packagePath, {
-      encoding: "utf8",
-    })
+    await readFile(packagePath, { encoding: "utf8" })
   ) as {
     dependencies?: { [dependency: string]: string };
     devDependencies?: { [devDependencies: string]: string };
   };
 
-  const localDependencies = Object.keys({
-    ...dependencies,
-    ...devDependencies,
-  })
+  const localDependencies = Object.keys({ ...dependencies, ...devDependencies })
     .filter(
       (dep) =>
-        dep.startsWith("@sanity-typed/") ||
-        dep.startsWith("@portabletext-typed/")
+        dep.startsWith("@sanity-typed/")
+        || dep.startsWith("@portabletext-typed/")
     )
     .map((dep) =>
       dep.replace("@sanity-typed/", "").replace("@portabletext-typed/", "pt-")

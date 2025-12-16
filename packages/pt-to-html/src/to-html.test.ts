@@ -79,11 +79,7 @@ describe("toHTML", () => {
           defineType({
             name: "foo",
             type: "array",
-            of: [
-              defineArrayMember({
-                type: "block",
-              }),
-            ],
+            of: [defineArrayMember({ type: "block" })],
           }),
         ],
       },
@@ -131,12 +127,8 @@ describe("toHTML", () => {
             name: "foo",
             type: "array",
             of: [
-              defineArrayMember({
-                type: "block",
-              }),
-              defineArrayMember({
-                type: "slug",
-              }),
+              defineArrayMember({ type: "block" }),
+              defineArrayMember({ type: "slug" }),
             ],
           }),
         ],
@@ -166,11 +158,7 @@ describe("toHTML", () => {
         markDefs: [],
         style: "normal",
       },
-      {
-        _key: "key",
-        _type: "slug",
-        current: "current",
-      },
+      { _key: "key", _type: "slug", current: "current" },
     ];
 
     expect(
@@ -200,13 +188,7 @@ describe("toHTML", () => {
           types: {},
         },
       })
-    ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          types: {},
-        },
-      })
-    );
+    ).toStrictEqual(toHTMLNative(blocks, { components: { types: {} } }));
 
     expect(
       toHTML(blocks, {
@@ -218,13 +200,7 @@ describe("toHTML", () => {
         },
       })
     ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          types: {
-            foo: () => "foo",
-          },
-        },
-      })
+      toHTMLNative(blocks, { components: { types: { foo: () => "foo" } } })
     );
 
     expect(
@@ -244,20 +220,12 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        components: {
-          types: {
-            slug: ({ value: { current } }) => current,
-          },
-        },
+        components: { types: { slug: ({ value: { current } }) => current } },
       })
     );
 
     expectType<{
-      components: {
-        types: {
-          slug: () => string;
-        };
-      };
+      components: { types: { slug: () => string } };
     }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
@@ -293,11 +261,7 @@ describe("toHTML", () => {
             marks: [],
             text: "Span number one. ",
           },
-          {
-            _key: "key",
-            _type: "slug",
-            current: "current",
-          },
+          { _key: "key", _type: "slug", current: "current" },
           {
             ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
@@ -338,13 +302,7 @@ describe("toHTML", () => {
           types: {},
         },
       })
-    ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          types: {},
-        },
-      })
-    );
+    ).toStrictEqual(toHTMLNative(blocks, { components: { types: {} } }));
 
     expect(
       toHTML(blocks, {
@@ -356,13 +314,7 @@ describe("toHTML", () => {
         },
       })
     ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          types: {
-            foo: () => "foo",
-          },
-        },
-      })
+      toHTMLNative(blocks, { components: { types: { foo: () => "foo" } } })
     );
 
     expect(
@@ -382,20 +334,12 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        components: {
-          types: {
-            slug: ({ value: { current } }) => current,
-          },
-        },
+        components: { types: { slug: ({ value: { current } }) => current } },
       })
     );
 
     expectType<{
-      components: {
-        types: {
-          slug: () => string;
-        };
-      };
+      components: { types: { slug: () => string } };
     }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
@@ -413,9 +357,7 @@ describe("toHTML", () => {
                 type: "block",
                 of: [defineArrayMember({ type: "slug" })],
               }),
-              defineArrayMember({
-                type: "slug",
-              }),
+              defineArrayMember({ type: "slug" }),
             ],
           }),
         ],
@@ -434,11 +376,7 @@ describe("toHTML", () => {
             marks: [],
             text: "Span number one. ",
           },
-          {
-            _key: "key",
-            _type: "slug",
-            current: "current",
-          },
+          { _key: "key", _type: "slug", current: "current" },
           {
             ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
@@ -450,11 +388,7 @@ describe("toHTML", () => {
         markDefs: [],
         style: "normal",
       },
-      {
-        _key: "key",
-        _type: "slug",
-        current: "current",
-      },
+      { _key: "key", _type: "slug", current: "current" },
     ];
 
     expect(
@@ -484,13 +418,7 @@ describe("toHTML", () => {
           types: {},
         },
       })
-    ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          types: {},
-        },
-      })
-    );
+    ).toStrictEqual(toHTMLNative(blocks, { components: { types: {} } }));
 
     expect(
       toHTML(blocks, {
@@ -502,13 +430,7 @@ describe("toHTML", () => {
         },
       })
     ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          types: {
-            foo: () => "foo",
-          },
-        },
-      })
+      toHTMLNative(blocks, { components: { types: { foo: () => "foo" } } })
     );
 
     expect(
@@ -528,20 +450,12 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        components: {
-          types: {
-            slug: ({ value: { current } }) => current,
-          },
-        },
+        components: { types: { slug: ({ value: { current } }) => current } },
       })
     );
 
     expectType<{
-      components: {
-        types: {
-          slug: () => string;
-        };
-      };
+      components: { types: { slug: () => string } };
     }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
@@ -622,13 +536,7 @@ describe("toHTML", () => {
           marks: {},
         },
       })
-    ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          marks: {},
-        },
-      })
-    );
+    ).toStrictEqual(toHTMLNative(blocks, { components: { marks: {} } }));
 
     expect(
       toHTML(blocks, {
@@ -640,13 +548,7 @@ describe("toHTML", () => {
         },
       })
     ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          marks: {
-            bar: () => "bar",
-          },
-        },
-      })
+      toHTMLNative(blocks, { components: { marks: { bar: () => "bar" } } })
     );
 
     expect(
@@ -704,11 +606,7 @@ describe("toHTML", () => {
     );
 
     expectType<{
-      components: {
-        marks: {
-          foo: () => string;
-        };
-      };
+      components: { marks: { foo: () => string } };
     }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
@@ -737,10 +635,7 @@ describe("toHTML", () => {
                         }),
                       ],
                     }),
-                    defineArrayMember({
-                      name: "foo",
-                      type: "slug",
-                    }),
+                    defineArrayMember({ name: "foo", type: "slug" }),
                   ],
                 },
               }),
@@ -771,16 +666,8 @@ describe("toHTML", () => {
           },
         ],
         markDefs: [
-          {
-            _key: "linkKey",
-            _type: "link",
-            href: "https://www.google.com",
-          },
-          {
-            _key: "fooKey",
-            _type: "foo",
-            current: "current",
-          },
+          { _key: "linkKey", _type: "link", href: "https://www.google.com" },
+          { _key: "fooKey", _type: "foo", current: "current" },
         ],
         style: "normal",
       },
@@ -813,13 +700,7 @@ describe("toHTML", () => {
           marks: {},
         },
       })
-    ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          marks: {},
-        },
-      })
-    );
+    ).toStrictEqual(toHTMLNative(blocks, { components: { marks: {} } }));
 
     expect(
       toHTML(blocks, {
@@ -831,13 +712,7 @@ describe("toHTML", () => {
         },
       })
     ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          marks: {
-            bar: () => "bar",
-          },
-        },
-      })
+      toHTMLNative(blocks, { components: { marks: { bar: () => "bar" } } })
     );
 
     expect(
@@ -901,11 +776,7 @@ describe("toHTML", () => {
     );
 
     expectType<{
-      components: {
-        marks: {
-          foo: () => string;
-        };
-      };
+      components: { marks: { foo: () => string } };
     }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
@@ -1006,13 +877,7 @@ describe("toHTML", () => {
           block: {},
         },
       })
-    ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          block: {},
-        },
-      })
-    );
+    ).toStrictEqual(toHTMLNative(blocks, { components: { block: {} } }));
 
     expect(
       toHTML(blocks, {
@@ -1024,13 +889,7 @@ describe("toHTML", () => {
         },
       })
     ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          block: {
-            bar: () => "bar",
-          },
-        },
-      })
+      toHTMLNative(blocks, { components: { block: { bar: () => "bar" } } })
     );
 
     expect(
@@ -1047,9 +906,7 @@ describe("toHTML", () => {
                   },
                   "foo",
                   BlockListItemDefault
-                > & {
-                  _key: string;
-                }
+                > & { _key: string }
               >();
 
               return `<blockquote>${children}</blockquote>`;
@@ -1083,9 +940,7 @@ describe("toHTML", () => {
                   },
                   "normal",
                   BlockListItemDefault
-                > & {
-                  _key: string;
-                }
+                > & { _key: string }
               >();
 
               return `<div>${children}</div>`;
@@ -1118,9 +973,7 @@ describe("toHTML", () => {
                 PortableTextSpan<BlockMarkDecoratorDefault> & { _key: string },
                 "foo" | "normal",
                 BlockListItemDefault
-              > & {
-                _key: string;
-              }
+              > & { _key: string }
             >();
 
             return `<div>${children}</div>`;
@@ -1129,18 +982,12 @@ describe("toHTML", () => {
       })
     ).toStrictEqual(
       toHTMLNative(blocks, {
-        components: {
-          block: ({ children }) => `<div>${children}</div>`,
-        },
+        components: { block: ({ children }) => `<div>${children}</div>` },
       })
     );
 
     expectType<{
-      components: {
-        block: {
-          foo: () => string;
-        };
-      };
+      components: { block: { foo: () => string } };
     }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });
 
@@ -1243,13 +1090,7 @@ describe("toHTML", () => {
           list: {},
         },
       })
-    ).toStrictEqual(
-      toHTMLNative(blocks, {
-        components: {
-          list: {},
-        },
-      })
-    );
+    ).toStrictEqual(toHTMLNative(blocks, { components: { list: {} } }));
 
     expect(
       toHTML(blocks, {
@@ -1267,12 +1108,8 @@ describe("toHTML", () => {
     ).toStrictEqual(
       toHTMLNative(blocks, {
         components: {
-          list: {
-            bar: () => "bar",
-          },
-          listItem: {
-            bar: () => "bar",
-          },
+          list: { bar: () => "bar" },
+          listItem: { bar: () => "bar" },
         },
       })
     );
@@ -1300,10 +1137,7 @@ describe("toHTML", () => {
                   },
                   BlockStyleDefault,
                   "foo"
-                > & {
-                  _key: string;
-                  listItem: "foo";
-                }
+                > & { _key: string; listItem: "foo" }
               >();
 
               return `<span>${children}</span>`;
@@ -1317,9 +1151,7 @@ describe("toHTML", () => {
           list: {
             foo: ({ children }) => `<blockquote>${children}</blockquote>`,
           },
-          listItem: {
-            foo: ({ children }) => `<span>${children}</span>`,
-          },
+          listItem: { foo: ({ children }) => `<span>${children}</span>` },
         },
       })
     );
@@ -1384,10 +1216,7 @@ describe("toHTML", () => {
                 PortableTextSpan<BlockMarkDecoratorDefault> & { _key: string },
                 BlockStyleDefault,
                 "bullet" | "foo"
-              > & {
-                _key: string;
-                listItem: "bullet" | "foo";
-              }
+              > & { _key: string; listItem: "bullet" | "foo" }
             >();
 
             return `<span>${children}</span>`;
@@ -1405,12 +1234,8 @@ describe("toHTML", () => {
 
     expectType<{
       components: {
-        list: {
-          foo: () => string;
-        };
-        listItem: {
-          foo: () => string;
-        };
+        list: { foo: () => string };
+        listItem: { foo: () => string };
       };
     }>().toBeAssignableTo<PortableTextOptions<(typeof blocks)[number]>>();
   });

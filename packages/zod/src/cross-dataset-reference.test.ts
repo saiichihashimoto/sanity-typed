@@ -46,11 +46,7 @@ describe("crossDatasetReference", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "crossDatasetReference",
-        },
+        { ...fields, _key: "key", _type: "crossDatasetReference" },
       ];
 
       const parsed = zods.foo.parse(unparsed);
@@ -84,13 +80,7 @@ describe("crossDatasetReference", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "foo",
-        },
-      ];
+      const unparsed = [{ ...fields, _key: "key", _type: "foo" }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -128,10 +118,7 @@ describe("crossDatasetReference", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: {
-          ...fields,
-          _type: "crossDatasetReference",
-        },
+        bar: { ...fields, _type: "crossDatasetReference" },
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -161,10 +148,7 @@ describe("crossDatasetReference", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-      };
+      const unparsed = { ...fields, _type: "foo" };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -189,25 +173,14 @@ describe("crossDatasetReference", () => {
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "bar",
-        },
-      ];
+      const unparsed = [{ ...fields, _key: "key", _type: "bar" }];
 
       const parsed = zods.bar.parse(unparsed);
 

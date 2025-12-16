@@ -33,25 +33,17 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
 
-    const delta = {
-      after: null,
-      before: null,
-    } as const;
+    const delta = { after: null, before: null } as const;
 
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<never>();
   });
@@ -70,10 +62,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -91,9 +80,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -112,10 +99,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -133,9 +117,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -154,10 +136,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -175,9 +154,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -196,10 +173,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -217,9 +191,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -238,10 +210,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -259,9 +228,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -280,10 +247,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -301,9 +265,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -322,10 +284,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -343,9 +302,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -364,10 +321,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -385,9 +339,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -429,9 +381,7 @@ describe("delta", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            delta: WritableDeep<typeof delta>;
-          }>
+          ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
         >
       >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     }
@@ -472,17 +422,12 @@ describe("delta", () => {
         WritableDeep<typeof expectedTree>
       >();
 
-      const delta = {
-        after: null,
-        before: null,
-      } as const;
+      const delta = { after: null, before: null } as const;
 
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            delta: WritableDeep<typeof delta>;
-          }>
+          ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
         >
       >().toStrictEqual<never>();
     }
@@ -502,10 +447,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -523,9 +465,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -544,10 +484,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -565,9 +502,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -586,10 +521,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -607,9 +539,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -628,10 +558,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -649,9 +576,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -670,10 +595,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -691,9 +613,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -712,10 +632,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -733,9 +650,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -754,10 +669,7 @@ describe("delta", () => {
     } as const;
 
     // TODO https://github.com/sanity-io/groq-js/issues/160
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -775,9 +687,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -796,10 +706,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -817,9 +724,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -861,9 +766,7 @@ describe("delta", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            delta: WritableDeep<typeof delta>;
-          }>
+          ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
         >
       >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     }
@@ -882,10 +785,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -913,18 +813,12 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
 
-    const delta = {
-      after: null,
-      before: null,
-    } as const;
+    const delta = { after: null, before: null } as const;
 
     const result = await (await evaluate(tree, delta)).get();
 
@@ -934,9 +828,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -954,18 +846,12 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
 
-    const delta = {
-      after: { _type: "foo" },
-      before: null,
-    } as const;
+    const delta = { after: { _type: "foo" }, before: null } as const;
 
     const result = await (await evaluate(tree, delta)).get();
 
@@ -975,9 +861,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -995,18 +879,12 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
 
-    const delta = {
-      after: null,
-      before: { _type: "foo" },
-    } as const;
+    const delta = { after: null, before: { _type: "foo" } } as const;
 
     const result = await (await evaluate(tree, delta)).get();
 
@@ -1016,9 +894,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -1036,10 +912,7 @@ describe("delta", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1057,9 +930,7 @@ describe("delta", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });

@@ -36,10 +36,7 @@ describe("specific issues", () => {
                               defineArrayMember({
                                 type: "object",
                                 fields: [
-                                  defineField({
-                                    name: "foo",
-                                    type: "image",
-                                  }),
+                                  defineField({ name: "foo", type: "image" }),
                                 ],
                               }),
                             ],
@@ -60,12 +57,7 @@ describe("specific issues", () => {
       _type: "foo";
       foo?: {
         _key: string;
-        foo?: {
-          foo?: {
-            _key: string;
-            foo?: ImageValue<false>;
-          }[];
-        };
+        foo?: { foo?: { _key: string; foo?: ImageValue<false> }[] };
       }[];
     }>();
   });
@@ -82,10 +74,7 @@ describe("specific issues", () => {
             name: "section.projectSlider",
             type: "object",
             fields: [
-              defineField({
-                type: "string",
-                name: "title",
-              }),
+              defineField({ type: "string", name: "title" }),
               defineField({
                 title: "Projects",
                 name: "projects",
@@ -127,11 +116,7 @@ describe("specific issues", () => {
               defineField({
                 name: "bar",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    type: "block",
-                  }),
-                ],
+                of: [defineArrayMember({ type: "block" })],
               }),
             ],
           }),
@@ -196,10 +181,7 @@ describe("specific issues", () => {
                           name: "qux",
                           type: "object",
                           fields: [
-                            defineField({
-                              name: "quux",
-                              type: "string",
-                            }),
+                            defineField({ name: "quux", type: "string" }),
                           ],
                         }),
                       ],
@@ -233,11 +215,7 @@ describe("specific issues", () => {
         }[];
         level?: number;
         listItem?: "bullet" | "number";
-        markDefs: {
-          _key: string;
-          _type: "qux";
-          quux?: string;
-        }[];
+        markDefs: { _key: string; _type: "qux"; quux?: string }[];
         style:
           | "blockquote"
           | "h1"

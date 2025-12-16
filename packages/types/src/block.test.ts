@@ -18,11 +18,7 @@ describe("block", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "block",
-                }),
-              ],
+              of: [defineArrayMember({ type: "block" })],
             }),
           ],
         },
@@ -68,12 +64,7 @@ describe("block", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "block",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "block" })],
             }),
           ],
         },
@@ -647,10 +638,7 @@ describe("block", () => {
               type: "object",
               fields: [
                 // @ts-expect-error EXPECTED blocks can't be fields https://www.sanity.io/docs/block-type
-                defineField({
-                  name: "bar",
-                  type: "block",
-                }),
+                defineField({ name: "bar", type: "block" }),
               ],
             }),
           ],
@@ -668,14 +656,7 @@ describe("block", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "block",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "block" })] },
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
@@ -714,19 +695,11 @@ describe("block", () => {
         projectId: "projectId",
         schema: {
           types: [
-            defineType({
-              name: "foo",
-              type: "block",
-            }),
+            defineType({ name: "foo", type: "block" }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },

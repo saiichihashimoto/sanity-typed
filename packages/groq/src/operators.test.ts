@@ -139,9 +139,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -172,9 +170,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -205,9 +201,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -238,9 +232,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -507,9 +499,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -540,9 +530,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -573,9 +561,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -606,9 +592,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -1226,12 +1210,7 @@ describe("operators", () => {
         left: { type: "Value", value: "a.b" },
         op: "in",
         right: {
-          args: [
-            {
-              type: "Value",
-              value: "a.*",
-            },
-          ],
+          args: [{ type: "Value", value: "a.*" }],
           func: (() => {}) as unknown as GroqFunction,
           name: "path",
           namespace: "global",
@@ -1242,10 +1221,7 @@ describe("operators", () => {
 
       expect(tree).toStrictEqual({
         ...expectedTree,
-        right: {
-          ...expectedTree.right,
-          func: expect.any(Function),
-        },
+        right: { ...expectedTree.right, func: expect.any(Function) },
       });
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof expectedTree>
@@ -1270,12 +1246,7 @@ describe("operators", () => {
         left: { type: "Value", value: "a.b" },
         op: "in",
         right: {
-          args: [
-            {
-              type: "Value",
-              value: "b.*",
-            },
-          ],
+          args: [{ type: "Value", value: "b.*" }],
           func: (() => {}) as unknown as GroqFunction,
           name: "path",
           namespace: "global",
@@ -1286,10 +1257,7 @@ describe("operators", () => {
 
       expect(tree).toStrictEqual({
         ...expectedTree,
-        right: {
-          ...expectedTree.right,
-          func: expect.any(Function),
-        },
+        right: { ...expectedTree.right, func: expect.any(Function) },
       });
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof expectedTree>
@@ -1325,10 +1293,7 @@ describe("operators", () => {
 
       expect(tree).toStrictEqual({
         ...expectedTree,
-        right: {
-          ...expectedTree.right,
-          func: expect.any(Function),
-        },
+        right: { ...expectedTree.right, func: expect.any(Function) },
       });
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof expectedTree>
@@ -1562,9 +1527,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -1594,9 +1557,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -1626,9 +1587,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -1685,9 +1644,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -1717,9 +1674,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -1749,9 +1704,7 @@ describe("operators", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            parameters: WritableDeep<typeof params>;
-          }>
+          ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
         >
       >().toStrictEqual<typeof expectedResult>();
     });
@@ -1932,10 +1885,7 @@ describe("operators", () => {
 
       expect(tree).toStrictEqual({
         ...expectedTree,
-        left: {
-          ...expectedTree.left,
-          func: expect.any(Function),
-        },
+        left: { ...expectedTree.left, func: expect.any(Function) },
       });
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof expectedTree>
@@ -2007,14 +1957,8 @@ describe("operators", () => {
 
       expect(tree).toStrictEqual({
         ...expectedTree,
-        left: {
-          ...expectedTree.left,
-          func: expect.any(Function),
-        },
-        right: {
-          ...expectedTree.right,
-          func: expect.any(Function),
-        },
+        left: { ...expectedTree.left, func: expect.any(Function) },
+        right: { ...expectedTree.right, func: expect.any(Function) },
       });
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof expectedTree>
@@ -2050,10 +1994,7 @@ describe("operators", () => {
 
       expect(tree).toStrictEqual({
         ...expectedTree,
-        left: {
-          ...expectedTree.left,
-          func: expect.any(Function),
-        },
+        left: { ...expectedTree.left, func: expect.any(Function) },
       });
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof expectedTree>

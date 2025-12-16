@@ -15,10 +15,7 @@ describe("interoperability", () => {
           const client =
             // @ts-expect-error EXPECTED castToTyped needs an explicit type
             castToTyped()(
-              createClientNative({
-                dataset: "dataset",
-                projectId: "projectId",
-              })
+              createClientNative({ dataset: "dataset", projectId: "projectId" })
             );
 
           return client;
@@ -34,10 +31,7 @@ describe("interoperability", () => {
           const client = castToTyped<{
             foo: AnySanityDocument & { _type: "foo" };
           }>()(
-            createClientNative({
-              dataset: "dataset",
-              projectId: "projectId",
-            })
+            createClientNative({ dataset: "dataset", projectId: "projectId" })
           );
 
           return client;
@@ -53,10 +47,7 @@ describe("interoperability", () => {
           const client = castToTyped<{
             foo: AnySanityDocument & { _type: "foo" };
           }>()(
-            createClientNative({
-              dataset: "dataset",
-              projectId: "projectId",
-            })
+            createClientNative({ dataset: "dataset", projectId: "projectId" })
           );
 
           return client;

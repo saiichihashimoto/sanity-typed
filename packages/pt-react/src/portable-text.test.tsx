@@ -85,11 +85,7 @@ describe("PortableText", () => {
           defineType({
             name: "foo",
             type: "array",
-            of: [
-              defineArrayMember({
-                type: "block",
-              }),
-            ],
+            of: [defineArrayMember({ type: "block" })],
           }),
         ],
       },
@@ -139,12 +135,8 @@ describe("PortableText", () => {
             name: "foo",
             type: "array",
             of: [
-              defineArrayMember({
-                type: "block",
-              }),
-              defineArrayMember({
-                type: "slug",
-              }),
+              defineArrayMember({ type: "block" }),
+              defineArrayMember({ type: "slug" }),
             ],
           }),
         ],
@@ -174,11 +166,7 @@ describe("PortableText", () => {
         markDefs: [],
         style: "normal",
       },
-      {
-        _key: "key",
-        _type: "slug",
-        current: "current",
-      },
+      { _key: "key", _type: "slug", current: "current" },
     ];
 
     expect(
@@ -197,7 +185,12 @@ describe("PortableText", () => {
         />
       )
     ).toStrictEqual(
-      renderToString(<PortableTextNative value={blocks} components={{}} />)
+      renderToString(
+        <PortableTextNative
+          value={blocks}
+          components={{}}
+        />
+      )
     );
 
     expect(
@@ -214,9 +207,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            types: {},
-          }}
+          components={{ types: {} }}
         />
       )
     );
@@ -237,11 +228,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            types: {
-              foo: () => "foo",
-            },
-          }}
+          components={{ types: { foo: () => "foo" } }}
         />
       )
     );
@@ -268,21 +255,13 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            types: {
-              slug: ({ value: { current } }) => current,
-            },
-          }}
+          components={{ types: { slug: ({ value: { current } }) => current } }}
         />
       )
     );
 
     expectType<{
-      components: {
-        types: {
-          slug: () => string;
-        };
-      };
+      components: { types: { slug: () => string } };
       value: typeof blocks;
     }>().toBeAssignableTo<PortableTextProps<(typeof blocks)[number]>>();
   });
@@ -319,11 +298,7 @@ describe("PortableText", () => {
             marks: [],
             text: "Span number one. ",
           },
-          {
-            _key: "key",
-            _type: "slug",
-            current: "current",
-          },
+          { _key: "key", _type: "slug", current: "current" },
           {
             ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
@@ -353,7 +328,12 @@ describe("PortableText", () => {
         />
       )
     ).toStrictEqual(
-      renderToString(<PortableTextNative value={blocks} components={{}} />)
+      renderToString(
+        <PortableTextNative
+          value={blocks}
+          components={{}}
+        />
+      )
     );
 
     expect(
@@ -370,9 +350,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            types: {},
-          }}
+          components={{ types: {} }}
         />
       )
     );
@@ -393,11 +371,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            types: {
-              foo: () => "foo",
-            },
-          }}
+          components={{ types: { foo: () => "foo" } }}
         />
       )
     );
@@ -424,21 +398,13 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            types: {
-              slug: ({ value: { current } }) => current,
-            },
-          }}
+          components={{ types: { slug: ({ value: { current } }) => current } }}
         />
       )
     );
 
     expectType<{
-      components: {
-        types: {
-          slug: () => string;
-        };
-      };
+      components: { types: { slug: () => string } };
       value: typeof blocks;
     }>().toBeAssignableTo<PortableTextProps<(typeof blocks)[number]>>();
   });
@@ -457,9 +423,7 @@ describe("PortableText", () => {
                 type: "block",
                 of: [defineArrayMember({ type: "slug" })],
               }),
-              defineArrayMember({
-                type: "slug",
-              }),
+              defineArrayMember({ type: "slug" }),
             ],
           }),
         ],
@@ -478,11 +442,7 @@ describe("PortableText", () => {
             marks: [],
             text: "Span number one. ",
           },
-          {
-            _key: "key",
-            _type: "slug",
-            current: "current",
-          },
+          { _key: "key", _type: "slug", current: "current" },
           {
             ...({} as { [decorator]: BlockMarkDecoratorDefault }),
             _key: "toaiCqIK",
@@ -494,11 +454,7 @@ describe("PortableText", () => {
         markDefs: [],
         style: "normal",
       },
-      {
-        _key: "key",
-        _type: "slug",
-        current: "current",
-      },
+      { _key: "key", _type: "slug", current: "current" },
     ];
 
     expect(
@@ -517,7 +473,12 @@ describe("PortableText", () => {
         />
       )
     ).toStrictEqual(
-      renderToString(<PortableTextNative value={blocks} components={{}} />)
+      renderToString(
+        <PortableTextNative
+          value={blocks}
+          components={{}}
+        />
+      )
     );
 
     expect(
@@ -534,9 +495,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            types: {},
-          }}
+          components={{ types: {} }}
         />
       )
     );
@@ -557,11 +516,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            types: {
-              foo: () => "foo",
-            },
-          }}
+          components={{ types: { foo: () => "foo" } }}
         />
       )
     );
@@ -588,21 +543,13 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            types: {
-              slug: ({ value: { current } }) => current,
-            },
-          }}
+          components={{ types: { slug: ({ value: { current } }) => current } }}
         />
       )
     );
 
     expectType<{
-      components: {
-        types: {
-          slug: () => string;
-        };
-      };
+      components: { types: { slug: () => string } };
       value: typeof blocks;
     }>().toBeAssignableTo<PortableTextProps<(typeof blocks)[number]>>();
   });
@@ -673,7 +620,12 @@ describe("PortableText", () => {
         />
       )
     ).toStrictEqual(
-      renderToString(<PortableTextNative value={blocks} components={{}} />)
+      renderToString(
+        <PortableTextNative
+          value={blocks}
+          components={{}}
+        />
+      )
     );
 
     expect(
@@ -690,9 +642,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            marks: {},
-          }}
+          components={{ marks: {} }}
         />
       )
     );
@@ -713,11 +663,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            marks: {
-              bar: () => "bar",
-            },
-          }}
+          components={{ marks: { bar: () => "bar" } }}
         />
       )
     );
@@ -789,11 +735,7 @@ describe("PortableText", () => {
     );
 
     expectType<{
-      components: {
-        marks: {
-          foo: () => string;
-        };
-      };
+      components: { marks: { foo: () => string } };
       value: typeof blocks;
     }>().toBeAssignableTo<PortableTextProps<(typeof blocks)[number]>>();
   });
@@ -823,10 +765,7 @@ describe("PortableText", () => {
                         }),
                       ],
                     }),
-                    defineArrayMember({
-                      name: "foo",
-                      type: "slug",
-                    }),
+                    defineArrayMember({ name: "foo", type: "slug" }),
                   ],
                 },
               }),
@@ -857,16 +796,8 @@ describe("PortableText", () => {
           },
         ],
         markDefs: [
-          {
-            _key: "linkKey",
-            _type: "link",
-            href: "https://www.google.com",
-          },
-          {
-            _key: "fooKey",
-            _type: "foo",
-            current: "current",
-          },
+          { _key: "linkKey", _type: "link", href: "https://www.google.com" },
+          { _key: "fooKey", _type: "foo", current: "current" },
         ],
         style: "normal",
       },
@@ -888,7 +819,12 @@ describe("PortableText", () => {
         />
       )
     ).toStrictEqual(
-      renderToString(<PortableTextNative value={blocks} components={{}} />)
+      renderToString(
+        <PortableTextNative
+          value={blocks}
+          components={{}}
+        />
+      )
     );
 
     expect(
@@ -905,9 +841,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            marks: {},
-          }}
+          components={{ marks: {} }}
         />
       )
     );
@@ -928,11 +862,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            marks: {
-              bar: () => "bar",
-            },
-          }}
+          components={{ marks: { bar: () => "bar" } }}
         />
       )
     );
@@ -1017,11 +947,7 @@ describe("PortableText", () => {
     );
 
     expectType<{
-      components: {
-        marks: {
-          foo: () => string;
-        };
-      };
+      components: { marks: { foo: () => string } };
       value: typeof blocks;
     }>().toBeAssignableTo<PortableTextProps<(typeof blocks)[number]>>();
   });
@@ -1112,7 +1038,12 @@ describe("PortableText", () => {
         />
       )
     ).toStrictEqual(
-      renderToString(<PortableTextNative value={blocks} components={{}} />)
+      renderToString(
+        <PortableTextNative
+          value={blocks}
+          components={{}}
+        />
+      )
     );
 
     expect(
@@ -1129,9 +1060,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            block: {},
-          }}
+          components={{ block: {} }}
         />
       )
     );
@@ -1152,11 +1081,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            block: {
-              bar: () => "bar",
-            },
-          }}
+          components={{ block: { bar: () => "bar" } }}
         />
       )
     );
@@ -1178,9 +1103,7 @@ describe("PortableText", () => {
                     },
                     "foo",
                     BlockListItemDefault
-                  > & {
-                    _key: string;
-                  }
+                  > & { _key: string }
                 >();
 
                 return <blockquote>{children}</blockquote>;
@@ -1220,9 +1143,7 @@ describe("PortableText", () => {
                     },
                     "normal",
                     BlockListItemDefault
-                  > & {
-                    _key: string;
-                  }
+                  > & { _key: string }
                 >();
 
                 return <div>{children}</div>;
@@ -1263,9 +1184,7 @@ describe("PortableText", () => {
                   },
                   "foo" | "normal",
                   BlockListItemDefault
-                > & {
-                  _key: string;
-                }
+                > & { _key: string }
               >();
 
               return <div>{children}</div>;
@@ -1277,19 +1196,13 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            block: ({ children }) => <div>{children}</div>,
-          }}
+          components={{ block: ({ children }) => <div>{children}</div> }}
         />
       )
     );
 
     expectType<{
-      components: {
-        block: {
-          foo: () => string;
-        };
-      };
+      components: { block: { foo: () => string } };
       value: typeof blocks;
     }>().toBeAssignableTo<PortableTextProps<(typeof blocks)[number]>>();
   });
@@ -1382,7 +1295,12 @@ describe("PortableText", () => {
         />
       )
     ).toStrictEqual(
-      renderToString(<PortableTextNative value={blocks} components={{}} />)
+      renderToString(
+        <PortableTextNative
+          value={blocks}
+          components={{}}
+        />
+      )
     );
 
     expect(
@@ -1399,9 +1317,7 @@ describe("PortableText", () => {
       renderToString(
         <PortableTextNative
           value={blocks}
-          components={{
-            list: {},
-          }}
+          components={{ list: {} }}
         />
       )
     );
@@ -1427,12 +1343,8 @@ describe("PortableText", () => {
         <PortableTextNative
           value={blocks}
           components={{
-            list: {
-              bar: () => "bar",
-            },
-            listItem: {
-              bar: () => "bar",
-            },
+            list: { bar: () => "bar" },
+            listItem: { bar: () => "bar" },
           }}
         />
       )
@@ -1463,10 +1375,7 @@ describe("PortableText", () => {
                     },
                     BlockStyleDefault,
                     "foo"
-                  > & {
-                    _key: string;
-                    listItem: "foo";
-                  }
+                  > & { _key: string; listItem: "foo" }
                 >();
 
                 return <span>{children}</span>;
@@ -1483,9 +1392,7 @@ describe("PortableText", () => {
             list: {
               foo: ({ children }) => <blockquote>{children}</blockquote>,
             },
-            listItem: {
-              foo: ({ children }) => <span>{children}</span>,
-            },
+            listItem: { foo: ({ children }) => <span>{children}</span> },
           }}
         />
       )
@@ -1561,10 +1468,7 @@ describe("PortableText", () => {
                   },
                   BlockStyleDefault,
                   "bullet" | "foo"
-                > & {
-                  _key: string;
-                  listItem: "bullet" | "foo";
-                }
+                > & { _key: string; listItem: "bullet" | "foo" }
               >();
 
               return <span>{children}</span>;
@@ -1586,12 +1490,8 @@ describe("PortableText", () => {
 
     expectType<{
       components: {
-        list: {
-          foo: () => string;
-        };
-        listItem: {
-          foo: () => string;
-        };
+        list: { foo: () => string };
+        listItem: { foo: () => string };
       };
       value: typeof blocks;
     }>().toBeAssignableTo<PortableTextProps<(typeof blocks)[number]>>();

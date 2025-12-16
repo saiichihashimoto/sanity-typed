@@ -29,10 +29,7 @@ describe("global", () => {
 
     const tree = parse(query, { mode: "delta" });
 
-    const expectedTree = {
-      key: "after",
-      type: "Context",
-    } as const;
+    const expectedTree = { key: "after", type: "Context" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -54,10 +51,7 @@ describe("global", () => {
 
     const tree = parse(query, { mode: "delta" });
 
-    const delta = {
-      after: null,
-      before: { _type: "foo" },
-    } as const;
+    const delta = { after: null, before: { _type: "foo" } } as const;
 
     const result = await (await evaluate(tree, delta)).get();
 
@@ -67,9 +61,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -79,10 +71,7 @@ describe("global", () => {
 
     const tree = parse(query, { mode: "delta" });
 
-    const delta = {
-      after: { _type: "foo" },
-      before: null,
-    } as const;
+    const delta = { after: { _type: "foo" }, before: null } as const;
 
     const result = await (await evaluate(tree, delta)).get();
 
@@ -92,9 +81,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -104,20 +91,14 @@ describe("global", () => {
 
     const tree = parse(query, { mode: "delta" });
 
-    const expectedTree = {
-      key: "after",
-      type: "Context",
-    } as const;
+    const expectedTree = { key: "after", type: "Context" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
 
-    const delta = {
-      after: { _type: "foo" },
-      before: null,
-    } as const;
+    const delta = { after: { _type: "foo" }, before: null } as const;
 
     const result = await (await evaluate(tree, delta)).get();
 
@@ -127,9 +108,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -152,10 +131,7 @@ describe("global", () => {
 
     const tree = parse(query, { mode: "delta" });
 
-    const expectedTree = {
-      key: "before",
-      type: "Context",
-    } as const;
+    const expectedTree = { key: "before", type: "Context" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -177,20 +153,14 @@ describe("global", () => {
 
     const tree = parse(query, { mode: "delta" });
 
-    const expectedTree = {
-      key: "before",
-      type: "Context",
-    } as const;
+    const expectedTree = { key: "before", type: "Context" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
 
-    const delta = {
-      after: { _type: "foo" },
-      before: null,
-    } as const;
+    const delta = { after: { _type: "foo" }, before: null } as const;
 
     const result = await (await evaluate(tree, delta)).get();
 
@@ -200,9 +170,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -212,20 +180,14 @@ describe("global", () => {
 
     const tree = parse(query, { mode: "delta" });
 
-    const expectedTree = {
-      key: "before",
-      type: "Context",
-    } as const;
+    const expectedTree = { key: "before", type: "Context" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
 
-    const delta = {
-      after: null,
-      before: { _type: "foo" },
-    } as const;
+    const delta = { after: null, before: { _type: "foo" } } as const;
 
     const result = await (await evaluate(tree, delta)).get();
 
@@ -235,9 +197,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -247,20 +207,14 @@ describe("global", () => {
 
     const tree = parse(query, { mode: "delta" });
 
-    const expectedTree = {
-      key: "before",
-      type: "Context",
-    } as const;
+    const expectedTree = { key: "before", type: "Context" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
 
-    const delta = {
-      after: null,
-      before: { _type: "foo" },
-    } as const;
+    const delta = { after: null, before: { _type: "foo" } } as const;
 
     const result = await (await evaluate(tree, delta)).get();
 
@@ -270,9 +224,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          delta: WritableDeep<typeof delta>;
-        }>
+        ScopeFromPartialContext<{ delta: WritableDeep<typeof delta> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -290,10 +242,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -321,10 +270,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -352,10 +298,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -386,10 +329,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -420,10 +360,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -454,10 +391,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -470,12 +404,7 @@ describe("global", () => {
 
     expect(result).toStrictEqual(expectedResult);
     expectType<
-      ExecuteQuery<
-        typeof query,
-        ScopeFromPartialScope<{
-          this: typeof root;
-        }>
-      >
+      ExecuteQuery<typeof query, ScopeFromPartialScope<{ this: typeof root }>>
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 
@@ -495,10 +424,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -511,12 +437,7 @@ describe("global", () => {
 
     expect(result).toStrictEqual(expectedResult);
     expectType<
-      ExecuteQuery<
-        typeof query,
-        ScopeFromPartialScope<{
-          this: typeof root;
-        }>
-      >
+      ExecuteQuery<typeof query, ScopeFromPartialScope<{ this: typeof root }>>
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
 
@@ -533,10 +454,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -590,10 +508,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -647,10 +562,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -678,10 +590,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -709,10 +618,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -740,10 +646,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -758,9 +661,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -778,10 +679,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -796,9 +694,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -816,10 +712,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -847,10 +740,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -878,10 +768,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -909,10 +796,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -961,10 +845,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>()
       // TODO https://github.com/saiichihashimoto/sanity-typed/issues/339
       .toBeAssignableTo<WritableDeep<typeof expectedTree>>();
@@ -992,10 +873,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1023,10 +901,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1054,10 +929,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1087,10 +959,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1120,10 +989,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1151,10 +1017,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1194,10 +1057,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1237,10 +1097,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1260,10 +1117,7 @@ describe("global", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      alternatives: [],
-      type: "Select",
-    } as const;
+    const expectedTree = { alternatives: [], type: "Select" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -1402,9 +1256,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -1451,9 +1303,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -1471,10 +1321,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1505,10 +1352,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1539,10 +1383,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1570,10 +1411,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1601,10 +1439,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1632,10 +1467,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1663,10 +1495,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1694,10 +1523,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1725,10 +1551,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1756,10 +1579,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1787,10 +1607,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1818,10 +1635,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1849,10 +1663,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1880,10 +1691,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1898,9 +1706,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          identity: typeof identity;
-        }>
+        ScopeFromPartialContext<{ identity: typeof identity }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -1918,10 +1724,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1936,9 +1739,7 @@ describe("global", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          identity: typeof identity;
-        }>
+        ScopeFromPartialContext<{ identity: typeof identity }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -1956,10 +1757,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -1987,10 +1785,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -2018,10 +1813,7 @@ describe("global", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();

@@ -49,7 +49,7 @@ const isTransaction = <
   TDocuments extends AnySanityDocument[],
   TOriginalDocument extends AnySanityDocument,
   TIsPromise extends boolean,
-  TIsScoped extends boolean
+  TIsScoped extends boolean,
 >(
   transaction: unknown
 ): transaction is TransactionType<
@@ -58,11 +58,11 @@ const isTransaction = <
   TIsPromise,
   TIsScoped
 > =>
-  transaction instanceof Transaction ||
-  transaction instanceof ObservableTransaction;
+  transaction instanceof Transaction
+  || transaction instanceof ObservableTransaction;
 
 export const createClient = <
-  const SanityValues extends { [type: string]: any }
+  const SanityValues extends { [type: string]: any },
 >(
   config: ClientConfig & {
     documents: MaybeFunction<MaybePromise<DocumentValues<SanityValues>[]>>;
@@ -119,7 +119,7 @@ export const createClient = <
     >),
     clone: () => createClient<SanityValues>(config),
     config: <
-      const NewConfig extends Partial<ClientConfig> | undefined = undefined
+      const NewConfig extends Partial<ClientConfig> | undefined = undefined,
     >(
       newConfig?: NewConfig
     ) =>
@@ -143,18 +143,14 @@ export const createClient = <
         : SanityClient<TDocument>,
     withConfig: <const NewConfig extends Partial<ClientConfig>>(
       newConfig?: NewConfig
-    ) =>
-      createClient<SanityValues>({
-        ...config,
-        ...newConfig,
-      }),
+    ) => createClient<SanityValues>({ ...config, ...newConfig }),
     fetch: async <
       const TQuery extends string,
       const TQueryParams extends { [param: string]: unknown },
       const TOptions extends
         | FilteredResponseQueryOptions
         | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions,
-      const TResult = never
+      const TResult = never,
     >(
       queryOrBuilder:
         | TQuery
@@ -232,7 +228,7 @@ export const createClient = <
             SetOptional<TDocument, "_id">,
             "_createdAt" | "_rev" | "_updatedAt"
           >,
-      const TOptions extends MutationOptions = BaseMutationOptions
+      const TOptions extends MutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
@@ -241,7 +237,7 @@ export const createClient = <
       Doc extends TDocument extends never
         ? never
         : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt">,
-      const TOptions extends MutationOptions = BaseMutationOptions
+      const TOptions extends MutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
@@ -250,13 +246,13 @@ export const createClient = <
       Doc extends TDocument extends never
         ? never
         : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt">,
-      const TOptions extends MutationOptions = BaseMutationOptions
+      const TOptions extends MutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
     ) => client.mutate({ createIfNotExists: document } as any, options) as any,
     delete: async <
-      const TOptions extends MutationOptions = BaseMutationOptions
+      const TOptions extends MutationOptions = BaseMutationOptions,
     >(
       idOrSelection: MutationSelection | string,
       options?: TOptions
@@ -272,20 +268,20 @@ export const createClient = <
       ) as any,
     patch: <
       TAttrs extends Partial<TDocument>,
-      TKeys extends TDocument extends never ? never : (keyof TDocument)[]
+      TKeys extends TDocument extends never ? never : (keyof TDocument)[],
     >(
       idOrSelection: PatchSelection,
       operations?: PatchOperations<TDocument, TAttrs, TKeys>
     ) =>
       new Patch(idOrSelection, operations, client as any) as PatchType<
-        Extract<TDocument, Partial<TAttrs>> &
-          (TDocument extends never
+        Extract<TDocument, Partial<TAttrs>>
+          & (TDocument extends never
             ? never
             : TKeys extends never
-            ? never
-            : TKeys[number] extends keyof TDocument
-            ? TDocument
-            : never),
+              ? never
+              : TKeys[number] extends keyof TDocument
+                ? TDocument
+                : never),
         TDocument,
         true,
         true
@@ -296,7 +292,7 @@ export const createClient = <
         Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
           _type: string;
         }
-      >[] = []
+      >[] = [],
     >(
       operations?: TMutations
     ) =>
@@ -313,7 +309,7 @@ export const createClient = <
       >,
     mutate: (async <
       Doc extends AnySanityDocument,
-      const TOptions extends MutationOptions = BaseMutationOptions
+      const TOptions extends MutationOptions = BaseMutationOptions,
     >(
       operations:
         | Mutation<
@@ -432,17 +428,10 @@ export const createClient = <
           !Object.keys(patchOperation.setIfMissing ?? {}).length
             ? identity<TDocument>
             : (doc) =>
-                ({
-                  ...patchOperation.setIfMissing,
-                  ...doc,
-                } as TDocument),
+                ({ ...patchOperation.setIfMissing, ...doc }) as TDocument,
           !Object.keys(patchOperation.set ?? {}).length
             ? identity<TDocument>
-            : (doc) =>
-                ({
-                  ...doc,
-                  ...patchOperation.set,
-                } as TDocument),
+            : (doc) => ({ ...doc, ...patchOperation.set }) as TDocument,
           reduceAcc(Object.keys(patchOperation.inc ?? {}), (doc, key) => ({
             ...doc,
             [key]: (doc[key] ?? 0) + (patchOperation.inc![key] as number),

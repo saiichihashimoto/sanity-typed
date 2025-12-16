@@ -23,11 +23,7 @@ describe("date", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "date",
-                }),
-              ],
+              of: [defineArrayMember({ type: "date" })],
             }),
           ],
         },
@@ -68,10 +64,7 @@ describe("date", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: "2023-09-12",
-      };
+      const unparsed = { _type: "foo", bar: "2023-09-12" };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -87,14 +80,7 @@ describe("date", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "date",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "date" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
@@ -114,14 +100,7 @@ describe("date", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "date",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "date" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
@@ -178,17 +157,9 @@ describe("date", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       expect(
-        zods.bar.parse({
-          _type: "bar",
-          baz: "2023-09-12",
-          foo: "2023-09-11",
-        })
+        zods.bar.parse({ _type: "bar", baz: "2023-09-12", foo: "2023-09-11" })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .toStrictEqual({
-          _type: "bar",
-          baz: "2023-09-12",
-          foo: "2023-09-11",
-        });
+        .toStrictEqual({ _type: "bar", baz: "2023-09-12", foo: "2023-09-11" });
     });
 
     it("max(maxDate)", () => {
@@ -241,17 +212,9 @@ describe("date", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       expect(
-        zods.bar.parse({
-          _type: "bar",
-          baz: "2023-09-12",
-          foo: "2023-09-13",
-        })
+        zods.bar.parse({ _type: "bar", baz: "2023-09-12", foo: "2023-09-13" })
       ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .toStrictEqual({
-          _type: "bar",
-          baz: "2023-09-12",
-          foo: "2023-09-13",
-        });
+        .toStrictEqual({ _type: "bar", baz: "2023-09-12", foo: "2023-09-13" });
     });
 
     it("custom(fn)", () => {

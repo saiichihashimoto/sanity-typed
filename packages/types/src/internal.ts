@@ -101,8 +101,8 @@ import type {
 type Merge_<FirstType, SecondType> = Except<
   FirstType,
   Extract<keyof FirstType, keyof SecondType>
-> &
-  SecondType;
+>
+  & SecondType;
 type MergeOld<FirstType, SecondType> = Simplify<Merge_<FirstType, SecondType>>;
 
 declare const README: unique symbol;
@@ -110,7 +110,7 @@ declare const required: unique symbol;
 
 type WithRequired<
   TRequired extends boolean,
-  Rule extends RuleDef<Rule, any>
+  Rule extends RuleDef<Rule, any>,
 > = MergeOld<
   {
     [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule
@@ -132,7 +132,7 @@ type WithRequired<
 type ValidationBuilder<
   TRequired extends boolean,
   Value,
-  Rule extends RuleDef<Rule, Value>
+  Rule extends RuleDef<Rule, Value>,
 > = (
   rule: WithRequired<false, Rule>
 ) => MaybeArray<WithRequired<TRequired | false, Rule>>;
@@ -140,14 +140,14 @@ type ValidationBuilder<
 export type DefinitionBase<
   TRequired extends boolean,
   Value,
-  Rule extends RuleDef<Rule, Value>
+  Rule extends RuleDef<Rule, Value>,
 > = {
   preview?: PreviewConfig;
   validation?: ValidationBuilder<TRequired, Value, Rule>;
 };
 
 export type GetOriginalRule<
-  TDefinitionBase extends DefinitionBase<any, any, any>
+  TDefinitionBase extends DefinitionBase<any, any, any>,
 > = TDefinitionBase extends DefinitionBase<any, any, infer Rule> ? Rule : never;
 
 type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = MergeOld<
@@ -212,17 +212,13 @@ export type GeopointDefinition<TRequired extends boolean> = MergeOld<
   DefinitionBase<TRequired, GeopointValue, GeopointRule>
 >;
 
-export type TitledListValue<T> = {
-  _key?: string;
-  title: string;
-  value: T;
-};
+export type TitledListValue<T> = { _key?: string; title: string; value: T };
 
 export type MaybeTitledListValue<T> = T | TitledListValue<T>;
 
 export type NumberDefinition<
   TNumberValue extends number,
-  TRequired extends boolean
+  TRequired extends boolean,
 > = MergeOld<
   NumberDefinitionNative,
   DefinitionBase<
@@ -232,9 +228,7 @@ export type NumberDefinition<
   > & {
     options?: MergeOld<
       NumberOptions,
-      {
-        list?: MaybeTitledListValue<TNumberValue>[];
-      }
+      { list?: MaybeTitledListValue<TNumberValue>[] }
     >;
   }
 >;
@@ -256,22 +250,19 @@ export const referenced: unique symbol = Symbol("referenced");
 
 export type ReferenceValue<
   TReferenced extends string,
-  TReferenceWeak extends boolean = false
+  TReferenceWeak extends boolean = false,
 > = MergeOld<
   Omit<ReferenceValueNative, "_key" | "_strengthenOnPublish" | "_weak">,
   (true extends TReferenceWeak
     ? Pick<ReferenceValueNative, "_strengthenOnPublish"> & { _weak?: true }
-    : unknown) & {
-    _type: "reference";
-    [referenced]: TReferenced;
-  }
+    : unknown) & { _type: "reference"; [referenced]: TReferenced }
 >;
 
 type TypeReference<TReferenced extends string> = MergeOld<
   TypeReferenceNative,
   {
-    type: TReferenced &
-      (IsStringLiteral<TReferenced> extends false
+    type: TReferenced
+      & (IsStringLiteral<TReferenced> extends false
         ? {
             [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
           }
@@ -282,7 +273,7 @@ type TypeReference<TReferenced extends string> = MergeOld<
 export type ReferenceDefinition<
   TReferenced extends string,
   TReferenceWeak extends boolean,
-  TRequired extends boolean
+  TRequired extends boolean,
 > = MergeOld<
   Omit<ReferenceDefinitionNative, "weak">,
   DefinitionBase<
@@ -320,16 +311,10 @@ export type RegexRule<Rule extends RuleDef<Rule, any>> = MergeOld<
               invert?: boolean;
               // TODO why have name here when it's in the second arg?
               // name?: string;
-            }
-          ]
-        | [
-            pattern: RegExp,
-            options: {
-              invert?: boolean;
-              name?: string;
-            }
+            },
           ]
         | [pattern: RegExp, name: string]
+        | [pattern: RegExp, options: { invert?: boolean; name?: string }]
         | [pattern: RegExp]
     ) => RegexRule<Rule>;
   }
@@ -337,7 +322,7 @@ export type RegexRule<Rule extends RuleDef<Rule, any>> = MergeOld<
 
 export type StringDefinition<
   TStringValue extends string,
-  TRequired extends boolean
+  TRequired extends boolean,
 > = MergeOld<
   StringDefinitionNative,
   DefinitionBase<
@@ -351,9 +336,7 @@ export type StringDefinition<
   > & {
     options?: MergeOld<
       StringOptions,
-      {
-        list?: MaybeTitledListValue<TStringValue>[];
-      }
+      { list?: MaybeTitledListValue<TStringValue>[] }
     >;
   }
 >;
@@ -378,37 +361,29 @@ type InferRawValue<Def extends DefinitionBase<any, any, any>> =
 
 export type ArrayDefinition<
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
-  TRequired extends boolean
+  TRequired extends boolean,
 > = MergeOld<
   ArrayDefinitionNative,
   DefinitionBase<
     TRequired,
     InferRawValue<TMemberDefinition>[],
     ArrayRule<InferRawValue<TMemberDefinition>[]>
-  > & {
-    of: TMemberDefinition[];
-  }
+  > & { of: TMemberDefinition[] }
 >;
 
 export type BlockStyleDefinition<Value extends string> = MergeOld<
   BlockStyleDefinitionNative,
-  {
-    value: Value;
-  }
+  { value: Value }
 >;
 
 export type BlockListDefinition<Value extends string> = MergeOld<
   BlockListDefinitionNative,
-  {
-    value: Value;
-  }
+  { value: Value }
 >;
 
 export type BlockDecoratorDefinition<Value extends string> = MergeOld<
   BlockDecoratorDefinitionNative,
-  {
-    value: Value;
-  }
+  { value: Value }
 >;
 
 export type BlockDefinition<
@@ -419,7 +394,7 @@ export type BlockDefinition<
     name?: string;
   },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
-  TRequired extends boolean
+  TRequired extends boolean,
 > = MergeOld<
   BlockDefinitionNative,
   DefinitionBase<
@@ -457,7 +432,7 @@ type ObjectValue<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  }
+  },
 > = Simplify<
   {
     [Name in Extract<
@@ -477,16 +452,14 @@ export type ObjectDefinition<
     name: string;
     [required]?: boolean;
   },
-  TRequired extends boolean
+  TRequired extends boolean,
 > = MergeOld<
   ObjectDefinitionNative,
   DefinitionBase<
     TRequired,
     ObjectValue<TFieldDefinition>,
     RewriteValue<ObjectValue<TFieldDefinition>, ObjectRule>
-  > & {
-    fields: TFieldDefinition[];
-  }
+  > & { fields: TFieldDefinition[] }
 >;
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
@@ -502,7 +475,7 @@ export type SanityDocument<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  } = never
+  } = never,
 > = Simplify<ObjectValue<TFieldDefinition> & SanityDocumentBase>;
 
 export type AnySanityDocument = Merge<SanityDocument, { _type: string }>;
@@ -511,7 +484,7 @@ export type DocumentRule<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  }
+  },
 > = RuleDef<DocumentRule<TFieldDefinition>, SanityDocument<TFieldDefinition>>;
 
 export type DocumentDefinition<
@@ -519,16 +492,14 @@ export type DocumentDefinition<
     name: string;
     [required]?: boolean;
   },
-  TRequired extends boolean
+  TRequired extends boolean,
 > = MergeOld<
   DocumentDefinitionNative,
   DefinitionBase<
     TRequired,
     SanityDocument<TFieldDefinition>,
     DocumentRule<TFieldDefinition>
-  > & {
-    fields: TFieldDefinition[];
-  }
+  > & { fields: TFieldDefinition[] }
 >;
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
@@ -541,7 +512,7 @@ export type FileValue<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  } = never
+  } = never,
 > = Simplify<FileValueBase & ObjectValue<TFieldDefinition>>;
 
 export type FileDefinition<
@@ -549,16 +520,14 @@ export type FileDefinition<
     name: string;
     [required]?: boolean;
   },
-  TRequired extends boolean
+  TRequired extends boolean,
 > = MergeOld<
   FileDefinitionNative,
   DefinitionBase<
     TRequired,
     FileValue<TFieldDefinition>,
     RewriteValue<FileValue<TFieldDefinition>, FileRule>
-  > & {
-    fields?: TFieldDefinition[];
-  }
+  > & { fields?: TFieldDefinition[] }
 >;
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
@@ -567,21 +536,18 @@ type ImageValueBase = {
   asset: ReferenceValue<"sanity.imageAsset", false>;
 };
 
-type ImageValueExtra = {
-  crop: ImageCrop;
-  hotspot: ImageHotspot;
-};
+type ImageValueExtra = { crop: ImageCrop; hotspot: ImageHotspot };
 
 export type ImageValue<
   THotspot extends boolean = false,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
-  } = never
+  } = never,
 > = Simplify<
-  ImageValueBase &
-    ObjectValue<TFieldDefinition> &
-    (THotspot extends true ? ImageValueExtra : unknown)
+  ImageValueBase
+    & ObjectValue<TFieldDefinition>
+    & (THotspot extends true ? ImageValueExtra : unknown)
 >;
 
 export type ImageDefinition<
@@ -590,7 +556,7 @@ export type ImageDefinition<
     name: string;
     [required]?: boolean;
   },
-  TRequired extends boolean
+  TRequired extends boolean,
 > = MergeOld<
   ImageDefinitionNative,
   DefinitionBase<
@@ -599,12 +565,7 @@ export type ImageDefinition<
     RewriteValue<ImageValue<THotspot, TFieldDefinition>, ImageRule>
   > & {
     fields?: TFieldDefinition[];
-    options?: MergeOld<
-      ImageOptions,
-      {
-        hotspot?: THotspot;
-      }
-    >;
+    options?: MergeOld<ImageOptions, { hotspot?: THotspot }>;
   }
 >;
 
@@ -625,7 +586,7 @@ type IntrinsicDefinitions<
     [required]?: boolean;
   },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
-  TRequired extends boolean
+  TRequired extends boolean,
 > = {
   array: ArrayDefinition<TMemberDefinition, TRequired>;
   block: BlockDefinition<
@@ -673,9 +634,7 @@ export type IntrinsicTypeName = Simplify<
 
 declare const aliasedType: unique symbol;
 
-type AliasValue<TType extends string> = {
-  [aliasedType]: TType;
-};
+type AliasValue<TType extends string> = { [aliasedType]: TType };
 
 export type TypeAliasDefinition<
   TType extends string,
@@ -696,7 +655,7 @@ export type TypeAliasDefinition<
     [required]?: boolean;
   },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
-  TRequired extends boolean
+  TRequired extends boolean,
 > = MergeOld<
   TypeAliasDefinitionNative<TType, TAlias>,
   DefinitionBase<TRequired, AliasValue<TType>, any> & {
@@ -741,34 +700,64 @@ export type ArrayMemberDefinition<
     name: string;
     [required]?: boolean;
   },
-  TMemberDefinition extends DefinitionBase<any, any, any> & {
-    name?: string;
-  },
-  AllowArrays extends boolean
-> = MaybeAllowUnknownProps<TStrict> &
-  ((TType extends "array" ? AllowArrays : true) extends false
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+  AllowArrays extends boolean,
+> = MaybeAllowUnknownProps<TStrict>
+  & ((TType extends "array" ? AllowArrays : true) extends false
     ? never
     : TType extends IntrinsicTypeName
-    ? // HACK Why can't I just index off of IntrinsicDefinitions?
-      Extract<
-        {
-          [type in IntrinsicTypeName]: Omit<
-            IntrinsicDefinitions<
-              TNumberValue,
-              TStringValue,
-              TReferenced,
-              TReferenceWeak,
-              TBlockStyle,
-              TBlockListItem,
-              TBlockMarkDecorator,
-              TBlockMarkAnnotation,
-              THotspot,
-              TFieldDefinition,
-              TMemberDefinition,
-              any
-            >[type] extends DefinitionBase<any, infer Value, infer Rule>
-              ? MergeOld<
-                  IntrinsicDefinitions<
+      ? // HACK Why can't I just index off of IntrinsicDefinitions?
+        Extract<
+          {
+            [type in IntrinsicTypeName]: Omit<
+              IntrinsicDefinitions<
+                TNumberValue,
+                TStringValue,
+                TReferenced,
+                TReferenceWeak,
+                TBlockStyle,
+                TBlockListItem,
+                TBlockMarkDecorator,
+                TBlockMarkAnnotation,
+                THotspot,
+                TFieldDefinition,
+                TMemberDefinition,
+                any
+              >[type] extends DefinitionBase<any, infer Value, infer Rule>
+                ? MergeOld<
+                    IntrinsicDefinitions<
+                      TNumberValue,
+                      TStringValue,
+                      TReferenced,
+                      TReferenceWeak,
+                      TBlockStyle,
+                      TBlockListItem,
+                      TBlockMarkDecorator,
+                      TBlockMarkAnnotation,
+                      THotspot,
+                      TFieldDefinition,
+                      TMemberDefinition,
+                      any
+                    >[type],
+                    DefinitionBase<
+                      any,
+                      IsPlainObject<Value> extends false
+                        ? Value
+                        : IsStringLiteral<TName> extends false
+                          ? Value
+                          : Omit<Value, "_type"> & { _type: TName },
+                      // @ts-expect-error TODO Doesn't match the rule for some reason
+                      RewriteValue<
+                        IsPlainObject<Value> extends false
+                          ? Value
+                          : IsStringLiteral<TName> extends false
+                            ? Value
+                            : Omit<Value, "_type"> & { _type: TName },
+                        Rule
+                      >
+                    >
+                  >
+                : IntrinsicDefinitions<
                     TNumberValue,
                     TStringValue,
                     TReferenced,
@@ -782,77 +771,41 @@ export type ArrayMemberDefinition<
                     TMemberDefinition,
                     any
                   >[type],
-                  DefinitionBase<
-                    any,
-                    IsPlainObject<Value> extends false
-                      ? Value
-                      : IsStringLiteral<TName> extends false
-                      ? Value
-                      : Omit<Value, "_type"> & { _type: TName },
-                    // @ts-expect-error TODO Doesn't match the rule for some reason
-                    RewriteValue<
-                      IsPlainObject<Value> extends false
-                        ? Value
-                        : IsStringLiteral<TName> extends false
-                        ? Value
-                        : Omit<Value, "_type"> & { _type: TName },
-                      Rule
-                    >
-                  >
-                >
-              : IntrinsicDefinitions<
-                  TNumberValue,
-                  TStringValue,
-                  TReferenced,
-                  TReferenceWeak,
-                  TBlockStyle,
-                  TBlockListItem,
-                  TBlockMarkDecorator,
-                  TBlockMarkAnnotation,
-                  THotspot,
-                  TFieldDefinition,
-                  TMemberDefinition,
-                  any
-                >[type],
-            "name"
-          >;
-        }[IntrinsicTypeName],
-        { type: TType }
-      >
-    : Omit<
-        MergeOld<
-          TypeAliasDefinition<
-            TType,
-            TAlias,
-            TNumberValue,
-            TStringValue,
-            TReferenced,
-            TReferenceWeak,
-            TBlockStyle,
-            TBlockListItem,
-            TBlockMarkDecorator,
-            TBlockMarkAnnotation,
-            THotspot,
-            TFieldDefinition,
-            TMemberDefinition,
-            any
+              "name"
+            >;
+          }[IntrinsicTypeName],
+          { type: TType }
+        >
+      : Omit<
+          MergeOld<
+            TypeAliasDefinition<
+              TType,
+              TAlias,
+              TNumberValue,
+              TStringValue,
+              TReferenced,
+              TReferenceWeak,
+              TBlockStyle,
+              TBlockListItem,
+              TBlockMarkDecorator,
+              TBlockMarkAnnotation,
+              THotspot,
+              TFieldDefinition,
+              TMemberDefinition,
+              any
+            >,
+            DefinitionBase<
+              any,
+              AliasValue<TType>
+                & (IsStringLiteral<TName> extends false
+                  ? unknown
+                  : { _type: TName }),
+              any
+            >
           >,
-          DefinitionBase<
-            any,
-            AliasValue<TType> &
-              (IsStringLiteral<TName> extends false
-                ? unknown
-                : { _type: TName }),
-            any
-          >
-        >,
-        "name"
-      >) &
-  (IsStringLiteral<TName> extends false
-    ? unknown
-    : {
-        name: TName;
-      }) & {
+          "name"
+        >)
+  & (IsStringLiteral<TName> extends false ? unknown : { name: TName }) & {
     name?: TName;
     [type]?: "arrayMember";
     type: TType;
@@ -885,7 +838,7 @@ export const makeDefineArrayMember =
     } = never,
     const TMemberDefinition extends DefinitionBase<any, any, any> & {
       name?: string;
-    } = never
+    } = never,
   >(
     arrayOfSchema: ArrayMemberDefinition<
       TType,
@@ -934,57 +887,55 @@ export type FieldDefinition<
     name: string;
     [required]?: boolean;
   },
-  TMemberDefinition extends DefinitionBase<any, any, any> & {
-    name?: string;
-  },
-  TRequired extends boolean
-> = FieldDefinitionBase &
-  MaybeAllowUnknownProps<TStrict> &
-  (TType extends "block"
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+  TRequired extends boolean,
+> = FieldDefinitionBase
+  & MaybeAllowUnknownProps<TStrict>
+  & (TType extends "block"
     ? never
     : TType extends IntrinsicTypeName
-    ? // HACK Why can't I just index off of IntrinsicDefinitions?
-      Extract<
-        {
-          [type in IntrinsicTypeName]: Omit<
-            IntrinsicDefinitions<
-              TNumberValue,
-              TStringValue,
-              TReferenced,
-              TReferenceWeak,
-              TBlockStyle,
-              TBlockListItem,
-              TBlockMarkDecorator,
-              TBlockMarkAnnotation,
-              THotspot,
-              TFieldDefinition,
-              TMemberDefinition,
-              TRequired
-            >[type],
-            "TODO why does this fail without the omit? we're clearly not using it"
-          >;
-        }[IntrinsicTypeName],
-        { type: TType }
-      >
-    : Omit<
-        TypeAliasDefinition<
-          TType,
-          TAlias,
-          TNumberValue,
-          TStringValue,
-          TReferenced,
-          TReferenceWeak,
-          TBlockStyle,
-          TBlockListItem,
-          TBlockMarkDecorator,
-          TBlockMarkAnnotation,
-          THotspot,
-          TFieldDefinition,
-          TMemberDefinition,
-          TRequired
-        >,
-        "TODO why does this fail without the omit? we're clearly not using it"
-      >) & {
+      ? // HACK Why can't I just index off of IntrinsicDefinitions?
+        Extract<
+          {
+            [type in IntrinsicTypeName]: Omit<
+              IntrinsicDefinitions<
+                TNumberValue,
+                TStringValue,
+                TReferenced,
+                TReferenceWeak,
+                TBlockStyle,
+                TBlockListItem,
+                TBlockMarkDecorator,
+                TBlockMarkAnnotation,
+                THotspot,
+                TFieldDefinition,
+                TMemberDefinition,
+                TRequired
+              >[type],
+              "TODO why does this fail without the omit? we're clearly not using it"
+            >;
+          }[IntrinsicTypeName],
+          { type: TType }
+        >
+      : Omit<
+          TypeAliasDefinition<
+            TType,
+            TAlias,
+            TNumberValue,
+            TStringValue,
+            TReferenced,
+            TReferenceWeak,
+            TBlockStyle,
+            TBlockListItem,
+            TBlockMarkDecorator,
+            TBlockMarkAnnotation,
+            THotspot,
+            TFieldDefinition,
+            TMemberDefinition,
+            TRequired
+          >,
+          "TODO why does this fail without the omit? we're clearly not using it"
+        >) & {
     name: TName;
     [required]?: TRequired;
     [type]?: "field";
@@ -1014,7 +965,7 @@ export const defineField = <
   const TMemberDefinition extends DefinitionBase<any, any, any> & {
     name?: string;
   } = never,
-  const TRequired extends boolean = false
+  const TRequired extends boolean = false,
 >(
   schemaField: FieldDefinition<
     TType,
@@ -1057,9 +1008,9 @@ export type TypeDefinition<
     name: string;
     [required]?: boolean;
   },
-  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string }
-> = MaybeAllowUnknownProps<TStrict> &
-  (TType extends IntrinsicTypeName
+  TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
+> = MaybeAllowUnknownProps<TStrict>
+  & (TType extends IntrinsicTypeName
     ? // HACK Why can't I just index off of IntrinsicDefinitions?
       Extract<
         {
@@ -1098,11 +1049,7 @@ export type TypeDefinition<
         TFieldDefinition,
         TMemberDefinition,
         any
-      >) & {
-    name: TName;
-    [type]?: "type";
-    type: TType;
-  };
+      >) & { name: TName; [type]?: "type"; type: TType };
 
 export const defineType = <
   const TType extends string,
@@ -1126,7 +1073,7 @@ export const defineType = <
   } = never,
   const TMemberDefinition extends DefinitionBase<any, any, any> & {
     name?: string;
-  } = never
+  } = never,
 >(
   schemaDefinition: TypeDefinition<
     TType,
@@ -1171,7 +1118,7 @@ export type ConfigBase<
     any
   >,
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive type
-  TPluginOptions extends PluginOptions<any, any>
+  TPluginOptions extends PluginOptions<any, any>,
 > = {
   plugins?: (PluginOptionsNative | TPluginOptions)[];
   schema?: MergeOld<
@@ -1210,9 +1157,9 @@ export type PluginOptions<
     any,
     any
   >,
-  TPluginOptions extends PluginOptions<any, any>
-> = ConfigBase<TTypeDefinition, TPluginOptions> &
-  Omit<PluginOptionsNative, "beta" | "plugins" | "schema"> & {
+  TPluginOptions extends PluginOptions<any, any>,
+> = ConfigBase<TTypeDefinition, TPluginOptions>
+  & Omit<PluginOptionsNative, "beta" | "plugins" | "schema"> & {
     beta?: BetaFeatures;
   };
 
@@ -1235,7 +1182,7 @@ export const definePlugin = <
     any
   >,
   TPluginOptions extends PluginOptions<any, any>,
-  TOptions = void
+  TOptions = void,
 >(
   arg:
     | PluginOptions<TTypeDefinition, TPluginOptions>
@@ -1263,7 +1210,7 @@ type WorkspaceOptions<
     any,
     any
   >,
-  TPluginOptions extends PluginOptions<any, any>
+  TPluginOptions extends PluginOptions<any, any>,
 > = MergeOld<
   Omit<WorkspaceOptionsNative, "beta">,
   ConfigBase<TTypeDefinition, TPluginOptions> & {
@@ -1290,16 +1237,13 @@ export type Config<
     any,
     any
   >,
-  TPluginOptions extends PluginOptions<any, any>
+  TPluginOptions extends PluginOptions<any, any>,
 > =
   | WorkspaceOptions<TTypeDefinition, TPluginOptions>[]
   | (Omit<
       WorkspaceOptions<TTypeDefinition, TPluginOptions>,
       "basePath" | "name"
-    > & {
-      basePath?: string;
-      name?: string;
-    });
+    > & { basePath?: string; name?: string });
 
 export const defineConfig = <
   TTypeDefinition extends TypeDefinition<
@@ -1319,7 +1263,7 @@ export const defineConfig = <
     any,
     any
   >,
-  TPluginOptions extends PluginOptions<any, any>
+  TPluginOptions extends PluginOptions<any, any>,
 >(
   config: Config<TTypeDefinition, TPluginOptions>
 ) =>
@@ -1336,10 +1280,7 @@ export type ImageAsset = MergeOld<
       ImageAssetNative["metadata"],
       {
         // https://www.sanity.io/docs/image-metadata#3e05db6e3c80
-        exif?: {
-          [key: string]: unknown;
-          _type: "sanity.imageExifMetadata";
-        };
+        exif?: { [key: string]: unknown; _type: "sanity.imageExifMetadata" };
         // https://www.sanity.io/docs/image-metadata#df19f6f51379
         location?: GeopointValue;
       }
@@ -1353,72 +1294,69 @@ export type ImplicitDocuments = {
     | ImageAsset as TImplicitDoc["_type"]]: TImplicitDoc;
 };
 
-type ExpandAliasValues<
-  Value,
-  AliasedValues extends { [name: string]: any }
-> = Value extends AliasValue<infer TType>
-  ? AliasedValues[TType] extends never
-    ? unknown
-    : IsPlainObject<
-        ExpandAliasValues<AliasedValues[TType], AliasedValues>
-      > extends false
-    ? ExpandAliasValues<AliasedValues[TType], AliasedValues>
-    : Omit<ExpandAliasValues<AliasedValues[TType], AliasedValues>, "_type"> & {
-        _type: Value extends { _type: infer TOverwriteType }
-          ? TOverwriteType
-          : TType;
-      }
-  : Value extends (infer Item)[]
-  ? (Item extends never
-      ? never
-      : IsPlainObject<Item> extends false
-      ? ExpandAliasValues<Item, AliasedValues>
-      : ExpandAliasValues<Item, AliasedValues> & {
-          _key: string;
-        })[]
-  : Value extends object
-  ? {
-      [key in keyof Value]: ExpandAliasValues<Value[key], AliasedValues>;
-    }
-  : Value;
+type ExpandAliasValues<Value, AliasedValues extends { [name: string]: any }> =
+  Value extends AliasValue<infer TType>
+    ? AliasedValues[TType] extends never
+      ? unknown
+      : IsPlainObject<
+            ExpandAliasValues<AliasedValues[TType], AliasedValues>
+          > extends false
+        ? ExpandAliasValues<AliasedValues[TType], AliasedValues>
+        : Omit<
+            ExpandAliasValues<AliasedValues[TType], AliasedValues>,
+            "_type"
+          > & {
+            _type: Value extends { _type: infer TOverwriteType }
+              ? TOverwriteType
+              : TType;
+          }
+    : Value extends (infer Item)[]
+      ? (Item extends never
+          ? never
+          : IsPlainObject<Item> extends false
+            ? ExpandAliasValues<Item, AliasedValues>
+            : ExpandAliasValues<Item, AliasedValues> & { _key: string })[]
+      : Value extends object
+        ? { [key in keyof Value]: ExpandAliasValues<Value[key], AliasedValues> }
+        : Value;
 
 export type InferSchemaValues<
-  TConfig extends MaybeArray<ConfigBase<any, any>>
+  TConfig extends MaybeArray<ConfigBase<any, any>>,
 > = PluginOptionsNative extends TConfig
   ? object
   : TConfig extends MaybeArray<
-      ConfigBase<infer TTypeDefinition, infer TPluginOptions>
-    >
-  ? Merge<
-      ImplicitDocuments,
-      {
-        [TName in TTypeDefinition["name"]]: ExpandAliasValues<
-          AliasValue<TName>,
-          InferSchemaValues<TPluginOptions> & {
-            [TDefinition in TypeDefinition<
-              any,
-              any,
-              any,
-              any,
-              any,
-              any,
-              any,
-              any,
-              any,
-              any,
-              any,
-              any,
-              any,
-              any,
-              any
-            > extends TTypeDefinition
-              ? never
-              : TTypeDefinition as TDefinition["name"]]: InferRawValue<TDefinition>;
-          }
-        >;
-      }
-    >
-  : never;
+        ConfigBase<infer TTypeDefinition, infer TPluginOptions>
+      >
+    ? Merge<
+        ImplicitDocuments,
+        {
+          [TName in TTypeDefinition["name"]]: ExpandAliasValues<
+            AliasValue<TName>,
+            InferSchemaValues<TPluginOptions> & {
+              [TDefinition in TypeDefinition<
+                any,
+                any,
+                any,
+                any,
+                any,
+                any,
+                any,
+                any,
+                any,
+                any,
+                any,
+                any,
+                any,
+                any,
+                any
+              > extends TTypeDefinition
+                ? never
+                : TTypeDefinition as TDefinition["name"]]: InferRawValue<TDefinition>;
+            }
+          >;
+        }
+      >
+    : never;
 
 export type DocumentValues<SanityValues extends InferSchemaValues<any>> =
   Extract<SanityValues[keyof SanityValues], AnySanityDocument>;
@@ -1529,10 +1467,10 @@ export const castToTyped = <Untyped>(untyped: Untyped) =>
               >
             : never)
     : Untyped extends PluginNative<infer TOptions>
-    ? ReturnType<typeof definePlugin<any, any, TOptions>>
-    : {
-        [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
-      };
+      ? ReturnType<typeof definePlugin<any, any, TOptions>>
+      : {
+          [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
+        };
 
 export const castFromTyped = <Typed>(typed: Typed) =>
   typed as Typed extends TypeDefinition<
@@ -1563,63 +1501,63 @@ export const castFromTyped = <Typed>(typed: Typed) =>
         >
       >
     : Typed extends ArrayMemberDefinition<
-        infer TType extends string,
-        infer TName extends string,
-        infer TAlias extends IntrinsicTypeName,
-        infer TStrict extends StrictDefinition,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any
-      >
-    ? ReturnType<
-        typeof defineArrayMemberNative<
-          TType,
-          TName,
-          { [key: string]: string },
-          { [key in never]: any },
-          TAlias,
-          TStrict
+          infer TType extends string,
+          infer TName extends string,
+          infer TAlias extends IntrinsicTypeName,
+          infer TStrict extends StrictDefinition,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+          any
         >
-      >
-    : Typed extends FieldDefinition<
-        infer TType extends string,
-        infer TName extends string,
-        infer TAlias extends IntrinsicTypeName,
-        infer TStrict extends StrictDefinition,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-        any
-      >
-    ? ReturnType<
-        typeof defineFieldNative<
-          TType,
-          TName,
-          { [key: string]: string },
-          { [key in never]: any },
-          TAlias,
-          TStrict
+      ? ReturnType<
+          typeof defineArrayMemberNative<
+            TType,
+            TName,
+            { [key: string]: string },
+            { [key in never]: any },
+            TAlias,
+            TStrict
+          >
         >
-      >
-    : Typed extends (options: infer TOptions) => PluginOptions<any, any>
-    ? PluginNative<TOptions>
-    : {
-        [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
-      };
+      : Typed extends FieldDefinition<
+            infer TType extends string,
+            infer TName extends string,
+            infer TAlias extends IntrinsicTypeName,
+            infer TStrict extends StrictDefinition,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any,
+            any
+          >
+        ? ReturnType<
+            typeof defineFieldNative<
+              TType,
+              TName,
+              { [key: string]: string },
+              { [key in never]: any },
+              TAlias,
+              TStrict
+            >
+          >
+        : Typed extends (options: infer TOptions) => PluginOptions<any, any>
+          ? PluginNative<TOptions>
+          : {
+              [README]: "⛔️ This can't be casted! Did you pass it the return value of a `define*` method from `sanity`?. ⛔️";
+            };

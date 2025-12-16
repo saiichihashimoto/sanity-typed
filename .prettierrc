@@ -1,13 +1,46 @@
 {
   "$schema": "http://json.schemastore.org/prettierrc",
-  "pluginSearchDirs": false,
   "plugins": [
     "@trivago/prettier-plugin-sort-imports",
     "prettier-plugin-sh",
-    "@standard-configs/prettier-plugin"
+    "prettier-plugin-packagejson",
+    "prettier-plugin-sort-json"
   ],
-  "quoteProps": "consistent",
+  "experimentalOperatorPosition": "start",
+  "experimentalTernaries": false,
   "importOrder": ["^@(sanity|portabletext)-typed/(.*)$", "^src/(.*)$", "^[./]"],
   "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
+  "importOrderSortSpecifiers": true,
+  "jsonRecursiveSort": true,
+  "jsonSortOrder": "{ \"$schema\": null, \"/.*/\": \"lexical\" }",
+  "objectWrap": "collapse",
+  "quoteProps": "consistent",
+  "singleAttributePerLine": true,
+  "trailingComma": "es5",
+  "overrides": [
+    {
+      "files": [".eslintrc.json"],
+      "options": {
+        "jsonSortOrder": "{ \"$schema\": null, \"root\": null, \"reportUnusedDisableDirectives\": null, \"ignorePatterns\": null, \"files\": null, \"plugins\": null, \"extends\": null, \"parser\": null, \"parserOptions\": null, \"settings\": null, \"env\": null, \"rules\": null, \"/^((?!/).)*$/\": \"lexical\", \"/^((?!overrides).)*$/\": \"lexical\" }"
+      }
+    },
+    {
+      "files": [".prettierrc"],
+      "options": {
+        "jsonSortOrder": "{ \"$schema\": null, \"files\": null, \"plugins\": null, \"options\": null, \"/^((?!overrides).)*$/\": \"lexical\" }"
+      }
+    },
+    {
+      "files": ["tsconfig-next.json", "tsconfig.json"],
+      "options": {
+        "jsonSortOrder": "{ \"$schema\": null, \"extends\": null, \"compilerOptions\": null, \"files\": null, \"include\": null, \"exclude\": null, \"references\": null, \"watchOptions\": null, \"typeAcquisition\": null, \"incremental\": null, \"composite\": null, \"tsBuildInfoFile\": null, \"disableSourceOfProjectReferenceRedirect\": null, \"disableSolutionSearching\": null, \"disableReferencedProjectLoad\": null, \"target\": null, \"lib\": null, \"jsx\": null, \"experimentalDecorators\": null, \"emitDecoratorMetadata\": null, \"jsxFactory\": null, \"jsxFragmentFactory\": null, \"jsxImportSource\": null, \"reactNamespace\": null, \"noLib\": null, \"useDefineForClassFields\": null, \"moduleDetection\": null, \"module\": null, \"rootDir\": null, \"moduleResolution\": null, \"baseUrl\": null, \"paths\": null, \"rootDirs\": null, \"typeRoots\": null, \"types\": null, \"allowUmdGlobalAccess\": null, \"moduleSuffixes\": null, \"allowImportingTsExtensions\": null, \"resolvePackageJsonExports\": null, \"resolvePackageJsonImports\": null, \"customConditions\": null, \"resolveJsonModule\": null, \"allowArbitraryExtensions\": null, \"noResolve\": null, \"allowJs\": null, \"checkJs\": null, \"maxNodeModuleJsDepth\": null, \"declaration\": null, \"declarationMap\": null, \"emitDeclarationOnly\": null, \"sourceMap\": null, \"inlineSourceMap\": null, \"outFile\": null, \"outDir\": null, \"removeComments\": null, \"noEmit\": null, \"importHelpers\": null, \"importsNotUsedAsValues\": null, \"downlevelIteration\": null, \"sourceRoot\": null, \"mapRoot\": null, \"inlineSources\": null, \"emitBOM\": null, \"newLine\": null, \"stripInternal\": null, \"noEmitHelpers\": null, \"noEmitOnError\": null, \"preserveConstEnums\": null, \"declarationDir\": null, \"preserveValueImports\": null, \"isolatedModules\": null, \"verbatimModuleSyntax\": null, \"allowSyntheticDefaultImports\": null, \"esModuleInterop\": null, \"preserveSymlinks\": null, \"forceConsistentCasingInFileNames\": null, \"strict\": null, \"noImplicitAny\": null, \"strictNullChecks\": null, \"strictFunctionTypes\": null, \"strictBindCallApply\": null, \"strictPropertyInitialization\": null, \"noImplicitThis\": null, \"useUnknownInCatchVariables\": null, \"alwaysStrict\": null, \"noUnusedLocals\": null, \"noUnusedParameters\": null, \"exactOptionalPropertyTypes\": null, \"noImplicitReturns\": null, \"noFallthroughCasesInSwitch\": null, \"noUncheckedIndexedAccess\": null, \"noImplicitOverride\": null, \"noPropertyAccessFromIndexSignature\": null, \"allowUnusedLabels\": null, \"allowUnreachableCode\": null, \"skipDefaultLibCheck\": null, \"skipLibCheck\": null, \"noErrorTruncation\": null, \"preserveWatchOutput\": null, \"pretty\": null, \"disableSizeLimit\": null, \"plugins\": null, \"charset\": null, \"keyofStringsOnly\": null, \"noImplicitUseStrict\": null, \"noStrictGenericChecks\": null, \"out\": null, \"suppressExcessPropertyErrors\": null, \"suppressImplicitAnyIndexErrors\": null, \"diagnostics\": null, \"explainFiles\": null, \"extendedDiagnostics\": null, \"generateCpuProfile\": null, \"listEmittedFiles\": null, \"listFiles\": null, \"traceResolution\": null, \"assumeChangesOnlyAffectDirectDependencies\": null, \"/.*/\": \"lexical\" }"
+      }
+    },
+    {
+      "files": ["turbo.json"],
+      "options": {
+        "jsonSortOrder": "{ \"$schema\": null, \"extends\": null, \"/^((?!tasks).)*$/\": \"lexical\" }"
+      }
+    }
+  ]
 }

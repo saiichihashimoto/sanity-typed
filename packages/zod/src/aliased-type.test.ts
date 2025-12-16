@@ -37,10 +37,7 @@ describe("<alias>", () => {
                 }),
               ],
             }),
-            defineType({
-              name: "bar",
-              type: "string",
-            }),
+            defineType({ name: "bar", type: "string" }),
           ],
         },
       });
@@ -48,11 +45,7 @@ describe("<alias>", () => {
 
       const unparsed = {
         bar: "bar",
-        foo: {
-          ...documentFields,
-          _type: "foo",
-          bar: "bar",
-        },
+        foo: { ...documentFields, _type: "foo", bar: "bar" },
       };
 
       const parsed = {
@@ -103,17 +96,11 @@ describe("<alias>", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
-        bar: {
-          _type: "bar",
-          baz: true,
-        },
+        bar: { _type: "bar", baz: true },
         foo: {
           ...documentFields,
           _type: "foo",
-          bar: {
-            _type: "bar",
-            baz: true,
-          },
+          bar: { _type: "bar", baz: true },
         },
       };
 
@@ -140,12 +127,7 @@ describe("<alias>", () => {
             defineType({
               name: "foo",
               type: "object",
-              fields: [
-                defineField({
-                  name: "foo",
-                  type: "foo",
-                }),
-              ],
+              fields: [defineField({ name: "foo", type: "foo" })],
             }),
           ],
         },
@@ -153,15 +135,7 @@ describe("<alias>", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = {
-        foo: {
-          _type: "foo",
-          foo: {
-            _type: "foo",
-            foo: {
-              _type: "foo",
-            },
-          },
-        },
+        foo: { _type: "foo", foo: { _type: "foo", foo: { _type: "foo" } } },
       };
 
       const parsed = {
@@ -186,12 +160,7 @@ describe("<alias>", () => {
             defineType({
               name: "foo",
               type: "object",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "bar",
-                }),
-              ],
+              fields: [defineField({ name: "bar", type: "bar" })],
             }),
             defineType({
               name: "bar",
@@ -231,12 +200,7 @@ describe("<alias>", () => {
                 _type: "foo",
                 bar: {
                   _type: "bar",
-                  baz: {
-                    _type: "baz",
-                    foo: {
-                      _type: "foo",
-                    },
-                  },
+                  baz: { _type: "baz", foo: { _type: "foo" } },
                 },
               },
             },
@@ -305,16 +269,11 @@ describe("<alias>", () => {
         foo: {
           ...documentFields,
           _type: "foo",
-          pluginValue: {
-            _type: "pluginValue",
-            baz: true,
-          },
+          pluginValue: { _type: "pluginValue", baz: true },
         },
       };
 
-      const parsed = {
-        foo: zods.foo.parse(unparsed.foo),
-      };
+      const parsed = { foo: zods.foo.parse(unparsed.foo) };
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)["foo"]>().toStrictEqual<
@@ -364,10 +323,7 @@ describe("<alias>", () => {
                 name: "plugin",
                 schema: {
                   types: [
-                    defineType({
-                      name: "plugin2Value",
-                      type: "boolean",
-                    }),
+                    defineType({ name: "plugin2Value", type: "boolean" }),
                   ],
                 },
               })(),
@@ -381,16 +337,11 @@ describe("<alias>", () => {
         foo: {
           ...documentFields,
           _type: "foo",
-          pluginValue: {
-            _type: "pluginValue",
-            baz: true,
-          },
+          pluginValue: { _type: "pluginValue", baz: true },
         },
       };
 
-      const parsed = {
-        foo: zods.foo.parse(unparsed.foo),
-      };
+      const parsed = { foo: zods.foo.parse(unparsed.foo) };
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)["foo"]>().toStrictEqual<
@@ -416,10 +367,7 @@ describe("<alias>", () => {
                 }),
               ],
             }),
-            defineType({
-              name: "bar",
-              type: "string",
-            }),
+            defineType({ name: "bar", type: "string" }),
           ],
         },
       })();
@@ -427,11 +375,7 @@ describe("<alias>", () => {
 
       const unparsed = {
         bar: "bar",
-        foo: {
-          ...documentFields,
-          _type: "foo",
-          bar: "bar",
-        },
+        foo: { ...documentFields, _type: "foo", bar: "bar" },
       };
 
       const parsed = {
@@ -481,17 +425,11 @@ describe("<alias>", () => {
       const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
-        bar: {
-          _type: "bar",
-          baz: true,
-        },
+        bar: { _type: "bar", baz: true },
         foo: {
           ...documentFields,
           _type: "foo",
-          bar: {
-            _type: "bar",
-            baz: true,
-          },
+          bar: { _type: "bar", baz: true },
         },
       };
 
@@ -517,12 +455,7 @@ describe("<alias>", () => {
             defineType({
               name: "foo",
               type: "object",
-              fields: [
-                defineField({
-                  name: "foo",
-                  type: "foo",
-                }),
-              ],
+              fields: [defineField({ name: "foo", type: "foo" })],
             }),
           ],
         },
@@ -530,15 +463,7 @@ describe("<alias>", () => {
       const zods = sanityConfigToZodsTyped(plugin);
 
       const unparsed = {
-        foo: {
-          _type: "foo",
-          foo: {
-            _type: "foo",
-            foo: {
-              _type: "foo",
-            },
-          },
-        },
+        foo: { _type: "foo", foo: { _type: "foo", foo: { _type: "foo" } } },
       };
 
       const parsed = {
@@ -563,12 +488,7 @@ describe("<alias>", () => {
             defineType({
               name: "foo",
               type: "object",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "bar",
-                }),
-              ],
+              fields: [defineField({ name: "bar", type: "bar" })],
             }),
             defineType({
               name: "bar",
@@ -608,12 +528,7 @@ describe("<alias>", () => {
                 _type: "foo",
                 bar: {
                   _type: "bar",
-                  baz: {
-                    _type: "baz",
-                    foo: {
-                      _type: "foo",
-                    },
-                  },
+                  baz: { _type: "baz", foo: { _type: "foo" } },
                 },
               },
             },
@@ -682,16 +597,11 @@ describe("<alias>", () => {
         foo: {
           ...documentFields,
           _type: "foo",
-          pluginValue: {
-            _type: "pluginValue",
-            baz: true,
-          },
+          pluginValue: { _type: "pluginValue", baz: true },
         },
       };
 
-      const parsed = {
-        foo: zods.foo.parse(unparsed.foo),
-      };
+      const parsed = { foo: zods.foo.parse(unparsed.foo) };
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)["foo"]>().toStrictEqual<
@@ -740,10 +650,7 @@ describe("<alias>", () => {
                 name: "plugin",
                 schema: {
                   types: [
-                    defineType({
-                      name: "plugin2Value",
-                      type: "boolean",
-                    }),
+                    defineType({ name: "plugin2Value", type: "boolean" }),
                   ],
                 },
               })(),
@@ -757,16 +664,11 @@ describe("<alias>", () => {
         foo: {
           ...documentFields,
           _type: "foo",
-          pluginValue: {
-            _type: "pluginValue",
-            baz: true,
-          },
+          pluginValue: { _type: "pluginValue", baz: true },
         },
       };
 
-      const parsed = {
-        foo: zods.foo.parse(unparsed.foo),
-      };
+      const parsed = { foo: zods.foo.parse(unparsed.foo) };
 
       expect(parsed).toStrictEqual(unparsed);
       expectType<(typeof parsed)["foo"]>().toStrictEqual<

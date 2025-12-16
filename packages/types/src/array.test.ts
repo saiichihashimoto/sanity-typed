@@ -17,10 +17,7 @@ describe("array", () => {
               type: "array",
               of: [
                 // @ts-expect-error EXPECTED arrays can't be children of arrays https://www.sanity.io/docs/array-type#fNBIr84P
-                defineArrayMember({
-                  type: "array",
-                  of: [],
-                }),
+                defineArrayMember({ type: "array", of: [] }),
               ],
             }),
           ],
@@ -138,16 +135,8 @@ describe("array", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]["bar"]>().toEqual<
         (
-          | {
-              _key: string;
-              _type: "bar";
-              bar: boolean;
-            }
-          | {
-              _key: string;
-              _type: "qux";
-              qux: boolean;
-            }
+          | { _key: string; _type: "bar"; bar: boolean }
+          | { _key: string; _type: "qux"; qux: boolean }
         )[]
       >();
     });
@@ -237,16 +226,8 @@ describe("array", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<
         (
-          | {
-              _key: string;
-              _type: "bar";
-              bar: boolean;
-            }
-          | {
-              _key: string;
-              _type: "qux";
-              qux: boolean;
-            }
+          | { _key: string; _type: "bar"; bar: boolean }
+          | { _key: string; _type: "qux"; qux: boolean }
         )[]
       >();
     });

@@ -2407,9 +2407,7 @@ describe("precedence and associativity", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialScope<{
-            this: WritableDeep<typeof root>;
-          }>
+          ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
         >
       >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
@@ -2444,9 +2442,7 @@ describe("precedence and associativity", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialScope<{
-            this: WritableDeep<typeof root>;
-          }>
+          ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
         >
       >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
@@ -2492,10 +2488,7 @@ describe("precedence and associativity", () => {
 
       expect(tree).toStrictEqual({
         ...expectedTree,
-        base: {
-          ...expectedTree.base,
-          func: expect.any(Function),
-        },
+        base: { ...expectedTree.base, func: expect.any(Function) },
       });
       expectType<Parse<typeof query>>().toStrictEqual<
         WritableDeep<typeof expectedTree>
@@ -2514,9 +2507,7 @@ describe("precedence and associativity", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            dataset: WritableDeep<typeof dataset>;
-          }>
+          ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
         >
       >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
@@ -2561,9 +2552,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -2604,9 +2593,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -2645,9 +2632,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -2688,9 +2673,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -2729,9 +2712,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -2773,9 +2754,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -2828,9 +2807,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -2871,9 +2848,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -2915,9 +2890,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -2958,9 +2931,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -2996,9 +2967,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -3040,9 +3009,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -3083,9 +3050,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -3121,9 +3086,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });
@@ -3157,9 +3120,7 @@ describe("precedence and associativity", () => {
         expectType<
           ExecuteQuery<
             typeof query,
-            ScopeFromPartialScope<{
-              this: WritableDeep<typeof root>;
-            }>
+            ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
           >
         >().toStrictEqual<WritableDeep<typeof expectedResult>>();
       });

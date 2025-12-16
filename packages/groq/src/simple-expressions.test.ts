@@ -39,10 +39,7 @@ describe("simple expressions", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      name: "key",
-      type: "AccessAttribute",
-    } as const;
+    const expectedTree = { name: "key", type: "AccessAttribute" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -86,9 +83,7 @@ describe("simple expressions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -98,10 +93,7 @@ describe("simple expressions", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      n: 1,
-      type: "Parent",
-    } as const;
+    const expectedTree = { n: 1, type: "Parent" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -114,9 +106,7 @@ describe("simple expressions", () => {
       ExecuteQuery<
         typeof query,
         ScopeFromPartialScope<{
-          parent: ScopeFromPartialScope<{
-            this: "foo";
-          }>;
+          parent: ScopeFromPartialScope<{ this: "foo" }>;
         }>
       >
     >().toStrictEqual<typeof expectedResult>();
@@ -127,10 +117,7 @@ describe("simple expressions", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      n: 2,
-      type: "Parent",
-    } as const;
+    const expectedTree = { n: 2, type: "Parent" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -144,9 +131,7 @@ describe("simple expressions", () => {
         typeof query,
         ScopeFromPartialScope<{
           parent: ScopeFromPartialScope<{
-            parent: ScopeFromPartialScope<{
-              this: "foo";
-            }>;
+            parent: ScopeFromPartialScope<{ this: "foo" }>;
           }>;
         }>
       >
@@ -158,10 +143,7 @@ describe("simple expressions", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      n: 3,
-      type: "Parent",
-    } as const;
+    const expectedTree = { n: 3, type: "Parent" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -176,9 +158,7 @@ describe("simple expressions", () => {
         ScopeFromPartialScope<{
           parent: ScopeFromPartialScope<{
             parent: ScopeFromPartialScope<{
-              parent: ScopeFromPartialScope<{
-                this: "foo";
-              }>;
+              parent: ScopeFromPartialScope<{ this: "foo" }>;
             }>;
           }>;
         }>
@@ -191,10 +171,7 @@ describe("simple expressions", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      name: "param",
-      type: "Parameter",
-    } as const;
+    const expectedTree = { name: "param", type: "Parameter" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -211,9 +188,7 @@ describe("simple expressions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<typeof expectedResult>();
   });

@@ -15,11 +15,7 @@ describe("datetime", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "datetime",
-                }),
-              ],
+              of: [defineArrayMember({ type: "datetime" })],
             }),
           ],
         },
@@ -64,14 +60,7 @@ describe("datetime", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "datetime",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "datetime" })] },
       });
 
       expectType<

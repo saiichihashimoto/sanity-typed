@@ -20,7 +20,7 @@ export type ObservableSanityClient<TDocument extends AnySanityDocument> =
   SanityClient<TDocument>["observable"];
 
 export const createClient = <
-  const SanityValues extends { [type: string]: any }
+  const SanityValues extends { [type: string]: any },
 >(
   config: ClientConfig
 ) => {
@@ -80,7 +80,7 @@ export const createClient = <
       const TOptions extends
         | FilteredResponseQueryOptions
         | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions,
-      const TResult = never
+      const TResult = never,
     >(
       queryOrBuilder:
         | TQuery
