@@ -568,8 +568,6 @@ const urlZod = <
 
         // https://github.com/sanity-io/sanity/blob/6020a46588ffd324e233b45eaf526a58652c62f2/packages/sanity/src/core/validation/validators/stringValidator.ts#L37
         return zod.superRefine((value, ctx) => {
-          /* eslint-disable fp/no-unused-expression -- zod.superRefine */
-
           let url: URL;
           try {
             url = allowRelative ? new URL(value, DUMMY_ORIGIN) : new URL(value);
@@ -611,8 +609,6 @@ const urlZod = <
           }
 
           return z.NEVER;
-
-          /* eslint-enable fp/no-unused-expression */
         });
       }
     )

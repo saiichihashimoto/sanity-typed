@@ -139,7 +139,7 @@ describe("<alias>", () => {
       };
 
       const parsed = {
-        // @ts-expect-error TODO Cyclical typing with zod doesn't seem to work
+        // @ts-expect-error -- TODO Cyclical typing with zod doesn't seem to work
         foo: zods.foo.parse(unparsed.foo),
       };
 
@@ -209,7 +209,7 @@ describe("<alias>", () => {
       };
 
       const parsed = {
-        // @ts-expect-error TODO Cyclical typing with zod doesn't seem to work
+        // @ts-expect-error -- TODO Cyclical typing with zod doesn't seem to work
         foo: zods.foo.parse(unparsed.foo),
       };
 
@@ -467,7 +467,7 @@ describe("<alias>", () => {
       };
 
       const parsed = {
-        // @ts-expect-error TODO Cyclical typing with zod doesn't seem to work
+        // @ts-expect-error -- TODO Cyclical typing with zod doesn't seem to work
         foo: zods.foo.parse(unparsed.foo),
       };
 
@@ -475,7 +475,7 @@ describe("<alias>", () => {
       expect(parsed).toStrictEqual(unparsed);
       expect(zods.foo.shape.foo.unwrap().schema).toStrictEqual(zods.foo);
       expectType<typeof parsed>().toStrictEqual<
-        // @ts-expect-error TODO Cyclical typing with zod doesn't seem to work
+        // @ts-expect-error -- TODO Cyclical typing with zod doesn't seem to work
         InferSchemaValues<typeof plugin>
       >();
     });
@@ -537,7 +537,7 @@ describe("<alias>", () => {
       };
 
       const parsed = {
-        // @ts-expect-error TODO Cyclical typing with zod doesn't seem to work
+        // @ts-expect-error -- TODO Cyclical typing with zod doesn't seem to work
         foo: zods.foo.parse(unparsed.foo),
       };
 
@@ -547,7 +547,7 @@ describe("<alias>", () => {
         zods.foo.shape.bar.unwrap().schema.shape.baz.schema.shape.foo.schema
       ).toStrictEqual(zods.foo);
       expectType<typeof parsed>().toStrictEqual<
-        // @ts-expect-error TODO Cyclical typing with zod doesn't seem to work
+        // @ts-expect-error -- TODO Cyclical typing with zod doesn't seem to work
         InferSchemaValues<typeof plugin>
       >();
     });

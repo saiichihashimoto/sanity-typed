@@ -128,7 +128,7 @@ export const traverseValidation = <
   };
 
   const rule = validation?.(
-    // @ts-expect-error EXPECTED This type is technically impossible, mainly because custom is conflicting across everything
+    // @ts-expect-error -- EXPECTED This type is technically impossible, mainly because custom is conflicting across everything
     Rule({})
   ) as
     | MaybeArray<

@@ -1268,7 +1268,7 @@ type SquareBracketTraversal<
                   : ConstantEvaluate<
                         ParseInner<TBracketExpression>
                       > extends string
-                    ? // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
+                    ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
                       MaybeMap<
                         Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>,
                         {
@@ -1788,7 +1788,7 @@ type EvaluateArrayElement<
 type EvaluateArrayElements<
   TElements extends ArrayElementNode[],
   TScope extends Scope<Context<any[], any>>,
-  // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
+  // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
 > = FlattenDoubleArray<{
   [Index in keyof TElements]: EvaluateArrayElement<TElements[Index], TScope>;
 }>;
@@ -1986,7 +1986,7 @@ type EvaluateFuncCall<
     ? TFuncNamespace extends keyof Functions<any, any>
       ? TFuncName extends keyof Functions<any, any>[TFuncNamespace]
         ? EvaluateFuncArgs<TNode["args"], TScope> extends any[]
-          ? // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
+          ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
             Functions<
               EvaluateFuncArgs<TNode["args"], TScope>,
               TScope
@@ -2105,7 +2105,7 @@ type EvaluateMath<
               : null
             : Evaluate<TNode["left"], TScope> extends string
               ? Evaluate<TNode["right"], TScope> extends string
-                ? // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
+                ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
                   `${Evaluate<TNode["left"], TScope>}${Evaluate<
                     TNode["right"],
                     TScope
@@ -2189,7 +2189,7 @@ type EvaluateObjectAttribute<
 type EvaluateObjectAttributes<
   TAttributes extends ObjectAttributeNode[],
   TScope extends Scope<Context<any[], any>>,
-  // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
+  // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
 > = {
   [Index in keyof TAttributes]-?: EvaluateObjectAttribute<
     TAttributes[Index],

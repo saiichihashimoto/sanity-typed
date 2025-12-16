@@ -573,7 +573,7 @@ type FakerOptions = ConstructorParameters<typeof Faker>[0];
 const instantiateFaker =
   (options: FakerOptions, seed: number) => (path: string) => {
     const faker = new Faker(options);
-    // eslint-disable-next-line fp/no-unused-expression -- Setting faker seed
+
     faker.seed(
       // https://stackoverflow.com/a/7616484
       [...path].reduce(
@@ -753,7 +753,7 @@ const membersFaker = <
   const memberFaker = (faker: Faker, index: number) =>
     faker.helpers.arrayElement(memberFakers)(index);
 
-  // @ts-expect-error TODO Why is this typed incorrectly
+  // @ts-expect-error -- TODO Why is this typed incorrectly
   return unique
     ? (
         faker: Faker,
@@ -2653,7 +2653,6 @@ const sanityConfigToFakerInner = <const TConfig extends ConfigBase<any, any>>(
 const counter = <Fn extends (index: number) => any>(fn: Fn) => {
   let count = -1;
 
-  // eslint-disable-next-line no-return-assign -- Mutable
   return () => fn((count += 1)) as ReturnType<Fn>;
 };
 
@@ -2683,7 +2682,6 @@ export const sanityConfigToFakerTyped = <
       documentIdFakerMemos[type]
       ?? instantiateFaker(faker, seed)(`.${type}._id`)(
         (faker: Faker, index: number) => {
-          // eslint-disable-next-line fp/no-loops -- Mutable
           while ((documentIdMemos[type]?.length ?? 0) <= index) {
             documentIdMemos[type] = [
               ...(documentIdMemos[type] ?? []),

@@ -1643,7 +1643,7 @@ describe("createClient", () => {
           .commit();
 
         expectType<typeof result>().toStrictEqual<
-          // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
           AnySanityDocument & { _type: "foo"; foo: string }
         >();
         expect(result).toStrictEqual({
@@ -1681,7 +1681,7 @@ describe("createClient", () => {
 
       expectType<
         typeof result
-      >().toStrictEqual<// @ts-expect-error TODO Return a union of the documents
+      >().toStrictEqual<// @ts-expect-error -- TODO Return a union of the documents
       undefined>();
       expect(result).toBeUndefined();
     });
@@ -1694,14 +1694,14 @@ describe("createClient", () => {
         {
           create: {
             _type: "foo",
-            // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+            // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
             foo: "foo",
           },
         },
       ]);
 
       expectType<typeof result>().toStrictEqual<
-        // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
         AnySanityDocument & { _type: "foo"; foo: string }
       >();
       expect(result).toStrictEqual({

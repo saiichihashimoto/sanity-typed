@@ -21,4 +21,4 @@ export const client = process.env.VERCEL
     });
 
 export const makeTypedQuery = async () =>
-  client.fetch('*[_type=="product"]{_id,productName,tags}');
+  await client.fetch('*[_type=="product"]{_id,productName,tags}');

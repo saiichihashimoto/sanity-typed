@@ -10,7 +10,6 @@ const getLocalDeps = async (
     return [];
   }
 
-  // eslint-disable-next-line fp/no-unused-expression -- Being mutable on purpose
   done.add(packagePath);
 
   const { dependencies = {}, devDependencies = {} } = JSON.parse(
@@ -35,11 +34,12 @@ const getLocalDeps = async (
       ...localDependencies.map((dep) => `../${dep}/src`),
       ...(
         await Promise.all(
-          localDependencies.map(async (dep) =>
-            getLocalDeps(
-              resolve(process.cwd(), "..", dep, "package.json"),
-              done
-            )
+          localDependencies.map(
+            async (dep) =>
+              await getLocalDeps(
+                resolve(process.cwd(), "..", dep, "package.json"),
+                done
+              )
           )
         )
       ).flat(),

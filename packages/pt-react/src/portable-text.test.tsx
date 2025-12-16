@@ -171,7 +171,7 @@ describe("PortableText", () => {
 
     expect(
       renderToString(
-        // @ts-expect-error EXPECTED PortableText requires components
+        // @ts-expect-error -- EXPECTED PortableText requires components
         <PortableText value={blocks} />
       )
     ).toStrictEqual(renderToString(<PortableTextNative value={blocks} />));
@@ -179,16 +179,16 @@ describe("PortableText", () => {
     expect(
       renderToString(
         <PortableText
-          value={blocks}
-          // @ts-expect-error EXPECTED PortableText requires components.types
+          // @ts-expect-error -- EXPECTED PortableText requires components.types
           components={{}}
+          value={blocks}
         />
       )
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{}}
+          value={blocks}
         />
       )
     );
@@ -198,7 +198,7 @@ describe("PortableText", () => {
         <PortableText
           value={blocks}
           components={{
-            // @ts-expect-error EXPECTED PortableText requires components.types.slug
+            // @ts-expect-error -- EXPECTED PortableText requires components.types.slug
             types: {},
           }}
         />
@@ -206,8 +206,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ types: {} }}
+          value={blocks}
         />
       )
     );
@@ -218,7 +218,7 @@ describe("PortableText", () => {
           value={blocks}
           components={{
             types: {
-              // @ts-expect-error EXPECTED PortableText requires components.types.slug
+              // @ts-expect-error -- EXPECTED PortableText requires components.types.slug
               foo: () => "foo",
             },
           }}
@@ -227,8 +227,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ types: { foo: () => "foo" } }}
+          value={blocks}
         />
       )
     );
@@ -254,8 +254,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ types: { slug: ({ value: { current } }) => current } }}
+          value={blocks}
         />
       )
     );
@@ -314,7 +314,7 @@ describe("PortableText", () => {
 
     expect(
       renderToString(
-        // @ts-expect-error EXPECTED PortableText requires components
+        // @ts-expect-error -- EXPECTED PortableText requires components
         <PortableText value={blocks} />
       )
     ).toStrictEqual(renderToString(<PortableTextNative value={blocks} />));
@@ -322,16 +322,16 @@ describe("PortableText", () => {
     expect(
       renderToString(
         <PortableText
-          value={blocks}
-          // @ts-expect-error EXPECTED PortableText requires components.types
+          // @ts-expect-error -- EXPECTED PortableText requires components.types
           components={{}}
+          value={blocks}
         />
       )
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{}}
+          value={blocks}
         />
       )
     );
@@ -341,7 +341,7 @@ describe("PortableText", () => {
         <PortableText
           value={blocks}
           components={{
-            // @ts-expect-error EXPECTED PortableText requires components.types.slug
+            // @ts-expect-error -- EXPECTED PortableText requires components.types.slug
             types: {},
           }}
         />
@@ -349,8 +349,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ types: {} }}
+          value={blocks}
         />
       )
     );
@@ -361,7 +361,7 @@ describe("PortableText", () => {
           value={blocks}
           components={{
             types: {
-              // @ts-expect-error EXPECTED PortableText requires components.types.slug
+              // @ts-expect-error -- EXPECTED PortableText requires components.types.slug
               foo: () => "foo",
             },
           }}
@@ -370,8 +370,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ types: { foo: () => "foo" } }}
+          value={blocks}
         />
       )
     );
@@ -397,8 +397,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ types: { slug: ({ value: { current } }) => current } }}
+          value={blocks}
         />
       )
     );
@@ -459,7 +459,7 @@ describe("PortableText", () => {
 
     expect(
       renderToString(
-        // @ts-expect-error EXPECTED PortableText requires components
+        // @ts-expect-error -- EXPECTED PortableText requires components
         <PortableText value={blocks} />
       )
     ).toStrictEqual(renderToString(<PortableTextNative value={blocks} />));
@@ -467,16 +467,16 @@ describe("PortableText", () => {
     expect(
       renderToString(
         <PortableText
-          value={blocks}
-          // @ts-expect-error EXPECTED PortableText requires components.types
+          // @ts-expect-error -- EXPECTED PortableText requires components.types
           components={{}}
+          value={blocks}
         />
       )
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{}}
+          value={blocks}
         />
       )
     );
@@ -486,7 +486,7 @@ describe("PortableText", () => {
         <PortableText
           value={blocks}
           components={{
-            // @ts-expect-error EXPECTED PortableText requires components.types.slug
+            // @ts-expect-error -- EXPECTED PortableText requires components.types.slug
             types: {},
           }}
         />
@@ -494,8 +494,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ types: {} }}
+          value={blocks}
         />
       )
     );
@@ -506,7 +506,7 @@ describe("PortableText", () => {
           value={blocks}
           components={{
             types: {
-              // @ts-expect-error EXPECTED PortableText requires components.types.slug
+              // @ts-expect-error -- EXPECTED PortableText requires components.types.slug
               foo: () => "foo",
             },
           }}
@@ -515,8 +515,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ types: { foo: () => "foo" } }}
+          value={blocks}
         />
       )
     );
@@ -542,8 +542,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ types: { slug: ({ value: { current } }) => current } }}
+          value={blocks}
         />
       )
     );
@@ -606,7 +606,7 @@ describe("PortableText", () => {
 
     expect(
       renderToString(
-        // @ts-expect-error EXPECTED PortableText requires components
+        // @ts-expect-error -- EXPECTED PortableText requires components
         <PortableText value={blocks} />
       )
     ).toStrictEqual(renderToString(<PortableTextNative value={blocks} />));
@@ -614,16 +614,16 @@ describe("PortableText", () => {
     expect(
       renderToString(
         <PortableText
-          value={blocks}
-          // @ts-expect-error EXPECTED PortableText requires components.marks
+          // @ts-expect-error -- EXPECTED PortableText requires components.marks
           components={{}}
+          value={blocks}
         />
       )
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{}}
+          value={blocks}
         />
       )
     );
@@ -633,7 +633,7 @@ describe("PortableText", () => {
         <PortableText
           value={blocks}
           components={{
-            // @ts-expect-error EXPECTED PortableText requires components.marks.foo
+            // @ts-expect-error -- EXPECTED PortableText requires components.marks.foo
             marks: {},
           }}
         />
@@ -641,8 +641,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ marks: {} }}
+          value={blocks}
         />
       )
     );
@@ -653,7 +653,7 @@ describe("PortableText", () => {
           value={blocks}
           components={{
             marks: {
-              // @ts-expect-error EXPECTED PortableText requires components.marks.foo
+              // @ts-expect-error -- EXPECTED PortableText requires components.marks.foo
               bar: () => "bar",
             },
           }}
@@ -662,8 +662,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ marks: { bar: () => "bar" } }}
+          value={blocks}
         />
       )
     );
@@ -713,7 +713,7 @@ describe("PortableText", () => {
 
                 return <i>{children}</i>;
               },
-              // @ts-expect-error EXPECTED Unless they're not provided
+              // @ts-expect-error -- EXPECTED Unless they're not provided
               underline: ({ children }) => <code>${children}</code>,
             },
           }}
@@ -805,7 +805,7 @@ describe("PortableText", () => {
 
     expect(
       renderToString(
-        // @ts-expect-error EXPECTED PortableText requires components
+        // @ts-expect-error -- EXPECTED PortableText requires components
         <PortableText value={blocks} />
       )
     ).toStrictEqual(renderToString(<PortableTextNative value={blocks} />));
@@ -813,16 +813,16 @@ describe("PortableText", () => {
     expect(
       renderToString(
         <PortableText
-          value={blocks}
-          // @ts-expect-error EXPECTED PortableText requires components.marks
+          // @ts-expect-error -- EXPECTED PortableText requires components.marks
           components={{}}
+          value={blocks}
         />
       )
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{}}
+          value={blocks}
         />
       )
     );
@@ -832,7 +832,7 @@ describe("PortableText", () => {
         <PortableText
           value={blocks}
           components={{
-            // @ts-expect-error EXPECTED PortableText requires components.marks.foo
+            // @ts-expect-error -- EXPECTED PortableText requires components.marks.foo
             marks: {},
           }}
         />
@@ -840,8 +840,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ marks: {} }}
+          value={blocks}
         />
       )
     );
@@ -852,7 +852,7 @@ describe("PortableText", () => {
           value={blocks}
           components={{
             marks: {
-              // @ts-expect-error EXPECTED PortableText requires components.marks.foo
+              // @ts-expect-error -- EXPECTED PortableText requires components.marks.foo
               bar: () => "bar",
             },
           }}
@@ -861,8 +861,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ marks: { bar: () => "bar" } }}
+          value={blocks}
         />
       )
     );
@@ -1024,7 +1024,7 @@ describe("PortableText", () => {
 
     expect(
       renderToString(
-        // @ts-expect-error EXPECTED PortableText requires components
+        // @ts-expect-error -- EXPECTED PortableText requires components
         <PortableText value={blocks} />
       )
     ).toStrictEqual(renderToString(<PortableTextNative value={blocks} />));
@@ -1032,16 +1032,16 @@ describe("PortableText", () => {
     expect(
       renderToString(
         <PortableText
-          value={blocks}
-          // @ts-expect-error EXPECTED PortableText requires components.block
+          // @ts-expect-error -- EXPECTED PortableText requires components.block
           components={{}}
+          value={blocks}
         />
       )
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{}}
+          value={blocks}
         />
       )
     );
@@ -1051,7 +1051,7 @@ describe("PortableText", () => {
         <PortableText
           value={blocks}
           components={{
-            // @ts-expect-error EXPECTED PortableText requires components.block.foo
+            // @ts-expect-error -- EXPECTED PortableText requires components.block.foo
             block: {},
           }}
         />
@@ -1059,8 +1059,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ block: {} }}
+          value={blocks}
         />
       )
     );
@@ -1071,7 +1071,7 @@ describe("PortableText", () => {
           value={blocks}
           components={{
             block: {
-              // @ts-expect-error EXPECTED PortableText requires components.block.foo
+              // @ts-expect-error -- EXPECTED PortableText requires components.block.foo
               bar: () => "bar",
             },
           }}
@@ -1080,8 +1080,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ block: { bar: () => "bar" } }}
+          value={blocks}
         />
       )
     );
@@ -1148,7 +1148,7 @@ describe("PortableText", () => {
 
                 return <div>{children}</div>;
               },
-              // @ts-expect-error EXPECTED Unless they're not provided
+              // @ts-expect-error -- EXPECTED Unless they're not provided
               h1: ({ children }) => <h2>{children}</h2>,
             },
           }}
@@ -1195,8 +1195,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ block: ({ children }) => <div>{children}</div> }}
+          value={blocks}
         />
       )
     );
@@ -1281,7 +1281,7 @@ describe("PortableText", () => {
 
     expect(
       renderToString(
-        // @ts-expect-error EXPECTED PortableText requires components
+        // @ts-expect-error -- EXPECTED PortableText requires components
         <PortableText value={blocks} />
       )
     ).toStrictEqual(renderToString(<PortableTextNative value={blocks} />));
@@ -1289,16 +1289,16 @@ describe("PortableText", () => {
     expect(
       renderToString(
         <PortableText
-          value={blocks}
-          // @ts-expect-error EXPECTED PortableText requires components.block
+          // @ts-expect-error -- EXPECTED PortableText requires components.block
           components={{}}
+          value={blocks}
         />
       )
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{}}
+          value={blocks}
         />
       )
     );
@@ -1308,7 +1308,7 @@ describe("PortableText", () => {
         <PortableText
           value={blocks}
           components={{
-            // @ts-expect-error EXPECTED PortableText requires components.block.foo
+            // @ts-expect-error -- EXPECTED PortableText requires components.block.foo
             list: {},
           }}
         />
@@ -1316,8 +1316,8 @@ describe("PortableText", () => {
     ).toStrictEqual(
       renderToString(
         <PortableTextNative
-          value={blocks}
           components={{ list: {} }}
+          value={blocks}
         />
       )
     );
@@ -1328,11 +1328,11 @@ describe("PortableText", () => {
           value={blocks}
           components={{
             list: {
-              // @ts-expect-error EXPECTED PortableText requires components.block.foo
+              // @ts-expect-error -- EXPECTED PortableText requires components.block.foo
               bar: () => "bar",
             },
             listItem: {
-              // @ts-expect-error EXPECTED listItem is optional, but it will type with the correct keys
+              // @ts-expect-error -- EXPECTED listItem is optional, but it will type with the correct keys
               bar: () => "bar",
             },
           }}
@@ -1413,14 +1413,14 @@ describe("PortableText", () => {
 
                 return <ol>{children}</ol>;
               },
-              // @ts-expect-error EXPECTED Unless they're not provided
+              // @ts-expect-error -- EXPECTED Unless they're not provided
               number: ({ children }) => <ul>{children}</ul>,
             },
             listItem: {
               foo: ({ children }) => <span>{children}</span>,
               // Retyping defaults is fine
               bullet: ({ children }) => <b>{children}</b>,
-              // @ts-expect-error EXPECTED Unless they're not provided
+              // @ts-expect-error -- EXPECTED Unless they're not provided
               number: ({ children }) => <i>{children}</i>,
             },
           }}

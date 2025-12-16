@@ -13,7 +13,7 @@ describe("interoperability", () => {
       it("is a typescript error without SanityValues", () => {
         const exec = () => {
           const client =
-            // @ts-expect-error EXPECTED castToTyped needs an explicit type
+            // @ts-expect-error -- EXPECTED castToTyped needs an explicit type
             castToTyped()(
               createClientNative({ dataset: "dataset", projectId: "projectId" })
             );

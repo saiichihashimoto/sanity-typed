@@ -187,15 +187,15 @@ export const createClient = <
       );
 
       const result = parseResult(
-        // @ts-expect-error TODO Not sure
+        // @ts-expect-error -- TODO Not sure
         await (
           await evaluate(
-            // @ts-expect-error TODO Not sure
+            // @ts-expect-error -- TODO Not sure
             parse(query, { params }),
             {
               params,
               dataset: [...(await datasetByIdPromise).values()],
-              // @ts-expect-error TODO Not sure
+              // @ts-expect-error -- TODO Not sure
               sanity: config,
             }
           )
@@ -206,7 +206,7 @@ export const createClient = <
       const { filterResponse = true } = options ?? {};
 
       return !filterResponse
-        ? // @ts-expect-error TODO Not sure
+        ? // @ts-expect-error -- TODO Not sure
           { result, query, ms: end - start }
         : result;
     },
@@ -329,13 +329,13 @@ export const createClient = <
       options?: TOptions
     ) => {
       if (Array.isArray(operations)) {
-        return operations.map(async (operation) =>
-          client.mutate(operation, options)
+        return await operations.map(
+          async (operation) => await client.mutate(operation, options)
         )[0];
       }
 
       if (isTransaction(operations)) {
-        return client.mutate(operations.serialize() as any, options);
+        return await client.mutate(operations.serialize() as any, options);
       }
 
       const datasetById = await datasetByIdPromise;
@@ -355,7 +355,6 @@ export const createClient = <
           _updatedAt: now.toISOString(),
         } as Extract<TDocument, { _type: Doc["_type"] }>;
 
-        // eslint-disable-next-line fp/no-unused-expression -- Map
         datasetById.set(_id, doc);
 
         return doc;
@@ -373,7 +372,6 @@ export const createClient = <
           _updatedAt: now.toISOString(),
         } as Extract<TDocument, { _type: Doc["_type"] }>;
 
-        // eslint-disable-next-line fp/no-unused-expression -- Map
         datasetById.set(document._id, doc);
 
         return doc;
@@ -395,7 +393,6 @@ export const createClient = <
             } as Extract<TDocument, { _type: Doc["_type"] }>);
 
         if (newDoc) {
-          // eslint-disable-next-line fp/no-unused-expression -- Map
           datasetById.set(document._id, newDoc);
         }
 
@@ -408,7 +405,6 @@ export const createClient = <
 
         const doc = datasetById.get(idOrSelection as string)!;
 
-        // eslint-disable-next-line fp/no-unused-expression -- Map
         datasetById.delete(idOrSelection as string);
 
         return doc;
@@ -418,7 +414,7 @@ export const createClient = <
         "patch" in operations ? operations.patch : operations.serialize();
 
       const previousDoc = datasetById.get(
-        // @ts-expect-error TODO Not sure
+        // @ts-expect-error -- TODO Not sure
         patchOperation.id as string
       )!;
 
@@ -468,7 +464,6 @@ export const createClient = <
         return previousDoc;
       }
 
-      // eslint-disable-next-line fp/no-unused-expression -- Map
       datasetById.set(newDoc._id, newDoc);
 
       return newDoc;
