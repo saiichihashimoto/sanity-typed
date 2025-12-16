@@ -3,9 +3,7 @@ import type { InferGetStaticPropsType } from "next";
 import { makeTypedQuery } from "../sanity/client-with-groq-builder";
 
 export const getStaticProps = async () => ({
-  props: {
-    products: await makeTypedQuery(),
-  },
+  props: { products: await makeTypedQuery() },
 });
 
 const Index = ({

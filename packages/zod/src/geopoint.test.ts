@@ -13,11 +13,7 @@ import type { InferSchemaValues } from "@sanity-typed/types";
 import { enableZod } from ".";
 import { sanityConfigToZodsTyped } from "./internal";
 
-const fields: Omit<GeopointValue, "_type"> = {
-  alt: 0,
-  lat: 0,
-  lng: 0,
-};
+const fields: Omit<GeopointValue, "_type"> = { alt: 0, lat: 0, lng: 0 };
 
 describe("geopoint", () => {
   describe("defineArrayMember", () => {
@@ -30,24 +26,14 @@ describe("geopoint", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "geopoint",
-                }),
-              ],
+              of: [defineArrayMember({ type: "geopoint" })],
             }),
           ],
         },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "geopoint",
-        },
-      ];
+      const unparsed = [{ ...fields, _key: "key", _type: "geopoint" }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -66,25 +52,14 @@ describe("geopoint", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "foo",
-                  type: "geopoint",
-                }),
-              ],
+              of: [defineArrayMember({ name: "foo", type: "geopoint" })],
             }),
           ],
         },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "foo",
-        },
-      ];
+      const unparsed = [{ ...fields, _key: "key", _type: "foo" }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -118,13 +93,7 @@ describe("geopoint", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: {
-          ...fields,
-          _type: "geopoint",
-        },
-      };
+      const unparsed = { _type: "foo", bar: { ...fields, _type: "geopoint" } };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -140,21 +109,11 @@ describe("geopoint", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "geopoint",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "geopoint" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-      };
+      const unparsed = { ...fields, _type: "foo" };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -170,32 +129,18 @@ describe("geopoint", () => {
         projectId: "projectId",
         schema: {
           types: [
-            defineType({
-              name: "foo",
-              type: "geopoint",
-            }),
+            defineType({ name: "foo", type: "geopoint" }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "bar",
-        },
-      ];
+      const unparsed = [{ ...fields, _key: "key", _type: "bar" }];
 
       const parsed = zods.bar.parse(unparsed);
 

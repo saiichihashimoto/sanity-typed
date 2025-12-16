@@ -15,11 +15,7 @@ describe("geopoint", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "geopoint",
-                }),
-              ],
+              of: [defineArrayMember({ type: "geopoint" })],
             }),
           ],
         },
@@ -43,12 +39,7 @@ describe("geopoint", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "geopoint",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "geopoint" })],
             }),
           ],
         },
@@ -98,14 +89,7 @@ describe("geopoint", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "geopoint",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "geopoint" })] },
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
@@ -122,19 +106,11 @@ describe("geopoint", () => {
         projectId: "projectId",
         schema: {
           types: [
-            defineType({
-              name: "foo",
-              type: "geopoint",
-            }),
+            defineType({ name: "foo", type: "geopoint" }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },

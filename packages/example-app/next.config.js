@@ -3,9 +3,7 @@
  */
 const nextConfig = {
   transpilePackages: ["../example-studio/sanity.config.ts"],
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  eslint: { ignoreDuringBuilds: true },
 };
 
 module.exports = nextConfig;

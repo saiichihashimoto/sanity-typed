@@ -3,9 +3,7 @@ import type { InferGetStaticPropsType } from "next";
 import { makeTypedQuery } from "../sanity/next-sanity-client";
 
 export const getStaticProps = async () => ({
-  props: {
-    products: await makeTypedQuery(),
-  },
+  props: { products: await makeTypedQuery() },
 });
 
 const Index = ({

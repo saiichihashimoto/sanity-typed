@@ -72,7 +72,7 @@ type ArgsObject = {
 };
 
 export const traverseValidation = <
-  TSchemaType extends SchemaTypeDefinition<any>
+  TSchemaType extends SchemaTypeDefinition<any>,
 >({
   validation,
 }: TSchemaType) => {
@@ -119,29 +119,22 @@ export const traverseValidation = <
         Rule({ ...value, uppercase: [...(value.uppercase ?? []), args] }),
       uri: (...args: any[]) =>
         Rule({ ...value, uri: [...(value.uri ?? []), args] }),
-      valueOfField: () => ({
-        path: "",
-        type: Symbol("TODO"),
-      }),
+      valueOfField: () => ({ path: "", type: Symbol("TODO") }),
     } as unknown as UnionToIntersection<
       GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
-    > & {
-      value: ArgsObject;
-    };
+    > & { value: ArgsObject };
 
     return rule;
   };
 
   const rule = validation?.(
-    // @ts-expect-error EXPECTED This type is technically impossible, mainly because custom is conflicting across everything
+    // @ts-expect-error -- EXPECTED This type is technically impossible, mainly because custom is conflicting across everything
     Rule({})
   ) as
     | MaybeArray<
         UnionToIntersection<
           GetOriginalRule<SchemaTypeDefinition<IntrinsicTypeName>>
-        > & {
-          value: ArgsObject;
-        }
+        > & { value: ArgsObject }
       >
     | undefined;
 

@@ -31,11 +31,7 @@ describe("block", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "block",
-                }),
-              ],
+              of: [defineArrayMember({ type: "block" })],
             }),
           ],
         },
@@ -70,12 +66,7 @@ describe("block", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "block",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "block" })],
             }),
           ],
         },
@@ -387,14 +378,7 @@ describe("block", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "block",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "block" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
@@ -420,19 +404,11 @@ describe("block", () => {
         projectId: "projectId",
         schema: {
           types: [
-            defineType({
-              name: "foo",
-              type: "block",
-            }),
+            defineType({ name: "foo", type: "block" }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },
@@ -705,8 +681,8 @@ describe("block", () => {
                 Rule.custom(() => "fail for no reason").custom(
                   enableZod(
                     (value) =>
-                      value?.children[0]?.text !== "bar" ||
-                      "value can't be `bar`"
+                      value?.children[0]?.text !== "bar"
+                      || "value can't be `bar`"
                   )
                 ),
             }),

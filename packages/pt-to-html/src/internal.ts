@@ -25,8 +25,8 @@ import type { MaybeArray } from "@sanity-typed/utils";
 type MergeOld<FirstType, SecondType> = Except<
   FirstType,
   Extract<keyof FirstType, keyof SecondType>
-> &
-  SecondType;
+>
+  & SecondType;
 
 // https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/marks.ts#L16
 type BlockMarkDecoratorDefault =
@@ -56,7 +56,7 @@ type BlockListItemDefault = "bullet" | "number";
 export type PortableTextMarkComponentOptions<
   Value,
   TMarkKey extends string,
-  TMarkType extends string
+  TMarkType extends string,
 > = {
   children: string;
   markKey: TMarkKey;
@@ -86,7 +86,7 @@ export type PortableTextHtmlComponents<
   TSibling extends { _type: string } = Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
     PortableTextBlock<any, any, any, any, any>
-  >
+  >,
 > = MergeOld<
   Partial<PortableTextHtmlComponentsNative>,
   SetRequired<
@@ -182,7 +182,7 @@ export type PortableTextOptions<
   TSibling extends { _type: string } = Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
     PortableTextBlock<any, any, any, any, any>
-  >
+  >,
 > = MergeOld<
   Partial<PortableTextOptionsNative>,
   SetRequired<
@@ -232,7 +232,7 @@ export const toHTML = <
   TSibling extends Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
     PortableTextBlock<any, any, any, any, any>
-  >
+  >,
 >(
   blocks: MaybeArray<TItem>,
   ...args: RequiredKeysOf<
@@ -257,7 +257,7 @@ export const toHTML = <
           TBlockStyle,
           TBlockListItem,
           TSibling
-        >
+        >,
       ]
     : [
         options: PortableTextOptions<
@@ -269,6 +269,6 @@ export const toHTML = <
           TBlockStyle,
           TBlockListItem,
           TSibling
-        >
+        >,
       ]
 ) => toHTMLNative(blocks, ...(args as any));

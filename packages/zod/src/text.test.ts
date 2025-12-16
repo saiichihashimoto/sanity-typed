@@ -23,11 +23,7 @@ describe("text", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "text",
-                }),
-              ],
+              of: [defineArrayMember({ type: "text" })],
             }),
           ],
         },
@@ -68,10 +64,7 @@ describe("text", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: "foo",
-      };
+      const unparsed = { _type: "foo", bar: "foo" };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -87,14 +80,7 @@ describe("text", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "text",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "text" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
@@ -159,18 +145,8 @@ describe("text", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(
-        zods.bar.parse({
-          _type: "bar",
-          baz: 4,
-          foo: "",
-        })
-      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .toStrictEqual({
-          _type: "bar",
-          baz: 4,
-          foo: "",
-        });
+      expect(zods.bar.parse({ _type: "bar", baz: 4, foo: "" })) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .toStrictEqual({ _type: "bar", baz: 4, foo: "" });
     });
 
     it("max(maxLength)", () => {
@@ -222,18 +198,8 @@ describe("text", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(
-        zods.bar.parse({
-          _type: "bar",
-          baz: 1,
-          foo: "fo",
-        })
-      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .toStrictEqual({
-          _type: "bar",
-          baz: 1,
-          foo: "fo",
-        });
+      expect(zods.bar.parse({ _type: "bar", baz: 1, foo: "fo" })) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .toStrictEqual({ _type: "bar", baz: 1, foo: "fo" });
     });
 
     it("length(exactLength)", () => {
@@ -288,18 +254,8 @@ describe("text", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(
-        zods.bar.parse({
-          _type: "bar",
-          baz: 1,
-          foo: "",
-        })
-      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .toStrictEqual({
-          _type: "bar",
-          baz: 1,
-          foo: "",
-        });
+      expect(zods.bar.parse({ _type: "bar", baz: 1, foo: "" })) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .toStrictEqual({ _type: "bar", baz: 1, foo: "" });
     });
 
     it("uppercase()", () => {

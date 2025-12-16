@@ -23,11 +23,7 @@ describe("datetime", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "datetime",
-                }),
-              ],
+              of: [defineArrayMember({ type: "datetime" })],
             }),
           ],
         },
@@ -68,10 +64,7 @@ describe("datetime", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: "2023-09-12T20:01:36.945Z",
-      };
+      const unparsed = { _type: "foo", bar: "2023-09-12T20:01:36.945Z" };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -87,14 +80,7 @@ describe("datetime", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "datetime",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "datetime" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
@@ -114,14 +100,7 @@ describe("datetime", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "datetime",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "datetime" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
@@ -267,8 +246,8 @@ describe("datetime", () => {
                 Rule.custom(() => "fail for no reason").custom(
                   enableZod(
                     (value) =>
-                      value !== "2023-09-12T20:01:36.946Z" ||
-                      "value can't be `2023-09-12T20:01:36.946Z`"
+                      value !== "2023-09-12T20:01:36.946Z"
+                      || "value can't be `2023-09-12T20:01:36.946Z`"
                   )
                 ),
             }),

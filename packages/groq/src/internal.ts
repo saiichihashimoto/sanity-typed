@@ -65,9 +65,8 @@ import type { PortableTextBlock } from "@portabletext-typed/types";
 import type { ReferenceValue, referenced } from "@sanity-typed/types";
 import type { IsPlainObject, TupleOfLength } from "@sanity-typed/utils";
 
-type Simplify<AnyType> = SimplifyNative<AnyType> extends AnyType
-  ? SimplifyNative<AnyType>
-  : AnyType;
+type Simplify<AnyType> =
+  SimplifyNative<AnyType> extends AnyType ? SimplifyNative<AnyType> : AnyType;
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Query-context
@@ -112,48 +111,48 @@ type AddPlaceholders<TString extends string> =
   TString extends `${infer TLeft} in ${infer TRight}`
     ? `${AddPlaceholders<TLeft>}${SurroundWithSpace<"in">}${AddPlaceholders<TRight>}`
     : TString extends `${infer TLeft} match ${infer TRight}`
-    ? `${AddPlaceholders<TLeft>}${SurroundWithSpace<"match">}${AddPlaceholders<TRight>}`
-    : TString extends `${infer TLeft} asc${infer TRight}`
-    ? `${AddPlaceholders<TLeft>}${PrefixWithSpace<"asc">}${AddPlaceholders<TRight>}`
-    : TString extends `${infer TLeft} desc${infer TRight}`
-    ? `${AddPlaceholders<TLeft>}${PrefixWithSpace<"desc">}${AddPlaceholders<TRight>}`
-    : TString extends `${infer TLeft}\\${infer TRight}`
-    ? `${AddPlaceholders<TLeft>}${TRight extends `${infer TRightHead}${infer TRightRest}`
-        ? `${TRightHead extends '"'
-            ? EscapedDoubleQuote
-            : TRightHead extends "'"
-            ? EscapedSingleQuote
-            : `\\${TRightHead}`}${AddPlaceholders<TRightRest>}`
-        : `\\${TRight}`}`
-    : TString;
+      ? `${AddPlaceholders<TLeft>}${SurroundWithSpace<"match">}${AddPlaceholders<TRight>}`
+      : TString extends `${infer TLeft} asc${infer TRight}`
+        ? `${AddPlaceholders<TLeft>}${PrefixWithSpace<"asc">}${AddPlaceholders<TRight>}`
+        : TString extends `${infer TLeft} desc${infer TRight}`
+          ? `${AddPlaceholders<TLeft>}${PrefixWithSpace<"desc">}${AddPlaceholders<TRight>}`
+          : TString extends `${infer TLeft}\\${infer TRight}`
+            ? `${AddPlaceholders<TLeft>}${TRight extends `${infer TRightHead}${infer TRightRest}`
+                ? `${TRightHead extends '"'
+                    ? EscapedDoubleQuote
+                    : TRightHead extends "'"
+                      ? EscapedSingleQuote
+                      : `\\${TRightHead}`}${AddPlaceholders<TRightRest>}`
+                : `\\${TRight}`}`
+            : TString;
 
 type RemovePlaceholders<TString extends string> =
   TString extends `${infer TLeft}${SurroundWithSpace<infer TOp>}${infer TRight}`
     ? `${RemovePlaceholders<TLeft>} ${TOp} ${RemovePlaceholders<TRight>}`
     : TString extends `${infer TLeft}${PrefixWithSpace<
-        infer TOp
-      >}${infer TRight}`
-    ? `${RemovePlaceholders<TLeft>} ${TOp}${RemovePlaceholders<TRight>}`
-    : TString extends `${infer TLeft}${EscapedDoubleQuote}${infer TRight}`
-    ? `${RemovePlaceholders<TLeft>}\\"${RemovePlaceholders<TRight>}`
-    : TString extends `${infer TLeft}${EscapedSingleQuote}${infer TRight}`
-    ? `${RemovePlaceholders<TLeft>}\\'${RemovePlaceholders<TRight>}`
-    : TString;
+          infer TOp
+        >}${infer TRight}`
+      ? `${RemovePlaceholders<TLeft>} ${TOp}${RemovePlaceholders<TRight>}`
+      : TString extends `${infer TLeft}${EscapedDoubleQuote}${infer TRight}`
+        ? `${RemovePlaceholders<TLeft>}\\"${RemovePlaceholders<TRight>}`
+        : TString extends `${infer TLeft}${EscapedSingleQuote}${infer TRight}`
+          ? `${RemovePlaceholders<TLeft>}\\'${RemovePlaceholders<TRight>}`
+          : TString;
 
 type RemoveWhitespace<TExpression extends string> =
   TExpression extends `${infer TLeft}${'"'}${infer TQuoted}${'"'}${infer TRight}`
     ? `${RemoveWhitespace<TLeft>}${'"'}${TQuoted}${'"'}${RemoveWhitespace<TRight>}`
     : TExpression extends `${infer TLeft}${"'"}${infer TQuoted}${"'"}${infer TRight}`
-    ? `${RemoveWhitespace<TLeft>}${"'"}${TQuoted}${"'"}${RemoveWhitespace<TRight>}`
-    : TExpression extends `${infer TLeft}${"\n"}${infer TRight}`
-    ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
-    : TExpression extends `${infer TLeft}${"\t"}${infer TRight}`
-    ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
-    : TExpression extends `${infer TLeft}${"     "}${infer TRight}`
-    ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
-    : TExpression extends `${infer TLeft}${" "}${infer TRight}`
-    ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
-    : TExpression;
+      ? `${RemoveWhitespace<TLeft>}${"'"}${TQuoted}${"'"}${RemoveWhitespace<TRight>}`
+      : TExpression extends `${infer TLeft}${"\n"}${infer TRight}`
+        ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
+        : TExpression extends `${infer TLeft}${"\t"}${infer TRight}`
+          ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
+          : TExpression extends `${infer TLeft}${"     "}${infer TRight}`
+            ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
+            : TExpression extends `${infer TLeft}${" "}${infer TRight}`
+              ? `${RemoveWhitespace<TLeft>}${RemoveWhitespace<TRight>}`
+              : TExpression;
 
 export type CleanGROQ<TExpression extends string> = RemovePlaceholders<
   RemoveWhitespace<AddPlaceholders<TExpression>>
@@ -172,7 +171,7 @@ export type Parse<TExpression extends string> = ParseInner<
  */
 export type Evaluate<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > =
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursion
   EvaluateExpression<TNode, TScope>;
@@ -185,15 +184,12 @@ export type Evaluate<
 type Primitives<TExpression extends string> = TExpression extends `+${number}`
   ? never
   : TExpression extends `-${number}`
-  ? never
-  : TExpression extends `.${string}`
-  ? never
-  : TExpression extends `${infer TValue extends boolean | number | null}`
-  ? {
-      type: "Value";
-      value: TValue;
-    }
-  : never;
+    ? never
+    : TExpression extends `.${string}`
+      ? never
+      : TExpression extends `${infer TValue extends boolean | number | null}`
+        ? { type: "Value"; value: TValue }
+        : never;
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#SingleEscapeSequence
@@ -218,14 +214,14 @@ type EscapeSequence = // TODO https://github.com/saiichihashimoto/sanity-typed/i
 type ReplaceInString<
   TString extends string,
   TReplace extends string,
-  TReplaceWith extends string = ""
+  TReplaceWith extends string = "",
 > = TString extends `${infer TLeft}${TReplace}${infer TRight}`
   ? `${TLeft}${TReplaceWith}${ReplaceInString<TRight, TReplace, TReplaceWith>}`
   : TString;
 
 type IfStringHas<
   TString extends string,
-  THas extends string
+  THas extends string,
 > = TString extends `${string}${THas}${string}` ? true : false;
 
 /**
@@ -272,19 +268,19 @@ type ArrayElement<TArrayElement extends string> =
       ? never
       : { isSplat: true; type: "ArrayElement"; value: ParseInner<TExpression> }
     : ParseInner<TArrayElement> extends never
-    ? never
-    : {
-        isSplat: false;
-        type: "ArrayElement";
-        value: ParseInner<TArrayElement>;
-      };
+      ? never
+      : {
+          isSplat: false;
+          type: "ArrayElement";
+          value: ParseInner<TArrayElement>;
+        };
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#ArrayElements
  */
 type ArrayElements<
   TArrayElements extends string,
-  _Prefix extends string = ""
+  _Prefix extends string = "",
 > = `${_Prefix}${TArrayElements}` extends ""
   ? []
   :
@@ -297,11 +293,11 @@ type ArrayElements<
               | (ArrayElement<`${_Prefix}${TArrayElement}`> extends never
                   ? never
                   : ArrayElements<TRemainingElements> extends never
-                  ? never
-                  : [
-                      ArrayElement<`${_Prefix}${TArrayElement}`>,
-                      ...ArrayElements<TRemainingElements>
-                    ])
+                    ? never
+                    : [
+                        ArrayElement<`${_Prefix}${TArrayElement}`>,
+                        ...ArrayElements<TRemainingElements>,
+                      ])
           : never);
 
 /**
@@ -311,10 +307,7 @@ type ArrayType<TExpression extends string> =
   TExpression extends `[${infer TArrayElements}]`
     ? ArrayElements<TArrayElements> extends never
       ? never
-      : {
-          elements: ArrayElements<TArrayElements>;
-          type: "Array";
-        }
+      : { elements: ArrayElements<TArrayElements>; type: "Array" }
     : never;
 
 /**
@@ -341,34 +334,34 @@ type ObjectAttribute<TObjectAttribute extends string> =
     ? TExpression extends ""
       ? { type: "ObjectSplat"; value: { type: "This" } }
       : ParseInner<TExpression> extends never
-      ? never
-      : { type: "ObjectSplat"; value: ParseInner<TExpression> }
+        ? never
+        : { type: "ObjectSplat"; value: ParseInner<TExpression> }
     : TObjectAttribute extends `${infer TName}:${infer TExpression}`
-    ? StringType<TName> extends never
-      ? never
-      : ParseInner<TExpression> extends never
-      ? never
-      : {
-          name: StringType<TName>["value"];
-          type: "ObjectAttributeValue";
-          value: ParseInner<TExpression>;
-        }
-    : ParseInner<TObjectAttribute> extends never
-    ? never
-    : DetermineName<ParseInner<TObjectAttribute>> extends never
-    ? never
-    : {
-        name: DetermineName<ParseInner<TObjectAttribute>>;
-        type: "ObjectAttributeValue";
-        value: ParseInner<TObjectAttribute>;
-      };
+      ? StringType<TName> extends never
+        ? never
+        : ParseInner<TExpression> extends never
+          ? never
+          : {
+              name: StringType<TName>["value"];
+              type: "ObjectAttributeValue";
+              value: ParseInner<TExpression>;
+            }
+      : ParseInner<TObjectAttribute> extends never
+        ? never
+        : DetermineName<ParseInner<TObjectAttribute>> extends never
+          ? never
+          : {
+              name: DetermineName<ParseInner<TObjectAttribute>>;
+              type: "ObjectAttributeValue";
+              value: ParseInner<TObjectAttribute>;
+            };
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#ObjectAttributes
  */
 type ObjectAttributes<
   TObjectAttributes extends string,
-  _Prefix extends string = ""
+  _Prefix extends string = "",
 > = `${_Prefix}${TObjectAttributes}` extends ""
   ? []
   :
@@ -384,11 +377,11 @@ type ObjectAttributes<
               | (ObjectAttribute<`${_Prefix}${TObjectAttribute}`> extends never
                   ? never
                   : ObjectAttributes<TRemainingAttributes> extends never
-                  ? never
-                  : [
-                      ObjectAttribute<`${_Prefix}${TObjectAttribute}`>,
-                      ...ObjectAttributes<TRemainingAttributes>
-                    ])
+                    ? never
+                    : [
+                        ObjectAttribute<`${_Prefix}${TObjectAttribute}`>,
+                        ...ObjectAttributes<TRemainingAttributes>,
+                      ])
           : never);
 
 /**
@@ -451,11 +444,11 @@ type Numeric = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 type IdentifierRest<TIdentifierRest extends string> = TIdentifierRest extends ""
   ? true
   : TIdentifierRest extends `${
-      | Alpha
-      | Numeric
-      | "_"}${infer TIdentifierRestInner}`
-  ? IdentifierRest<TIdentifierRestInner>
-  : false;
+        | Alpha
+        | Numeric
+        | "_"}${infer TIdentifierRestInner}`
+    ? IdentifierRest<TIdentifierRestInner>
+    : false;
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#Identifier
@@ -477,8 +470,8 @@ type ThisAttribute<TExpression extends string> = TExpression extends `${
   | null}`
   ? never
   : Identifier<TExpression> extends never
-  ? never
-  : { name: TExpression; type: "AccessAttribute" };
+    ? never
+    : { name: TExpression; type: "AccessAttribute" };
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#Everything
@@ -492,12 +485,12 @@ type Everything<TExpression extends string> = TExpression extends "*"
  */
 type Parent<
   TExpression extends string,
-  Levels extends null[] = [null]
+  Levels extends null[] = [null],
 > = TExpression extends "^"
   ? { n: Levels["length"]; type: "Parent" }
   : TExpression extends `^.${infer TParents}`
-  ? Parent<TParents, [null, ...Levels]>
-  : never;
+    ? Parent<TParents, [null, ...Levels]>
+    : never;
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#sec-geo-type
@@ -517,7 +510,7 @@ declare const ArbitrarySelectorValue: unique symbol;
 
 type Functions<
   TArgs extends any[],
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = {
   /**
    * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Array-namespace
@@ -531,12 +524,12 @@ type Functions<
         ? TArr extends null[] | []
           ? []
           : TArr extends [infer THead, ...infer TTail]
-          ? THead extends null
-            ? Functions<[TTail], TScope>["array"]["compact"]
-            : [THead, ...Functions<[TTail], TScope>["array"]["compact"]]
-          : TArr extends (infer TElement)[]
-          ? NonNullable<TElement>[]
-          : never
+            ? THead extends null
+              ? Functions<[TTail], TScope>["array"]["compact"]
+              : [THead, ...Functions<[TTail], TScope>["array"]["compact"]]
+            : TArr extends (infer TElement)[]
+              ? NonNullable<TElement>[]
+              : never
         : null
       : never;
     /**
@@ -559,15 +552,15 @@ type Functions<
         ? TArr extends null[] | []
           ? []
           : TArr extends [...infer TInitial, infer TLast]
-          ? TLast extends boolean | number | string
-            ? TLast extends Functions<
-                [TInitial],
-                TScope
-              >["array"]["unique"][number]
-              ? Functions<[TInitial], TScope>["array"]["unique"]
+            ? TLast extends boolean | number | string
+              ? TLast extends Functions<
+                  [TInitial],
+                  TScope
+                >["array"]["unique"][number]
+                ? Functions<[TInitial], TScope>["array"]["unique"]
+                : [...Functions<[TInitial], TScope>["array"]["unique"], TLast]
               : [...Functions<[TInitial], TScope>["array"]["unique"], TLast]
-            : [...Functions<[TInitial], TScope>["array"]["unique"], TLast]
-          : TArr
+            : TArr
         : null
       : never;
   };
@@ -595,11 +588,11 @@ type Functions<
           ? TBefore extends null
             ? never
             : TAfter extends null
-            ? never
-            : Functions<
-                [TBefore, TAfter, TSelector],
-                TScope
-              >["diff"]["changedAny"]
+              ? never
+              : Functions<
+                  [TBefore, TAfter, TSelector],
+                  TScope
+                >["diff"]["changedAny"]
           : never
         : never
       : never;
@@ -614,11 +607,11 @@ type Functions<
           ? TBefore extends null
             ? never
             : TAfter extends null
-            ? never
-            : Functions<
-                [TBefore, TAfter, TSelector],
-                TScope
-              >["diff"]["changedOnly"]
+              ? never
+              : Functions<
+                  [TBefore, TAfter, TSelector],
+                  TScope
+                >["diff"]["changedOnly"]
           : never
         : never
       : never;
@@ -634,8 +627,8 @@ type Functions<
             ? null
             : "create"
           : TAfter extends null
-          ? "delete"
-          : "update"
+            ? "delete"
+            : "update"
         : never
       : never;
   };
@@ -709,10 +702,10 @@ type Functions<
     coalesce: TArgs extends []
       ? null
       : TArgs extends [infer THead, ...infer TTail]
-      ? null extends THead
-        ? Functions<TTail, TScope>["global"]["coalesce"] | NonNullable<THead>
-        : THead
-      : never;
+        ? null extends THead
+          ? Functions<TTail, TScope>["global"]["coalesce"] | NonNullable<THead>
+          : THead
+        : never;
     /**
      * @link https://spec.groq.dev/GROQ-1.revision1/#global_count()
      */
@@ -808,8 +801,8 @@ type Functions<
         ? IsUnknown<TPrecision> extends true
           ? number
           : TPrecision extends number
-          ? number
-          : null
+            ? number
+            : null
         : null
       : never;
     /**
@@ -845,10 +838,10 @@ type Functions<
           ? 0
           : null
         : TArr extends (number | null)[]
-        ? mathFn extends "max" | "min"
-          ? Exclude<TArr[number], null>
-          : number
-        : null
+          ? mathFn extends "max" | "min"
+            ? Exclude<TArr[number], null>
+            : number
+          : null
       : never;
   };
   /**
@@ -916,10 +909,7 @@ type Functions<
 type Asc<TExpression extends string> = TExpression extends `${infer TBase} asc`
   ? ParseInner<TBase> extends never
     ? never
-    : {
-        base: ParseInner<TBase>;
-        type: "Asc";
-      }
+    : { base: ParseInner<TBase>; type: "Asc" }
   : never;
 
 /**
@@ -929,10 +919,7 @@ type Desc<TExpression extends string> =
   TExpression extends `${infer TBase} desc`
     ? ParseInner<TBase> extends never
       ? never
-      : {
-          base: ParseInner<TBase>;
-          type: "Desc";
-        }
+      : { base: ParseInner<TBase>; type: "Desc" }
     : never;
 
 /**
@@ -943,12 +930,12 @@ type Pair<TExpression extends string> =
     ? ParseInner<TCondition> extends never
       ? never
       : ParseInner<TValue> extends never
-      ? never
-      : {
-          condition: ParseInner<TCondition>;
-          type: "SelectAlternative";
-          value: ParseInner<TValue>;
-        }
+        ? never
+        : {
+            condition: ParseInner<TCondition>;
+            type: "SelectAlternative";
+            value: ParseInner<TValue>;
+          }
     : never;
 
 /**
@@ -967,7 +954,7 @@ type SelectorTupleInner<TExpression extends string> =
       Selector<TFirst> extends never
       ? never
       : // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Recursion
-        Selector<TRest> | SelectorTupleInner<TRest>
+          Selector<TRest> | SelectorTupleInner<TRest>
     : never;
 
 /**
@@ -981,27 +968,27 @@ type Selector<TExpression extends string> =
       ? Selector<TSelector> extends never
         ? never
         : Identifier<TIdentifier> extends never
-        ? TIdentifier extends `(${infer TInnerExpression})`
-          ? Selector<TInnerExpression> | SelectorTupleInner<TInnerExpression>
-          : never
-        : { type: "Selector" }
+          ? TIdentifier extends `(${infer TInnerExpression})`
+            ? Selector<TInnerExpression> | SelectorTupleInner<TInnerExpression>
+            : never
+          : { type: "Selector" }
       : never)
   | (TExpression extends `${infer TSelector}[${infer TBracketExpression}]`
       ? Selector<TSelector> extends never
         ? never
         : TBracketExpression extends ""
-        ? { type: "Selector" }
-        : ConstantEvaluate<ParseInner<TBracketExpression>> extends never
-        ? never
-        : ConstantEvaluate<ParseInner<TBracketExpression>> extends number
-        ? never
-        : { type: "Selector" }
+          ? { type: "Selector" }
+          : ConstantEvaluate<ParseInner<TBracketExpression>> extends never
+            ? never
+            : ConstantEvaluate<ParseInner<TBracketExpression>> extends number
+              ? never
+              : { type: "Selector" }
       : never)
   | (ThisAttribute<TExpression> extends never ? never : { type: "Selector" });
 
 type FuncArgCustomParse<
   TExpression extends string,
-  TFuncLastArg extends boolean
+  TFuncLastArg extends boolean,
 > = {
   delta: {
     changedAny: TFuncLastArg extends true
@@ -1031,7 +1018,7 @@ type FuncArgParse<
   TExpression extends string,
   TFuncNamespace extends string,
   TFuncName extends string,
-  TFuncLastArg extends boolean = false
+  TFuncLastArg extends boolean = false,
 > = TFuncNamespace extends keyof FuncArgCustomParse<TExpression, TFuncLastArg>
   ? TFuncName extends keyof FuncArgCustomParse<
       TExpression,
@@ -1045,7 +1032,7 @@ type FuncArgs<
   TArgs extends string,
   TFuncNamespace extends string,
   TFuncName extends string,
-  _Prefix extends string = ""
+  _Prefix extends string = "",
 > = `${_Prefix}${TArgs}` extends ""
   ? []
   :
@@ -1062,7 +1049,7 @@ type FuncArgs<
                 TFuncNamespace,
                 TFuncName,
                 true
-              >
+              >,
             ])
       | (TArgs extends `${infer TFuncArg},${infer TFuncArgs}`
           ?
@@ -1079,44 +1066,34 @@ type FuncArgs<
                 > extends never
                   ? never
                   : FuncArgs<TFuncArgs, TFuncNamespace, TFuncName> extends never
-                  ? never
-                  : [
-                      FuncArgParse<
-                        `${_Prefix}${TFuncArg}`,
-                        TFuncNamespace,
-                        TFuncName
-                      >,
-                      ...FuncArgs<TFuncArgs, TFuncNamespace, TFuncName>
-                    ])
+                    ? never
+                    : [
+                        FuncArgParse<
+                          `${_Prefix}${TFuncArg}`,
+                          TFuncNamespace,
+                          TFuncName
+                        >,
+                        ...FuncArgs<TFuncArgs, TFuncNamespace, TFuncName>,
+                      ])
           : never);
 
 // https://github.com/sanity-io/groq-js/blob/28dee3d75e9e32722dfb2291e1f58e1418e11bb8/src/parser.ts#L382
 // before() and after() return ContextNodes instead
 type FunctionsToOtherNodes<
   TFuncName extends string,
-  TFuncArgs extends any[]
+  TFuncArgs extends any[],
 > = TFuncName extends "after" | "before"
-  ? {
-      key: TFuncName;
-      type: "Context";
-    }
+  ? { key: TFuncName; type: "Context" }
   : TFuncName extends "select"
-  ? TFuncArgs extends [
-      ...infer TAlternatives extends SelectAlternativeNode[],
-      infer TFallback extends ExprNode
-    ]
-    ? {
-        alternatives: TAlternatives;
-        fallback: TFallback;
-        type: "Select";
-      }
-    : TFuncArgs extends infer TAlternatives extends SelectAlternativeNode[]
-    ? {
-        alternatives: TAlternatives;
-        type: "Select";
-      }
-    : never
-  : never;
+    ? TFuncArgs extends [
+        ...infer TAlternatives extends SelectAlternativeNode[],
+        infer TFallback extends ExprNode,
+      ]
+      ? { alternatives: TAlternatives; fallback: TFallback; type: "Select" }
+      : TFuncArgs extends infer TAlternatives extends SelectAlternativeNode[]
+        ? { alternatives: TAlternatives; type: "Select" }
+        : never
+    : never;
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#FuncCall
@@ -1128,34 +1105,34 @@ type FuncCall<TExpression extends string> =
         ? FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName> extends never
           ? never
           : TFuncName extends keyof Functions<any, any>[TFuncNamespace]
+            ? {
+                args: Simplify<
+                  FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>
+                >;
+                func: GroqFunction;
+                name: TFuncName;
+                namespace: TFuncNamespace;
+                type: "FuncCall";
+              }
+            : FunctionsToOtherNodes<
+                TFuncName,
+                Simplify<FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>>
+              >
+        : never
+      : FuncArgs<TFuncCallArgs, "global", TFuncFullName> extends never
+        ? never
+        : TFuncFullName extends keyof Functions<any, any>["global"]
           ? {
-              args: Simplify<
-                FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>
-              >;
+              args: Simplify<FuncArgs<TFuncCallArgs, "global", TFuncFullName>>;
               func: GroqFunction;
-              name: TFuncName;
-              namespace: TFuncNamespace;
+              name: TFuncFullName;
+              namespace: "global";
               type: "FuncCall";
             }
           : FunctionsToOtherNodes<
-              TFuncName,
-              Simplify<FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>>
+              TFuncFullName,
+              Simplify<FuncArgs<TFuncCallArgs, "global", TFuncFullName>>
             >
-        : never
-      : FuncArgs<TFuncCallArgs, "global", TFuncFullName> extends never
-      ? never
-      : TFuncFullName extends keyof Functions<any, any>["global"]
-      ? {
-          args: Simplify<FuncArgs<TFuncCallArgs, "global", TFuncFullName>>;
-          func: GroqFunction;
-          name: TFuncFullName;
-          namespace: "global";
-          type: "FuncCall";
-        }
-      : FunctionsToOtherNodes<
-          TFuncFullName,
-          Simplify<FuncArgs<TFuncCallArgs, "global", TFuncFullName>>
-        >
     : never;
 
 /**
@@ -1165,10 +1142,7 @@ type Parameter<TExpression extends string> =
   TExpression extends `$${infer TIdentifier}`
     ? Identifier<TIdentifier> extends never
       ? never
-      : {
-          name: TIdentifier;
-          type: "Parameter";
-        }
+      : { name: TIdentifier; type: "Parameter" }
     : never;
 
 /**
@@ -1240,23 +1214,19 @@ type KnownArrayNode =
 type MaybeMapBase<TBase extends ExprNode> = TBase extends never
   ? never
   : TBase extends KnownArrayNode
-  ? { type: "This" }
-  : TBase;
+    ? { type: "This" }
+    : TBase;
 
 type MaybeMap<
   TBase extends ExprNode,
-  TNode extends ExprNode
+  TNode extends ExprNode,
 > = TBase extends never
   ? never
   : TNode extends never
-  ? never
-  : TBase extends KnownArrayNode
-  ? {
-      base: TBase;
-      expr: TNode;
-      type: "Map";
-    }
-  : TNode;
+    ? never
+    : TBase extends KnownArrayNode
+      ? { base: TBase; expr: TNode; type: "Map" }
+      : TNode;
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#Range
@@ -1268,13 +1238,13 @@ type Range<TExpression extends string> = {
     ? ParseInner<TStart> extends never
       ? never
       : ParseInner<TEnd> extends never
-      ? never
-      : {
-          isInclusive: TOp extends ".." ? true : false;
-          left: ParseInner<TStart>;
-          right: ParseInner<TEnd>;
-          type: "Range";
-        }
+        ? never
+        : {
+            isInclusive: TOp extends ".." ? true : false;
+            left: ParseInner<TStart>;
+            right: ParseInner<TEnd>;
+            type: "Range";
+          }
     : never;
 }["..." | ".."];
 
@@ -1286,7 +1256,7 @@ type Range<TExpression extends string> = {
  */
 type SquareBracketTraversal<
   TExpression extends string,
-  _Prefix extends string = ""
+  _Prefix extends string = "",
 > = TExpression extends `${infer TBase}[${infer TBracketExpression}]`
   ?
       | SquareBracketTraversal<`${TBracketExpression}]`, `${_Prefix}${TBase}[`>
@@ -1296,56 +1266,66 @@ type SquareBracketTraversal<
               | (ConstantEvaluate<ParseInner<TBracketExpression>> extends never
                   ? never
                   : ConstantEvaluate<
-                      ParseInner<TBracketExpression>
-                    > extends string
-                  ? // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
-                    MaybeMap<
-                      Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>,
-                      {
-                        base: MaybeMapBase<
-                          Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>
-                        >;
-                        name: ConstantEvaluate<ParseInner<TBracketExpression>>;
-                        type: "AccessAttribute";
-                      }
-                    >
-                  : ConstantEvaluate<
-                      ParseInner<TBracketExpression>
-                    > extends number
-                  ? {
-                      base: Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>;
-                      index: ConstantEvaluate<ParseInner<TBracketExpression>>;
-                      type: "AccessElement";
-                    }
-                  : {
-                      base: Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>;
-                      expr: ParseInner<TBracketExpression>;
-                      type: "Filter";
-                    })
+                        ParseInner<TBracketExpression>
+                      > extends string
+                    ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+                      MaybeMap<
+                        Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>,
+                        {
+                          base: MaybeMapBase<
+                            Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>
+                          >;
+                          name: ConstantEvaluate<
+                            ParseInner<TBracketExpression>
+                          >;
+                          type: "AccessAttribute";
+                        }
+                      >
+                    : ConstantEvaluate<
+                          ParseInner<TBracketExpression>
+                        > extends number
+                      ? {
+                          base: Exclude<
+                            ParseInner<`${_Prefix}${TBase}`>,
+                            Level10
+                          >;
+                          index: ConstantEvaluate<
+                            ParseInner<TBracketExpression>
+                          >;
+                          type: "AccessElement";
+                        }
+                      : {
+                          base: Exclude<
+                            ParseInner<`${_Prefix}${TBase}`>,
+                            Level10
+                          >;
+                          expr: ParseInner<TBracketExpression>;
+                          type: "Filter";
+                        })
               | (Range<TBracketExpression> extends never
                   ? never
                   : ConstantEvaluate<
-                      Range<TBracketExpression>["left"]
-                    > extends number
-                  ? ConstantEvaluate<
-                      Range<TBracketExpression>["right"]
-                    > extends number
-                    ? {
-                        base: Exclude<
-                          ParseInner<`${_Prefix}${TBase}`>,
-                          Level10
-                        >;
-                        isInclusive: Range<TBracketExpression>["isInclusive"];
-                        left: ConstantEvaluate<
-                          Range<TBracketExpression>["left"]
-                        >;
-                        right: ConstantEvaluate<
-                          Range<TBracketExpression>["right"]
-                        >;
-                        type: "Slice";
-                      }
-                    : never
-                  : never))
+                        Range<TBracketExpression>["left"]
+                      > extends number
+                    ? ConstantEvaluate<
+                        Range<TBracketExpression>["right"]
+                      > extends number
+                      ? {
+                          base: Exclude<
+                            ParseInner<`${_Prefix}${TBase}`>,
+                            Level10
+                          >;
+                          isInclusive: Range<TBracketExpression>["isInclusive"];
+                          left: ConstantEvaluate<
+                            Range<TBracketExpression>["left"]
+                          >;
+                          right: ConstantEvaluate<
+                            Range<TBracketExpression>["right"]
+                          >;
+                          type: "Slice";
+                        }
+                      : never
+                    : never))
   : never;
 
 /**
@@ -1353,94 +1333,92 @@ type SquareBracketTraversal<
  */
 type AttributeAccess<
   TExpression extends string,
-  _Prefix extends string = ""
+  _Prefix extends string = "",
 > = TExpression extends `${infer TBase}.${infer TIdentifier}`
   ?
       | AttributeAccess<TIdentifier, `${_Prefix}${TBase}.`>
       | (Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10> extends never
           ? never
           : Identifier<TIdentifier> extends never
-          ? never
-          : MaybeMap<
-              Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>,
-              {
-                base: MaybeMapBase<
-                  Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>
-                >;
-                name: TIdentifier;
-                type: "AccessAttribute";
-              }
-            >)
+            ? never
+            : MaybeMap<
+                Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>,
+                {
+                  base: MaybeMapBase<
+                    Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>
+                  >;
+                  name: TIdentifier;
+                  type: "AccessAttribute";
+                }
+              >)
   : never;
 
-type ProjectionInner<
-  TBase extends string,
-  TProjection extends string
-> = Exclude<ParseInner<TBase>, Level10> extends never
-  ? never
-  : ObjectType<`{${TProjection}}`> extends never
-  ? never
-  : MaybeMap<
-      Exclude<ParseInner<TBase>, Level10>,
-      {
-        base: MaybeMapBase<Exclude<ParseInner<TBase>, Level10>>;
-        expr: ObjectType<`{${TProjection}}`>;
-        type: "Projection";
-      }
-    >;
+type ProjectionInner<TBase extends string, TProjection extends string> =
+  Exclude<ParseInner<TBase>, Level10> extends never
+    ? never
+    : ObjectType<`{${TProjection}}`> extends never
+      ? never
+      : MaybeMap<
+          Exclude<ParseInner<TBase>, Level10>,
+          {
+            base: MaybeMapBase<Exclude<ParseInner<TBase>, Level10>>;
+            expr: ObjectType<`{${TProjection}}`>;
+            type: "Projection";
+          }
+        >;
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#Projection
  */
 type Projection<
   TExpression extends string,
-  _Prefix extends string = ""
+  _Prefix extends string = "",
 > = TExpression extends `${infer TBase}|{${infer TProjection}}`
   ?
       | Projection<`${TProjection}}`, `${_Prefix}${TBase}|{`>
       | ProjectionInner<`${_Prefix}${TBase}`, TProjection>
   : TExpression extends `${infer TBase}{${infer TProjection}}`
-  ?
-      | Projection<`${TProjection}}`, `${_Prefix}${TBase}{`>
-      | ProjectionInner<`${_Prefix}${TBase}`, TProjection>
-  : never;
+    ?
+        | Projection<`${TProjection}}`, `${_Prefix}${TBase}{`>
+        | ProjectionInner<`${_Prefix}${TBase}`, TProjection>
+    : never;
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#Dereference
  */
 type Dereference<
   TExpression extends string,
-  _Prefix extends string = ""
+  _Prefix extends string = "",
 > = TExpression extends `${infer TBase}->${infer TIdentifier}`
   ?
       | Dereference<TIdentifier, `${_Prefix}${TBase}->`>
       | (Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10> extends never
           ? never
           : TIdentifier extends ""
-          ? MaybeMap<
-              Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>,
-              {
-                base: MaybeMapBase<
-                  Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>
-                >;
-                type: "Deref";
-              }
-            >
-          : Identifier<TIdentifier> extends never
-          ? never
-          : MaybeMap<
-              Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>,
-              {
-                base: {
+            ? MaybeMap<
+                Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>,
+                {
                   base: MaybeMapBase<
                     Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>
                   >;
                   type: "Deref";
-                };
-                name: TIdentifier;
-                type: "AccessAttribute";
-              }
-            >)
+                }
+              >
+            : Identifier<TIdentifier> extends never
+              ? never
+              : MaybeMap<
+                  Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>,
+                  {
+                    base: {
+                      base: MaybeMapBase<
+                        Exclude<ParseInner<`${_Prefix}${TBase}`>, Level10>
+                      >;
+                      type: "Deref";
+                    };
+                    name: TIdentifier;
+                    type: "AccessAttribute";
+                  }
+                >)
   : never;
 
 /**
@@ -1475,10 +1453,10 @@ type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
     score: TArgs extends []
       ? never
       : TBase extends (infer Element)[]
-      ? (IsPlainObject<Element> extends false
-          ? never
-          : Element & { _score: number })[]
-      : never;
+        ? (IsPlainObject<Element> extends false
+            ? never
+            : Element & { _score: number })[]
+        : never;
   };
 };
 
@@ -1490,32 +1468,36 @@ type PipeFuncCall<TExpression extends string> =
     ? Parse<TBase> extends never
       ? never
       : TFuncFullName extends `${infer TFuncNamespace}::${infer TFuncName}`
-      ? TFuncNamespace extends keyof PipeFunctions<any, any>
-        ? FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName> extends never
-          ? never
-          : TFuncName extends keyof PipeFunctions<any, any>[TFuncNamespace]
-          ? {
-              args: Simplify<
-                FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>
-              >;
-              base: Parse<TBase>;
-              func: GroqPipeFunction;
-              name: TFuncNamespace extends "global" ? TFuncName : TFuncFullName;
-              type: "PipeFuncCall";
-            }
+        ? TFuncNamespace extends keyof PipeFunctions<any, any>
+          ? FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName> extends never
+            ? never
+            : TFuncName extends keyof PipeFunctions<any, any>[TFuncNamespace]
+              ? {
+                  args: Simplify<
+                    FuncArgs<TFuncCallArgs, TFuncNamespace, TFuncName>
+                  >;
+                  base: Parse<TBase>;
+                  func: GroqPipeFunction;
+                  name: TFuncNamespace extends "global"
+                    ? TFuncName
+                    : TFuncFullName;
+                  type: "PipeFuncCall";
+                }
+              : never
           : never
-        : never
-      : FuncArgs<TFuncCallArgs, "global", TFuncFullName> extends never
-      ? never
-      : TFuncFullName extends keyof PipeFunctions<any, any>["global"]
-      ? {
-          args: Simplify<FuncArgs<TFuncCallArgs, "global", TFuncFullName>>;
-          base: Parse<TBase>;
-          func: GroqPipeFunction;
-          name: TFuncFullName;
-          type: "PipeFuncCall";
-        }
-      : never
+        : FuncArgs<TFuncCallArgs, "global", TFuncFullName> extends never
+          ? never
+          : TFuncFullName extends keyof PipeFunctions<any, any>["global"]
+            ? {
+                args: Simplify<
+                  FuncArgs<TFuncCallArgs, "global", TFuncFullName>
+                >;
+                base: Parse<TBase>;
+                func: GroqPipeFunction;
+                name: TFuncFullName;
+                type: "PipeFuncCall";
+              }
+            : never
     : never;
 
 /**
@@ -1550,36 +1532,36 @@ type BooleanOperators = {
 type BooleanOperator<
   TExpression extends string,
   TOp extends keyof BooleanOperators | null = null,
-  _Prefix extends string = ""
+  _Prefix extends string = "",
 > = TOp extends null
   ? {
       [TOp in keyof BooleanOperators]: BooleanOperator<TExpression, TOp>;
     }[keyof BooleanOperators]
   : TExpression extends `${infer TLeft}${TOp}${infer TRight}`
-  ?
-      | BooleanOperator<TRight, TOp, `${_Prefix}${TLeft}${TOp}`>
-      | (Exclude<
-          ParseInner<`${_Prefix}${TLeft}`>,
-          BooleanOperators[NonNullable<TOp>]["leftLevel"]
-        > extends never
-          ? never
-          : Exclude<
-              ParseInner<TRight>,
-              BooleanOperators[NonNullable<TOp>]["rightLevel"]
-            > extends never
-          ? never
-          : {
-              left: Exclude<
-                ParseInner<`${_Prefix}${TLeft}`>,
-                BooleanOperators[NonNullable<TOp>]["leftLevel"]
-              >;
-              right: Exclude<
-                ParseInner<TRight>,
-                BooleanOperators[NonNullable<TOp>]["rightLevel"]
-              >;
-              type: BooleanOperators[NonNullable<TOp>]["type"];
-            })
-  : never;
+    ?
+        | BooleanOperator<TRight, TOp, `${_Prefix}${TLeft}${TOp}`>
+        | (Exclude<
+            ParseInner<`${_Prefix}${TLeft}`>,
+            BooleanOperators[NonNullable<TOp>]["leftLevel"]
+          > extends never
+            ? never
+            : Exclude<
+                  ParseInner<TRight>,
+                  BooleanOperators[NonNullable<TOp>]["rightLevel"]
+                > extends never
+              ? never
+              : {
+                  left: Exclude<
+                    ParseInner<`${_Prefix}${TLeft}`>,
+                    BooleanOperators[NonNullable<TOp>]["leftLevel"]
+                  >;
+                  right: Exclude<
+                    ParseInner<TRight>,
+                    BooleanOperators[NonNullable<TOp>]["rightLevel"]
+                  >;
+                  type: BooleanOperators[NonNullable<TOp>]["type"];
+                })
+    : never;
 
 type PrefixOperators = {
   "!": { level: Exclude<Level9, NegNode>; type: "Not" };
@@ -1594,25 +1576,25 @@ type PrefixOperators = {
  */
 type PrefixOperator<
   TExpression extends string,
-  TOp extends keyof PrefixOperators | null = null
+  TOp extends keyof PrefixOperators | null = null,
 > = TOp extends null
   ? {
       [TOp in keyof PrefixOperators]: PrefixOperator<TExpression, TOp>;
     }[keyof PrefixOperators]
   : TExpression extends `${TOp}${infer TBase}`
-  ? Exclude<
-      ParseInner<TBase>,
-      PrefixOperators[NonNullable<TOp>]["level"]
-    > extends never
-    ? never
-    : {
-        base: Exclude<
-          ParseInner<TBase>,
-          PrefixOperators[NonNullable<TOp>]["level"]
-        >;
-        type: PrefixOperators[NonNullable<TOp>]["type"];
-      }
-  : never;
+    ? Exclude<
+        ParseInner<TBase>,
+        PrefixOperators[NonNullable<TOp>]["level"]
+      > extends never
+      ? never
+      : {
+          base: Exclude<
+            ParseInner<TBase>,
+            PrefixOperators[NonNullable<TOp>]["level"]
+          >;
+          type: PrefixOperators[NonNullable<TOp>]["type"];
+        }
+    : never;
 
 type Operators = {
   "!=": { leftLevel: Level4; rightLevel: Level4 };
@@ -1620,12 +1602,11 @@ type Operators = {
   "*": {
     leftLevel: Level6;
     rightLevel: // HACK https://github.com/sanity-io/GROQ/issues/112
-    EverythingNode | Level7;
+      EverythingNode | Level7;
   };
   "**": {
     leftLevel: Level9;
-    rightLevel: // HACK Should be Level8, but NegNode on the right is fine
-    Level7;
+    rightLevel: Level7; // HACK Should be Level8, but NegNode on the right is fine
   };
   "+": { leftLevel: Level5; rightLevel: Level6 };
   "-": { leftLevel: Level5; rightLevel: Level6 };
@@ -1652,47 +1633,47 @@ type Operators = {
 type OpCall<
   TExpression extends string,
   TOp extends keyof Operators | null = null,
-  _Prefix extends string = ""
+  _Prefix extends string = "",
 > = TOp extends null
   ? { [TOp in keyof Operators]: OpCall<TExpression, TOp> }[keyof Operators]
   : TExpression extends `${infer TLeft}${Operators[NonNullable<TOp>] extends {
-      withSpaces: true;
-    }
-      ? ` ${TOp} `
-      : TOp}${infer TRight}`
-  ?
-      | OpCall<
-          TRight,
-          TOp,
-          `${_Prefix}${TLeft}${Operators[NonNullable<TOp>] extends {
-            withSpaces: true;
-          }
-            ? ` ${TOp} `
-            : TOp}`
-        >
-      | (Exclude<
-          ParseInner<`${_Prefix}${TLeft}`>,
-          Operators[NonNullable<TOp>]["leftLevel"]
-        > extends never
-          ? never
-          : Exclude<
-              ParseInner<TRight>,
-              Operators[NonNullable<TOp>]["rightLevel"]
-            > extends never
-          ? never
-          : {
-              left: Exclude<
-                ParseInner<`${_Prefix}${TLeft}`>,
-                Operators[NonNullable<TOp>]["leftLevel"]
-              >;
-              op: TOp;
-              right: Exclude<
-                ParseInner<TRight>,
-                Operators[NonNullable<TOp>]["rightLevel"]
-              >;
-              type: "OpCall";
-            })
-  : never;
+        withSpaces: true;
+      }
+        ? ` ${TOp} `
+        : TOp}${infer TRight}`
+    ?
+        | OpCall<
+            TRight,
+            TOp,
+            `${_Prefix}${TLeft}${Operators[NonNullable<TOp>] extends {
+              withSpaces: true;
+            }
+              ? ` ${TOp} `
+              : TOp}`
+          >
+        | (Exclude<
+            ParseInner<`${_Prefix}${TLeft}`>,
+            Operators[NonNullable<TOp>]["leftLevel"]
+          > extends never
+            ? never
+            : Exclude<
+                  ParseInner<TRight>,
+                  Operators[NonNullable<TOp>]["rightLevel"]
+                > extends never
+              ? never
+              : {
+                  left: Exclude<
+                    ParseInner<`${_Prefix}${TLeft}`>,
+                    Operators[NonNullable<TOp>]["leftLevel"]
+                  >;
+                  op: TOp;
+                  right: Exclude<
+                    ParseInner<TRight>,
+                    Operators[NonNullable<TOp>]["rightLevel"]
+                  >;
+                  type: "OpCall";
+                })
+    : never;
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#In
@@ -1700,27 +1681,27 @@ type OpCall<
 
 type InOperator<
   TExpression extends string,
-  _Prefix extends string = ""
+  _Prefix extends string = "",
 > = TExpression extends `${infer TLeft} in ${infer TRight}`
   ? // | InOperator<TRight, `${_Prefix}${TLeft} in `>
     Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4> extends never
     ? never
     : Exclude<ParseInner<TRight>, Level4> extends never
-    ? Range<TRight> extends never
-      ? never
+      ? Range<TRight> extends never
+        ? never
+        : {
+            base: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
+            isInclusive: Range<TRight>["isInclusive"];
+            left: Range<TRight>["left"];
+            right: Range<TRight>["right"];
+            type: "InRange";
+          }
       : {
-          base: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
-          isInclusive: Range<TRight>["isInclusive"];
-          left: Range<TRight>["left"];
-          right: Range<TRight>["right"];
-          type: "InRange";
+          left: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
+          op: "in";
+          right: Exclude<ParseInner<TRight>, Level4>;
+          type: "OpCall";
         }
-    : {
-        left: Exclude<ParseInner<`${_Prefix}${TLeft}`>, Level4>;
-        op: "in";
-        right: Exclude<ParseInner<TRight>, Level4>;
-        type: "OpCall";
-      }
   : never;
 
 /**
@@ -1743,7 +1724,7 @@ type Expression<TExpression extends string> =
 
 type EvaluateBaseOrThis<
   TNode extends AccessAttributeNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends { base: infer TBase extends ExprNode }
   ? Evaluate<TBase, TScope>
   : TScope["this"];
@@ -1754,7 +1735,7 @@ type EvaluateBaseOrThis<
  */
 type EvaluateAccessAttribute<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends AccessAttributeNode
   ? EvaluateBaseOrThis<TNode, TScope> extends object
     ? EvaluateBaseOrThis<TNode, TScope> extends {
@@ -1762,10 +1743,10 @@ type EvaluateAccessAttribute<
       }
       ? TValue
       : EvaluateBaseOrThis<TNode, TScope> extends {
-          [name in TNode["name"]]?: infer TValue;
-        }
-      ? TValue | undefined
-      : null
+            [name in TNode["name"]]?: infer TValue;
+          }
+        ? TValue | undefined
+        : null
     : null
   : never;
 
@@ -1774,7 +1755,7 @@ type EvaluateAccessAttribute<
  */
 type EvaluateAccessElement<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends AccessElementNode
   ? Evaluate<TNode["base"], TScope> extends any[]
     ? TNode["index"] extends keyof Evaluate<TNode["base"], TScope>
@@ -1790,14 +1771,14 @@ type EvaluateAccessElement<
 type FlattenDoubleArray<TArray extends any[][]> = TArray extends []
   ? []
   : TArray extends [infer THead extends any[], ...infer TTail extends any[][]]
-  ? [...THead, ...FlattenDoubleArray<TTail>]
-  : TArray extends (infer TElement extends any[])[]
-  ? TElement[number][]
-  : never;
+    ? [...THead, ...FlattenDoubleArray<TTail>]
+    : TArray extends (infer TElement extends any[])[]
+      ? TElement[number][]
+      : never;
 
 type EvaluateArrayElement<
   TElement extends ArrayElementNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TElement["isSplat"] extends true
   ? Evaluate<TElement["value"], TScope> extends any[]
     ? Evaluate<TElement["value"], TScope>
@@ -1806,8 +1787,8 @@ type EvaluateArrayElement<
 
 type EvaluateArrayElements<
   TElements extends ArrayElementNode[],
-  TScope extends Scope<Context<any[], any>>
-  // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
+  TScope extends Scope<Context<any[], any>>,
+  // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
 > = FlattenDoubleArray<{
   [Index in keyof TElements]: EvaluateArrayElement<TElements[Index], TScope>;
 }>;
@@ -1817,7 +1798,7 @@ type EvaluateArrayElements<
  */
 type EvaluateArray<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends ArrayNode
   ? EvaluateArrayElements<TNode["elements"], TScope>
   : never;
@@ -1827,7 +1808,7 @@ type EvaluateArray<
  */
 type EvaluateArrayPostfix<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends ArrayCoerceNode
   ? Evaluate<TNode["base"], TScope> extends any[]
     ? Evaluate<TNode["base"], TScope>
@@ -1840,7 +1821,7 @@ type EvaluateArrayPostfix<
  */
 type EvaluateBooleanOperator<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends AndNode | OrNode
   ? TNode extends {
       left: infer TLeft extends ExprNode;
@@ -1850,23 +1831,20 @@ type EvaluateBooleanOperator<
     ? Extract<
         BooleanOperators[keyof BooleanOperators],
         { type: TType }
-      > extends {
-        stronger: infer TStronger;
-        weaker: infer TWeaker;
-      }
+      > extends { stronger: infer TStronger; weaker: infer TWeaker }
       ? boolean extends Evaluate<TLeft, TScope>
         ? Evaluate<TRight, TScope>
         : boolean extends Evaluate<TRight, TScope>
-        ? Evaluate<TLeft, TScope>
-        : Evaluate<TLeft, TScope> extends TStronger
-        ? TStronger
-        : Evaluate<TRight, TScope> extends TStronger
-        ? TStronger
-        : Evaluate<TLeft, TScope> extends TWeaker
-        ? Evaluate<TRight, TScope> extends TWeaker
-          ? TWeaker
-          : null
-        : null
+          ? Evaluate<TLeft, TScope>
+          : Evaluate<TLeft, TScope> extends TStronger
+            ? TStronger
+            : Evaluate<TRight, TScope> extends TStronger
+              ? TStronger
+              : Evaluate<TLeft, TScope> extends TWeaker
+                ? Evaluate<TRight, TScope> extends TWeaker
+                  ? TWeaker
+                  : null
+                : null
       : never
     : never
   : never;
@@ -1886,7 +1864,7 @@ type EvaluateComparison<TNode extends ExprNode> = TNode extends OpCallNode & {
  */
 type EvaluateContext<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends ContextNode
   ? TNode extends { key: infer TKey extends "after" | "before" }
     ? TScope extends { context: { delta: { [key in TKey]: infer TValue } } }
@@ -1900,7 +1878,7 @@ type EvaluateContext<
  */
 type EvaluateDereference<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends DerefNode
   ? Evaluate<TNode["base"], TScope> extends SetOptional<
       ReferenceValue<infer TReferenced>,
@@ -1920,8 +1898,8 @@ type Not<TBoolean, Enabled extends boolean = true> = TBoolean extends boolean
   ? Enabled extends false
     ? TBoolean
     : TBoolean extends true
-    ? false
-    : true
+      ? false
+      : true
   : null;
 
 /**
@@ -1929,17 +1907,17 @@ type Not<TBoolean, Enabled extends boolean = true> = TBoolean extends boolean
  */
 type EvaluateEquality<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends OpCallNode & { op: "!=" | "==" }
   ? Not<
       Evaluate<TNode["left"], TScope> extends Evaluate<TNode["right"], TScope>
         ? true
         : Evaluate<TNode["right"], TScope> extends Evaluate<
-            TNode["left"],
-            TScope
-          >
-        ? true
-        : false,
+              TNode["left"],
+              TScope
+            >
+          ? true
+          : false,
       TNode["op"] extends "!=" ? true : false
     >
   : never;
@@ -1949,25 +1927,25 @@ type EvaluateEquality<
  */
 type EvaluateEverything<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends EverythingNode ? TScope["context"]["dataset"] : never;
 
 type EvaluateFilterElement<
   TElement,
   TFilterExpression extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TElement extends never
   ? never
   : Evaluate<TFilterExpression, NestedScope<TElement, TScope>> extends never
-  ? never
-  : Evaluate<TFilterExpression, NestedScope<TElement, TScope>> extends true
-  ? [TElement]
-  : [];
+    ? never
+    : Evaluate<TFilterExpression, NestedScope<TElement, TScope>> extends true
+      ? [TElement]
+      : [];
 
 type EvaluateFilterElements<
   TBase extends any[],
   TFilterExpression extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = FlattenDoubleArray<{
   [Index in keyof TBase]: EvaluateFilterElement<
     TBase[Index],
@@ -1981,7 +1959,7 @@ type EvaluateFilterElements<
  */
 type EvaluateFilter<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends FilterNode
   ? Evaluate<TNode["base"], TScope> extends any[]
     ? EvaluateFilterElements<
@@ -1994,26 +1972,21 @@ type EvaluateFilter<
 
 type EvaluateFuncArgs<
   TArgs extends ExprNode[],
-  TScope extends Scope<Context<any[], any>>
-> = {
-  [key in keyof TArgs]: Evaluate<TArgs[key], TScope>;
-};
+  TScope extends Scope<Context<any[], any>>,
+> = { [key in keyof TArgs]: Evaluate<TArgs[key], TScope> };
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#EvaluateFuncCall()
  */
 type EvaluateFuncCall<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends FuncCallNode
-  ? TNode extends {
-      name: infer TFuncName;
-      namespace: infer TFuncNamespace;
-    }
+  ? TNode extends { name: infer TFuncName; namespace: infer TFuncNamespace }
     ? TFuncNamespace extends keyof Functions<any, any>
       ? TFuncName extends keyof Functions<any, any>[TFuncNamespace]
         ? EvaluateFuncArgs<TNode["args"], TScope> extends any[]
-          ? // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
+          ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
             Functions<
               EvaluateFuncArgs<TNode["args"], TScope>,
               TScope
@@ -2029,7 +2002,7 @@ type EvaluateFuncCall<
  */
 type EvaluateIn<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends OpCallNode & { op: "in" }
   ? Evaluate<TNode["right"], TScope> extends any[]
     ? Evaluate<TNode["left"], TScope> extends Evaluate<
@@ -2039,10 +2012,10 @@ type EvaluateIn<
       ? true
       : false
     : Evaluate<TNode["right"], TScope> extends Path
-    ? Evaluate<TNode["left"], TScope> extends string
-      ? boolean
-      : null
-    : never
+      ? Evaluate<TNode["left"], TScope> extends string
+        ? boolean
+        : null
+      : never
   : never;
 
 /**
@@ -2057,7 +2030,7 @@ type EmptyObject = { [key: string]: never };
 type EvaluateMapElements<
   TBases extends any[],
   TExpression extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = {
   [index in keyof TBases]: Evaluate<
     TExpression,
@@ -2067,7 +2040,7 @@ type EvaluateMapElements<
 
 type EvaluateMap<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends MapNode
   ? Evaluate<TNode["base"], TScope> extends any[]
     ? EvaluateMapElements<
@@ -2083,7 +2056,7 @@ type EvaluateMap<
  */
 type EvaluateMatch<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends OpCallNode & { op: "match" }
   ? Evaluate<TNode["left"], TScope> extends string[] | string
     ? Evaluate<TNode["right"], TScope> extends string[] | string
@@ -2102,7 +2075,7 @@ type EvaluateMatch<
  */
 type EvaluateMath<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends OpCallNode
   ?
       | (TNode extends { op: "-" }
@@ -2110,13 +2083,13 @@ type EvaluateMath<
             ? Evaluate<TNode["right"], TScope> extends DateTime
               ? number
               : Evaluate<TNode["right"], TScope> extends number
-              ? DateTime
-              : null
+                ? DateTime
+                : null
             : Evaluate<TNode["left"], TScope> extends number
-            ? Evaluate<TNode["right"], TScope> extends number
-              ? number
+              ? Evaluate<TNode["right"], TScope> extends number
+                ? number
+                : null
               : null
-            : null
           : never)
       | (TNode extends { op: "*" | "**" | "/" | "%" }
           ? Evaluate<TNode["left"], TScope> extends number
@@ -2131,37 +2104,37 @@ type EvaluateMath<
               ? DateTime
               : null
             : Evaluate<TNode["left"], TScope> extends string
-            ? Evaluate<TNode["right"], TScope> extends string
-              ? // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
-                `${Evaluate<TNode["left"], TScope>}${Evaluate<
-                  TNode["right"],
-                  TScope
-                >}`
-              : null
-            : Evaluate<TNode["left"], TScope> extends number
-            ? Evaluate<TNode["right"], TScope> extends number
-              ? number
-              : null
-            : Evaluate<TNode["left"], TScope> extends any[]
-            ? Evaluate<TNode["right"], TScope> extends any[]
-              ? [
-                  ...Evaluate<TNode["left"], TScope>,
-                  ...Evaluate<TNode["right"], TScope>
-                ]
-              : null
-            : Evaluate<TNode["left"], TScope> extends object
-            ? Evaluate<TNode["right"], TScope> extends object
-              ? Simplify<
-                  EmptyObject extends Evaluate<TNode["right"], TScope>
-                    ? Evaluate<TNode["left"], TScope>
-                    : Evaluate<TNode["right"], TScope> &
-                        Omit<
-                          Evaluate<TNode["left"], TScope>,
-                          keyof Evaluate<TNode["right"], TScope>
+              ? Evaluate<TNode["right"], TScope> extends string
+                ? // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
+                  `${Evaluate<TNode["left"], TScope>}${Evaluate<
+                    TNode["right"],
+                    TScope
+                  >}`
+                : null
+              : Evaluate<TNode["left"], TScope> extends number
+                ? Evaluate<TNode["right"], TScope> extends number
+                  ? number
+                  : null
+                : Evaluate<TNode["left"], TScope> extends any[]
+                  ? Evaluate<TNode["right"], TScope> extends any[]
+                    ? [
+                        ...Evaluate<TNode["left"], TScope>,
+                        ...Evaluate<TNode["right"], TScope>,
+                      ]
+                    : null
+                  : Evaluate<TNode["left"], TScope> extends object
+                    ? Evaluate<TNode["right"], TScope> extends object
+                      ? Simplify<
+                          EmptyObject extends Evaluate<TNode["right"], TScope>
+                            ? Evaluate<TNode["left"], TScope>
+                            : Evaluate<TNode["right"], TScope>
+                                & Omit<
+                                  Evaluate<TNode["left"], TScope>,
+                                  keyof Evaluate<TNode["right"], TScope>
+                                >
                         >
-                >
-              : null
-            : null
+                      : null
+                    : null
           : never)
   : never;
 
@@ -2170,7 +2143,7 @@ type EvaluateMath<
  */
 type EvaluateNeg<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends NegNode
   ? Evaluate<TNode["base"], TScope> extends number
     ? `-${Evaluate<
@@ -2179,11 +2152,11 @@ type EvaluateNeg<
       >}` extends `${infer TNum extends number}`
       ? TNum
       : `${Evaluate<
-          TNode["base"],
-          TScope
-        >}` extends `-${infer TNum extends number}`
-      ? TNum
-      : Evaluate<TNode["base"], TScope>
+            TNode["base"],
+            TScope
+          >}` extends `-${infer TNum extends number}`
+        ? TNum
+        : Evaluate<TNode["base"], TScope>
     : null
   : never;
 
@@ -2192,12 +2165,12 @@ type EvaluateNeg<
  */
 type EvaluateNot<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends NotNode ? Not<Evaluate<TNode["base"], TScope>> : never;
 
 type EvaluateObjectAttribute<
   TAttribute extends ObjectAttributeNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > =
   | (TAttribute extends ObjectAttributeValueNode
       ? {
@@ -2215,8 +2188,8 @@ type EvaluateObjectAttribute<
 
 type EvaluateObjectAttributes<
   TAttributes extends ObjectAttributeNode[],
-  TScope extends Scope<Context<any[], any>>
-  // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
+  TScope extends Scope<Context<any[], any>>,
+  // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
 > = {
   [Index in keyof TAttributes]-?: EvaluateObjectAttribute<
     TAttributes[Index],
@@ -2238,7 +2211,7 @@ type EvaluateObjectAttributes<
  */
 type EvaluateObject<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends ObjectNode
   ? Simplify<EvaluateObjectAttributes<TNode["attributes"], TScope>>
   : never;
@@ -2248,7 +2221,7 @@ type EvaluateObject<
  */
 type EvaluateParameter<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends ParameterNode
   ? TScope["context"]["parameters"][TNode["name"]]
   : never;
@@ -2259,19 +2232,19 @@ type EvaluateParameter<
 type EvaluateParent<
   TNode extends ExprNode,
   TScope extends Scope<Context<any[], any>>,
-  Level extends number = Extract<TNode, ParentNode>["n"]
+  Level extends number = Extract<TNode, ParentNode>["n"],
 > = TNode extends ParentNode
   ? Level extends 0
     ? TScope["this"]
     : TScope["parent"] extends null
-    ? null
-    : EvaluateParent<
-        TNode,
-        NonNullable<TScope["parent"]>,
-        TupleOfLength<null, Level, Level> extends [any, ...infer Rest]
-          ? Rest["length"]
-          : never
-      >
+      ? null
+      : EvaluateParent<
+          TNode,
+          NonNullable<TScope["parent"]>,
+          TupleOfLength<null, Level, Level> extends [any, ...infer Rest]
+            ? Rest["length"]
+            : never
+        >
   : never;
 
 /**
@@ -2279,7 +2252,7 @@ type EvaluateParent<
  */
 type EvaluateParenthesis<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends GroupNode ? Evaluate<TNode["base"], TScope> : never;
 
 /**
@@ -2287,7 +2260,7 @@ type EvaluateParenthesis<
  */
 type EvaluatePipeFuncCall<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends PipeFuncCallNode
   ? TNode["name"] extends `${infer TFuncNamespace}::${infer TFuncIdentifier}`
     ? TFuncNamespace extends keyof PipeFunctions<any, any>
@@ -2303,15 +2276,15 @@ type EvaluatePipeFuncCall<
         : never
       : never
     : TNode["name"] extends keyof PipeFunctions<any, any>["global"]
-    ? EvaluateFuncArgs<TNode["args"], TScope> extends any[]
-      ? Evaluate<TNode["base"], TScope> extends any[]
-        ? PipeFunctions<
-            Evaluate<TNode["base"], TScope>,
-            EvaluateFuncArgs<TNode["args"], TScope>
-          >["global"][TNode["name"]]
-        : null
+      ? EvaluateFuncArgs<TNode["args"], TScope> extends any[]
+        ? Evaluate<TNode["base"], TScope> extends any[]
+          ? PipeFunctions<
+              Evaluate<TNode["base"], TScope>,
+              EvaluateFuncArgs<TNode["args"], TScope>
+            >["global"][TNode["name"]]
+          : null
+        : never
       : never
-    : never
   : never;
 
 /**
@@ -2319,7 +2292,7 @@ type EvaluatePipeFuncCall<
  */
 type EvaluatePos<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends PosNode
   ? Evaluate<TNode["base"], TScope> extends number
     ? Evaluate<TNode["base"], TScope>
@@ -2331,7 +2304,7 @@ type EvaluatePos<
  */
 type EvaluateProjection<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends ProjectionNode
   ? Evaluate<TNode["base"], TScope> extends null
     ? null
@@ -2344,32 +2317,32 @@ type EvaluateProjection<
 type EvaluateSelectAlternatives<
   TAlternatives extends SelectAlternativeNode[],
   TFallback extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TAlternatives extends []
   ? Evaluate<TFallback, TScope>
   : TAlternatives extends [
-      infer TFirstAlternative extends SelectAlternativeNode,
-      ...infer TRemainingAlternatives extends SelectAlternativeNode[]
-    ]
-  ?
-      | (Evaluate<TFirstAlternative["condition"], TScope> extends true
-          ? never
-          : EvaluateSelectAlternatives<
-              TRemainingAlternatives,
-              TFallback,
-              TScope
-            >)
-      | (true extends Evaluate<TFirstAlternative["condition"], TScope>
-          ? Evaluate<TFirstAlternative["value"], TScope>
-          : never)
-  : never;
+        infer TFirstAlternative extends SelectAlternativeNode,
+        ...infer TRemainingAlternatives extends SelectAlternativeNode[],
+      ]
+    ?
+        | (Evaluate<TFirstAlternative["condition"], TScope> extends true
+            ? never
+            : EvaluateSelectAlternatives<
+                TRemainingAlternatives,
+                TFallback,
+                TScope
+              >)
+        | (true extends Evaluate<TFirstAlternative["condition"], TScope>
+            ? Evaluate<TFirstAlternative["value"], TScope>
+            : never)
+    : never;
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#global_select()
  */
 type EvaluateSelect<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends SelectNode
   ? TNode extends {
       alternatives: infer TAlternatives extends SelectAlternativeNode[];
@@ -2377,14 +2350,14 @@ type EvaluateSelect<
     }
     ? EvaluateSelectAlternatives<TAlternatives, TFallback, TScope>
     : TNode extends {
-        alternatives: infer TAlternatives extends SelectAlternativeNode[];
-      }
-    ? EvaluateSelectAlternatives<
-        TAlternatives,
-        { type: "Value"; value: null },
-        TScope
-      >
-    : null
+          alternatives: infer TAlternatives extends SelectAlternativeNode[];
+        }
+      ? EvaluateSelectAlternatives<
+          TAlternatives,
+          { type: "Value"; value: null },
+          TScope
+        >
+      : null
   : never;
 
 /**
@@ -2399,7 +2372,7 @@ type EvaluateSelector<TNode extends ExprNode> = TNode extends SelectorNode
  */
 type EvaluateSlice<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends SliceNode
   ? Evaluate<TNode["base"], TScope> extends any[]
     ? // HACK Since literally slicing a tuple in typescript isn't feasible, the most correct type is an array of unions
@@ -2412,14 +2385,14 @@ type EvaluateSlice<
  */
 type EvaluateThis<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > = TNode extends ThisNode ? TScope["this"] : never;
 
 type EvaluateValue<TNode extends ExprNode> = Extract<TNode, ValueNode>["value"];
 
 type EvaluateExpression<
   TNode extends ExprNode,
-  TScope extends Scope<Context<any[], any>>
+  TScope extends Scope<Context<any[], any>>,
 > =
   | EvaluateAccessAttribute<TNode, TScope>
   | EvaluateAccessElement<TNode, TScope>
@@ -2467,7 +2440,9 @@ export type RootScope<TContext extends Context<any[], any>> = {
  */
 export type ExecuteQuery<
   TQuery extends string,
-  TScope extends Scope<Context<any[], any>> = RootScope<Context<never[], never>>
+  TScope extends Scope<Context<any[], any>> = RootScope<
+    Context<never[], never>
+  >,
 > = Simplify<Evaluate<Parse<TQuery>, TScope>>;
 
 type Defaults<Value, PartialValue extends Partial<Value>> = {
@@ -2477,9 +2452,9 @@ type Defaults<Value, PartialValue extends Partial<Value>> = {
 };
 
 export type ScopeFromPartialContext<
-  TContext extends Partial<Context<any[], any>>
+  TContext extends Partial<Context<any[], any>>,
 > = RootScope<Defaults<Context<any[], any>, TContext>>;
 
 export type ScopeFromPartialScope<
-  TScope extends Partial<Scope<Context<any[], any>>>
+  TScope extends Partial<Scope<Context<any[], any>>>,
 > = Defaults<Scope<Context<any[], any>>, TScope>;

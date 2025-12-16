@@ -19,14 +19,8 @@ describe("object", () => {
                 defineArrayMember({
                   type: "object",
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -56,14 +50,8 @@ describe("object", () => {
                   name: "bar",
                   type: "object",
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -144,9 +132,7 @@ describe("object", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"][number]>().toEqual<{
         _key: string;
-        bar: {
-          tar: number;
-        };
+        bar: { tar: number };
       }>();
     });
   });
@@ -167,14 +153,8 @@ describe("object", () => {
                   type: "object",
                   validation: (Rule) => Rule.required(),
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -185,10 +165,7 @@ describe("object", () => {
 
       expectType<
         InferSchemaValues<typeof config>["foo"]["bar"]
-      >().toStrictEqual<{
-        bar?: boolean;
-        tar?: number;
-      }>();
+      >().toStrictEqual<{ bar?: boolean; tar?: number }>();
     });
 
     it("infers required fields", () => {
@@ -221,9 +198,7 @@ describe("object", () => {
 
       expectType<
         InferSchemaValues<typeof config>["foo"]["bar"]
-      >().toStrictEqual<{
-        bar: boolean;
-      }>();
+      >().toStrictEqual<{ bar: boolean }>();
     });
 
     it("infers nested objects", () => {
@@ -263,11 +238,7 @@ describe("object", () => {
 
       expectType<
         InferSchemaValues<typeof config>["foo"]["bar"]
-      >().toStrictEqual<{
-        bar: {
-          tar: number;
-        };
-      }>();
+      >().toStrictEqual<{ bar: { tar: number } }>();
     });
   });
 
@@ -282,14 +253,8 @@ describe("object", () => {
               name: "foo",
               type: "object",
               fields: [
-                defineField({
-                  name: "bar",
-                  type: "boolean",
-                }),
-                defineField({
-                  name: "tar",
-                  type: "number",
-                }),
+                defineField({ name: "bar", type: "boolean" }),
+                defineField({ name: "tar", type: "number" }),
               ],
             }),
           ],
@@ -313,25 +278,14 @@ describe("object", () => {
               name: "foo",
               type: "object",
               fields: [
-                defineField({
-                  name: "bar",
-                  type: "boolean",
-                }),
-                defineField({
-                  name: "tar",
-                  type: "number",
-                }),
+                defineField({ name: "bar", type: "boolean" }),
+                defineField({ name: "tar", type: "number" }),
               ],
             }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },
@@ -399,9 +353,7 @@ describe("object", () => {
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
-        bar: {
-          tar: number;
-        };
+        bar: { tar: number };
       }>();
     });
   });

@@ -23,11 +23,7 @@ describe("boolean", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "boolean",
-                }),
-              ],
+              of: [defineArrayMember({ type: "boolean" })],
             }),
           ],
         },
@@ -68,10 +64,7 @@ describe("boolean", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: true,
-      };
+      const unparsed = { _type: "foo", bar: true };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -87,14 +80,7 @@ describe("boolean", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "boolean",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "boolean" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 

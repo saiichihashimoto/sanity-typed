@@ -175,12 +175,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "bar",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    name: "bar",
-                    type: "foo",
-                  }),
-                ],
+                of: [defineArrayMember({ name: "bar", type: "foo" })],
               }),
             ],
           },
@@ -215,10 +210,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   to: [],
                   dataset: "dataset",
                 }),
-                (faker, previous) => ({
-                  ...previous,
-                  _ref: "foo",
-                })
+                (faker, previous) => ({ ...previous, _ref: "foo" })
               ),
             ],
           },

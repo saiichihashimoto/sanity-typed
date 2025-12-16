@@ -26,9 +26,7 @@ describe("createClient", () => {
   it("returns a SanityClient", () => {
     const client = createClient<{
       foo: AnySanityDocument & { _type: "foo"; foo: string };
-    }>({
-      documents: [],
-    });
+    }>({ documents: [] });
 
     expectType<typeof client>().toEqual<
       SanityClient<AnySanityDocument & { _type: "foo"; foo: string }>
@@ -39,15 +37,11 @@ describe("createClient", () => {
     it("returns the same type", () => {
       const client = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>({
-        documents: [],
-      });
+      }>({ documents: [] });
 
       const clientClone = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>({
-        documents: [],
-      }).clone();
+      }>({ documents: [] }).clone();
 
       expectType<typeof clientClone>().toEqual<typeof client>();
     });
@@ -79,19 +73,11 @@ describe("createClient", () => {
     it("returns the altered type", () => {
       const client = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>({
-        documents: [],
-        dataset: "dataset",
-        projectId: "newProjectId",
-      });
+      }>({ documents: [], dataset: "dataset", projectId: "newProjectId" });
 
       const clientWithConfig = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>({
-        documents: [],
-        dataset: "dataset",
-        projectId: "projectId",
-      }).config({
+      }>({ documents: [], dataset: "dataset", projectId: "projectId" }).config({
         projectId: "newProjectId",
       });
 
@@ -104,11 +90,7 @@ describe("createClient", () => {
     it("returns the altered type", () => {
       const client = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>({
-        documents: [],
-        dataset: "dataset",
-        projectId: "newProjectId",
-      });
+      }>({ documents: [], dataset: "dataset", projectId: "newProjectId" });
 
       const clientWithConfig = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
@@ -116,9 +98,7 @@ describe("createClient", () => {
         documents: [],
         dataset: "dataset",
         projectId: "projectId",
-      }).withConfig({
-        projectId: "newProjectId",
-      });
+      }).withConfig({ projectId: "newProjectId" });
 
       expectType<typeof clientWithConfig>().toEqual<typeof client>();
       expect(clientWithConfig.config()).toStrictEqual(client.config());
@@ -190,27 +170,71 @@ describe("createClient", () => {
     });
 
     it("uses the params in queries", async () => {
-      const result = await createClient({
-        documents: [],
-      }).fetch("$param", { param: "foo" });
+      const result = await createClient({ documents: [] }).fetch("$param", {
+        param: "foo",
+      });
 
       expectType<typeof result>().toStrictEqual<"foo">();
       expect(result).toBe("foo");
     });
 
+    it("uses the params in slices", async () => {
+      const result = await createClient<{
+        bar: { _type: "bar"; bar: "bar" };
+        foo: AnySanityDocument & { _type: "foo"; foo: string };
+      }>({
+        documents: [
+          {
+            _createdAt: "_createdAt",
+            _id: "id-1",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo",
+          },
+          {
+            _createdAt: "_createdAt",
+            _id: "id-2",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo",
+          },
+          {
+            _createdAt: "_createdAt",
+            _id: "id-3",
+            _rev: "_rev",
+            _type: "foo",
+            _updatedAt: "_updatedAt",
+            foo: "foo",
+          },
+        ],
+      }).fetch("*[$start...$end]", { start: 1, end: 2 });
+
+      expectType<typeof result>().toStrictEqual<
+        (AnySanityDocument & { _type: "foo"; foo: string })[]
+      >();
+      expect(result).toStrictEqual([
+        {
+          _createdAt: "_createdAt",
+          _id: "id-2",
+          _rev: "_rev",
+          _type: "foo",
+          _updatedAt: "_updatedAt",
+          foo: "foo",
+        },
+      ]);
+    });
+
     it("returns RawQueryResponse", async () => {
-      const result = await createClient({
-        documents: [],
-      }).fetch("5", undefined, {
-        filterResponse: false,
-      });
+      const result = await createClient({ documents: [] }).fetch(
+        "5",
+        undefined,
+        { filterResponse: false }
+      );
 
       expectType<typeof result>().toStrictEqual<RawQueryResponse<5, "5">>();
-      expect(result).toStrictEqual({
-        ms: 0,
-        result: 5,
-        query: "5",
-      });
+      expect(result).toStrictEqual({ ms: 0, result: 5, query: "5" });
     });
   });
 
@@ -218,9 +242,7 @@ describe("createClient", () => {
     it.failing("observes the groq query result", () => {
       const result = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>({
-        documents: [],
-      })
+      }>({ documents: [] })
         // TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
         .listen("*");
 
@@ -234,9 +256,7 @@ describe("createClient", () => {
     it.failing("returns ListenEvent with options", () => {
       const result = createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>({
-        documents: [],
-      })
+      }>({ documents: [] })
         // TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
         .listen("*", {}, {});
 
@@ -275,16 +295,8 @@ describe("createClient", () => {
       }).getDocument("id");
 
       expectType<typeof result>().toEqual<
-        | (AnySanityDocument & {
-            _id: "id";
-            _type: "foo";
-            foo: string;
-          })
-        | (AnySanityDocument & {
-            _id: "id";
-            _type: "qux";
-            qux: number;
-          })
+        | (AnySanityDocument & { _id: "id"; _type: "foo"; foo: string })
+        | (AnySanityDocument & { _id: "id"; _type: "qux"; qux: number })
         | undefined
       >();
       expect(result).toStrictEqual({
@@ -327,31 +339,15 @@ describe("createClient", () => {
       expectType<typeof result>().toEqual<
         [
           (
-            | (AnySanityDocument & {
-                _id: "id";
-                _type: "foo";
-                foo: string;
-              })
-            | (AnySanityDocument & {
-                _id: "id";
-                _type: "qux";
-                qux: number;
-              })
+            | (AnySanityDocument & { _id: "id"; _type: "foo"; foo: string })
+            | (AnySanityDocument & { _id: "id"; _type: "qux"; qux: number })
             | null
           ),
           (
-            | (AnySanityDocument & {
-                _id: "id2";
-                _type: "foo";
-                foo: string;
-              })
-            | (AnySanityDocument & {
-                _id: "id2";
-                _type: "qux";
-                qux: number;
-              })
+            | (AnySanityDocument & { _id: "id2"; _type: "foo"; foo: string })
+            | (AnySanityDocument & { _id: "id2"; _type: "qux"; qux: number })
             | null
-          )
+          ),
         ]
       >();
       expect(result).toStrictEqual([
@@ -402,31 +398,15 @@ describe("createClient", () => {
       expectType<typeof result>().toEqual<
         [
           (
-            | (AnySanityDocument & {
-                _id: "id";
-                _type: "foo";
-                foo: string;
-              })
-            | (AnySanityDocument & {
-                _id: "id";
-                _type: "qux";
-                qux: number;
-              })
+            | (AnySanityDocument & { _id: "id"; _type: "foo"; foo: string })
+            | (AnySanityDocument & { _id: "id"; _type: "qux"; qux: number })
             | null
           ),
           (
-            | (AnySanityDocument & {
-                _id: "id2";
-                _type: "foo";
-                foo: string;
-              })
-            | (AnySanityDocument & {
-                _id: "id2";
-                _type: "qux";
-                qux: number;
-              })
+            | (AnySanityDocument & { _id: "id2"; _type: "foo"; foo: string })
+            | (AnySanityDocument & { _id: "id2"; _type: "qux"; qux: number })
             | null
-          )
+          ),
         ]
       >();
       expect(result).toStrictEqual([
@@ -477,31 +457,15 @@ describe("createClient", () => {
       expectType<typeof result>().toEqual<
         [
           (
-            | (AnySanityDocument & {
-                _id: "id";
-                _type: "foo";
-                foo: string;
-              })
-            | (AnySanityDocument & {
-                _id: "id";
-                _type: "qux";
-                qux: number;
-              })
+            | (AnySanityDocument & { _id: "id"; _type: "foo"; foo: string })
+            | (AnySanityDocument & { _id: "id"; _type: "qux"; qux: number })
             | null
           ),
           (
-            | (AnySanityDocument & {
-                _id: "id2";
-                _type: "foo";
-                foo: string;
-              })
-            | (AnySanityDocument & {
-                _id: "id2";
-                _type: "qux";
-                qux: number;
-              })
+            | (AnySanityDocument & { _id: "id2"; _type: "foo"; foo: string })
+            | (AnySanityDocument & { _id: "id2"; _type: "qux"; qux: number })
             | null
-          )
+          ),
         ]
       >();
       expect(result).toStrictEqual([
@@ -554,31 +518,15 @@ describe("createClient", () => {
       expectType<typeof result>().toEqual<
         [
           (
-            | (AnySanityDocument & {
-                _id: "id";
-                _type: "foo";
-                foo: string;
-              })
-            | (AnySanityDocument & {
-                _id: "id";
-                _type: "qux";
-                qux: number;
-              })
+            | (AnySanityDocument & { _id: "id"; _type: "foo"; foo: string })
+            | (AnySanityDocument & { _id: "id"; _type: "qux"; qux: number })
             | null
           ),
           (
-            | (AnySanityDocument & {
-                _id: "id2";
-                _type: "foo";
-                foo: string;
-              })
-            | (AnySanityDocument & {
-                _id: "id2";
-                _type: "qux";
-                qux: number;
-              })
+            | (AnySanityDocument & { _id: "id2"; _type: "foo"; foo: string })
+            | (AnySanityDocument & { _id: "id2"; _type: "qux"; qux: number })
             | null
-          )
+          ),
         ]
       >();
       expect(result).toStrictEqual([
@@ -607,9 +555,7 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>({
-        documents: [],
-      }).create({ _type: "foo", foo: "foo" });
+      }>({ documents: [] }).create({ _type: "foo", foo: "foo" });
 
       expectType<typeof result>().toStrictEqual<
         AnySanityDocument & { _type: "foo"; foo: string }
@@ -673,11 +619,7 @@ describe("createClient", () => {
             foo: "foo",
           },
         ],
-      }).createIfNotExists({
-        _type: "foo",
-        _id: "id",
-        foo: "foo",
-      });
+      }).createIfNotExists({ _type: "foo", _id: "id", foo: "foo" });
 
       expectType<typeof result>().toStrictEqual<
         AnySanityDocument & { _type: "foo"; foo: string }
@@ -1326,9 +1268,7 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>({
-        documents: [],
-      })
+      }>({ documents: [] })
         .transaction()
         .commit();
 
@@ -1341,9 +1281,7 @@ describe("createClient", () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>({
-          documents: [],
-        })
+        }>({ documents: [] })
           .transaction()
           .create({ _type: "foo", foo: "foo" })
           .commit();
@@ -1365,9 +1303,7 @@ describe("createClient", () => {
         const result = await createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
           qux: AnySanityDocument & { _type: "qux"; qux: number };
-        }>({
-          documents: [],
-        })
+        }>({ documents: [] })
           .transaction([{ create: { _type: "foo", foo: "foo" } }])
           .commit();
 
@@ -1707,7 +1643,7 @@ describe("createClient", () => {
           .commit();
 
         expectType<typeof result>().toStrictEqual<
-          // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
           AnySanityDocument & { _type: "foo"; foo: string }
         >();
         expect(result).toStrictEqual({
@@ -1725,9 +1661,7 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>({
-        documents: [],
-      })
+      }>({ documents: [] })
         .transaction()
         .create({ _type: "foo", foo: "foo" })
         .reset()
@@ -1743,13 +1677,11 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>({
-        documents: [],
-      }).mutate([]);
+      }>({ documents: [] }).mutate([]);
 
       expectType<
         typeof result
-      >().toStrictEqual<// @ts-expect-error TODO Return a union of the documents
+      >().toStrictEqual<// @ts-expect-error -- TODO Return a union of the documents
       undefined>();
       expect(result).toBeUndefined();
     });
@@ -1758,20 +1690,18 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>({
-        documents: [],
-      }).mutate([
+      }>({ documents: [] }).mutate([
         {
           create: {
             _type: "foo",
-            // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+            // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
             foo: "foo",
           },
         },
       ]);
 
       expectType<typeof result>().toStrictEqual<
-        // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
         AnySanityDocument & { _type: "foo"; foo: string }
       >();
       expect(result).toStrictEqual({
@@ -1826,9 +1756,9 @@ describe("createClient", () => {
       const result = await createClient<{
         foo: AnySanityDocument & { _type: "foo"; foo: string };
         qux: AnySanityDocument & { _type: "qux"; qux: number };
-      }>({
-        documents: [],
-      }).mutate(new Transaction().create({ _type: "foo", foo: "foo" }));
+      }>({ documents: [] }).mutate(
+        new Transaction().create({ _type: "foo", foo: "foo" })
+      );
 
       expectType<typeof result>().toStrictEqual<
         AnySanityDocument & { _type: "foo"; foo: string }

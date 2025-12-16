@@ -21,9 +21,9 @@ import type { SanityClient } from ".";
 describe("createClient", () => {
   it("returns a SanityClient", () => {
     const exec = () =>
-      createClient<{
-        foo: AnySanityDocument & { _type: "foo"; foo: string };
-      }>({});
+      createClient<{ foo: AnySanityDocument & { _type: "foo"; foo: string } }>(
+        {}
+      );
 
     expectType<ReturnType<typeof exec>>().toEqual<
       SanityClient<AnySanityDocument & { _type: "foo"; foo: string }>
@@ -51,10 +51,7 @@ describe("createClient", () => {
   describe("config", () => {
     it("returns the config with more", () => {
       const exec = () =>
-        createClient({
-          dataset: "dataset",
-          projectId: "projectId",
-        }).config();
+        createClient({ dataset: "dataset", projectId: "projectId" }).config();
 
       expectType<
         ReturnType<typeof exec>
@@ -65,18 +62,12 @@ describe("createClient", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>({
-          dataset: "dataset",
-          projectId: "newProjectId",
-        });
+        }>({ dataset: "dataset", projectId: "newProjectId" });
 
       const execWithConfig = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>({
-          dataset: "dataset",
-          projectId: "projectId",
-        }).config({
+        }>({ dataset: "dataset", projectId: "projectId" }).config({
           projectId: "newProjectId",
         });
 
@@ -91,18 +82,12 @@ describe("createClient", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>({
-          dataset: "dataset",
-          projectId: "newProjectId",
-        });
+        }>({ dataset: "dataset", projectId: "newProjectId" });
 
       const execWithConfig = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>({
-          dataset: "dataset",
-          projectId: "projectId",
-        }).withConfig({
+        }>({ dataset: "dataset", projectId: "projectId" }).withConfig({
           projectId: "newProjectId",
         });
 
@@ -190,16 +175,8 @@ describe("createClient", () => {
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Promise<
-          | (AnySanityDocument & {
-              _id: "id";
-              _type: "foo";
-              foo: string;
-            })
-          | (AnySanityDocument & {
-              _id: "id";
-              _type: "qux";
-              qux: number;
-            })
+          | (AnySanityDocument & { _id: "id"; _type: "foo"; foo: string })
+          | (AnySanityDocument & { _id: "id"; _type: "qux"; qux: number })
           | undefined
         >
       >();
@@ -218,31 +195,15 @@ describe("createClient", () => {
         Promise<
           [
             (
-              | (AnySanityDocument & {
-                  _id: "id";
-                  _type: "foo";
-                  foo: string;
-                })
-              | (AnySanityDocument & {
-                  _id: "id";
-                  _type: "qux";
-                  qux: number;
-                })
+              | (AnySanityDocument & { _id: "id"; _type: "foo"; foo: string })
+              | (AnySanityDocument & { _id: "id"; _type: "qux"; qux: number })
               | null
             ),
             (
-              | (AnySanityDocument & {
-                  _id: "id2";
-                  _type: "foo";
-                  foo: string;
-                })
-              | (AnySanityDocument & {
-                  _id: "id2";
-                  _type: "qux";
-                  qux: number;
-                })
+              | (AnySanityDocument & { _id: "id2"; _type: "foo"; foo: string })
+              | (AnySanityDocument & { _id: "id2"; _type: "qux"; qux: number })
               | null
-            )
+            ),
           ]
         >
       >();
@@ -837,7 +798,7 @@ describe("createClient", () => {
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
           Promise<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });
@@ -883,14 +844,14 @@ describe("createClient", () => {
           {
             create: {
               _type: "foo",
-              // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+              // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
               foo: "foo",
             },
           },
         ]);
 
       expectType<ReturnType<typeof exec>>().toStrictEqual<
-        // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+        // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
         Promise<AnySanityDocument & { _type: "foo"; foo: string }>
       >();
     });

@@ -11,7 +11,7 @@ export const client = createClient<SanityValues>({
 
 export const makeTypedQuery = async () =>
   /** No need for createGroqBuilder, `q` is already typed! */
-  client.fetch((q) =>
+  await client.fetch((q) =>
     q.star
       .filterByType("product")
       .project({ _id: true, productName: true, tags: true })

@@ -24,10 +24,7 @@ describe("portable text extension", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -56,10 +53,7 @@ describe("portable text extension", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -86,9 +80,7 @@ describe("portable text extension", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -107,10 +99,7 @@ describe("portable text extension", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -153,9 +142,7 @@ describe("portable text extension", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -174,10 +161,7 @@ describe("portable text extension", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -220,9 +204,7 @@ describe("portable text extension", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -240,10 +222,7 @@ describe("portable text extension", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -271,10 +250,7 @@ describe("portable text extension", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -296,9 +272,7 @@ describe("portable text extension", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -316,10 +290,7 @@ describe("portable text extension", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -349,9 +320,7 @@ describe("portable text extension", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });

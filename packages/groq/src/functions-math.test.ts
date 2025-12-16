@@ -41,10 +41,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -93,10 +90,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -145,10 +139,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -187,10 +178,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -211,22 +199,14 @@ describe("math", () => {
     const tree = parse(query);
 
     const expectedTree = {
-      args: [
-        {
-          elements: [],
-          type: "Array",
-        },
-      ],
+      args: [{ elements: [], type: "Array" }],
       func: (() => {}) as unknown as GroqFunction,
       name: "sum",
       namespace: "math",
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -275,10 +255,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -327,10 +304,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -379,10 +353,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -421,10 +392,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -445,22 +413,14 @@ describe("math", () => {
     const tree = parse(query);
 
     const expectedTree = {
-      args: [
-        {
-          elements: [],
-          type: "Array",
-        },
-      ],
+      args: [{ elements: [], type: "Array" }],
       func: (() => {}) as unknown as GroqFunction,
       name: "avg",
       namespace: "math",
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -509,10 +469,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -561,10 +518,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -613,10 +567,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -655,10 +606,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -679,22 +627,14 @@ describe("math", () => {
     const tree = parse(query);
 
     const expectedTree = {
-      args: [
-        {
-          elements: [],
-          type: "Array",
-        },
-      ],
+      args: [{ elements: [], type: "Array" }],
       func: (() => {}) as unknown as GroqFunction,
       name: "min",
       namespace: "math",
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -743,10 +683,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -795,10 +732,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -847,10 +781,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -889,10 +820,7 @@ describe("math", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -913,22 +841,14 @@ describe("math", () => {
     const tree = parse(query);
 
     const expectedTree = {
-      args: [
-        {
-          elements: [],
-          type: "Array",
-        },
-      ],
+      args: [{ elements: [], type: "Array" }],
       func: (() => {}) as unknown as GroqFunction,
       name: "max",
       namespace: "math",
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();

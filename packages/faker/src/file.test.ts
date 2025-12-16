@@ -21,9 +21,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [],
-        },
+        schema: { types: [] },
       });
       const sanityFaker = sanityConfigToFakerTyped(config, {
         seed,
@@ -50,11 +48,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    type: "file",
-                  }),
-                ],
+                of: [defineArrayMember({ type: "file" })],
               }),
             ],
           },
@@ -87,14 +81,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   defineArrayMember({
                     type: "file",
                     fields: [
-                      defineField({
-                        name: "bar",
-                        type: "boolean",
-                      }),
-                      defineField({
-                        name: "tar",
-                        type: "number",
-                      }),
+                      defineField({ name: "bar", type: "boolean" }),
+                      defineField({ name: "tar", type: "number" }),
                     ],
                   }),
                 ],
@@ -131,14 +119,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     name: "bar",
                     type: "file",
                     fields: [
-                      defineField({
-                        name: "bar",
-                        type: "boolean",
-                      }),
-                      defineField({
-                        name: "tar",
-                        type: "number",
-                      }),
+                      defineField({ name: "bar", type: "boolean" }),
+                      defineField({ name: "tar", type: "number" }),
                     ],
                   }),
                 ],
@@ -300,14 +282,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     type: "file",
                     validation: (Rule) => Rule.required(),
                     fields: [
-                      defineField({
-                        name: "bar",
-                        type: "boolean",
-                      }),
-                      defineField({
-                        name: "tar",
-                        type: "number",
-                      }),
+                      defineField({ name: "bar", type: "boolean" }),
+                      defineField({ name: "tar", type: "number" }),
                     ],
                   }),
                 ],
@@ -427,14 +403,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
-          schema: {
-            types: [
-              defineType({
-                name: "foo",
-                type: "file",
-              }),
-            ],
-          },
+          schema: { types: [defineType({ name: "foo", type: "file" })] },
         });
         const sanityFaker = sanityConfigToFakerTyped(config, {
           seed,
@@ -461,14 +430,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 name: "foo",
                 type: "file",
                 fields: [
-                  defineField({
-                    name: "bar",
-                    type: "boolean",
-                  }),
-                  defineField({
-                    name: "tar",
-                    type: "number",
-                  }),
+                  defineField({ name: "bar", type: "boolean" }),
+                  defineField({ name: "tar", type: "number" }),
                 ],
               }),
             ],
@@ -499,25 +462,14 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 name: "foo",
                 type: "file",
                 fields: [
-                  defineField({
-                    name: "bar",
-                    type: "boolean",
-                  }),
-                  defineField({
-                    name: "tar",
-                    type: "number",
-                  }),
+                  defineField({ name: "bar", type: "boolean" }),
+                  defineField({ name: "tar", type: "number" }),
                 ],
               }),
               defineType({
                 name: "bar",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    name: "bar",
-                    type: "foo",
-                  }),
-                ],
+                of: [defineArrayMember({ name: "bar", type: "foo" })],
               }),
             ],
           },
@@ -623,16 +575,10 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           schema: {
             types: [
               customFaker(
-                defineType({
-                  name: "foo",
-                  type: "file",
-                }),
+                defineType({ name: "foo", type: "file" }),
                 (faker, previous) => ({
                   ...previous,
-                  asset: {
-                    ...previous.asset,
-                    _ref: "foo",
-                  },
+                  asset: { ...previous.asset, _ref: "foo" },
                 })
               ),
             ],
