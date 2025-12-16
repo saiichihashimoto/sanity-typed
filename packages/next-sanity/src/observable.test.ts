@@ -53,18 +53,12 @@ describe("observable", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>({
-          dataset: "dataset",
-          projectId: "newProjectId",
-        }).observable;
+        }>({ dataset: "dataset", projectId: "newProjectId" }).observable;
 
       const execWithConfig = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>({
-          dataset: "dataset",
-          projectId: "projectId",
-        }).observable.config({
+        }>({ dataset: "dataset", projectId: "projectId" }).observable.config({
           projectId: "newProjectId",
         });
 
@@ -79,10 +73,7 @@ describe("observable", () => {
       const exec = () =>
         createClient<{
           foo: AnySanityDocument & { _type: "foo"; foo: string };
-        }>({
-          dataset: "dataset",
-          projectId: "newProjectId",
-        }).observable;
+        }>({ dataset: "dataset", projectId: "newProjectId" }).observable;
 
       const execWithConfig = () =>
         createClient<{
@@ -90,9 +81,7 @@ describe("observable", () => {
         }>({
           dataset: "dataset",
           projectId: "projectId",
-        }).observable.withConfig({
-          projectId: "newProjectId",
-        });
+        }).observable.withConfig({ projectId: "newProjectId" });
 
       expectType<ReturnType<typeof execWithConfig>>().toEqual<
         ReturnType<typeof exec>
@@ -181,16 +170,8 @@ describe("observable", () => {
 
       expectType<ReturnType<typeof exec>>().toEqual<
         Observable<
-          | (AnySanityDocument & {
-              _id: "id";
-              _type: "foo";
-              foo: string;
-            })
-          | (AnySanityDocument & {
-              _id: "id";
-              _type: "qux";
-              qux: number;
-            })
+          | (AnySanityDocument & { _id: "id"; _type: "foo"; foo: string })
+          | (AnySanityDocument & { _id: "id"; _type: "qux"; qux: number })
           | undefined
         >
       >();
@@ -209,31 +190,15 @@ describe("observable", () => {
         Observable<
           [
             (
-              | (AnySanityDocument & {
-                  _id: "id";
-                  _type: "foo";
-                  foo: string;
-                })
-              | (AnySanityDocument & {
-                  _id: "id";
-                  _type: "qux";
-                  qux: number;
-                })
+              | (AnySanityDocument & { _id: "id"; _type: "foo"; foo: string })
+              | (AnySanityDocument & { _id: "id"; _type: "qux"; qux: number })
               | null
             ),
             (
-              | (AnySanityDocument & {
-                  _id: "id2";
-                  _type: "foo";
-                  foo: string;
-                })
-              | (AnySanityDocument & {
-                  _id: "id2";
-                  _type: "qux";
-                  qux: number;
-                })
+              | (AnySanityDocument & { _id: "id2"; _type: "foo"; foo: string })
+              | (AnySanityDocument & { _id: "id2"; _type: "qux"; qux: number })
               | null
-            )
+            ),
           ]
         >
       >();
@@ -830,7 +795,7 @@ describe("observable", () => {
             .commit();
 
         expectType<ReturnType<typeof exec>>().toStrictEqual<
-          // @ts-expect-error TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
+          // @ts-expect-error -- TODO https://github.com/saiichihashimoto/sanity-typed/issues/286
           Observable<AnySanityDocument & { _type: "foo"; foo: string }>
         >();
       });

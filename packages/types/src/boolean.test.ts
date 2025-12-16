@@ -15,11 +15,7 @@ describe("boolean", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "boolean",
-                }),
-              ],
+              of: [defineArrayMember({ type: "boolean" })],
             }),
           ],
         },
@@ -64,14 +60,7 @@ describe("boolean", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "boolean",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "boolean" })] },
       });
 
       expectType<

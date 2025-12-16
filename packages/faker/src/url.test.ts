@@ -27,11 +27,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    type: "url",
-                  }),
-                ],
+                of: [defineArrayMember({ type: "url" })],
               }),
             ],
           },
@@ -94,14 +90,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
-          schema: {
-            types: [
-              defineType({
-                name: "foo",
-                type: "url",
-              }),
-            ],
-          },
+          schema: { types: [defineType({ name: "foo", type: "url" })] },
         });
         const sanityFaker = sanityConfigToFakerTyped(config, {
           seed,
@@ -124,14 +113,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
-          schema: {
-            types: [
-              defineType({
-                name: "foo",
-                type: "url",
-              }),
-            ],
-          },
+          schema: { types: [defineType({ name: "foo", type: "url" })] },
         });
         const sanityFaker = sanityConfigToFakerTyped(config, {
           seed,
@@ -305,10 +287,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           schema: {
             types: [
               customFaker(
-                defineType({
-                  name: "foo",
-                  type: "url",
-                }),
+                defineType({ name: "foo", type: "url" }),
                 () => "https://google.com"
               ),
             ],

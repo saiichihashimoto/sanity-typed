@@ -17,7 +17,7 @@ export const parse = <const Query extends string>(
 // eslint-disable-next-line fp/no-class -- retyping an existing class
 export declare class StaticValue<
   P,
-  T extends GroqType
+  T extends GroqType,
 > extends StaticValueNative<P, T> {
   get(): Promise<P>;
 }
@@ -42,7 +42,7 @@ export const evaluate = <
   const SanityDataset extends string,
   const Before extends Dataset[number] | null = null,
   const After extends Dataset[number] | null = null,
-  const This = null
+  const This = null,
 >(
   node: Node,
   options: {
@@ -52,24 +52,18 @@ export const evaluate = <
     identity?: Identity;
     params?: Parameters;
     root?: This;
-    sanity?: {
-      dataset: SanityDataset;
-      projectId: SanityProjectId;
-    };
+    sanity?: { dataset: SanityDataset; projectId: SanityProjectId };
     timestamp?: Date;
   } = {}
 ) =>
-  // @ts-expect-error TODO Type instantiation is excessively deep and possibly infinite.
+  // @ts-expect-error -- TODO Type instantiation is excessively deep and possibly infinite.
   evaluateNative(node, options) as MaybePromiseLike<
     StaticOrStreamValue<
       Evaluate<
         WritableDeep<Node>,
         {
           context: {
-            client: {
-              dataset: SanityDataset;
-              projectId: SanityProjectId;
-            };
+            client: { dataset: SanityDataset; projectId: SanityProjectId };
             dataset: WritableDeep<Dataset>;
             delta: { after: WritableDeep<After>; before: WritableDeep<Before> };
             identity: Identity;

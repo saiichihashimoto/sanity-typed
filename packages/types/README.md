@@ -185,12 +185,7 @@ export const myPlugin = definePlugin({
       defineType({
         name: "myPlugin",
         type: "object",
-        fields: [
-          defineField({
-            name: "baz",
-            type: "boolean",
-          }),
-        ],
+        fields: [defineField({ name: "baz", type: "boolean" })],
       }),
     ],
   },
@@ -209,18 +204,11 @@ import { myPlugin } from "./my-plugin";
 const foo = defineType({
   name: "foo",
   type: "document",
-  fields: [
-    defineField({
-      name: "bar",
-      type: "myPlugin",
-    }),
-  ],
+  fields: [defineField({ name: "bar", type: "myPlugin" })],
 });
 
 const config = defineConfig({
-  schema: {
-    types: [foo],
-  },
+  schema: { types: [foo] },
   plugins: [myPlugin()],
 });
 
@@ -299,16 +287,12 @@ Another solution would be to keep old configs around, just to derive their types
 
 ```typescript
 const config = defineConfig({
-  schema: {
-    types: [foo],
-  },
+  schema: { types: [foo] },
   plugins: [myPlugin()],
 });
 
 const oldConfig = defineConfig({
-  schema: {
-    types: [oldFoo],
-  },
+  schema: { types: [oldFoo] },
   plugins: [myPlugin()],
 });
 

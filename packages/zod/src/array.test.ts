@@ -37,10 +37,7 @@ describe("array", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: [true],
-      };
+      const unparsed = { _type: "foo", bar: [true] };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -76,10 +73,7 @@ describe("array", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: [true, "foo"],
-      };
+      const unparsed = { _type: "foo", bar: [true, "foo"] };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -293,16 +287,8 @@ describe("array", () => {
 
       expect(() =>
         zods.foo.parse([
-          {
-            _key: "key1",
-            _type: "bar",
-            bar: true,
-          },
-          {
-            _key: "key2",
-            _type: "bar",
-            bar: true,
-          },
+          { _key: "key1", _type: "bar", bar: true },
+          { _key: "key2", _type: "bar", bar: true },
         ])
       ).toThrow("Can't contain duplicates");
     });
@@ -358,18 +344,8 @@ describe("array", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(
-        zods.bar.parse({
-          _type: "bar",
-          baz: 4,
-          foo: [],
-        })
-      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .toStrictEqual({
-          _type: "bar",
-          baz: 4,
-          foo: [],
-        });
+      expect(zods.bar.parse({ _type: "bar", baz: 4, foo: [] })) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .toStrictEqual({ _type: "bar", baz: 4, foo: [] });
     });
 
     it("max(maxLength)", () => {
@@ -423,18 +399,8 @@ describe("array", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(
-        zods.bar.parse({
-          _type: "bar",
-          baz: 1,
-          foo: [true, false],
-        })
-      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .toStrictEqual({
-          _type: "bar",
-          baz: 1,
-          foo: [true, false],
-        });
+      expect(zods.bar.parse({ _type: "bar", baz: 1, foo: [true, false] })) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .toStrictEqual({ _type: "bar", baz: 1, foo: [true, false] });
     });
 
     it("length(exactLength)", () => {
@@ -491,18 +457,8 @@ describe("array", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      expect(
-        zods.bar.parse({
-          _type: "bar",
-          baz: 1,
-          foo: [],
-        })
-      ) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
-        .toStrictEqual({
-          _type: "bar",
-          baz: 1,
-          foo: [],
-        });
+      expect(zods.bar.parse({ _type: "bar", baz: 1, foo: [] })) // TODO https://github.com/saiichihashimoto/sanity-typed/issues/516
+        .toStrictEqual({ _type: "bar", baz: 1, foo: [] });
     });
 
     it("custom(fn)", () => {
@@ -518,9 +474,9 @@ describe("array", () => {
                 Rule.custom(() => "fail for no reason").custom(
                   enableZod(
                     (value) =>
-                      !value?.length ||
-                      value[0] === true ||
-                      "first value must be `true`"
+                      !value?.length
+                      || value[0] === true
+                      || "first value must be `true`"
                   )
                 ),
               of: [defineArrayMember({ type: "boolean" })],

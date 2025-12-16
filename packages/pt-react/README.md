@@ -104,18 +104,16 @@ export const post = defineType({
 ```
 ```with-portabletext-react.tsx```:
 ```typescript
+// import { PortableText } from "@portabletext/react";
 import type { InferGetStaticPropsType } from "next";
 import { Fragment } from "react";
 
-// import { PortableText } from "@portabletext/react";
 import { PortableText } from "@portabletext-typed/react";
 
 import { client } from "../sanity/client";
 
 export const getStaticProps = async () => ({
-  props: {
-    posts: await client.fetch('*[_type=="post"]'),
-  },
+  props: { posts: await client.fetch('*[_type=="post"]') },
 });
 
 const Index = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => (

@@ -34,10 +34,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   }),
                 ],
               }),
-              defineType({
-                name: "bar",
-                type: "string",
-              }),
+              defineType({ name: "bar", type: "string" }),
             ],
           },
         });
@@ -46,10 +43,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        const fakes = {
-          bar: sanityFaker.bar(),
-          foo: sanityFaker.foo(),
-        };
+        const fakes = { bar: sanityFaker.bar(), foo: sanityFaker.foo() };
 
         const zods = sanityConfigToZods(config);
 
@@ -99,10 +93,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        const fakes = {
-          bar: sanityFaker.bar(),
-          foo: sanityFaker.foo(),
-        };
+        const fakes = { bar: sanityFaker.bar(), foo: sanityFaker.foo() };
 
         const zods = sanityConfigToZods(config);
 
@@ -125,12 +116,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "object",
-                fields: [
-                  defineField({
-                    name: "foo",
-                    type: "foo",
-                  }),
-                ],
+                fields: [defineField({ name: "foo", type: "foo" })],
               }),
             ],
           },
@@ -140,9 +126,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        const fakes = {
-          foo: sanityFaker.foo(),
-        };
+        const fakes = { foo: sanityFaker.foo() };
 
         const zods = sanityConfigToZods(config);
 
@@ -162,12 +146,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "object",
-                fields: [
-                  defineField({
-                    name: "bar",
-                    type: "bar",
-                  }),
-                ],
+                fields: [defineField({ name: "bar", type: "bar" })],
               }),
               defineType({
                 name: "bar",
@@ -267,9 +246,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        const fakes = {
-          foo: sanityFaker.foo(),
-        };
+        const fakes = { foo: sanityFaker.foo() };
 
         const zods = sanityConfigToZods(config);
 
@@ -321,10 +298,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   name: "plugin",
                   schema: {
                     types: [
-                      defineType({
-                        name: "plugin2Value",
-                        type: "boolean",
-                      }),
+                      defineType({ name: "plugin2Value", type: "boolean" }),
                     ],
                   },
                 })(),
@@ -337,9 +311,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        const fakes = {
-          foo: sanityFaker.foo(),
-        };
+        const fakes = { foo: sanityFaker.foo() };
 
         const zods = sanityConfigToZods(config);
 
@@ -367,10 +339,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   }),
                 ],
               }),
-              defineType({
-                name: "bar",
-                type: "string",
-              }),
+              defineType({ name: "bar", type: "string" }),
             ],
           },
         })();
@@ -379,10 +348,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        const fakes = {
-          bar: sanityFaker.bar(),
-          foo: sanityFaker.foo(),
-        };
+        const fakes = { bar: sanityFaker.bar(), foo: sanityFaker.foo() };
 
         const zods = sanityConfigToZods(plugin);
 
@@ -431,10 +397,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        const fakes = {
-          bar: sanityFaker.bar(),
-          foo: sanityFaker.foo(),
-        };
+        const fakes = { bar: sanityFaker.bar(), foo: sanityFaker.foo() };
 
         const zods = sanityConfigToZods(plugin);
 
@@ -456,12 +419,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "object",
-                fields: [
-                  defineField({
-                    name: "foo",
-                    type: "foo",
-                  }),
-                ],
+                fields: [defineField({ name: "foo", type: "foo" })],
               }),
             ],
           },
@@ -471,9 +429,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        const fakes = {
-          foo: sanityFaker.foo(),
-        };
+        const fakes = { foo: sanityFaker.foo() };
 
         const zods = sanityConfigToZods(plugin);
 
@@ -492,12 +448,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "object",
-                fields: [
-                  defineField({
-                    name: "bar",
-                    type: "bar",
-                  }),
-                ],
+                fields: [defineField({ name: "bar", type: "bar" })],
               }),
               defineType({
                 name: "bar",
@@ -596,9 +547,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        const fakes = {
-          foo: sanityFaker.foo(),
-        };
+        const fakes = { foo: sanityFaker.foo() };
 
         const zods = sanityConfigToZods(plugin);
 
@@ -649,10 +598,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   name: "plugin",
                   schema: {
                     types: [
-                      defineType({
-                        name: "plugin2Value",
-                        type: "boolean",
-                      }),
+                      defineType({ name: "plugin2Value", type: "boolean" }),
                     ],
                   },
                 })(),
@@ -665,9 +611,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           faker: { locale: [en, base] },
         });
 
-        const fakes = {
-          foo: sanityFaker.foo(),
-        };
+        const fakes = { foo: sanityFaker.foo() };
 
         const zods = sanityConfigToZods(plugin);
 

@@ -15,27 +15,14 @@ describe("type DocumentValues", () => {
           defineType({
             name: "foo",
             type: "document",
-            fields: [
-              defineField({
-                name: "foo",
-                type: "boolean",
-              }),
-            ],
+            fields: [defineField({ name: "foo", type: "boolean" })],
           }),
           defineType({
             name: "bar",
             type: "document",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "number",
-              }),
-            ],
+            fields: [defineField({ name: "bar", type: "number" })],
           }),
-          defineType({
-            name: "qux",
-            type: "string",
-          }),
+          defineType({ name: "qux", type: "string" }),
         ],
       },
     });
@@ -74,11 +61,7 @@ describe("type DocumentValues", () => {
           path: string;
           sha1hash: string;
           size: number;
-          source?: {
-            id: string;
-            name: string;
-            url?: string;
-          };
+          source?: { id: string; name: string; url?: string };
           title?: string;
           url: string;
         }
@@ -169,11 +152,7 @@ describe("type DocumentValues", () => {
           path: string;
           sha1hash: string;
           size: number;
-          source?: {
-            id: string;
-            name: string;
-            url?: string;
-          };
+          source?: { id: string; name: string; url?: string };
           title?: string;
           url: string;
         }

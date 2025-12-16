@@ -27,11 +27,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    type: "string",
-                  }),
-                ],
+                of: [defineArrayMember({ type: "string" })],
               }),
             ],
           },
@@ -63,9 +59,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 of: [
                   defineArrayMember({
                     type: "string",
-                    options: {
-                      list: ["foo", { title: "Bar", value: "bar" }],
-                    },
+                    options: { list: ["foo", { title: "Bar", value: "bar" }] },
                   }),
                 ],
               }),
@@ -138,9 +132,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     name: "bar",
                     type: "string",
                     validation: (Rule) => Rule.required(),
-                    options: {
-                      list: ["foo", { title: "Bar", value: "bar" }],
-                    },
+                    options: { list: ["foo", { title: "Bar", value: "bar" }] },
                   }),
                 ],
               }),
@@ -168,14 +160,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
-          schema: {
-            types: [
-              defineType({
-                name: "foo",
-                type: "string",
-              }),
-            ],
-          },
+          schema: { types: [defineType({ name: "foo", type: "string" })] },
         });
         const sanityFaker = sanityConfigToFakerTyped(config, {
           seed,
@@ -201,9 +186,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "string",
-                options: {
-                  list: ["foo", { title: "Bar", value: "bar" }],
-                },
+                options: { list: ["foo", { title: "Bar", value: "bar" }] },
               }),
             ],
           },
@@ -682,10 +665,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           schema: {
             types: [
               customFaker(
-                defineType({
-                  name: "foo",
-                  type: "string",
-                }),
+                defineType({ name: "foo", type: "string" }),
                 () => "foo"
               ),
             ],

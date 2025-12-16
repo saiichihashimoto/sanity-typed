@@ -27,11 +27,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    type: "email",
-                  }),
-                ],
+                of: [defineArrayMember({ type: "email" })],
               }),
             ],
           },
@@ -94,14 +90,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
-          schema: {
-            types: [
-              defineType({
-                name: "foo",
-                type: "email",
-              }),
-            ],
-          },
+          schema: { types: [defineType({ name: "foo", type: "email" })] },
         });
         const sanityFaker = sanityConfigToFakerTyped(config, {
           seed,
@@ -124,14 +113,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
-          schema: {
-            types: [
-              defineType({
-                name: "foo",
-                type: "email",
-              }),
-            ],
-          },
+          schema: { types: [defineType({ name: "foo", type: "email" })] },
         });
         const sanityFaker = sanityConfigToFakerTyped(config, {
           seed,
@@ -157,10 +139,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           schema: {
             types: [
               customFaker(
-                defineType({
-                  name: "foo",
-                  type: "email",
-                }),
+                defineType({ name: "foo", type: "email" }),
                 () => "foo@gmail.com"
               ),
             ],

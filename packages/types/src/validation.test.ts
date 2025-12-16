@@ -33,10 +33,7 @@ describe("validation", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<
-        {
-          _key: string;
-          bar?: boolean;
-        }[]
+        { _key: string; bar?: boolean }[]
       >();
     });
 
@@ -67,10 +64,7 @@ describe("validation", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<
-        {
-          _key: string;
-          bar?: boolean;
-        }[]
+        { _key: string; bar?: boolean }[]
       >();
     });
 
@@ -101,10 +95,7 @@ describe("validation", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<
-        {
-          _key: string;
-          bar: boolean;
-        }[]
+        { _key: string; bar: boolean }[]
       >();
     });
 
@@ -138,10 +129,7 @@ describe("validation", () => {
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<
-        {
-          _key: string;
-          bar: boolean;
-        }[]
+        { _key: string; bar: boolean }[]
       >();
     });
   });

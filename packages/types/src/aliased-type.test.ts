@@ -23,10 +23,7 @@ describe("<alias>", () => {
                 }),
               ],
             }),
-            defineType({
-              name: "bar",
-              type: "string",
-            }),
+            defineType({ name: "bar", type: "string" }),
           ],
         },
       });
@@ -86,10 +83,7 @@ describe("<alias>", () => {
         _rev: string;
         _type: "foo";
         _updatedAt: string;
-        bar: {
-          _type: "bar";
-          baz: boolean;
-        };
+        bar: { _type: "bar"; baz: boolean };
       }>();
     });
 
@@ -112,10 +106,7 @@ describe("<alias>", () => {
                 }),
               ],
             }),
-            defineType({
-              name: "bar",
-              type: "string",
-            }),
+            defineType({ name: "bar", type: "string" }),
           ],
         },
       });
@@ -142,12 +133,7 @@ describe("<alias>", () => {
             defineType({
               name: "foo",
               type: "object",
-              fields: [
-                defineField({
-                  name: "foo",
-                  type: "foo",
-                }),
-              ],
+              fields: [defineField({ name: "foo", type: "foo" })],
             }),
           ],
         },
@@ -168,12 +154,7 @@ describe("<alias>", () => {
             defineType({
               name: "foo",
               type: "object",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "bar",
-                }),
-              ],
+              fields: [defineField({ name: "bar", type: "bar" })],
             }),
             defineType({
               name: "bar",
@@ -258,10 +239,7 @@ describe("<alias>", () => {
         _rev: string;
         _type: "foo";
         _updatedAt: string;
-        pluginValue: {
-          _type: "pluginValue";
-          baz: boolean;
-        };
+        pluginValue: { _type: "pluginValue"; baz: boolean };
       }>();
     });
 
@@ -307,10 +285,7 @@ describe("<alias>", () => {
                 name: "plugin",
                 schema: {
                   types: [
-                    defineType({
-                      name: "plugin2Value",
-                      type: "boolean",
-                    }),
+                    defineType({ name: "plugin2Value", type: "boolean" }),
                   ],
                 },
               })(),
@@ -325,10 +300,7 @@ describe("<alias>", () => {
         _rev: string;
         _type: "foo";
         _updatedAt: string;
-        pluginValue: {
-          _type: "pluginValue";
-          baz: boolean;
-        };
+        pluginValue: { _type: "pluginValue"; baz: boolean };
       }>();
     });
   });
@@ -342,17 +314,9 @@ describe("<alias>", () => {
             defineType({
               name: "foo",
               type: "document",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "bar",
-                }),
-              ],
+              fields: [defineField({ name: "bar", type: "bar" })],
             }),
-            defineType({
-              name: "bar",
-              type: "string",
-            }),
+            defineType({ name: "bar", type: "string" }),
           ],
         },
       })();
@@ -411,10 +375,7 @@ describe("<alias>", () => {
         _rev: string;
         _type: "foo";
         _updatedAt: string;
-        bar: {
-          _type: "bar";
-          baz: boolean;
-        };
+        bar: { _type: "bar"; baz: boolean };
       }>();
     });
 
@@ -435,10 +396,7 @@ describe("<alias>", () => {
                 }),
               ],
             }),
-            defineType({
-              name: "bar",
-              type: "string",
-            }),
+            defineType({ name: "bar", type: "string" }),
           ],
         },
       })();
@@ -464,12 +422,7 @@ describe("<alias>", () => {
             defineType({
               name: "foo",
               type: "object",
-              fields: [
-                defineField({
-                  name: "foo",
-                  type: "foo",
-                }),
-              ],
+              fields: [defineField({ name: "foo", type: "foo" })],
             }),
           ],
         },
@@ -491,12 +444,7 @@ describe("<alias>", () => {
             defineType({
               name: "foo",
               type: "object",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "bar",
-                }),
-              ],
+              fields: [defineField({ name: "bar", type: "bar" })],
             }),
             defineType({
               name: "bar",
@@ -580,10 +528,7 @@ describe("<alias>", () => {
         _rev: string;
         _type: "foo";
         _updatedAt: string;
-        pluginValue: {
-          _type: "pluginValue";
-          baz: boolean;
-        };
+        pluginValue: { _type: "pluginValue"; baz: boolean };
       }>();
     });
 
@@ -628,10 +573,7 @@ describe("<alias>", () => {
                 name: "plugin",
                 schema: {
                   types: [
-                    defineType({
-                      name: "plugin2Value",
-                      type: "boolean",
-                    }),
+                    defineType({ name: "plugin2Value", type: "boolean" }),
                   ],
                 },
               })(),
@@ -646,10 +588,7 @@ describe("<alias>", () => {
         _rev: string;
         _type: "foo";
         _updatedAt: string;
-        pluginValue: {
-          _type: "pluginValue";
-          baz: boolean;
-        };
+        pluginValue: { _type: "pluginValue"; baz: boolean };
       }>();
     });
   });

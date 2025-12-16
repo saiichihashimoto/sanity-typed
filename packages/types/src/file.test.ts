@@ -15,11 +15,7 @@ describe("file", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "file",
-                }),
-              ],
+              of: [defineArrayMember({ type: "file" })],
             }),
           ],
         },
@@ -41,12 +37,7 @@ describe("file", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "file",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "file" })],
             }),
           ],
         },
@@ -70,14 +61,8 @@ describe("file", () => {
                 defineArrayMember({
                   type: "file",
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -166,9 +151,7 @@ describe("file", () => {
         _key: string;
         _type: "file";
         asset: ReferenceValue<"sanity.fileAsset", false>;
-        bar: {
-          tar: number;
-        };
+        bar: { tar: number };
       }>();
     });
   });
@@ -218,14 +201,8 @@ describe("file", () => {
                   type: "file",
                   validation: (Rule) => Rule.required(),
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -321,9 +298,7 @@ describe("file", () => {
       >().toStrictEqual<{
         _type: "file";
         asset: ReferenceValue<"sanity.fileAsset", false>;
-        bar: {
-          tar: number;
-        };
+        bar: { tar: number };
       }>();
     });
   });
@@ -333,14 +308,7 @@ describe("file", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "file",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "file" })] },
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
@@ -355,19 +323,11 @@ describe("file", () => {
         projectId: "projectId",
         schema: {
           types: [
-            defineType({
-              name: "foo",
-              type: "file",
-            }),
+            defineType({ name: "foo", type: "file" }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },
@@ -388,14 +348,8 @@ describe("file", () => {
               name: "foo",
               type: "file",
               fields: [
-                defineField({
-                  name: "bar",
-                  type: "boolean",
-                }),
-                defineField({
-                  name: "tar",
-                  type: "number",
-                }),
+                defineField({ name: "bar", type: "boolean" }),
+                defineField({ name: "tar", type: "number" }),
               ],
             }),
           ],
@@ -470,9 +424,7 @@ describe("file", () => {
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
         asset: ReferenceValue<"sanity.fileAsset", false>;
-        bar: {
-          tar: number;
-        };
+        bar: { tar: number };
       }>();
     });
   });

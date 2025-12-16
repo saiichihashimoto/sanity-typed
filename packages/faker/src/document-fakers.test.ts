@@ -21,27 +21,14 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
             defineType({
               name: "foo",
               type: "document",
-              fields: [
-                defineField({
-                  name: "foo",
-                  type: "boolean",
-                }),
-              ],
+              fields: [defineField({ name: "foo", type: "boolean" })],
             }),
             defineType({
               name: "bar",
               type: "document",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "number",
-                }),
-              ],
+              fields: [defineField({ name: "bar", type: "number" })],
             }),
-            defineType({
-              name: "baz",
-              type: "string",
-            }),
+            defineType({ name: "baz", type: "string" }),
           ],
         },
       });
@@ -86,27 +73,14 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
             defineType({
               name: "foo",
               type: "document",
-              fields: [
-                defineField({
-                  name: "foo",
-                  type: "boolean",
-                }),
-              ],
+              fields: [defineField({ name: "foo", type: "boolean" })],
             }),
             defineType({
               name: "bar",
               type: "document",
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "number",
-                }),
-              ],
+              fields: [defineField({ name: "bar", type: "number" })],
             }),
-            defineType({
-              name: "baz",
-              type: "string",
-            }),
+            defineType({ name: "baz", type: "string" }),
           ],
         },
       });

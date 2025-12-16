@@ -10,26 +10,20 @@ const getLocalDeps = async (
     return [];
   }
 
-  // eslint-disable-next-line fp/no-unused-expression -- Being mutable on purpose
   done.add(packagePath);
 
   const { dependencies = {}, devDependencies = {} } = JSON.parse(
-    await readFile(packagePath, {
-      encoding: "utf8",
-    })
+    await readFile(packagePath, { encoding: "utf8" })
   ) as {
     dependencies?: { [dependency: string]: string };
     devDependencies?: { [devDependencies: string]: string };
   };
 
-  const localDependencies = Object.keys({
-    ...dependencies,
-    ...devDependencies,
-  })
+  const localDependencies = Object.keys({ ...dependencies, ...devDependencies })
     .filter(
       (dep) =>
-        dep.startsWith("@sanity-typed/") ||
-        dep.startsWith("@portabletext-typed/")
+        dep.startsWith("@sanity-typed/")
+        || dep.startsWith("@portabletext-typed/")
     )
     .map((dep) =>
       dep.replace("@sanity-typed/", "").replace("@portabletext-typed/", "pt-")
@@ -40,11 +34,12 @@ const getLocalDeps = async (
       ...localDependencies.map((dep) => `../${dep}/src`),
       ...(
         await Promise.all(
-          localDependencies.map(async (dep) =>
-            getLocalDeps(
-              resolve(process.cwd(), "..", dep, "package.json"),
-              done
-            )
+          localDependencies.map(
+            async (dep) =>
+              await getLocalDeps(
+                resolve(process.cwd(), "..", dep, "package.json"),
+                done
+              )
           )
         )
       ).flat(),

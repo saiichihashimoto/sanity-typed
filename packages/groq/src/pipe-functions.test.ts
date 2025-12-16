@@ -71,9 +71,7 @@ describe("pipe functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            dataset: WritableDeep<typeof dataset>;
-          }>
+          ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
         >
       >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
@@ -111,9 +109,7 @@ describe("pipe functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            dataset: WritableDeep<typeof dataset>;
-          }>
+          ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
         >
       >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
@@ -151,9 +147,7 @@ describe("pipe functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            dataset: WritableDeep<typeof dataset>;
-          }>
+          ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
         >
       >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
@@ -239,9 +233,7 @@ describe("pipe functions", () => {
       expectType<
         ExecuteQuery<
           typeof query,
-          ScopeFromPartialContext<{
-            dataset: WritableDeep<typeof dataset>;
-          }>
+          ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
         >
       >().toStrictEqual<WritableDeep<typeof expectedResult>>();
     });
@@ -267,10 +259,7 @@ describe("pipe functions", () => {
       type: "PipeFuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -305,10 +294,7 @@ describe("pipe functions", () => {
       type: "PipeFuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -323,9 +309,7 @@ describe("pipe functions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -350,10 +334,7 @@ describe("pipe functions", () => {
       type: "PipeFuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -371,9 +352,7 @@ describe("pipe functions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -427,10 +406,7 @@ describe("pipe functions", () => {
       ...expectedTree,
       args: [
         expectedTree.args[0],
-        {
-          ...expectedTree.args[1],
-          func: expect.any(Function),
-        },
+        { ...expectedTree.args[1], func: expect.any(Function) },
       ],
       func: expect.any(Function),
     });
@@ -451,9 +427,7 @@ describe("pipe functions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -478,10 +452,7 @@ describe("pipe functions", () => {
       type: "PipeFuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -499,9 +470,7 @@ describe("pipe functions", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toEqual<WritableDeep<typeof expectedResult>>();
   });

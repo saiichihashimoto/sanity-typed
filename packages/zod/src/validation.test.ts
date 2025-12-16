@@ -40,15 +40,7 @@ describe("validation", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          _key: "key",
-        },
-        {
-          _key: "key",
-          bar: true,
-        },
-      ];
+      const unparsed = [{ _key: "key" }, { _key: "key", bar: true }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -85,15 +77,7 @@ describe("validation", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          _key: "key",
-        },
-        {
-          _key: "key",
-          bar: true,
-        },
-      ];
+      const unparsed = [{ _key: "key" }, { _key: "key", bar: true }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -130,12 +114,7 @@ describe("validation", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          _key: "key",
-          bar: true,
-        },
-      ];
+      const unparsed = [{ _key: "key", bar: true }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -176,12 +155,7 @@ describe("validation", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          _key: "key",
-          bar: true,
-        },
-      ];
+      const unparsed = [{ _key: "key", bar: true }];
 
       const parsed = zods.foo.parse(unparsed);
 

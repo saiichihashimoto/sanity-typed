@@ -15,11 +15,7 @@ describe("string", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "string",
-                }),
-              ],
+              of: [defineArrayMember({ type: "string" })],
             }),
           ],
         },
@@ -42,9 +38,7 @@ describe("string", () => {
               of: [
                 defineArrayMember({
                   type: "string",
-                  options: {
-                    list: ["foo", { title: "Bar", value: "bar" }],
-                  },
+                  options: { list: ["foo", { title: "Bar", value: "bar" }] },
                 }),
               ],
             }),
@@ -99,9 +93,7 @@ describe("string", () => {
                   name: "bar",
                   type: "string",
                   validation: (Rule) => Rule.required(),
-                  options: {
-                    list: ["foo", { title: "Bar", value: "bar" }],
-                  },
+                  options: { list: ["foo", { title: "Bar", value: "bar" }] },
                 }),
               ],
             }),
@@ -120,14 +112,7 @@ describe("string", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "string",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "string" })] },
       });
 
       expectType<

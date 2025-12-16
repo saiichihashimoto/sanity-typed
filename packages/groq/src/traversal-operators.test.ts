@@ -36,9 +36,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialScope<{
-          this: WritableDeep<typeof root>;
-        }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -73,9 +71,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialScope<{
-          this: WritableDeep<typeof root>;
-        }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -106,9 +102,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialScope<{
-          this: WritableDeep<typeof root>;
-        }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -143,9 +137,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialScope<{
-          this: WritableDeep<typeof root>;
-        }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -157,11 +149,7 @@ describe("traversal operators", () => {
 
     const expectedTree = {
       base: { type: "Everything" },
-      expr: {
-        base: { type: "This" },
-        name: "key",
-        type: "AccessAttribute",
-      },
+      expr: { base: { type: "This" }, name: "key", type: "AccessAttribute" },
       type: "Map",
     } as const;
 
@@ -180,9 +168,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -194,11 +180,7 @@ describe("traversal operators", () => {
 
     const expectedTree = {
       base: { type: "Everything" },
-      expr: {
-        base: { type: "This" },
-        name: "key",
-        type: "AccessAttribute",
-      },
+      expr: { base: { type: "This" }, name: "key", type: "AccessAttribute" },
       type: "Map",
     } as const;
 
@@ -217,9 +199,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -290,9 +270,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -323,9 +301,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -515,9 +491,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -703,9 +677,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -741,9 +713,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -801,9 +771,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -872,9 +840,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -1053,9 +1019,7 @@ describe("traversal operators", () => {
         type: "Array",
       },
       expr: {
-        base: {
-          type: "This",
-        },
+        base: { type: "This" },
         expr: {
           attributes: [
             {
@@ -1112,9 +1076,7 @@ describe("traversal operators", () => {
         type: "Array",
       },
       expr: {
-        base: {
-          type: "This",
-        },
+        base: { type: "This" },
         expr: {
           attributes: [
             {
@@ -1154,15 +1116,9 @@ describe("traversal operators", () => {
       base: {
         base: { type: "Everything" },
         expr: {
-          left: {
-            name: "_type",
-            type: "AccessAttribute",
-          },
+          left: { name: "_type", type: "AccessAttribute" },
           op: "==",
-          right: {
-            type: "Value",
-            value: "foo",
-          },
+          right: { type: "Value", value: "foo" },
           type: "OpCall",
         },
         type: "Filter",
@@ -1174,10 +1130,7 @@ describe("traversal operators", () => {
             {
               name: "name",
               type: "ObjectAttributeValue",
-              value: {
-                name: "name",
-                type: "AccessAttribute",
-              },
+              value: { name: "name", type: "AccessAttribute" },
             },
           ],
           type: "Object",
@@ -1205,9 +1158,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          dataset: WritableDeep<typeof dataset>;
-        }>
+        ScopeFromPartialContext<{ dataset: WritableDeep<typeof dataset> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -1259,9 +1210,7 @@ describe("traversal operators", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialScope<{
-          this: WritableDeep<typeof root>;
-        }>
+        ScopeFromPartialScope<{ this: WritableDeep<typeof root> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -1281,9 +1230,7 @@ describe("traversal operators", () => {
       WritableDeep<typeof expectedTree>
     >();
 
-    const params = {
-      param: { _type: "reference", _ref: "foo" },
-    } as const;
+    const params = { param: { _type: "reference", _ref: "foo" } } as const;
 
     const dataset = [
       { _id: "foo", _type: "foo", value: "foo" },
@@ -1322,9 +1269,7 @@ describe("traversal operators", () => {
       WritableDeep<typeof expectedTree>
     >();
 
-    const params = {
-      param: { _type: "reference", _ref: "foo" },
-    } as const;
+    const params = { param: { _type: "reference", _ref: "foo" } } as const;
 
     const dataset = [
       { _id: "foo", _type: "foo", value: "foo" },
@@ -1402,18 +1347,9 @@ describe("traversal operators", () => {
     const tree = parse(query);
 
     const expectedTree = {
-      base: {
-        base: {
-          name: "param",
-          type: "Parameter",
-        },
-        type: "ArrayCoerce",
-      },
+      base: { base: { name: "param", type: "Parameter" }, type: "ArrayCoerce" },
       expr: {
-        base: {
-          base: { type: "This" },
-          type: "Deref",
-        },
+        base: { base: { type: "This" }, type: "Deref" },
         name: "value",
         type: "AccessAttribute",
       },
@@ -1559,10 +1495,7 @@ describe("traversal operators", () => {
     const tree = parse(query);
 
     const expectedTree = {
-      base: {
-        base: { name: "param", type: "Parameter" },
-        type: "Deref",
-      },
+      base: { base: { name: "param", type: "Parameter" }, type: "Deref" },
       name: "value",
       type: "AccessAttribute",
     } as const;
@@ -1652,18 +1585,9 @@ describe("traversal operators", () => {
     const tree = parse(query);
 
     const expectedTree = {
-      base: {
-        base: {
-          name: "param",
-          type: "Parameter",
-        },
-        type: "ArrayCoerce",
-      },
+      base: { base: { name: "param", type: "Parameter" }, type: "ArrayCoerce" },
       expr: {
-        base: {
-          base: { type: "This" },
-          type: "Deref",
-        },
+        base: { base: { type: "This" }, type: "Deref" },
         name: "value",
         type: "AccessAttribute",
       },

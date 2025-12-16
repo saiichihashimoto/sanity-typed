@@ -71,12 +71,7 @@ export const myPlugin = definePlugin({
       defineType({
         name: "myPlugin",
         type: "object",
-        fields: [
-          defineField({
-            name: "baz",
-            type: "boolean",
-          }),
-        ],
+        fields: [defineField({ name: "baz", type: "boolean" })],
       }),
     ],
   },
@@ -95,18 +90,11 @@ import { myPlugin } from "./my-plugin";
 const foo = defineType({
   name: "foo",
   type: "document",
-  fields: [
-    defineField({
-      name: "bar",
-      type: "myPlugin",
-    }),
-  ],
+  fields: [defineField({ name: "bar", type: "myPlugin" })],
 });
 
 const config = defineConfig({
-  schema: {
-    types: [foo],
-  },
+  schema: { types: [foo] },
   plugins: [myPlugin()],
 });
 

@@ -27,11 +27,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    type: "geopoint",
-                  }),
-                ],
+                of: [defineArrayMember({ type: "geopoint" })],
               }),
             ],
           },
@@ -60,12 +56,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    name: "foo",
-                    type: "geopoint",
-                  }),
-                ],
+                of: [defineArrayMember({ name: "foo", type: "geopoint" })],
               }),
             ],
           },
@@ -128,14 +119,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
-          schema: {
-            types: [
-              defineType({
-                name: "foo",
-                type: "geopoint",
-              }),
-            ],
-          },
+          schema: { types: [defineType({ name: "foo", type: "geopoint" })] },
         });
         const sanityFaker = sanityConfigToFakerTyped(config, {
           seed,
@@ -158,19 +142,11 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           projectId: "projectId",
           schema: {
             types: [
-              defineType({
-                name: "foo",
-                type: "geopoint",
-              }),
+              defineType({ name: "foo", type: "geopoint" }),
               defineType({
                 name: "bar",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    name: "bar",
-                    type: "foo",
-                  }),
-                ],
+                of: [defineArrayMember({ name: "bar", type: "foo" })],
               }),
             ],
           },
@@ -199,14 +175,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           schema: {
             types: [
               customFaker(
-                defineType({
-                  name: "foo",
-                  type: "geopoint",
-                }),
-                (faker, previous) => ({
-                  ...previous,
-                  alt: 0,
-                })
+                defineType({ name: "foo", type: "geopoint" }),
+                (faker, previous) => ({ ...previous, alt: 0 })
               ),
             ],
           },

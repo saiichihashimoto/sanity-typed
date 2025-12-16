@@ -32,10 +32,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -64,10 +61,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -82,9 +76,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -103,10 +95,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -121,9 +110,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -142,10 +129,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -160,9 +144,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -181,10 +163,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -199,9 +178,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -220,10 +197,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -238,9 +212,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -259,10 +231,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -277,9 +246,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -298,10 +265,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -316,9 +280,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -337,10 +299,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -355,9 +314,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -376,10 +333,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -394,9 +348,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -418,10 +370,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -436,9 +385,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -460,10 +407,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -478,9 +422,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -502,10 +444,7 @@ describe("geojson", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -520,9 +459,7 @@ describe("geojson", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          parameters: WritableDeep<typeof params>;
-        }>
+        ScopeFromPartialContext<{ parameters: WritableDeep<typeof params> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
