@@ -34,14 +34,8 @@ describe("document", () => {
                 defineArrayMember({
                   type: "document",
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -52,13 +46,7 @@ describe("document", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          _type: "document",
-          _key: "key",
-          bar: true,
-          tar: 1,
-        },
+        { ...fields, _type: "document", _key: "key", bar: true, tar: 1 },
       ];
 
       const parsed = zods.foo.parse(unparsed);
@@ -83,14 +71,8 @@ describe("document", () => {
                   name: "bar",
                   type: "document",
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -101,13 +83,7 @@ describe("document", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "bar",
-          bar: true,
-          tar: 1,
-        },
+        { ...fields, _key: "key", _type: "bar", bar: true, tar: 1 },
       ];
 
       const parsed = zods.foo.parse(unparsed);
@@ -146,12 +122,7 @@ describe("document", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          _type: "document",
-          _key: "key",
-          bar: true,
-        },
+        { ...fields, _type: "document", _key: "key", bar: true },
       ];
 
       const parsed = zods.foo.parse(unparsed);
@@ -197,12 +168,7 @@ describe("document", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          _type: "document",
-          _key: "key",
-          bar: { tar: 1 },
-        },
+        { ...fields, _type: "document", _key: "key", bar: { tar: 1 } },
       ];
 
       const parsed = zods.foo.parse(unparsed);
@@ -230,14 +196,8 @@ describe("document", () => {
                   type: "document",
                   validation: (Rule) => Rule.required(),
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -249,12 +209,7 @@ describe("document", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: {
-          ...fields,
-          _type: "document",
-          bar: true,
-          tar: 1,
-        },
+        bar: { ...fields, _type: "document", bar: true, tar: 1 },
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -296,11 +251,7 @@ describe("document", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: {
-          ...fields,
-          _type: "document",
-          bar: true,
-        },
+        bar: { ...fields, _type: "document", bar: true },
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -349,11 +300,7 @@ describe("document", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: {
-          ...fields,
-          _type: "document",
-          bar: { tar: 1 },
-        },
+        bar: { ...fields, _type: "document", bar: { tar: 1 } },
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -376,14 +323,8 @@ describe("document", () => {
               name: "foo",
               type: "document",
               fields: [
-                defineField({
-                  name: "bar",
-                  type: "boolean",
-                }),
-                defineField({
-                  name: "tar",
-                  type: "number",
-                }),
+                defineField({ name: "bar", type: "boolean" }),
+                defineField({ name: "tar", type: "number" }),
               ],
             }),
           ],
@@ -391,12 +332,7 @@ describe("document", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-        bar: true,
-        tar: 1,
-      };
+      const unparsed = { ...fields, _type: "foo", bar: true, tar: 1 };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -416,25 +352,14 @@ describe("document", () => {
               name: "foo",
               type: "document",
               fields: [
-                defineField({
-                  name: "bar",
-                  type: "boolean",
-                }),
-                defineField({
-                  name: "tar",
-                  type: "number",
-                }),
+                defineField({ name: "bar", type: "boolean" }),
+                defineField({ name: "tar", type: "number" }),
               ],
             }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },
@@ -442,13 +367,7 @@ describe("document", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "bar",
-          bar: true,
-          tar: 1,
-        },
+        { ...fields, _key: "key", _type: "bar", bar: true, tar: 1 },
       ];
 
       const parsed = zods.bar.parse(unparsed);
@@ -481,11 +400,7 @@ describe("document", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-        bar: true,
-      };
+      const unparsed = { ...fields, _type: "foo", bar: true };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -525,11 +440,7 @@ describe("document", () => {
     });
     const zods = sanityConfigToZodsTyped(config);
 
-    const unparsed = {
-      ...fields,
-      _type: "foo",
-      bar: { tar: 1 },
-    };
+    const unparsed = { ...fields, _type: "foo", bar: { tar: 1 } };
 
     const parsed = zods.foo.parse(unparsed);
 
@@ -555,12 +466,7 @@ describe("document", () => {
                     (value) => value?.bar !== "bar" || "value can't be `bar`"
                   )
                 ),
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "string",
-                }),
-              ],
+              fields: [defineField({ name: "bar", type: "string" })],
             }),
           ],
         },

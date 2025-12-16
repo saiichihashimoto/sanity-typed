@@ -19,14 +19,8 @@ describe("document", () => {
                 defineArrayMember({
                   type: "document",
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -61,14 +55,8 @@ describe("document", () => {
                   name: "bar",
                   type: "document",
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -159,9 +147,7 @@ describe("document", () => {
         _rev: string;
         _type: "document";
         _updatedAt: string;
-        bar: {
-          tar: number;
-        };
+        bar: { tar: number };
       }>();
     });
   });
@@ -182,14 +168,8 @@ describe("document", () => {
                   type: "document",
                   validation: (Rule) => Rule.required(),
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -294,9 +274,7 @@ describe("document", () => {
         _rev: string;
         _type: "document";
         _updatedAt: string;
-        bar: {
-          tar: number;
-        };
+        bar: { tar: number };
       }>();
     });
   });
@@ -312,14 +290,8 @@ describe("document", () => {
               name: "foo",
               type: "document",
               fields: [
-                defineField({
-                  name: "bar",
-                  type: "boolean",
-                }),
-                defineField({
-                  name: "tar",
-                  type: "number",
-                }),
+                defineField({ name: "bar", type: "boolean" }),
+                defineField({ name: "tar", type: "number" }),
               ],
             }),
           ],
@@ -347,25 +319,14 @@ describe("document", () => {
               name: "foo",
               type: "document",
               fields: [
-                defineField({
-                  name: "bar",
-                  type: "boolean",
-                }),
-                defineField({
-                  name: "tar",
-                  type: "number",
-                }),
+                defineField({ name: "bar", type: "boolean" }),
+                defineField({ name: "tar", type: "number" }),
               ],
             }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },
@@ -442,9 +403,7 @@ describe("document", () => {
         _rev: string;
         _type: "foo";
         _updatedAt: string;
-        bar: {
-          tar: number;
-        };
+        bar: { tar: number };
       }>();
     });
   });

@@ -14,28 +14,11 @@ import { sanityConfigToZodsTyped } from "./internal";
 
 const fields: Omit<ImageValue, "_type" | "asset"> & {
   asset: Omit<ImageValue["asset"], symbol>;
-} = {
-  asset: {
-    _ref: "ref",
-    _type: "reference",
-  },
-};
+} = { asset: { _ref: "ref", _type: "reference" } };
 
 const hotspotFields: Pick<ImageValue<true>, "crop" | "hotspot"> = {
-  crop: {
-    _type: "sanity.imageCrop",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    top: 0,
-  },
-  hotspot: {
-    _type: "sanity.imageHotspot",
-    height: 0,
-    width: 0,
-    x: 0,
-    y: 0,
-  },
+  crop: { _type: "sanity.imageCrop", bottom: 0, left: 0, right: 0, top: 0 },
+  hotspot: { _type: "sanity.imageHotspot", height: 0, width: 0, x: 0, y: 0 },
 };
 
 describe("image", () => {
@@ -49,24 +32,14 @@ describe("image", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "image",
-                }),
-              ],
+              of: [defineArrayMember({ type: "image" })],
             }),
           ],
         },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _type: "image",
-          _key: "key",
-        },
-      ];
+      const unparsed = [{ ...fields, _type: "image", _key: "key" }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -90,14 +63,8 @@ describe("image", () => {
                   name: "bar",
                   type: "image",
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -108,13 +75,7 @@ describe("image", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "bar",
-          bar: true,
-          tar: 1,
-        },
+        { ...fields, _key: "key", _type: "bar", bar: true, tar: 1 },
       ];
 
       const parsed = zods.foo.parse(unparsed);
@@ -137,9 +98,7 @@ describe("image", () => {
               of: [
                 defineArrayMember({
                   type: "image",
-                  options: {
-                    hotspot: true,
-                  },
+                  options: { hotspot: true },
                 }),
               ],
             }),
@@ -149,12 +108,7 @@ describe("image", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          ...hotspotFields,
-          _type: "image",
-          _key: "key",
-        },
+        { ...fields, ...hotspotFields, _type: "image", _key: "key" },
       ];
 
       const parsed = zods.foo.parse(unparsed);
@@ -178,14 +132,8 @@ describe("image", () => {
                 defineArrayMember({
                   type: "image",
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -196,13 +144,7 @@ describe("image", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          _type: "image",
-          _key: "key",
-          bar: true,
-          tar: 1,
-        },
+        { ...fields, _type: "image", _key: "key", bar: true, tar: 1 },
       ];
 
       const parsed = zods.foo.parse(unparsed);
@@ -240,14 +182,7 @@ describe("image", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _type: "image",
-          _key: "key",
-          bar: true,
-        },
-      ];
+      const unparsed = [{ ...fields, _type: "image", _key: "key", bar: true }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -292,12 +227,7 @@ describe("image", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          _type: "image",
-          _key: "key",
-          bar: { tar: 1 },
-        },
+        { ...fields, _type: "image", _key: "key", bar: { tar: 1 } },
       ];
 
       const parsed = zods.foo.parse(unparsed);
@@ -332,13 +262,7 @@ describe("image", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: {
-          ...fields,
-          _type: "image",
-        },
-      };
+      const unparsed = { _type: "foo", bar: { ...fields, _type: "image" } };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -362,9 +286,7 @@ describe("image", () => {
                   name: "bar",
                   type: "image",
                   validation: (Rule) => Rule.required(),
-                  options: {
-                    hotspot: true,
-                  },
+                  options: { hotspot: true },
                 }),
               ],
             }),
@@ -375,11 +297,7 @@ describe("image", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: {
-          ...fields,
-          ...hotspotFields,
-          _type: "image",
-        },
+        bar: { ...fields, ...hotspotFields, _type: "image" },
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -405,14 +323,8 @@ describe("image", () => {
                   type: "image",
                   validation: (Rule) => Rule.required(),
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -424,12 +336,7 @@ describe("image", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: {
-          ...fields,
-          _type: "image",
-          bar: true,
-          tar: 1,
-        },
+        bar: { ...fields, _type: "image", bar: true, tar: 1 },
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -471,11 +378,7 @@ describe("image", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: {
-          ...fields,
-          _type: "image",
-          bar: true,
-        },
+        bar: { ...fields, _type: "image", bar: true },
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -524,11 +427,7 @@ describe("image", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: {
-          ...fields,
-          _type: "image",
-          bar: { tar: 1 },
-        },
+        bar: { ...fields, _type: "image", bar: { tar: 1 } },
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -545,21 +444,11 @@ describe("image", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "image",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "image" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-      };
+      const unparsed = { ...fields, _type: "foo" };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -579,25 +468,14 @@ describe("image", () => {
               name: "foo",
               type: "image",
               fields: [
-                defineField({
-                  name: "bar",
-                  type: "boolean",
-                }),
-                defineField({
-                  name: "tar",
-                  type: "number",
-                }),
+                defineField({ name: "bar", type: "boolean" }),
+                defineField({ name: "tar", type: "number" }),
               ],
             }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },
@@ -605,13 +483,7 @@ describe("image", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "bar",
-          bar: true,
-          tar: 1,
-        },
+        { ...fields, _key: "key", _type: "bar", bar: true, tar: 1 },
       ];
 
       const parsed = zods.bar.parse(unparsed);
@@ -631,20 +503,14 @@ describe("image", () => {
             defineType({
               name: "foo",
               type: "image",
-              options: {
-                hotspot: true,
-              },
+              options: { hotspot: true },
             }),
           ],
         },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        ...hotspotFields,
-        _type: "foo",
-      };
+      const unparsed = { ...fields, ...hotspotFields, _type: "foo" };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -664,14 +530,8 @@ describe("image", () => {
               name: "foo",
               type: "image",
               fields: [
-                defineField({
-                  name: "bar",
-                  type: "boolean",
-                }),
-                defineField({
-                  name: "tar",
-                  type: "number",
-                }),
+                defineField({ name: "bar", type: "boolean" }),
+                defineField({ name: "tar", type: "number" }),
               ],
             }),
           ],
@@ -679,12 +539,7 @@ describe("image", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-        bar: true,
-        tar: 1,
-      };
+      const unparsed = { ...fields, _type: "foo", bar: true, tar: 1 };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -716,11 +571,7 @@ describe("image", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-        bar: true,
-      };
+      const unparsed = { ...fields, _type: "foo", bar: true };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -759,11 +610,7 @@ describe("image", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-        bar: { tar: 1 },
-      };
+      const unparsed = { ...fields, _type: "foo", bar: { tar: 1 } };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -790,12 +637,7 @@ describe("image", () => {
                     (value) => value?.bar !== "bar" || "value can't be `bar`"
                   )
                 ),
-              fields: [
-                defineField({
-                  name: "bar",
-                  type: "string",
-                }),
-              ],
+              fields: [defineField({ name: "bar", type: "string" })],
             }),
           ],
         },

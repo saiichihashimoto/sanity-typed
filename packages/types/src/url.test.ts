@@ -15,11 +15,7 @@ describe("url", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "url",
-                }),
-              ],
+              of: [defineArrayMember({ type: "url" })],
             }),
           ],
         },
@@ -64,14 +60,7 @@ describe("url", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "url",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "url" })] },
       });
 
       expectType<

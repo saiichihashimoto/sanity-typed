@@ -6,8 +6,8 @@ export type Negate<T> = T extends true ? false : true;
 export type IsPlainObject<T> = T extends any[]
   ? false
   : T extends object
-  ? true
-  : false;
+    ? true
+    : false;
 
 export const isPlainObject = <T>(value: T) =>
   isPlainObjectNative(value) as IsPlainObject<T>;
@@ -18,40 +18,40 @@ export type ReadonlyTupleOfLength<
   T,
   Min extends number = number,
   Max extends number = number,
-  Result extends T[] = []
+  Result extends T[] = [],
 > = Result["length"] extends Min
   ? IsNumericLiteral<Max> extends false
     ? readonly [...Result, ...T[]]
     : Result["length"] extends Max
-    ? Result
-    :
-        | ReadonlyTupleOfLength<
-            T,
-            [T, ...Result]["length"] & number,
-            Max,
-            [T, ...Result]
-          >
-        | Result
+      ? Result
+      :
+          | ReadonlyTupleOfLength<
+              T,
+              [T, ...Result]["length"] & number,
+              Max,
+              [T, ...Result]
+            >
+          | Result
   : ReadonlyTupleOfLength<T, Min, Max, [T, ...Result]>;
 
 export type TupleOfLength<
   T,
   Min extends number = number,
   Max extends number = number,
-  Result extends T[] = []
+  Result extends T[] = [],
 > = Result["length"] extends Min
   ? IsNumericLiteral<Max> extends false
     ? [...Result, ...T[]]
     : Result["length"] extends Max
-    ? Result
-    :
-        | Result
-        | TupleOfLength<
-            T,
-            [T, ...Result]["length"] & number,
-            Max,
-            [T, ...Result]
-          >
+      ? Result
+      :
+          | Result
+          | TupleOfLength<
+              T,
+              [T, ...Result]["length"] & number,
+              Max,
+              [T, ...Result]
+            >
   : TupleOfLength<T, Min, Max, [T, ...Result]>;
 
 export const ternary = <Condition extends boolean, TrueValue, FalseValue>(

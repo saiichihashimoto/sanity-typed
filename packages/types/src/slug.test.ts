@@ -15,11 +15,7 @@ describe("slug", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "slug",
-                }),
-              ],
+              of: [defineArrayMember({ type: "slug" })],
             }),
           ],
         },
@@ -41,12 +37,7 @@ describe("slug", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "slug",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "slug" })],
             }),
           ],
         },
@@ -82,10 +73,7 @@ describe("slug", () => {
 
       expectType<
         InferSchemaValues<typeof config>["foo"]["bar"]
-      >().toStrictEqual<{
-        _type: "slug";
-        current: string;
-      }>();
+      >().toStrictEqual<{ _type: "slug"; current: string }>();
     });
   });
 
@@ -94,14 +82,7 @@ describe("slug", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "slug",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "slug" })] },
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
@@ -116,19 +97,11 @@ describe("slug", () => {
         projectId: "projectId",
         schema: {
           types: [
-            defineType({
-              name: "foo",
-              type: "slug",
-            }),
+            defineType({ name: "foo", type: "slug" }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },

@@ -27,11 +27,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    type: "boolean",
-                  }),
-                ],
+                of: [defineArrayMember({ type: "boolean" })],
               }),
             ],
           },
@@ -94,14 +90,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
-          schema: {
-            types: [
-              defineType({
-                name: "foo",
-                type: "boolean",
-              }),
-            ],
-          },
+          schema: { types: [defineType({ name: "foo", type: "boolean" })] },
         });
         const sanityFaker = sanityConfigToFakerTyped(config, {
           seed,
@@ -127,10 +116,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           schema: {
             types: [
               customFaker(
-                defineType({
-                  name: "foo",
-                  type: "boolean",
-                }),
+                defineType({ name: "foo", type: "boolean" }),
                 () => true
               ),
             ],

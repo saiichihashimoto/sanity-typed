@@ -16,11 +16,7 @@ describe("image", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "image",
-                }),
-              ],
+              of: [defineArrayMember({ type: "image" })],
             }),
           ],
         },
@@ -42,12 +38,7 @@ describe("image", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "image",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "image" })],
             }),
           ],
         },
@@ -70,9 +61,7 @@ describe("image", () => {
               of: [
                 defineArrayMember({
                   type: "image",
-                  options: {
-                    hotspot: true,
-                  },
+                  options: { hotspot: true },
                 }),
               ],
             }),
@@ -102,14 +91,8 @@ describe("image", () => {
                 defineArrayMember({
                   type: "image",
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -198,9 +181,7 @@ describe("image", () => {
         _key: string;
         _type: "image";
         asset: ReferenceValue<"sanity.imageAsset", false>;
-        bar: {
-          tar: number;
-        };
+        bar: { tar: number };
       }>();
     });
   });
@@ -249,9 +230,7 @@ describe("image", () => {
                   name: "bar",
                   type: "image",
                   validation: (Rule) => Rule.required(),
-                  options: {
-                    hotspot: true,
-                  },
+                  options: { hotspot: true },
                 }),
               ],
             }),
@@ -284,14 +263,8 @@ describe("image", () => {
                   type: "image",
                   validation: (Rule) => Rule.required(),
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
               ],
@@ -387,9 +360,7 @@ describe("image", () => {
       >().toStrictEqual<{
         _type: "image";
         asset: ReferenceValue<"sanity.imageAsset", false>;
-        bar: {
-          tar: number;
-        };
+        bar: { tar: number };
       }>();
     });
   });
@@ -399,14 +370,7 @@ describe("image", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "image",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "image" })] },
       });
 
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
@@ -421,19 +385,11 @@ describe("image", () => {
         projectId: "projectId",
         schema: {
           types: [
-            defineType({
-              name: "foo",
-              type: "image",
-            }),
+            defineType({ name: "foo", type: "image" }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },
@@ -453,9 +409,7 @@ describe("image", () => {
             defineType({
               name: "foo",
               type: "image",
-              options: {
-                hotspot: true as const,
-              },
+              options: { hotspot: true as const },
             }),
           ],
         },
@@ -479,14 +433,8 @@ describe("image", () => {
               name: "foo",
               type: "image",
               fields: [
-                defineField({
-                  name: "bar",
-                  type: "boolean",
-                }),
-                defineField({
-                  name: "tar",
-                  type: "number",
-                }),
+                defineField({ name: "bar", type: "boolean" }),
+                defineField({ name: "tar", type: "number" }),
               ],
             }),
           ],
@@ -560,9 +508,7 @@ describe("image", () => {
       expectType<InferSchemaValues<typeof config>["foo"]>().toEqual<{
         _type: "foo";
         asset: ReferenceValue<"sanity.imageAsset", false>;
-        bar: {
-          tar: number;
-        };
+        bar: { tar: number };
       }>();
     });
   });

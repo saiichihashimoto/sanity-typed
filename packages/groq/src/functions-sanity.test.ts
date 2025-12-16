@@ -21,10 +21,7 @@ describe("sanity", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -39,9 +36,7 @@ describe("sanity", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          client: WritableDeep<typeof client>;
-        }>
+        ScopeFromPartialContext<{ client: WritableDeep<typeof client> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });
@@ -59,10 +54,7 @@ describe("sanity", () => {
       type: "FuncCall",
     } as const;
 
-    expect(tree).toStrictEqual({
-      ...expectedTree,
-      func: expect.any(Function),
-    });
+    expect(tree).toStrictEqual({ ...expectedTree, func: expect.any(Function) });
     expectType<Parse<typeof query>>().toStrictEqual<
       WritableDeep<typeof expectedTree>
     >();
@@ -77,9 +69,7 @@ describe("sanity", () => {
     expectType<
       ExecuteQuery<
         typeof query,
-        ScopeFromPartialContext<{
-          client: WritableDeep<typeof client>;
-        }>
+        ScopeFromPartialContext<{ client: WritableDeep<typeof client> }>
       >
     >().toStrictEqual<WritableDeep<typeof expectedResult>>();
   });

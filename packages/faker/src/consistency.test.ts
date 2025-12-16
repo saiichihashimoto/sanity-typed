@@ -53,10 +53,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         projectId: "projectId",
         schema: {
           types: [
-            defineType({
-              name: "bar",
-              type: "boolean",
-            }),
+            defineType({ name: "bar", type: "boolean" }),
             defineType({
               name: "foo",
               type: "document",
@@ -92,10 +89,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 }),
               ],
             }),
-            defineType({
-              name: "baz",
-              type: "number",
-            }),
+            defineType({ name: "baz", type: "number" }),
           ],
         },
       });

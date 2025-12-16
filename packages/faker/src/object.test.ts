@@ -31,14 +31,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   defineArrayMember({
                     type: "object",
                     fields: [
-                      defineField({
-                        name: "bar",
-                        type: "boolean",
-                      }),
-                      defineField({
-                        name: "tar",
-                        type: "number",
-                      }),
+                      defineField({ name: "bar", type: "boolean" }),
+                      defineField({ name: "tar", type: "number" }),
                     ],
                   }),
                 ],
@@ -75,14 +69,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     name: "bar",
                     type: "object",
                     fields: [
-                      defineField({
-                        name: "bar",
-                        type: "boolean",
-                      }),
-                      defineField({
-                        name: "tar",
-                        type: "number",
-                      }),
+                      defineField({ name: "bar", type: "boolean" }),
+                      defineField({ name: "tar", type: "number" }),
                     ],
                   }),
                 ],
@@ -209,14 +197,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                     type: "object",
                     validation: (Rule) => Rule.required(),
                     fields: [
-                      defineField({
-                        name: "bar",
-                        type: "boolean",
-                      }),
-                      defineField({
-                        name: "tar",
-                        type: "number",
-                      }),
+                      defineField({ name: "bar", type: "boolean" }),
+                      defineField({ name: "tar", type: "number" }),
                     ],
                   }),
                 ],
@@ -342,14 +324,8 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 name: "foo",
                 type: "object",
                 fields: [
-                  defineField({
-                    name: "bar",
-                    type: "boolean",
-                  }),
-                  defineField({
-                    name: "tar",
-                    type: "number",
-                  }),
+                  defineField({ name: "bar", type: "boolean" }),
+                  defineField({ name: "tar", type: "number" }),
                 ],
               }),
             ],
@@ -380,25 +356,14 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                 name: "foo",
                 type: "object",
                 fields: [
-                  defineField({
-                    name: "bar",
-                    type: "boolean",
-                  }),
-                  defineField({
-                    name: "tar",
-                    type: "number",
-                  }),
+                  defineField({ name: "bar", type: "boolean" }),
+                  defineField({ name: "tar", type: "number" }),
                 ],
               }),
               defineType({
                 name: "bar",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    name: "bar",
-                    type: "foo",
-                  }),
-                ],
+                of: [defineArrayMember({ name: "bar", type: "foo" })],
               }),
             ],
           },
@@ -508,20 +473,11 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
                   name: "foo",
                   type: "object",
                   fields: [
-                    defineField({
-                      name: "bar",
-                      type: "boolean",
-                    }),
-                    defineField({
-                      name: "tar",
-                      type: "number",
-                    }),
+                    defineField({ name: "bar", type: "boolean" }),
+                    defineField({ name: "tar", type: "number" }),
                   ],
                 }),
-                (faker, previous) => ({
-                  ...previous,
-                  tar: 0,
-                })
+                (faker, previous) => ({ ...previous, tar: 0 })
               ),
             ],
           },

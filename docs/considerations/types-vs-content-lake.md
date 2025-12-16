@@ -8,16 +8,12 @@ Another solution would be to keep old configs around, just to derive their types
 
 ```typescript
 const config = defineConfig({
-  schema: {
-    types: [foo],
-  },
+  schema: { types: [foo] },
   plugins: [myPlugin()],
 });
 
 const oldConfig = defineConfig({
-  schema: {
-    types: [oldFoo],
-  },
+  schema: { types: [oldFoo] },
   plugins: [myPlugin()],
 });
 

@@ -27,11 +27,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
               defineType({
                 name: "foo",
                 type: "array",
-                of: [
-                  defineArrayMember({
-                    type: "datetime",
-                  }),
-                ],
+                of: [defineArrayMember({ type: "datetime" })],
               }),
             ],
           },
@@ -94,14 +90,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
-          schema: {
-            types: [
-              defineType({
-                name: "foo",
-                type: "datetime",
-              }),
-            ],
-          },
+          schema: { types: [defineType({ name: "foo", type: "datetime" })] },
         });
         const sanityFaker = sanityConfigToFakerTyped(config, {
           seed,
@@ -124,14 +113,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
         const config = defineConfig({
           dataset: "dataset",
           projectId: "projectId",
-          schema: {
-            types: [
-              defineType({
-                name: "foo",
-                type: "datetime",
-              }),
-            ],
-          },
+          schema: { types: [defineType({ name: "foo", type: "datetime" })] },
         });
         const sanityFaker = sanityConfigToFakerTyped(config, {
           seed,
@@ -299,10 +281,7 @@ describe.each(Array.from({ length: 5 }).map((_, seed) => [{ seed }]))(
           schema: {
             types: [
               customFaker(
-                defineType({
-                  name: "foo",
-                  type: "datetime",
-                }),
+                defineType({ name: "foo", type: "datetime" }),
                 () => "2022-12-30T00:00:00.000Z"
               ),
             ],

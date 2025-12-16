@@ -31,10 +31,7 @@ describe("interoperability", () => {
               name: "foo",
               type: "document",
               fields: [
-                defineField({
-                  name: "pluginValue",
-                  type: "pluginValue",
-                }),
+                defineField({ name: "pluginValue", type: "pluginValue" }),
               ],
             }),
           ],
@@ -49,10 +46,7 @@ describe("interoperability", () => {
                     name: "pluginValue",
                     type: "object" as const,
                     fields: [
-                      defineFieldNative({
-                        name: "baz",
-                        type: "boolean",
-                      }),
+                      defineFieldNative({ name: "baz", type: "boolean" }),
                     ],
                   }),
                 ],
@@ -82,10 +76,7 @@ describe("interoperability", () => {
               name: "foo",
               type: "document",
               fields: [
-                defineField({
-                  name: "pluginValue",
-                  type: "pluginValue",
-                }),
+                defineField({ name: "pluginValue", type: "pluginValue" }),
               ],
             }),
           ],
@@ -98,12 +89,7 @@ describe("interoperability", () => {
                 defineTypeNative({
                   name: "pluginValue",
                   type: "object" as const,
-                  fields: [
-                    defineFieldNative({
-                      name: "baz",
-                      type: "boolean",
-                    }),
-                  ],
+                  fields: [defineFieldNative({ name: "baz", type: "boolean" })],
                 }),
               ],
             },
@@ -127,12 +113,7 @@ describe("interoperability", () => {
         projectId: "projectId",
         schema: {
           types: [
-            castToTyped(
-              defineTypeNative({
-                name: "foo",
-                type: "boolean",
-              })
-            ),
+            castToTyped(defineTypeNative({ name: "foo", type: "boolean" })),
           ],
         },
       });
@@ -150,12 +131,7 @@ describe("interoperability", () => {
               defineTypeNative({
                 name: "foo",
                 type: "object",
-                fields: [
-                  defineFieldNative({
-                    name: "baz",
-                    type: "boolean",
-                  }),
-                ],
+                fields: [defineFieldNative({ name: "baz", type: "boolean" })],
               })
             ),
           ],
@@ -179,10 +155,7 @@ describe("interoperability", () => {
               type: "object",
               fields: [
                 castToTyped(
-                  defineFieldNative({
-                    name: "bar",
-                    type: "boolean",
-                  })
+                  defineFieldNative({ name: "bar", type: "boolean" })
                 ),
               ],
             }),
@@ -208,10 +181,7 @@ describe("interoperability", () => {
                     name: "bar",
                     type: "object",
                     fields: [
-                      defineFieldNative({
-                        name: "bar",
-                        type: "boolean",
-                      }),
+                      defineFieldNative({ name: "bar", type: "boolean" }),
                     ],
                   })
                 ),
@@ -224,13 +194,7 @@ describe("interoperability", () => {
       expectType<
         InferSchemaValues<typeof config2>["foo"]["bar"]
       >().toStrictEqual<
-        | {
-            [x: string]: unknown;
-            _type: "bar";
-          }
-        | {
-            [x: string]: unknown;
-          }
+        { [x: string]: unknown } | { [x: string]: unknown; _type: "bar" }
       >();
     });
 
@@ -245,10 +209,7 @@ describe("interoperability", () => {
               type: "array",
               of: [
                 castToTyped(
-                  defineArrayMemberNative({
-                    name: "bar",
-                    type: "boolean",
-                  })
+                  defineArrayMemberNative({ name: "bar", type: "boolean" })
                 ),
               ],
             }),
@@ -273,10 +234,7 @@ describe("interoperability", () => {
                   defineArrayMemberNative({
                     type: "object",
                     fields: [
-                      defineFieldNative({
-                        name: "bar",
-                        type: "boolean",
-                      }),
+                      defineFieldNative({ name: "bar", type: "boolean" }),
                     ],
                   })
                 ),
@@ -304,10 +262,7 @@ describe("interoperability", () => {
               name: "foo",
               type: "document" as const,
               fields: [
-                defineFieldNative({
-                  name: "pluginValue",
-                  type: "pluginValue",
-                }),
+                defineFieldNative({ name: "pluginValue", type: "pluginValue" }),
               ],
             }),
           ],
@@ -321,12 +276,7 @@ describe("interoperability", () => {
                   defineType({
                     name: "pluginValue",
                     type: "object",
-                    fields: [
-                      defineField({
-                        name: "baz",
-                        type: "boolean",
-                      }),
-                    ],
+                    fields: [defineField({ name: "baz", type: "boolean" })],
                   }),
                 ],
               },
@@ -344,10 +294,7 @@ describe("interoperability", () => {
               name: "foo",
               type: "document" as const,
               fields: [
-                defineFieldNative({
-                  name: "pluginValue",
-                  type: "pluginValue",
-                }),
+                defineFieldNative({ name: "pluginValue", type: "pluginValue" }),
               ],
             }),
           ],
@@ -360,12 +307,7 @@ describe("interoperability", () => {
                 defineTypeNative({
                   name: "pluginValue",
                   type: "object" as const,
-                  fields: [
-                    defineFieldNative({
-                      name: "baz",
-                      type: "boolean",
-                    }),
-                  ],
+                  fields: [defineFieldNative({ name: "baz", type: "boolean" })],
                 }),
               ],
             },
@@ -385,23 +327,13 @@ describe("interoperability", () => {
             defineTypeNative({
               name: "foo",
               type: "document" as const,
-              fields: [
-                defineFieldNative({
-                  name: "bar",
-                  type: "bar",
-                }),
-              ],
+              fields: [defineFieldNative({ name: "bar", type: "bar" })],
             }),
             castFromTyped(
               defineType({
                 name: "bar",
                 type: "object",
-                fields: [
-                  defineField({
-                    name: "baz",
-                    type: "boolean",
-                  }),
-                ],
+                fields: [defineField({ name: "baz", type: "boolean" })],
               })
             ),
           ],
@@ -416,22 +348,12 @@ describe("interoperability", () => {
             defineTypeNative({
               name: "foo",
               type: "document" as const,
-              fields: [
-                defineFieldNative({
-                  name: "bar",
-                  type: "bar",
-                }),
-              ],
+              fields: [defineFieldNative({ name: "bar", type: "bar" })],
             }),
             defineTypeNative({
               name: "bar" as const,
               type: "object" as const,
-              fields: [
-                defineFieldNative({
-                  name: "baz",
-                  type: "boolean",
-                }),
-              ],
+              fields: [defineFieldNative({ name: "baz", type: "boolean" })],
             }),
           ],
         },
@@ -442,10 +364,7 @@ describe("interoperability", () => {
 
     it("castFromTyped(defineField(...))", () => {
       const booleanField = castFromTyped(
-        defineField({
-          name: "bar",
-          type: "boolean",
-        })
+        defineField({ name: "bar", type: "boolean" })
       );
       const booleanFieldNative = defineFieldNative({
         name: "bar",
@@ -460,24 +379,14 @@ describe("interoperability", () => {
         defineField({
           name: "foo",
           type: "object",
-          fields: [
-            defineField({
-              name: "bar",
-              type: "boolean",
-            }),
-          ],
+          fields: [defineField({ name: "bar", type: "boolean" })],
         })
       );
 
       const objectFieldNative = defineFieldNative({
         name: "foo",
         type: "object",
-        fields: [
-          defineFieldNative({
-            name: "bar",
-            type: "boolean",
-          }),
-        ],
+        fields: [defineFieldNative({ name: "bar", type: "boolean" })],
       });
 
       expectType<typeof objectField>().toStrictEqual<
@@ -487,10 +396,7 @@ describe("interoperability", () => {
 
     it("castFromTyped(defineArrayMember(...))", () => {
       const booleanField = castFromTyped(
-        defineArrayMember({
-          name: "bar",
-          type: "boolean",
-        })
+        defineArrayMember({ name: "bar", type: "boolean" })
       );
 
       const booleanFieldNative = defineArrayMemberNative({
@@ -506,24 +412,14 @@ describe("interoperability", () => {
         defineArrayMember({
           name: "foo",
           type: "object",
-          fields: [
-            defineField({
-              name: "bar",
-              type: "boolean",
-            }),
-          ],
+          fields: [defineField({ name: "bar", type: "boolean" })],
         })
       );
 
       const objectFieldNative = defineArrayMemberNative({
         name: "foo",
         type: "object",
-        fields: [
-          defineFieldNative({
-            name: "bar",
-            type: "boolean",
-          }),
-        ],
+        fields: [defineFieldNative({ name: "bar", type: "boolean" })],
       });
 
       expectType<typeof objectField>().toStrictEqual<

@@ -283,6 +283,8 @@ jobs:
         with:
           bundler-cache: true
 
+      - run: rm -rf .eslintcache node_modules/.cache/prettier
+
       - uses: actions/cache/restore@v4
         with:
           path: |

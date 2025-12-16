@@ -92,14 +92,8 @@ type Foo = ExecuteQuery<
       client: ClientConfig;
       dataset: ({ _type: "bar" } | { _type: "foo" })[];
       delta:
-        | {
-            after: { _type: "bar" } | null;
-            before: { _type: "bar" } | null;
-          }
-        | {
-            after: { _type: "foo" } | null;
-            before: { _type: "foo" } | null;
-          };
+        | { after: { _type: "bar" } | null; before: { _type: "bar" } | null }
+        | { after: { _type: "foo" } | null; before: { _type: "foo" } | null };
       identity: string;
       parameters: { [param: string]: any };
     };

@@ -34,7 +34,7 @@ export const client = createClient<SanityValues>({
 });
 
 export const makeTypedQuery = async () =>
-  client.fetch('*[_type=="product"]{_id,productName,tags}');
+  await client.fetch('*[_type=="product"]{_id,productName,tags}');
 /**
  *  makeTypedQuery() === Promise<[{
  *    _id: "id",

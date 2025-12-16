@@ -25,10 +25,7 @@ describe("data types", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      type: "Value",
-      value: null,
-    } as const;
+    const expectedTree = { type: "Value", value: null } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -50,10 +47,7 @@ describe("data types", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      type: "Value",
-      value: true,
-    } as const;
+    const expectedTree = { type: "Value", value: true } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -75,10 +69,7 @@ describe("data types", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      type: "Value",
-      value: false,
-    } as const;
+    const expectedTree = { type: "Value", value: false } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -100,10 +91,7 @@ describe("data types", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      type: "Value",
-      value: 5.6,
-    } as const;
+    const expectedTree = { type: "Value", value: 5.6 } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -258,10 +246,7 @@ describe("data types", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      elements: [],
-      type: "Array",
-    } as const;
+    const expectedTree = { elements: [], type: "Array" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<
@@ -563,10 +548,7 @@ describe("data types", () => {
 
     const tree = parse(query);
 
-    const expectedTree = {
-      attributes: [],
-      type: "Object",
-    } as const;
+    const expectedTree = { attributes: [], type: "Object" } as const;
 
     expect(tree).toStrictEqual(expectedTree);
     expectType<Parse<typeof query>>().toStrictEqual<

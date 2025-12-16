@@ -15,11 +15,7 @@ describe("text", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "text",
-                }),
-              ],
+              of: [defineArrayMember({ type: "text" })],
             }),
           ],
         },
@@ -64,14 +60,7 @@ describe("text", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "text",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "text" })] },
       });
 
       expectType<

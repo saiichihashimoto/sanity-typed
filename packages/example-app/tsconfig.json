@@ -5,9 +5,7 @@
     "incremental": true,
     "jsx": "preserve",
     "baseUrl": "./src",
-    "paths": {
-      "sanity.config": ["../../example-studio/sanity.config.ts"]
-    },
+    "paths": { "sanity.config": ["../../example-studio/sanity.config.ts"] },
     "noEmit": true,
     "skipLibCheck": true
   },

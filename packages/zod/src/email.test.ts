@@ -23,11 +23,7 @@ describe("email", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "email",
-                }),
-              ],
+              of: [defineArrayMember({ type: "email" })],
             }),
           ],
         },
@@ -68,10 +64,7 @@ describe("email", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: "foo@bar.com",
-      };
+      const unparsed = { _type: "foo", bar: "foo@bar.com" };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -87,14 +80,7 @@ describe("email", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "email",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "email" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
@@ -114,14 +100,7 @@ describe("email", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "email",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "email" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
