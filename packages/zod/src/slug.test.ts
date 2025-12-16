@@ -25,24 +25,14 @@ describe("slug", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "slug",
-                }),
-              ],
+              of: [defineArrayMember({ type: "slug" })],
             }),
           ],
         },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "slug",
-        },
-      ];
+      const unparsed = [{ ...fields, _key: "key", _type: "slug" }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -61,25 +51,14 @@ describe("slug", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "foo",
-                  type: "slug",
-                }),
-              ],
+              of: [defineArrayMember({ name: "foo", type: "slug" })],
             }),
           ],
         },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "foo",
-        },
-      ];
+      const unparsed = [{ ...fields, _key: "key", _type: "foo" }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -113,13 +92,7 @@ describe("slug", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: {
-          ...fields,
-          _type: "slug",
-        },
-      };
+      const unparsed = { _type: "foo", bar: { ...fields, _type: "slug" } };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -135,21 +108,11 @@ describe("slug", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "slug",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "slug" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-      };
+      const unparsed = { ...fields, _type: "foo" };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -165,32 +128,18 @@ describe("slug", () => {
         projectId: "projectId",
         schema: {
           types: [
-            defineType({
-              name: "foo",
-              type: "slug",
-            }),
+            defineType({ name: "foo", type: "slug" }),
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "bar",
-        },
-      ];
+      const unparsed = [{ ...fields, _key: "key", _type: "bar" }];
 
       const parsed = zods.bar.parse(unparsed);
 

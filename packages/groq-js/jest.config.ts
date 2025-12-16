@@ -1,10 +1,7 @@
 import type { Config } from "jest";
 
 const config: Config = {
-  fakeTimers: {
-    enableGlobally: true,
-    now: 1696486441293,
-  },
+  fakeTimers: { enableGlobally: true, now: 1696486441293 },
   passWithNoTests: true,
   preset: "ts-jest",
   restoreMocks: true,

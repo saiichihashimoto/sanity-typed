@@ -70,11 +70,7 @@ describe("specific issues", () => {
         slug: { _type: "slug", current: "bar" },
         title: "notTitle",
       },
-      {
-        _type: "foo",
-        slug: { _type: "slug", current: "foo" },
-        title: "title",
-      },
+      { _type: "foo", slug: { _type: "slug", current: "foo" }, title: "title" },
     ] as const;
     const params = { slug: "foo" } as const;
 

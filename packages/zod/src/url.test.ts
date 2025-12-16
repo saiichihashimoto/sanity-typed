@@ -23,11 +23,7 @@ describe("url", () => {
             defineType({
               name: "foo",
               type: "array",
-              of: [
-                defineArrayMember({
-                  type: "url",
-                }),
-              ],
+              of: [defineArrayMember({ type: "url" })],
             }),
           ],
         },
@@ -68,10 +64,7 @@ describe("url", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: "https://google.com",
-      };
+      const unparsed = { _type: "foo", bar: "https://google.com" };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -87,14 +80,7 @@ describe("url", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "url",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "url" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
@@ -114,14 +100,7 @@ describe("url", () => {
       const config = defineConfig({
         dataset: "dataset",
         projectId: "projectId",
-        schema: {
-          types: [
-            defineType({
-              name: "foo",
-              type: "url",
-            }),
-          ],
-        },
+        schema: { types: [defineType({ name: "foo", type: "url" })] },
       });
       const zods = sanityConfigToZodsTyped(config);
 
@@ -253,8 +232,8 @@ describe("url", () => {
                 Rule.custom(() => "fail for no reason").custom(
                   enableZod(
                     (value) =>
-                      value !== "https://yahoo.com" ||
-                      "value can't be `https://yahoo.com`"
+                      value !== "https://yahoo.com"
+                      || "value can't be `https://yahoo.com`"
                   )
                 ),
             }),

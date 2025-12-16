@@ -20,7 +20,7 @@ export type ObservableSanityClient<TDocument extends AnySanityDocument> =
   SanityClient<TDocument>["observable"];
 
 export const createClient = <
-  const SanityValues extends { [type: string]: any }
+  const SanityValues extends { [type: string]: any },
 >(
   config: ClientConfig
 ) => {
@@ -41,7 +41,7 @@ export const createClient = <
   try {
     const {
       createGroqBuilder,
-      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, unicorn/prefer-module -- Optional Dependency
+      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, unicorn/prefer-module -- Optional Dependency
     } = require("groq-builder") as {
       createGroqBuilder: typeof createGroqBuilderType;
     };
@@ -80,7 +80,7 @@ export const createClient = <
       const TOptions extends
         | FilteredResponseQueryOptions
         | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions,
-      const TResult = never
+      const TResult = never,
     >(
       queryOrBuilder:
         | TQuery

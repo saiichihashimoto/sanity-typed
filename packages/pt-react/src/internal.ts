@@ -52,7 +52,7 @@ type BlockListItemDefault = "bullet" | "number";
 export type PortableTextMarkComponent<
   Value,
   TMarkKey extends string,
-  TMarkType extends string
+  TMarkType extends string,
 > = ComponentType<{
   children: ReactNode;
   markKey: TMarkKey;
@@ -82,7 +82,7 @@ export type PortableTextReactComponents<
   TSibling extends { _type: string } = Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
     PortableTextBlock<any, any, any, any, any>
-  >
+  >,
 > = Merge<
   Partial<PortableTextReactComponentsNative>,
   SetRequired<
@@ -178,7 +178,7 @@ export type PortableTextProps<
   TSibling extends { _type: string } = Exclude<
     IsStringLiteral<TItem["_type"]> extends false ? never : TItem,
     PortableTextBlock<any, any, any, any, any>
-  >
+  >,
 > = Merge<
   Partial<Omit<PortableTextPropsNative<TItem>, "value">>,
   SetRequired<
@@ -209,16 +209,14 @@ export type PortableTextProps<
       ? never
       : "components"
   >
-> & {
-  value: MaybeArray<TItem>;
-};
+> & { value: MaybeArray<TItem> };
 
 export const PortableText = <
   const TItem extends { _type: string },
   const TBlock extends Extract<
     TItem,
     PortableTextBlock<any, any, any, any, any>
-  >
+  >,
 >(
   props: PortableTextProps<
     TItem,

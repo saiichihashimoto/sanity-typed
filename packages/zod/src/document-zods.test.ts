@@ -18,27 +18,14 @@ describe("documentZods", () => {
           defineType({
             name: "foo",
             type: "document",
-            fields: [
-              defineField({
-                name: "foo",
-                type: "boolean",
-              }),
-            ],
+            fields: [defineField({ name: "foo", type: "boolean" })],
           }),
           defineType({
             name: "bar",
             type: "document",
-            fields: [
-              defineField({
-                name: "bar",
-                type: "number",
-              }),
-            ],
+            fields: [defineField({ name: "bar", type: "number" })],
           }),
-          defineType({
-            name: "baz",
-            type: "string",
-          }),
+          defineType({ name: "baz", type: "string" }),
         ],
       },
     });
@@ -90,11 +77,7 @@ describe("documentZods", () => {
       title: "title",
       url: "http://google.com",
       metadata: { key: "value" },
-      source: {
-        id: "id",
-        name: "name",
-        url: "http://google.com",
-      },
+      source: { id: "id", name: "name", url: "http://google.com" },
     };
 
     expect(documentsZod.parse(fileAsset)).toStrictEqual(fileAsset);
@@ -117,11 +100,7 @@ describe("documentZods", () => {
       size: 0,
       title: "title",
       url: "http://google.com",
-      source: {
-        id: "id",
-        name: "name",
-        url: "http://google.com",
-      },
+      source: { id: "id", name: "name", url: "http://google.com" },
       metadata: {
         key: "value",
         _type: "sanity.imageMetadata",
@@ -135,16 +114,8 @@ describe("documentZods", () => {
           height: 0,
           width: 0,
         },
-        exif: {
-          key: "value",
-          _type: "sanity.imageExifMetadata",
-        },
-        location: {
-          _type: "geopoint",
-          alt: 0,
-          lat: 0,
-          lng: 0,
-        },
+        exif: { key: "value", _type: "sanity.imageExifMetadata" },
+        location: { _type: "geopoint", alt: 0, lat: 0, lng: 0 },
         palette: {
           _type: "sanity.imagePalette",
           darkMuted: {

@@ -12,12 +12,10 @@
         "!**/*.md",
         "!src/**/*.test.*"
       ],
-      "outputs": ["dist/**", ".next/**"],
-      "outputLogs": "new-only"
+      "outputLogs": "new-only",
+      "outputs": ["dist/**", ".next/**"]
     },
-    "dev": {
-      "persistent": true
-    },
+    "dev": { "persistent": true },
     "for-test-to-depend-but-not-run": {
       "dependsOn": ["^for-test-to-depend-but-not-run"],
       "inputs": ["$TURBO_DEFAULT$", "!LICENSE", "!.*/**", "!**/*.md"]

@@ -150,7 +150,7 @@ export const client = createClient<SanityValues>({
 });
 
 export const makeTypedQuery = async () =>
-  client.fetch('*[_type=="product"]{_id,productName,tags}');
+  await client.fetch('*[_type=="product"]{_id,productName,tags}');
 /**
  *  typeof makeTypedQuery === () => Promise<{
  *    _id: string;
@@ -188,7 +188,7 @@ export const client = createClient<SanityValues>({
 
 export const makeTypedQuery = async () =>
   /** No need for createGroqBuilder, `q` is already typed! */
-  client.fetch((q) =>
+  await client.fetch((q) =>
     q.star
       .filterByType("product")
       .project({ _id: true, productName: true, tags: true })
@@ -294,16 +294,12 @@ Another solution would be to keep old configs around, just to derive their types
 
 ```typescript
 const config = defineConfig({
-  schema: {
-    types: [foo],
-  },
+  schema: { types: [foo] },
   plugins: [myPlugin()],
 });
 
 const oldConfig = defineConfig({
-  schema: {
-    types: [oldFoo],
-  },
+  schema: { types: [oldFoo] },
   plugins: [myPlugin()],
 });
 

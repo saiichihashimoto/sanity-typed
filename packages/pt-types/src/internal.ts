@@ -31,7 +31,7 @@ const decorator: unique symbol = Symbol("decorator");
 export { decorator };
 
 export type PortableTextSpan<
-  TBlockMarkDecorator extends string = BlockMarkDecoratorDefault
+  TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
 > = SetRequired<
   Omit<PortableTextSpanNative, "_key"> & { [decorator]: TBlockMarkDecorator },
   "marks"
@@ -54,7 +54,7 @@ export type PortableTextBlock<
   TMarkDef extends PortableTextMarkDefinition = PortableTextMarkDefinition,
   TChild extends { _type: string } = PortableTextSpan<TBlockMarkDecorator>,
   TBlockStyle extends string = BlockStyleDefault,
-  TBlockListItem extends string = BlockListItemDefault
+  TBlockListItem extends string = BlockListItemDefault,
 > =
   // TODO PortableTextBlock is too complex for some reason https://github.com/saiichihashimoto/sanity-typed/issues/415
   // Omit<

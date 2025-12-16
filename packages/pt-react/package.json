@@ -23,7 +23,9 @@
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "npm run build -- --no-clean",
@@ -42,8 +44,8 @@
     "@sanity-typed/types": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
     "jest": "29.7.0",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "ts-jest": "29.2.5"
   },
   "peerDependencies": {

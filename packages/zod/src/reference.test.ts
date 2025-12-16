@@ -37,13 +37,7 @@ describe("reference", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "reference",
-        },
-      ];
+      const unparsed = [{ ...fields, _key: "key", _type: "reference" }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -75,13 +69,7 @@ describe("reference", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "foo",
-        },
-      ];
+      const unparsed = [{ ...fields, _key: "key", _type: "foo" }];
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -114,12 +102,7 @@ describe("reference", () => {
       const zods = sanityConfigToZodsTyped(config);
 
       const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "reference",
-          _weak: true,
-        },
+        { ...fields, _key: "key", _type: "reference", _weak: true },
       ];
 
       const parsed = zods.foo.parse(unparsed);
@@ -155,13 +138,7 @@ describe("reference", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        _type: "foo",
-        bar: {
-          ...fields,
-          _type: "reference",
-        },
-      };
+      const unparsed = { _type: "foo", bar: { ...fields, _type: "reference" } };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -197,11 +174,7 @@ describe("reference", () => {
 
       const unparsed = {
         _type: "foo",
-        bar: {
-          ...fields,
-          _type: "reference",
-          _weak: true,
-        },
+        bar: { ...fields, _type: "reference", _weak: true },
       };
 
       const parsed = zods.foo.parse(unparsed);
@@ -230,10 +203,7 @@ describe("reference", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-      };
+      const unparsed = { ...fields, _type: "foo" };
 
       const parsed = zods.foo.parse(unparsed);
 
@@ -257,25 +227,14 @@ describe("reference", () => {
             defineType({
               name: "bar",
               type: "array",
-              of: [
-                defineArrayMember({
-                  name: "bar",
-                  type: "foo",
-                }),
-              ],
+              of: [defineArrayMember({ name: "bar", type: "foo" })],
             }),
           ],
         },
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = [
-        {
-          ...fields,
-          _key: "key",
-          _type: "bar",
-        },
-      ];
+      const unparsed = [{ ...fields, _key: "key", _type: "bar" }];
 
       const parsed = zods.bar.parse(unparsed);
 
@@ -302,11 +261,7 @@ describe("reference", () => {
       });
       const zods = sanityConfigToZodsTyped(config);
 
-      const unparsed = {
-        ...fields,
-        _type: "foo",
-        _weak: true,
-      };
+      const unparsed = { ...fields, _type: "foo", _weak: true };
 
       const parsed = zods.foo.parse(unparsed);
 

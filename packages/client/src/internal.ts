@@ -49,14 +49,14 @@ import type { AnySanityDocument } from "@sanity-typed/types/src/internal";
 type MergeOld<FirstType, SecondType> = Except<
   FirstType,
   Extract<keyof FirstType, keyof SecondType>
-> &
-  SecondType;
+>
+  & SecondType;
 
 declare const README: unique symbol;
 
 type PromiseOrObservable<
   TIsPromise extends boolean,
-  T
+  T,
 > = TIsPromise extends true ? Promise<T> : Observable<T>;
 
 export type MutationOptions = BaseMutationOptions & {
@@ -66,23 +66,23 @@ export type MutationOptions = BaseMutationOptions & {
 
 type MutationResult<
   Value,
-  TOptions extends MutationOptions | undefined
+  TOptions extends MutationOptions | undefined,
 > = TOptions extends { returnDocuments: false; returnFirst: false }
   ? MultipleMutationResult
   : TOptions extends { returnFirst: false }
-  ? Value extends any[]
-    ? Value
-    : Value[]
-  : TOptions extends { returnDocuments: false }
-  ? SingleMutationResult
-  : Value extends any[]
-  ? Value[0]
-  : Value;
+    ? Value extends any[]
+      ? Value
+      : Value[]
+    : TOptions extends { returnDocuments: false }
+      ? SingleMutationResult
+      : Value extends any[]
+        ? Value[0]
+        : Value;
 
 export type PatchOperations<
   TDocument extends AnySanityDocument,
   TAttrs extends Partial<TDocument>,
-  TKeys extends TDocument extends never ? never : (keyof TDocument)[]
+  TKeys extends TDocument extends never ? never : (keyof TDocument)[],
 > = MergeOld<
   PatchOperationsNative,
   {
@@ -98,14 +98,14 @@ export type PatchOperations<
 export type PatchMutationOperation<
   TDocument extends AnySanityDocument,
   TAttrs extends Partial<TDocument>,
-  TKeys extends TDocument extends never ? never : (keyof TDocument)[]
+  TKeys extends TDocument extends never ? never : (keyof TDocument)[],
 > = MutationSelection & PatchOperations<TDocument, TAttrs, TKeys>;
 
 export type PatchType<
   TDocument extends AnySanityDocument,
   TOriginalDocument extends AnySanityDocument,
   TIsPromise extends boolean,
-  TIsScoped extends boolean
+  TIsScoped extends boolean,
 > = MergeOld<
   BasePatch,
   {
@@ -124,7 +124,7 @@ export type PatchType<
     dec: <
       TAttrs extends TIsScoped extends true
         ? Partial<TDocument> & { [key: string]: number }
-        : any
+        : any,
     >(
       attrs: TAttrs
     ) => PatchType<
@@ -138,7 +138,7 @@ export type PatchType<
     diffMatchPatch: <
       TAttrs extends TIsScoped extends true
         ? Partial<TDocument> & { [key: string]: string }
-        : any
+        : any,
     >(
       attrs: TAttrs
     ) => PatchType<
@@ -155,7 +155,7 @@ export type PatchType<
     inc: <
       TAttrs extends TIsScoped extends true
         ? Partial<TDocument> & { [key: string]: number }
-        : any
+        : any,
     >(
       attrs: TAttrs
     ) => PatchType<
@@ -191,7 +191,7 @@ export type PatchType<
       TIsScoped
     >;
     setIfMissing: <
-      TAttrs extends TIsScoped extends true ? Partial<TDocument> : any
+      TAttrs extends TIsScoped extends true ? Partial<TDocument> : any,
     >(
       attrs: TAttrs
     ) => PatchType<
@@ -214,8 +214,8 @@ export type PatchType<
       TKeys extends TDocument extends never
         ? never
         : TIsScoped extends true
-        ? (keyof TDocument)[]
-        : string[]
+          ? (keyof TDocument)[]
+          : string[],
     >(
       keys: TKeys
     ) => PatchType<
@@ -223,8 +223,8 @@ export type PatchType<
         ? TDocument extends never
           ? never
           : TKeys[number] extends keyof TDocument
-          ? TDocument
-          : never
+            ? TDocument
+            : never
         : TDocument & { [key in TKeys[number]]: any },
       TOriginalDocument,
       TIsPromise,
@@ -237,20 +237,20 @@ export const Patch = PatchNative as unknown as new <
   const TDocument extends AnySanityDocument,
   const TAttrs extends Partial<TDocument>,
   const TKeys extends TDocument extends never ? never : (keyof TDocument)[],
-  const TClient extends SanityClient<TDocument> | undefined = undefined
+  const TClient extends SanityClient<TDocument> | undefined = undefined,
 >(
   idOrSelection: PatchSelection,
   operations?: PatchOperations<TDocument, TAttrs, TKeys>,
   client?: TClient
 ) => PatchType<
-  Extract<TDocument, Partial<TAttrs>> &
-    (TDocument extends never
+  Extract<TDocument, Partial<TAttrs>>
+    & (TDocument extends never
       ? never
       : TKeys extends never
-      ? never
-      : TKeys[number] extends keyof TDocument
-      ? TDocument
-      : never),
+        ? never
+        : TKeys[number] extends keyof TDocument
+          ? TDocument
+          : never),
   TDocument,
   true,
   undefined extends TClient ? false : true
@@ -260,20 +260,20 @@ export const ObservablePatch = ObservablePatchNative as unknown as new <
   const TDocument extends AnySanityDocument,
   const TAttrs extends Partial<TDocument>,
   const TKeys extends TDocument extends never ? never : (keyof TDocument)[],
-  const TClient extends SanityClient<TDocument> | undefined = undefined
+  const TClient extends SanityClient<TDocument> | undefined = undefined,
 >(
   idOrSelection: PatchSelection,
   operations?: PatchOperations<TDocument, TAttrs, TKeys>,
   client?: TClient
 ) => PatchType<
-  Extract<TDocument, Partial<TAttrs>> &
-    (TDocument extends never
+  Extract<TDocument, Partial<TAttrs>>
+    & (TDocument extends never
       ? never
       : TKeys extends never
-      ? never
-      : TKeys[number] extends keyof TDocument
-      ? TDocument
-      : never),
+        ? never
+        : TKeys[number] extends keyof TDocument
+          ? TDocument
+          : never),
   TDocument,
   false,
   undefined extends TClient ? false : true
@@ -283,7 +283,7 @@ export type TransactionType<
   TDocuments extends AnySanityDocument[],
   TOriginalDocument extends AnySanityDocument,
   TIsPromise extends boolean,
-  TIsScoped extends boolean
+  TIsScoped extends boolean,
 > = MergeOld<
   TransactionNative,
   {
@@ -301,7 +301,7 @@ export type TransactionType<
         : Omit<
             SetOptional<TOriginalDocument, "_id">,
             "_createdAt" | "_rev" | "_updatedAt"
-          > & { _type: string }
+          > & { _type: string },
     >(
       document: Doc
     ) => TransactionType<
@@ -309,7 +309,7 @@ export type TransactionType<
         ...TDocuments,
         TIsScoped extends true
           ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
-          : Doc & TOriginalDocument
+          : Doc & TOriginalDocument,
       ],
       TOriginalDocument,
       TIsPromise,
@@ -320,7 +320,7 @@ export type TransactionType<
         ? never
         : Omit<TOriginalDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
             _type: string;
-          }
+          },
     >(
       document: Doc
     ) => TransactionType<
@@ -328,7 +328,7 @@ export type TransactionType<
         ...TDocuments,
         TIsScoped extends true
           ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
-          : Doc & TOriginalDocument
+          : Doc & TOriginalDocument,
       ],
       TOriginalDocument,
       TIsPromise,
@@ -339,7 +339,7 @@ export type TransactionType<
         ? never
         : Omit<TOriginalDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
             _type: string;
-          }
+          },
     >(
       document: Doc
     ) => TransactionType<
@@ -347,7 +347,7 @@ export type TransactionType<
         ...TDocuments,
         TIsScoped extends true
           ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
-          : Doc & TOriginalDocument
+          : Doc & TOriginalDocument,
       ],
       TOriginalDocument,
       TIsPromise,
@@ -374,7 +374,7 @@ export type TransactionType<
                     TIsPromise,
                     TIsScoped
                   >
-                ) => PatchType<Doc, TOriginalDocument, TIsPromise, TIsScoped>)
+                ) => PatchType<Doc, TOriginalDocument, TIsPromise, TIsScoped>),
           ]
         | [patch: PatchType<Doc, TOriginalDocument, TIsPromise, TIsScoped>]
     ) => TransactionType<
@@ -393,7 +393,7 @@ export type Mutation<
   TDocument extends AnySanityDocument,
   Doc extends Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
     _type: string;
-  }
+  },
 > =
   | Exclude<
       MutationNative,
@@ -415,22 +415,20 @@ export type Mutation<
 
 export type MutationDoc<
   TDocument extends AnySanityDocument,
-  TMutation extends Mutation<any, any>
-> = TMutation extends {
-  create: infer Doc;
-}
+  TMutation extends Mutation<any, any>,
+> = TMutation extends { create: infer Doc }
   ? Extract<TDocument, Doc>
   : TMutation extends { createOrReplace: infer Doc }
-  ? Extract<TDocument, Doc>
-  : TMutation extends { createIfNotExists: infer Doc }
-  ? Extract<TDocument, Doc>
-  : TMutation extends { delete: any }
-  ? SanityAssetDocument | TDocument
-  : never;
+    ? Extract<TDocument, Doc>
+    : TMutation extends { createIfNotExists: infer Doc }
+      ? Extract<TDocument, Doc>
+      : TMutation extends { delete: any }
+        ? SanityAssetDocument | TDocument
+        : never;
 
 export const Transaction = TransactionNative as unknown as new <
   const TDocument extends AnySanityDocument,
-  const TClient extends SanityClient<TDocument> | undefined = undefined
+  const TClient extends SanityClient<TDocument> | undefined = undefined,
 >(
   operations?: Mutation<TDocument, any>[],
   client?: TClient,
@@ -445,7 +443,7 @@ export const Transaction = TransactionNative as unknown as new <
 export const ObservableTransaction =
   ObservableTransactionNative as unknown as new <
     const TDocument extends AnySanityDocument,
-    const TClient extends SanityClient<TDocument> | undefined = undefined
+    const TClient extends SanityClient<TDocument> | undefined = undefined,
   >(
     operations?: Mutation<TDocument, any>[],
     client?: TClient,
@@ -459,10 +457,7 @@ export const ObservableTransaction =
 
 export type MutationEvent<TDocument extends AnySanityDocument> = Merge<
   MutationEventNative,
-  {
-    previous?: TDocument | null;
-    result?: TDocument;
-  }
+  { previous?: TDocument | null; result?: TDocument }
 >;
 
 export type ListenEvent<TDocument extends AnySanityDocument> =
@@ -471,32 +466,28 @@ export type ListenEvent<TDocument extends AnySanityDocument> =
 
 export type RawQueryResponse<Result, Query extends string = string> = Merge<
   RawQueryResponseNative<Result>,
-  {
-    query: Query;
-  }
+  { query: Query }
 >;
 
 type MaybeRawQueryResponse<
   Result,
   Query extends string,
-  Options extends FilteredResponseQueryOptions | UnfilteredResponseQueryOptions
+  Options extends FilteredResponseQueryOptions | UnfilteredResponseQueryOptions,
 > = Options extends UnfilteredResponseQueryOptions
   ? RawQueryResponse<Result, Query>
   : Result;
 
 export type GetDocuments<
   TDocument extends AnySanityDocument,
-  Ids extends string[]
-> = {
-  [index in keyof Ids]: (TDocument & { _id: Ids[index] }) | null;
-};
+  Ids extends string[],
+> = { [index in keyof Ids]: (TDocument & { _id: Ids[index] }) | null };
 
 export type OverrideSanityClient<
   TSanityClient,
   TClientConfig extends ClientConfig,
   TDocument extends AnySanityDocument,
   TObservableClient,
-  TIsPromise extends boolean
+  TIsPromise extends boolean,
 > = MergeOld<
   TSanityClient,
   {
@@ -508,7 +499,7 @@ export type OverrideSanityClient<
       TIsPromise
     >;
     config: <
-      const NewConfig extends Partial<ClientConfig> | undefined = undefined
+      const NewConfig extends Partial<ClientConfig> | undefined = undefined,
     >(
       newConfig?: NewConfig
     ) => NewConfig extends undefined
@@ -527,7 +518,7 @@ export type OverrideSanityClient<
             SetOptional<TDocument, "_id">,
             "_createdAt" | "_rev" | "_updatedAt"
           >,
-      const TOptions extends MutationOptions = BaseMutationOptions
+      const TOptions extends MutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
@@ -539,7 +530,7 @@ export type OverrideSanityClient<
       Doc extends TDocument extends never
         ? never
         : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt">,
-      const TOptions extends MutationOptions = BaseMutationOptions
+      const TOptions extends MutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
@@ -551,7 +542,7 @@ export type OverrideSanityClient<
       Doc extends TDocument extends never
         ? never
         : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt">,
-      const TOptions extends MutationOptions = BaseMutationOptions
+      const TOptions extends MutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
@@ -572,24 +563,18 @@ export type OverrideSanityClient<
       const TOptions extends
         | FilteredResponseQueryOptions
         | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions,
-      const TResult = never
+      const TResult = never,
     >(
       query:
         | TQuery
         | ((
             q: GroqBuilder<
               { [key in never]: never },
-              {
-                documentTypes: TDocument;
-                referenceSymbol: typeof referenced;
-              }
+              { documentTypes: TDocument; referenceSymbol: typeof referenced }
             >
           ) => GroqBuilder<
             TResult,
-            {
-              documentTypes: TDocument;
-              referenceSymbol: typeof referenced;
-            }
+            { documentTypes: TDocument; referenceSymbol: typeof referenced }
           >),
       params?: TQueryParams,
       options?: TOptions
@@ -629,7 +614,7 @@ export type OverrideSanityClient<
     listen: <
       const TQuery extends string,
       const TQueryParams = QueryParams,
-      const TOptions extends ListenOptions | undefined = undefined
+      const TOptions extends ListenOptions | undefined = undefined,
     >(
       query: TQuery,
       params?: TQueryParams,
@@ -667,7 +652,7 @@ export type OverrideSanityClient<
     >;
     mutate: <
       Doc extends AnySanityDocument,
-      const TOptions extends MutationOptions = BaseMutationOptions
+      const TOptions extends MutationOptions = BaseMutationOptions,
     >(
       operations:
         | Mutation<
@@ -700,19 +685,19 @@ export type OverrideSanityClient<
     observable: TObservableClient;
     patch: <
       TAttrs extends Partial<TDocument>,
-      TKeys extends TDocument extends never ? never : (keyof TDocument)[]
+      TKeys extends TDocument extends never ? never : (keyof TDocument)[],
     >(
       idOrSelection: PatchSelection,
       operations?: PatchOperations<TDocument, TAttrs, TKeys>
     ) => PatchType<
-      Extract<TDocument, Partial<TAttrs>> &
-        (TDocument extends never
+      Extract<TDocument, Partial<TAttrs>>
+        & (TDocument extends never
           ? never
           : TKeys extends never
-          ? never
-          : TKeys[number] extends keyof TDocument
-          ? TDocument
-          : never),
+            ? never
+            : TKeys[number] extends keyof TDocument
+              ? TDocument
+              : never),
       TDocument,
       TIsPromise,
       true
@@ -725,7 +710,7 @@ export type OverrideSanityClient<
           : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
               _type: string;
             }
-      >[] = []
+      >[] = [],
     >(
       operations?: TMutations
     ) => TransactionType<
@@ -750,7 +735,7 @@ export type OverrideSanityClient<
 
 export type ObservableSanityClient<
   TClientConfig extends ClientConfig,
-  TDocument extends AnySanityDocument
+  TDocument extends AnySanityDocument,
 > = OverrideSanityClient<
   ObservableSanityClientNative,
   TClientConfig,
@@ -770,7 +755,7 @@ export type SanityClient<TDocument extends AnySanityDocument> =
   >;
 
 export const createClient = <
-  const SanityValues extends { [type: string]: any }
+  const SanityValues extends { [type: string]: any },
 >(
   config: ClientConfig
 ) => {
@@ -791,7 +776,7 @@ export const createClient = <
   try {
     const {
       createGroqBuilder,
-      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires, unicorn/prefer-module -- Optional Dependency
+      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports, unicorn/prefer-module -- Optional Dependency
     } = require("groq-builder") as {
       createGroqBuilder: typeof createGroqBuilderType;
     };
@@ -830,7 +815,7 @@ export const createClient = <
       const TOptions extends
         | FilteredResponseQueryOptions
         | UnfilteredResponseQueryOptions = FilteredResponseQueryOptions,
-      const TResult = never
+      const TResult = never,
     >(
       queryOrBuilder:
         | TQuery
@@ -878,7 +863,7 @@ export const castToTyped =
       : [
           error: {
             [README]: "⛔️ Without providing a SanityValues, castToTyped is meaningless. eg. castToTyped<SanityValues>()(untypedClient) ⛔️";
-          }
+          },
         ]
   ) =>
   <const TClient extends SanityClientNative>(untyped: TClient) =>
