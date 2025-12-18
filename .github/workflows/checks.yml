@@ -16,7 +16,7 @@ jobs:
     name: Install Node Modules
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
       # HACK If we can lookup the cache, then this entire job is unnecessary
@@ -67,7 +67,7 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: recursive
@@ -262,7 +262,7 @@ jobs:
     needs: install-node-modules
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
       - uses: actions/setup-node@v4.4.0
@@ -321,7 +321,7 @@ jobs:
       packages: ${{ steps.set-packages.outputs.packages }}
       typescript-versions: ${{ steps.set-typescript-versions.outputs.typescript-versions }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
       - uses: actions/setup-node@v4.4.0
@@ -356,7 +356,7 @@ jobs:
         package: ${{ fromJson(needs.test-matrix.outputs.packages) }}
         typescript-version: ${{ fromJson(needs.test-matrix.outputs.typescript-versions) }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
       - uses: actions/setup-node@v4.4.0
