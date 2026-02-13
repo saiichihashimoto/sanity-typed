@@ -168,6 +168,12 @@ const nav = defineType({
 
 ## Breaking Changes
 
+### 8 to 9
+
+#### Node Requirement to ^22.14.0
+
+The required Node version is now ^22.14.0. Older versions are no longer supported and newer versions will be added as we validate them.
+
 ### 7 to 8
 
 #### Typescript version from 5.7.2 <= x <= 5.7.3

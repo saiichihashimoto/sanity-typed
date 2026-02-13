@@ -4,7 +4,10 @@
   "description": "Completing sanity's developer experience with typescript (and more)!",
   "homepage": "https://github.com/saiichihashimoto/sanity-typed",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
-  "repository": "github:saiichihashimoto/sanity-typed",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saiichihashimoto/sanity-typed.git"
+  },
   "funding": {
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
@@ -55,11 +58,12 @@
     "imagemin-lint-staged": "0.5.1",
     "is-ci": "3.0.1",
     "lint-staged": "15.4.3",
-    "multi-semantic-release": "3.0.2",
+    "multi-semantic-release": "3.1.0",
     "prettier": "3.7.4",
     "prettier-plugin-packagejson": "2.5.20",
     "prettier-plugin-sh": "0.18.0",
     "prettier-plugin-sort-json": "4.1.1",
+    "semantic-release": "25.0.0",
     "ts-node": "10.9.2",
     "tsup": "8.4.0",
     "turbo": "2.5.0",
@@ -68,6 +72,6 @@
   },
   "packageManager": "npm@10.9.0",
   "engines": {
-    "node": "^18.17.0 || ^20.18.0"
+    "node": "^22.14.0"
   }
 }

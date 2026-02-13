@@ -20,7 +20,10 @@
   ],
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/zod",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
-  "repository": "github:saiichihashimoto/sanity-typed",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saiichihashimoto/sanity-typed.git"
+  },
   "funding": {
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
@@ -60,6 +63,6 @@
     "zod": "^3.21.4"
   },
   "engines": {
-    "node": "^18.17.0 || ^20.18.0"
+    "node": "^22.14.0"
   }
 }

@@ -16,6 +16,8 @@
 - [Install](#install)
 - [Usage](#usage)
 - [Breaking Changes](#breaking-changes)
+  - [3 to 4](#3-to-4)
+    - [Node Requirement to ^22.14.0](#node-requirement-to-22140)
   - [2 to 3](#2-to-3)
     - [Typescript version from 5.7.2 <= x <= 5.7.3](#typescript-version-from-572--x--573)
   - [1 to 2](#1-to-2)
@@ -220,6 +222,12 @@ export default Index;
 ```
 
 ## Breaking Changes
+
+### 3 to 4
+
+#### Node Requirement to ^22.14.0
+
+The required Node version is now ^22.14.0. Older versions are no longer supported and newer versions will be added as we validate them.
 
 ### 2 to 3
 
