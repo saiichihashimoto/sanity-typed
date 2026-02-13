@@ -16,12 +16,12 @@ jobs:
     name: Install Node Modules
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
       # HACK If we can lookup the cache, then this entire job is unnecessary
       - id: node-modules
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             node_modules
@@ -32,12 +32,12 @@ jobs:
           lookup-only: true
 
       - if: steps.node-modules.outputs.cache-hit != 'true'
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v6.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
       - if: steps.node-modules.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             node_modules
@@ -67,15 +67,15 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v6.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: |
             node_modules
@@ -116,59 +116,59 @@ jobs:
           echo "HASH_TYPES=$HASH_TYPES" >> $GITHUB_ENV
           echo "HASH_ZOD=$HASH_ZOD" >> $GITHUB_ENV
 
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_CLIENT_MOCK }}*
           key: turbo-cache-${{ env.HASH_CLIENT_MOCK }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_CLIENT }}*
           key: turbo-cache-${{ env.HASH_CLIENT }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_EXAMPLE_APP }}*
           key: turbo-cache-${{ env.HASH_EXAMPLE_APP }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_EXAMPLE_STUDIO }}*
           key: turbo-cache-${{ env.HASH_EXAMPLE_STUDIO }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_FAKER }}*
           key: turbo-cache-${{ env.HASH_FAKER }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_GROQ_JS }}*
           key: turbo-cache-${{ env.HASH_GROQ_JS }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_GROQ }}*
           key: turbo-cache-${{ env.HASH_GROQ }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_NEXT_SANITY }}*
           key: turbo-cache-${{ env.HASH_NEXT_SANITY }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_PREVIEW_KIT }}*
           key: turbo-cache-${{ env.HASH_PREVIEW_KIT }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_PT_REACT }}*
           key: turbo-cache-${{ env.HASH_PT_REACT }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_PT_TO_HTML }}*
           key: turbo-cache-${{ env.HASH_PT_TO_HTML }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_PT_TYPES }}*
           key: turbo-cache-${{ env.HASH_PT_TYPES }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_TYPES }}*
           key: turbo-cache-${{ env.HASH_TYPES }}
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH_ZOD }}*
           key: turbo-cache-${{ env.HASH_ZOD }}
@@ -179,72 +179,72 @@ jobs:
 
       # Whether or not npm run build fails, we want to save the cache when we can
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_CLIENT_MOCK }}*
           key: turbo-cache-${{ env.HASH_CLIENT_MOCK }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_CLIENT }}*
           key: turbo-cache-${{ env.HASH_CLIENT }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_EXAMPLE_APP }}*
           key: turbo-cache-${{ env.HASH_EXAMPLE_APP }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_EXAMPLE_STUDIO }}*
           key: turbo-cache-${{ env.HASH_EXAMPLE_STUDIO }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_FAKER }}*
           key: turbo-cache-${{ env.HASH_FAKER }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_GROQ_JS }}*
           key: turbo-cache-${{ env.HASH_GROQ_JS }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_GROQ }}*
           key: turbo-cache-${{ env.HASH_GROQ }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_NEXT_SANITY }}*
           key: turbo-cache-${{ env.HASH_NEXT_SANITY }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_PREVIEW_KIT }}*
           key: turbo-cache-${{ env.HASH_PREVIEW_KIT }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_PT_REACT }}*
           key: turbo-cache-${{ env.HASH_PT_REACT }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_PT_TO_HTML }}*
           key: turbo-cache-${{ env.HASH_PT_TO_HTML }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_PT_TYPES }}*
           key: turbo-cache-${{ env.HASH_PT_TYPES }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_TYPES }}*
           key: turbo-cache-${{ env.HASH_TYPES }}
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH_ZOD }}*
           key: turbo-cache-${{ env.HASH_ZOD }}
@@ -262,14 +262,14 @@ jobs:
     needs: install-node-modules
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v6.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: |
             node_modules
@@ -285,7 +285,7 @@ jobs:
 
       - run: rm -rf .eslintcache node_modules/.cache/prettier
 
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: |
             .eslintcache
@@ -299,7 +299,7 @@ jobs:
 
       # Whether or not npm run lint fails, we want to save the cache when we can
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             .eslintcache
@@ -321,14 +321,14 @@ jobs:
       packages: ${{ steps.set-packages.outputs.packages }}
       typescript-versions: ${{ steps.set-typescript-versions.outputs.typescript-versions }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v6.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: |
             node_modules
@@ -356,14 +356,14 @@ jobs:
         package: ${{ fromJson(needs.test-matrix.outputs.packages) }}
         typescript-version: ${{ fromJson(needs.test-matrix.outputs.typescript-versions) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v6.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: |
             node_modules
@@ -381,7 +381,7 @@ jobs:
           HASH=$(echo $DRY_RUN | jq --raw-output ".tasks[] | select(.taskId | contains(\"${{ matrix.package }}#test\")) | .hash")
           echo "HASH=$HASH" >> $GITHUB_ENV
 
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v5
         with:
           path: .turbo/cache/${{ env.HASH }}*
           key: turbo-cache-test-${{ matrix.typescript-version }}-${{ env.HASH }}
@@ -392,7 +392,7 @@ jobs:
 
       # Whether or not npm run test fails, we want to save the cache when we can
       - if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .turbo/cache/${{ env.HASH }}*
           key: turbo-cache-test-${{ matrix.typescript-version }}-${{ env.HASH }}
