@@ -47,7 +47,7 @@
     "@sanity-typed/types": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
     "jest": "29.7.0",
-    "react": "19.2.3",
+    "react": "19.2.4",
     "react-dom": "19.2.3",
     "ts-jest": "29.2.5"
   },

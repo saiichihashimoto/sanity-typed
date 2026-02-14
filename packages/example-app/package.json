@@ -31,7 +31,7 @@
     "@sanity/client": "7.14.0",
     "groq-builder": "0.9.1",
     "next": "15.3.8",
-    "react": "19.2.3"
+    "react": "19.2.4"
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development"
