@@ -30,7 +30,7 @@
     "build": "tsup",
     "dev": "npm run build -- --no-clean",
     "pretest": "jest --clearCache",
-    "test": "jest"
+    "test": "jest --runInBand"
   },
   "dependencies": {
     "@portabletext-typed/types": "0.0.0-development",
