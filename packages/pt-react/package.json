@@ -29,6 +29,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "npm run build -- --no-clean",
+    "pretest": "jest --clearCache",
     "test": "jest"
   },
   "dependencies": {
