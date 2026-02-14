@@ -56,6 +56,7 @@ export default defineConfig(
     clean: true,
     dts: true,
     entry: ["src/index.ts", "src/internal.ts"],
+    format: ["esm", "cjs"],
     skipNodeModulesBundle: true,
     watch:
       clean === false

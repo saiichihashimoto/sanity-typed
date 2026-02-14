@@ -16,7 +16,20 @@
     "url": "https://github.com/sponsors/saiichihashimoto"
   },
   "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./src/internal": {
+      "types": "./dist/internal.d.ts",
+      "import": "./dist/internal.mjs",
+      "require": "./dist/internal.js"
+    }
+  },
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
