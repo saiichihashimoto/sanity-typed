@@ -38,7 +38,7 @@
   "devDependencies": {
     "@jest/globals": "29.7.0",
     "@jest/types": "29.6.3",
-    "@portabletext/react": "4.0.3",
+    "@portabletext/react": "6.0.2",
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
@@ -49,7 +49,7 @@
     "ts-jest": "29.2.5"
   },
   "peerDependencies": {
-    "@portabletext/react": "^3.0.11 || ^4.0.3",
+    "@portabletext/react": "^3.0.11",
     "typescript": "5.7.2 || 5.7.3"
   }
 }
