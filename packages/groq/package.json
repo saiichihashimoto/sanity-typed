@@ -50,7 +50,7 @@
     "@sanity/client": "7.5.0",
     "@types/geojson": "7946.0.16",
     "groq-js": "1.14.0",
-    "jest": "29.7.0",
+    "jest": "30.2.0",
     "ts-jest": "29.2.5"
   },
   "peerDependencies": {
