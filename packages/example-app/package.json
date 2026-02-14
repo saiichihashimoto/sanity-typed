@@ -28,7 +28,7 @@
     "@sanity-typed/faker": "0.0.0-development",
     "@sanity-typed/next-sanity": "0.0.0-development",
     "@sanity-typed/zod": "0.0.0-development",
-    "@sanity/client": "7.14.0",
+    "@sanity/client": "7.5.0",
     "groq-builder": "0.9.1",
     "next": "15.3.8",
     "react": "19.2.4"
