@@ -24,6 +24,7 @@ export declare class StaticValue<
 
 // eslint-disable-next-line fp/no-class -- retyping an existing class
 export declare class StreamValue<P> extends StreamValueNative {
+  // @ts-expect-error -- EXPECTED Intentionally narrowing return type from Promise<any[]> to Promise<P> for typed usage
   get(): Promise<P>;
 }
 
