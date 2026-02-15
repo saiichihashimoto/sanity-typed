@@ -10,7 +10,7 @@
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
-    "@semantic-release/npm",
+    "@semrel-extra/npm",
     "@semantic-release/github"
   ]
 }
