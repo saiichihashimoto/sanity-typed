@@ -26,6 +26,8 @@ Infer Sanity Document Types from Sanity Schemas
   - [Typescript Errors in IDEs](#typescript-errors-in-ides)
     - [VSCode](#vscode)
 - [Breaking Changes](#breaking-changes)
+  - [8 to 9](#8-to-9)
+    - [Node Requirement to ^22.14.0](#node-requirement-to-22140)
   - [7 to 8](#7-to-8)
     - [Typescript version from 5.7.2 <= x <= 5.7.3](#typescript-version-from-572--x--573)
   - [6 to 7](#6-to-7)
@@ -313,6 +315,12 @@ Often you'll run into an issue where you get typescript errors in your IDE but, 
 - Open any typescript file and you can [see which version is being used in the status bar](https://code.visualstudio.com/docs/typescript/typescript-compiling#_compiler-versus-language-service). Please check this (and provide a screenshot confirming this) before creating an issue. Spending hours debugging your issue ony to find that you're not using your workspace's version is very frustrating.
 
 ## Breaking Changes
+
+### 8 to 9
+
+#### Node Requirement to ^22.14.0
+
+The required Node version is now ^22.14.0. Older versions are no longer supported and newer versions will be added as we validate them.
 
 ### 7 to 8
 

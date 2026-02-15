@@ -21,6 +21,8 @@ Infer [GROQ](https://github.com/sanity-io/groq) Result Types from GROQ strings
     - [VSCode](#vscode)
   - [`Type instantiation is excessively deep and possibly infinite`](#type-instantiation-is-excessively-deep-and-possibly-infinite)
 - [Breaking Changes](#breaking-changes)
+  - [3 to 4](#3-to-4)
+    - [Node Requirement to ^22.14.0](#node-requirement-to-22140)
   - [2 to 3](#2-to-3)
     - [Typescript version from 5.7.2 <= x <= 5.7.3](#typescript-version-from-572--x--573)
   - [1 to 2](#1-to-2)
@@ -147,6 +149,12 @@ You might run into the dreaded `Type instantiation is excessively deep and possi
 People will sometimes create a repo with their issue. _Please_ open a PR with a minimal test instead. Without a PR there will be no tests reflecting your issue and it may appear again in a regression. Forking a github repo to make a PR is a more welcome way to contribute to an open source library.
 
 ## Breaking Changes
+
+### 3 to 4
+
+#### Node Requirement to ^22.14.0
+
+The required Node version is now ^22.14.0. Older versions are no longer supported and newer versions will be added as we validate them.
 
 ### 2 to 3
 

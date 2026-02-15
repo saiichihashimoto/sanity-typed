@@ -45,6 +45,12 @@ Depending on your tree-shaking setup, you'll want to swap between the real clien
 
 ## Breaking Changes
 
+### 4 to 5
+
+#### Node Requirement to ^22.14.0
+
+The required Node version is now ^22.14.0. Older versions are no longer supported and newer versions will be added as we validate them.
+
 ### 3 to 4
 
 #### Typescript version from 5.7.2 <= x <= 5.7.3

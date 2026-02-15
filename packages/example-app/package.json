@@ -5,7 +5,10 @@
   "private": true,
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/example-app",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
-  "repository": "github:saiichihashimoto/sanity-typed",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saiichihashimoto/sanity-typed.git"
+  },
   "funding": {
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
@@ -25,10 +28,10 @@
     "@sanity-typed/faker": "0.0.0-development",
     "@sanity-typed/next-sanity": "0.0.0-development",
     "@sanity-typed/zod": "0.0.0-development",
-    "@sanity/client": "7.5.0",
+    "@sanity/client": "7.14.0",
     "groq-builder": "0.9.1",
     "next": "15.3.8",
-    "react": "19.2.3"
+    "react": "19.2.4"
   },
   "devDependencies": {
     "@sanity-typed/tsconfig": "0.0.0-development"
@@ -37,6 +40,6 @@
     "typescript": "5.7.2 || 5.7.3"
   },
   "engines": {
-    "node": "^18.17.0 || ^20.18.0"
+    "node": "^22.22.0"
   }
 }

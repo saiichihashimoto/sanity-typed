@@ -5,7 +5,10 @@
   "private": true,
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/example-studio",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
-  "repository": "github:saiichihashimoto/sanity-typed",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saiichihashimoto/sanity-typed.git"
+  },
   "funding": {
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"

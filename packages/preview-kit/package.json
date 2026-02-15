@@ -23,13 +23,24 @@
   ],
   "homepage": "https://github.com/saiichihashimoto/sanity-typed/tree/main/packages/preview-kit",
   "bugs": "https://github.com/saiichihashimoto/sanity-typed/issues",
-  "repository": "github:saiichihashimoto/sanity-typed",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saiichihashimoto/sanity-typed.git"
+  },
   "funding": {
     "type": "individual",
     "url": "https://github.com/sponsors/saiichihashimoto"
   },
   "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
