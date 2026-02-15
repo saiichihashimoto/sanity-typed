@@ -252,7 +252,7 @@ jobs:
       - run: npm config set workspaces-update false
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx multi-semantic-release --ignore-private-packages --debug
+        run: npx multi-semantic-release --ignore-private-packages
   lint:
     name: Lint
     if: always()
