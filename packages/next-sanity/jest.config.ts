@@ -9,7 +9,10 @@ const config: Config = {
   verbose: true,
   modulePaths: ["."],
   moduleNameMapper: {
+    "^@portabletext-typed/([^/]+)/src/(.*)$":
+      "<rootDir>/../../packages/$1/src/$2",
     "^@portabletext-typed/([^/]*)$": "<rootDir>/../../packages/pt-$1/src",
+    "^@sanity-typed/([^/]+)/src/(.*)$": "<rootDir>/../../packages/$1/src/$2",
     "^@sanity-typed/([^/]*)$": "<rootDir>/../../packages/$1/src",
   },
 };

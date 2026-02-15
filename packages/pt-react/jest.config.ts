@@ -12,7 +12,10 @@ const config: Config = {
   transformIgnorePatterns: ["/node_modules/(?!(@portabletext|@sanity|react)/)"],
   transform: { "^.+\\.(ts|tsx)$": "ts-jest", "^.+\\.(js|jsx)$": "babel-jest" },
   moduleNameMapper: {
+    "^@portabletext-typed/([^/]+)/src/(.*)$":
+      "<rootDir>/../../packages/$1/src/$2",
     "^@portabletext-typed/([^/]*)$": "<rootDir>/../../packages/pt-$1/src",
+    "^@sanity-typed/([^/]+)/src/(.*)$": "<rootDir>/../../packages/$1/src/$2",
     "^@sanity-typed/([^/]*)$": "<rootDir>/../../packages/$1/src",
   },
 };
