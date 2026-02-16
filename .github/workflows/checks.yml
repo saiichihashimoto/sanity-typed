@@ -32,7 +32,7 @@ jobs:
           lookup-only: true
 
       - if: steps.node-modules.outputs.cache-hit != 'true'
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v6.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -71,7 +71,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v6.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -262,7 +262,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v6.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -321,7 +321,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v6.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
@@ -356,7 +356,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v6.2.0
         with:
           node-version-file: "package.json"
           cache: "npm"
