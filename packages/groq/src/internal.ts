@@ -2453,10 +2453,10 @@ type Defaults<Value, PartialValue extends Partial<Value>> = {
     : Value[Key];
 };
 
-export type ScopeFromPartialContext<
+export interface ScopeFromPartialContext<
   TContext extends Partial<Context<any[], any>>,
-> = RootScope<Defaults<Context<any[], any>, TContext>>;
+> extends RootScope<Defaults<Context<any[], any>, TContext>> {}
 
-export type ScopeFromPartialScope<
+export interface ScopeFromPartialScope<
   TScope extends Partial<Scope<Context<any[], any>>>,
-> = Defaults<Scope<Context<any[], any>>, TScope>;
+> extends Defaults<Scope<Context<any[], any>>, TScope> {}

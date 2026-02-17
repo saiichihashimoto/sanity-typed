@@ -74,21 +74,21 @@ type MutationResult<
         ? Value[0]
         : Value;
 
-export type PatchOperations<
+export interface PatchOperations<
   TDocument extends AnySanityDocument,
   TAttrs extends Partial<TDocument>,
   TKeys extends TDocument extends never ? never : (keyof TDocument)[],
-> = MergeOld<
+> extends Omit<
   PatchOperationsNative,
-  {
-    dec?: TAttrs & { [key: string]: number };
-    diffMatchPatch?: TAttrs & { [key: string]: string };
-    inc?: TAttrs & { [key: string]: number };
-    set?: TAttrs;
-    setIfMissing?: TAttrs;
-    unset?: TKeys;
-  }
->;
+  "dec" | "diffMatchPatch" | "inc" | "set" | "setIfMissing" | "unset"
+> {
+  dec?: TAttrs & { [key: string]: number };
+  diffMatchPatch?: TAttrs & { [key: string]: string };
+  inc?: TAttrs & { [key: string]: number };
+  set?: TAttrs;
+  setIfMissing?: TAttrs;
+  unset?: TKeys;
+}
 
 export type PatchMutationOperation<
   TDocument extends AnySanityDocument,
@@ -96,137 +96,149 @@ export type PatchMutationOperation<
   TKeys extends TDocument extends never ? never : (keyof TDocument)[],
 > = MutationSelection & PatchOperations<TDocument, TAttrs, TKeys>;
 
-export type PatchType<
+export interface PatchType<
   TDocument extends AnySanityDocument,
   TOriginalDocument extends AnySanityDocument,
   TIsPromise extends boolean,
   TIsScoped extends boolean,
-> = MergeOld<
+> extends Omit<
   BasePatch,
-  {
-    append: (
-      ...args: Parameters<BasePatch["append"]>
-    ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
-    clone: () => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
-    commit: TIsScoped extends false
+  | "append"
+  | "clone"
+  | "commit"
+  | "dec"
+  | "diffMatchPatch"
+  | "ifRevisionId"
+  | "inc"
+  | "insert"
+  | "prepend"
+  | "reset"
+  | "serialize"
+  | "set"
+  | "setIfMissing"
+  | "splice"
+  | "toJSON"
+  | "unset"
+> {
+  append: (
+    ...args: Parameters<BasePatch["append"]>
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  clone: () => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  commit: TIsScoped extends false
+    ? never
+    : <const TOptions extends BaseMutationOptions = BaseMutationOptions>(
+        options?: TOptions
+      ) => PromiseOrObservable<TIsPromise, MutationResult<TDocument, TOptions>>;
+  dec: <
+    TAttrs extends TIsScoped extends true
+      ? Partial<TDocument> & { [key: string]: number }
+      : any,
+  >(
+    attrs: TAttrs
+  ) => PatchType<
+    TIsScoped extends true
+      ? Extract<TDocument, Partial<TAttrs>>
+      : TAttrs & TDocument,
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  diffMatchPatch: <
+    TAttrs extends TIsScoped extends true
+      ? Partial<TDocument> & { [key: string]: string }
+      : any,
+  >(
+    attrs: TAttrs
+  ) => PatchType<
+    TIsScoped extends true
+      ? Extract<TDocument, Partial<TAttrs>>
+      : TAttrs & TDocument,
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  ifRevisionId: (
+    ...args: Parameters<BasePatch["ifRevisionId"]>
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  inc: <
+    TAttrs extends TIsScoped extends true
+      ? Partial<TDocument> & { [key: string]: number }
+      : any,
+  >(
+    attrs: TAttrs
+  ) => PatchType<
+    TIsScoped extends true
+      ? Extract<TDocument, Partial<TAttrs>>
+      : TAttrs & TDocument,
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  insert: (
+    ...args: Parameters<BasePatch["insert"]>
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  prepend: (
+    ...args: Parameters<BasePatch["prepend"]>
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  reset: (
+    ...args: Parameters<BasePatch["reset"]>
+  ) => PatchType<TOriginalDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  serialize: () => PatchMutationOperation<
+    TDocument,
+    Partial<TDocument>,
+    TDocument extends never ? never : (keyof TDocument)[]
+  >;
+  set: <TAttrs extends TIsScoped extends true ? Partial<TDocument> : any>(
+    attrs: TAttrs
+  ) => PatchType<
+    TIsScoped extends true
+      ? Extract<TDocument, Partial<TAttrs>>
+      : TAttrs & TDocument,
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  setIfMissing: <
+    TAttrs extends TIsScoped extends true ? Partial<TDocument> : any,
+  >(
+    attrs: TAttrs
+  ) => PatchType<
+    TIsScoped extends true
+      ? Extract<TDocument, Partial<TAttrs>>
+      : TAttrs & TDocument,
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  splice: (
+    ...args: Parameters<BasePatch["splice"]>
+  ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
+  toJSON: () => PatchMutationOperation<
+    TDocument,
+    Partial<TDocument>,
+    TDocument extends never ? never : (keyof TDocument)[]
+  >;
+  unset: <
+    TKeys extends TDocument extends never
       ? never
-      : <const TOptions extends BaseMutationOptions = BaseMutationOptions>(
-          options?: TOptions
-        ) => PromiseOrObservable<
-          TIsPromise,
-          MutationResult<TDocument, TOptions>
-        >;
-    dec: <
-      TAttrs extends TIsScoped extends true
-        ? Partial<TDocument> & { [key: string]: number }
-        : any,
-    >(
-      attrs: TAttrs
-    ) => PatchType<
-      TIsScoped extends true
-        ? Extract<TDocument, Partial<TAttrs>>
-        : TAttrs & TDocument,
-      TOriginalDocument,
-      TIsPromise,
-      TIsScoped
-    >;
-    diffMatchPatch: <
-      TAttrs extends TIsScoped extends true
-        ? Partial<TDocument> & { [key: string]: string }
-        : any,
-    >(
-      attrs: TAttrs
-    ) => PatchType<
-      TIsScoped extends true
-        ? Extract<TDocument, Partial<TAttrs>>
-        : TAttrs & TDocument,
-      TOriginalDocument,
-      TIsPromise,
-      TIsScoped
-    >;
-    ifRevisionId: (
-      ...args: Parameters<BasePatch["ifRevisionId"]>
-    ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
-    inc: <
-      TAttrs extends TIsScoped extends true
-        ? Partial<TDocument> & { [key: string]: number }
-        : any,
-    >(
-      attrs: TAttrs
-    ) => PatchType<
-      TIsScoped extends true
-        ? Extract<TDocument, Partial<TAttrs>>
-        : TAttrs & TDocument,
-      TOriginalDocument,
-      TIsPromise,
-      TIsScoped
-    >;
-    insert: (
-      ...args: Parameters<BasePatch["insert"]>
-    ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
-    prepend: (
-      ...args: Parameters<BasePatch["prepend"]>
-    ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
-    reset: (
-      ...args: Parameters<BasePatch["reset"]>
-    ) => PatchType<TOriginalDocument, TOriginalDocument, TIsPromise, TIsScoped>;
-    serialize: () => PatchMutationOperation<
-      TDocument,
-      Partial<TDocument>,
-      TDocument extends never ? never : (keyof TDocument)[]
-    >;
-    set: <TAttrs extends TIsScoped extends true ? Partial<TDocument> : any>(
-      attrs: TAttrs
-    ) => PatchType<
-      TIsScoped extends true
-        ? Extract<TDocument, Partial<TAttrs>>
-        : TAttrs & TDocument,
-      TOriginalDocument,
-      TIsPromise,
-      TIsScoped
-    >;
-    setIfMissing: <
-      TAttrs extends TIsScoped extends true ? Partial<TDocument> : any,
-    >(
-      attrs: TAttrs
-    ) => PatchType<
-      TIsScoped extends true
-        ? Extract<TDocument, Partial<TAttrs>>
-        : TAttrs & TDocument,
-      TOriginalDocument,
-      TIsPromise,
-      TIsScoped
-    >;
-    splice: (
-      ...args: Parameters<BasePatch["splice"]>
-    ) => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
-    toJSON: () => PatchMutationOperation<
-      TDocument,
-      Partial<TDocument>,
-      TDocument extends never ? never : (keyof TDocument)[]
-    >;
-    unset: <
-      TKeys extends TDocument extends never
+      : TIsScoped extends true
+        ? (keyof TDocument)[]
+        : string[],
+  >(
+    keys: TKeys
+  ) => PatchType<
+    TIsScoped extends true
+      ? TDocument extends never
         ? never
-        : TIsScoped extends true
-          ? (keyof TDocument)[]
-          : string[],
-    >(
-      keys: TKeys
-    ) => PatchType<
-      TIsScoped extends true
-        ? TDocument extends never
-          ? never
-          : TKeys[number] extends keyof TDocument
-            ? TDocument
-            : never
-        : TDocument & { [key in TKeys[number]]: any },
-      TOriginalDocument,
-      TIsPromise,
-      TIsScoped
-    >;
-  }
->;
+        : TKeys[number] extends keyof TDocument
+          ? TDocument
+          : never
+      : TDocument & { [key in TKeys[number]]: any },
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+}
 
 export const Patch = PatchNative as unknown as new <
   const TDocument extends AnySanityDocument,
@@ -274,115 +286,121 @@ export const ObservablePatch = ObservablePatchNative as unknown as new <
   undefined extends TClient ? false : true
 >;
 
-export type TransactionType<
+export interface TransactionType<
   TDocuments extends AnySanityDocument[],
   TOriginalDocument extends AnySanityDocument,
   TIsPromise extends boolean,
   TIsScoped extends boolean,
-> = MergeOld<
+> extends Omit<
   TransactionNative,
-  {
-    commit: TIsScoped extends false
+  | "commit"
+  | "create"
+  | "createIfNotExists"
+  | "createOrReplace"
+  | "delete"
+  | "patch"
+  | "reset"
+> {
+  commit: TIsScoped extends false
+    ? never
+    : <const TOptions extends BaseMutationOptions = BaseMutationOptions>(
+        options?: TOptions
+      ) => PromiseOrObservable<
+        TIsPromise,
+        MutationResult<TDocuments, TOptions>
+      >;
+  create: <
+    Doc extends TOriginalDocument extends never
       ? never
-      : <const TOptions extends BaseMutationOptions = BaseMutationOptions>(
-          options?: TOptions
-        ) => PromiseOrObservable<
-          TIsPromise,
-          MutationResult<TDocuments, TOptions>
-        >;
-    create: <
-      Doc extends TOriginalDocument extends never
-        ? never
-        : Omit<
-            SetOptional<TOriginalDocument, "_id">,
-            "_createdAt" | "_rev" | "_updatedAt"
-          > & { _type: string },
-    >(
-      document: Doc
-    ) => TransactionType<
-      [
-        ...TDocuments,
-        TIsScoped extends true
-          ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
-          : Doc & TOriginalDocument,
-      ],
-      TOriginalDocument,
-      TIsPromise,
-      TIsScoped
-    >;
-    createIfNotExists: <
-      Doc extends TOriginalDocument extends never
-        ? never
-        : Omit<TOriginalDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
-            _type: string;
-          },
-    >(
-      document: Doc
-    ) => TransactionType<
-      [
-        ...TDocuments,
-        TIsScoped extends true
-          ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
-          : Doc & TOriginalDocument,
-      ],
-      TOriginalDocument,
-      TIsPromise,
-      TIsScoped
-    >;
-    createOrReplace: <
-      Doc extends TOriginalDocument extends never
-        ? never
-        : Omit<TOriginalDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
-            _type: string;
-          },
-    >(
-      document: Doc
-    ) => TransactionType<
-      [
-        ...TDocuments,
-        TIsScoped extends true
-          ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
-          : Doc & TOriginalDocument,
-      ],
-      TOriginalDocument,
-      TIsPromise,
-      TIsScoped
-    >;
-    delete: (
-      idOrSelection: MutationSelection | string
-    ) => TransactionType<
-      [...TDocuments, SanityAssetDocument | TOriginalDocument],
-      TOriginalDocument,
-      TIsPromise,
-      TIsScoped
-    >;
-    patch: <Doc extends TOriginalDocument>(
-      ...args:
-        | [
-            documentId: string,
-            patchOps?:
-              | PatchOperationsNative
-              | ((
-                  patch: PatchType<
-                    TOriginalDocument,
-                    TOriginalDocument,
-                    TIsPromise,
-                    TIsScoped
-                  >
-                ) => PatchType<Doc, TOriginalDocument, TIsPromise, TIsScoped>),
-          ]
-        | [patch: PatchType<Doc, TOriginalDocument, TIsPromise, TIsScoped>]
-    ) => TransactionType<
-      [...TDocuments, Doc],
-      TOriginalDocument,
-      TIsPromise,
-      TIsScoped
-    >;
-    reset: (
-      ...args: Parameters<TransactionNative["reset"]>
-    ) => TransactionType<[], TOriginalDocument, TIsPromise, TIsScoped>;
-  }
->;
+      : Omit<
+          SetOptional<TOriginalDocument, "_id">,
+          "_createdAt" | "_rev" | "_updatedAt"
+        > & { _type: string },
+  >(
+    document: Doc
+  ) => TransactionType<
+    [
+      ...TDocuments,
+      TIsScoped extends true
+        ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
+        : Doc & TOriginalDocument,
+    ],
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  createIfNotExists: <
+    Doc extends TOriginalDocument extends never
+      ? never
+      : Omit<TOriginalDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+          _type: string;
+        },
+  >(
+    document: Doc
+  ) => TransactionType<
+    [
+      ...TDocuments,
+      TIsScoped extends true
+        ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
+        : Doc & TOriginalDocument,
+    ],
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  createOrReplace: <
+    Doc extends TOriginalDocument extends never
+      ? never
+      : Omit<TOriginalDocument, "_createdAt" | "_rev" | "_updatedAt"> & {
+          _type: string;
+        },
+  >(
+    document: Doc
+  ) => TransactionType<
+    [
+      ...TDocuments,
+      TIsScoped extends true
+        ? Extract<TOriginalDocument, { _type: Doc["_type"] }>
+        : Doc & TOriginalDocument,
+    ],
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  delete: (
+    idOrSelection: MutationSelection | string
+  ) => TransactionType<
+    [...TDocuments, SanityAssetDocument | TOriginalDocument],
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  patch: <Doc extends TOriginalDocument>(
+    ...args:
+      | [
+          documentId: string,
+          patchOps?:
+            | PatchOperationsNative
+            | ((
+                patch: PatchType<
+                  TOriginalDocument,
+                  TOriginalDocument,
+                  TIsPromise,
+                  TIsScoped
+                >
+              ) => PatchType<Doc, TOriginalDocument, TIsPromise, TIsScoped>),
+        ]
+      | [patch: PatchType<Doc, TOriginalDocument, TIsPromise, TIsScoped>]
+  ) => TransactionType<
+    [...TDocuments, Doc],
+    TOriginalDocument,
+    TIsPromise,
+    TIsScoped
+  >;
+  reset: (
+    ...args: Parameters<TransactionNative["reset"]>
+  ) => TransactionType<[], TOriginalDocument, TIsPromise, TIsScoped>;
+}
 
 export type Mutation<
   TDocument extends AnySanityDocument,
@@ -450,19 +468,23 @@ export const ObservableTransaction =
     undefined extends TClient ? false : true
   >;
 
-export type MutationEvent<TDocument extends AnySanityDocument> = Merge<
-  MutationEventNative,
-  { previous?: TDocument | null; result?: TDocument }
->;
+export interface MutationEvent<
+  TDocument extends AnySanityDocument,
+> extends Omit<MutationEventNative, "previous" | "result"> {
+  previous?: TDocument | null;
+  result?: TDocument;
+}
 
 export type ListenEvent<TDocument extends AnySanityDocument> =
   | Exclude<ListenEventNative<any>, MutationEventNative<any>>
   | MutationEvent<TDocument>;
 
-export type RawQueryResponse<Result, Query extends string = string> = Merge<
-  RawQueryResponseNative<Result>,
-  { query: Query }
->;
+export interface RawQueryResponse<
+  Result,
+  Query extends string = string,
+> extends Omit<RawQueryResponseNative<Result>, "query"> {
+  query: Query;
+}
 
 type MaybeRawQueryResponse<
   Result,

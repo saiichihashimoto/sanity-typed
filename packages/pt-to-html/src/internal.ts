@@ -143,14 +143,11 @@ export type PortableTextHtmlComponents<
       >;
       types?: {
         [TType in TChildSibling | TSibling as TType["_type"]]: (
-          options: MergeOld<
-            PortableTextTypeComponentOptions<TType>,
-            {
-              isInline:
-                | (TType extends TChildSibling ? true : never)
-                | (TType extends TSibling ? false : never);
-            }
-          >
+          options: Omit<PortableTextTypeComponentOptions<TType>, "isInline"> & {
+            isInline:
+              | (TType extends TChildSibling ? true : never)
+              | (TType extends TSibling ? false : never);
+          }
         ) => string;
       };
     },

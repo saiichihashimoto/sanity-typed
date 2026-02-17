@@ -312,6 +312,13 @@
         "@typescript-eslint/method-signature-style": "error",
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/no-empty-object-type": [
+          "error",
+          {
+            "allowInterfaces": "with-single-extends",
+            "allowObjectTypes": "never"
+          }
+        ],
         "@typescript-eslint/no-explicit-any": [
           "off",
           { "fixToUnknown": true, "ignoreRestArgs": true }

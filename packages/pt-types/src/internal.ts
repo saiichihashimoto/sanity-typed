@@ -1,5 +1,7 @@
 import type {
   PortableTextBlock as PortableTextBlockNative,
+  PortableTextBlockStyle as PortableTextBlockStyleNative,
+  PortableTextListItemType,
   PortableTextMarkDefinition,
   PortableTextSpan as PortableTextSpanNative,
 } from "@portabletext/types";
@@ -29,24 +31,23 @@ const decorator: unique symbol = Symbol("decorator");
 // HACK The declaration and export can't be on the same line https://stackoverflow.com/a/67074360
 export { decorator };
 
-export type PortableTextSpan<
+export interface PortableTextSpan<
   TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
-> = SetRequired<
-  Omit<PortableTextSpanNative, "_key"> & { [decorator]: TBlockMarkDecorator },
-  "marks"
->;
+> extends SetRequired<Omit<PortableTextSpanNative, "_key">, "marks"> {
+  [decorator]: TBlockMarkDecorator;
+}
+
+type ExtractStringLiterals<T> = T extends string
+  ? string extends T
+    ? never
+    : T
+  : never;
 
 export type BlockStyleDefault =
-  | "blockquote"
-  | "h1"
-  | "h2"
-  | "h3"
-  | "h4"
-  | "h5"
-  | "h6"
-  | "normal";
+  ExtractStringLiterals<PortableTextBlockStyleNative>;
 
-export type BlockListItemDefault = "bullet" | "number";
+export type BlockListItemDefault =
+  ExtractStringLiterals<PortableTextListItemType>;
 
 export interface PortableTextBlock<
   TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,

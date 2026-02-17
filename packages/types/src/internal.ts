@@ -55,6 +55,7 @@ import type {
   ReferenceRule,
   ReferenceValue as ReferenceValueNative,
   RuleDef,
+  SanityDocument as SanityDocumentNative,
   ScheduledPublishingPluginOptions,
   SchemaPluginOptions as SchemaPluginOptionsNative,
   SlugDefinition as SlugDefinitionNative,
@@ -73,7 +74,6 @@ import type {
   WorkspaceOptions as WorkspaceOptionsNative,
 } from "sanity";
 import type {
-  Except,
   IsStringLiteral,
   Merge,
   OmitIndexSignature,
@@ -96,38 +96,25 @@ import type {
   TupleOfLength,
 } from "@sanity-typed/utils";
 
-// HACK Couldn't use type-fest's Merge >=3.0.0
-
-type Merge_<FirstType, SecondType> = Except<
-  FirstType,
-  Extract<keyof FirstType, keyof SecondType>
->
-  & SecondType;
-type MergeOld<FirstType, SecondType> = Simplify<Merge_<FirstType, SecondType>>;
-
 declare const README: unique symbol;
 declare const required: unique symbol;
 
 type WithRequired<
   TRequired extends boolean,
   Rule extends RuleDef<Rule, any>,
-> = MergeOld<
-  {
-    [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule
-      ? (...args: Args) => WithRequired<TRequired, Rule>
-      : Rule[key];
-  },
-  {
-    optional: () => WithRequired<false, Rule>;
-    required: (
-      ...args: Parameters<Rule["required"]>
-    ) => WithRequired<true, Rule>;
-    [required]: TRequired;
-    warning: (
-      ...args: Parameters<Rule["warning"]>
-    ) => WithRequired<false, Rule>;
-  }
->;
+> = {
+  [key in keyof Omit<
+    Rule,
+    "optional" | "required" | "warning"
+  >]: Rule[key] extends (...args: infer Args) => Rule
+    ? (...args: Args) => WithRequired<TRequired, Rule>
+    : Rule[key];
+} & {
+  optional: () => WithRequired<false, Rule>;
+  required: (...args: Parameters<Rule["required"]>) => WithRequired<true, Rule>;
+  [required]: TRequired;
+  warning: (...args: Parameters<Rule["warning"]>) => WithRequired<false, Rule>;
+};
 
 type ValidationBuilder<
   TRequired extends boolean,
@@ -150,23 +137,22 @@ export type GetOriginalRule<
   TDefinitionBase extends DefinitionBase<any, any, any>,
 > = TDefinitionBase extends DefinitionBase<any, any, infer Rule> ? Rule : never;
 
-type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = MergeOld<
-  {
-    [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule
-      ? (...args: Args) => RewriteValue<Value, Rule>
-      : Rule[key];
-  },
-  {
-    custom: <LenientValue extends Value>(
-      fn: CustomValidator<LenientValue | undefined>
-    ) => RewriteValue<Value, Rule>;
-  }
->;
+type RewriteValue<Value, Rule extends RuleDef<Rule, any>> = {
+  [key in keyof Omit<Rule, "custom">]: Rule[key] extends (
+    ...args: infer Args
+  ) => Rule
+    ? (...args: Args) => RewriteValue<Value, Rule>
+    : Rule[key];
+} & {
+  custom: <LenientValue extends Value>(
+    fn: CustomValidator<LenientValue | undefined>
+  ) => RewriteValue<Value, Rule>;
+};
 
-export type BooleanDefinition<TRequired extends boolean> = MergeOld<
-  BooleanDefinitionNative,
-  DefinitionBase<TRequired, boolean, BooleanRule>
->;
+export interface BooleanDefinition<TRequired extends boolean>
+  extends
+    Omit<BooleanDefinitionNative, keyof DefinitionBase<any, any, any>>,
+    DefinitionBase<TRequired, boolean, BooleanRule> {}
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
 export interface CrossDatasetReferenceValue {
@@ -177,40 +163,42 @@ export interface CrossDatasetReferenceValue {
   _weak?: boolean;
 }
 
-type CrossDatasetReferenceRule = RuleDef<
+interface CrossDatasetReferenceRule extends RuleDef<
   CrossDatasetReferenceRule,
   CrossDatasetReferenceValue
->;
+> {}
 
-export type CrossDatasetReferenceDefinition<TRequired extends boolean> =
-  MergeOld<
-    CrossDatasetReferenceDefinitionNative,
+export interface CrossDatasetReferenceDefinition<TRequired extends boolean>
+  extends
+    Omit<
+      CrossDatasetReferenceDefinitionNative,
+      keyof DefinitionBase<any, any, any>
+    >,
     DefinitionBase<
       TRequired,
       CrossDatasetReferenceValue,
       CrossDatasetReferenceRule
-    >
-  >;
+    > {}
 
-export type DateDefinition<TRequired extends boolean> = MergeOld<
-  DateDefinitionNative,
-  DefinitionBase<TRequired, string, DateRule>
->;
+export interface DateDefinition<TRequired extends boolean>
+  extends
+    Omit<DateDefinitionNative, keyof DefinitionBase<any, any, any>>,
+    DefinitionBase<TRequired, string, DateRule> {}
 
-export type DatetimeDefinition<TRequired extends boolean> = MergeOld<
-  DatetimeDefinitionNative,
-  DefinitionBase<TRequired, string, DatetimeRule>
->;
+export interface DatetimeDefinition<TRequired extends boolean>
+  extends
+    Omit<DatetimeDefinitionNative, keyof DefinitionBase<any, any, any>>,
+    DefinitionBase<TRequired, string, DatetimeRule> {}
 
-export type EmailDefinition<TRequired extends boolean> = MergeOld<
-  EmailDefinitionNative,
-  DefinitionBase<TRequired, string, EmailRule>
->;
+export interface EmailDefinition<TRequired extends boolean>
+  extends
+    Omit<EmailDefinitionNative, keyof DefinitionBase<any, any, any>>,
+    DefinitionBase<TRequired, string, EmailRule> {}
 
-export type GeopointDefinition<TRequired extends boolean> = MergeOld<
-  GeopointDefinitionNative,
-  DefinitionBase<TRequired, GeopointValue, GeopointRule>
->;
+export interface GeopointDefinition<TRequired extends boolean>
+  extends
+    Omit<GeopointDefinitionNative, keyof DefinitionBase<any, any, any>>,
+    DefinitionBase<TRequired, GeopointValue, GeopointRule> {}
 
 export interface TitledListValue<T> {
   _key?: string;
@@ -220,22 +208,21 @@ export interface TitledListValue<T> {
 
 export type MaybeTitledListValue<T> = T | TitledListValue<T>;
 
-export type NumberDefinition<
+export interface NumberDefinition<
   TNumberValue extends number,
   TRequired extends boolean,
-> = MergeOld<
-  NumberDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    TNumberValue,
-    RewriteValue<TNumberValue, NumberRule>
-  > & {
-    options?: MergeOld<
-      NumberOptions,
-      { list?: MaybeTitledListValue<TNumberValue>[] }
-    >;
-  }
->;
+>
+  extends
+    Omit<NumberDefinitionNative, keyof DefinitionBase<any, any, any>>,
+    DefinitionBase<
+      TRequired,
+      TNumberValue,
+      RewriteValue<TNumberValue, NumberRule>
+    > {
+  options?: Omit<NumberOptions, "list"> & {
+    list?: MaybeTitledListValue<TNumberValue>[];
+  };
+}
 
 /**
  * **WARNING!!!**
@@ -255,142 +242,155 @@ export const referenced: unique symbol = Symbol("referenced");
 export type ReferenceValue<
   TReferenced extends string,
   TReferenceWeak extends boolean = false,
-> = MergeOld<
-  Omit<ReferenceValueNative, "_key" | "_strengthenOnPublish" | "_weak">,
-  (true extends TReferenceWeak
+> = Omit<
+  ReferenceValueNative,
+  "_key" | "_strengthenOnPublish" | "_type" | "_weak"
+>
+  & (true extends TReferenceWeak
     ? Pick<ReferenceValueNative, "_strengthenOnPublish"> & { _weak?: true }
-    : unknown) & { _type: "reference"; [referenced]: TReferenced }
->;
+    : unknown) & { _type: "reference"; [referenced]: TReferenced };
 
-type TypeReference<TReferenced extends string> = MergeOld<
+interface TypeReference<TReferenced extends string> extends Omit<
   TypeReferenceNative,
-  {
-    type: TReferenced
-      & (IsStringLiteral<TReferenced> extends false
-        ? {
-            [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
-          }
-        : unknown);
-  }
->;
+  "type"
+> {
+  type: TReferenced
+    & (IsStringLiteral<TReferenced> extends false
+      ? {
+          [README]: "⛔️ Unfortunately, this needs an `as const` for correct types. ⛔️";
+        }
+      : unknown);
+}
 
-export type ReferenceDefinition<
+export interface ReferenceDefinition<
   TReferenced extends string,
   TReferenceWeak extends boolean,
   TRequired extends boolean,
-> = MergeOld<
-  Omit<ReferenceDefinitionNative, "weak">,
-  DefinitionBase<
-    TRequired,
-    ReferenceValue<TReferenced, TReferenceWeak>,
-    RewriteValue<ReferenceValue<TReferenced, TReferenceWeak>, ReferenceRule>
-  > & {
-    to:
-      | ReadonlyTupleOfLength<TypeReference<TReferenced>, 1>
-      | TupleOfLength<TypeReference<TReferenced>, 1>;
-    weak?: TReferenceWeak;
-  }
->;
+>
+  extends
+    Omit<
+      ReferenceDefinitionNative,
+      keyof DefinitionBase<any, any, any> | "to" | "weak"
+    >,
+    DefinitionBase<
+      TRequired,
+      ReferenceValue<TReferenced, TReferenceWeak>,
+      RewriteValue<ReferenceValue<TReferenced, TReferenceWeak>, ReferenceRule>
+    > {
+  to:
+    | ReadonlyTupleOfLength<TypeReference<TReferenced>, 1>
+    | TupleOfLength<TypeReference<TReferenced>, 1>;
+  weak?: TReferenceWeak;
+}
 
-export type SlugValue = Required<SlugValueNative>;
+export interface SlugValue extends Required<SlugValueNative> {}
 
-export type SlugDefinition<TRequired extends boolean> = MergeOld<
-  SlugDefinitionNative,
-  DefinitionBase<TRequired, SlugValue, RewriteValue<SlugValue, SlugRule>>
->;
+export interface SlugDefinition<TRequired extends boolean>
+  extends
+    Omit<SlugDefinitionNative, keyof DefinitionBase<any, any, any>>,
+    DefinitionBase<TRequired, SlugValue, RewriteValue<SlugValue, SlugRule>> {}
 
-export type RegexRule<Rule extends RuleDef<Rule, any>> = MergeOld<
-  {
-    [key in keyof Rule]: Rule[key] extends (...args: infer Args) => Rule
-      ? (...args: Args) => RegexRule<Rule>
-      : Rule[key];
-  },
-  {
-    regex: (
-      ...args:
-        | [
-            pattern: RegExp,
-            name: string,
-            options: {
-              invert?: boolean;
-              // TODO why have name here when it's in the second arg?
-              // name?: string;
-            },
-          ]
-        | [pattern: RegExp, name: string]
-        | [pattern: RegExp, options: { invert?: boolean; name?: string }]
-        | [pattern: RegExp]
-    ) => RegexRule<Rule>;
-  }
->;
+export type RegexRule<Rule extends RuleDef<Rule, any>> = {
+  [key in keyof Omit<Rule, "regex">]: Rule[key] extends (
+    ...args: infer Args
+  ) => Rule
+    ? (...args: Args) => RegexRule<Rule>
+    : Rule[key];
+} & {
+  regex: (
+    ...args:
+      | [
+          pattern: RegExp,
+          name: string,
+          options: {
+            invert?: boolean;
+            // TODO why have name here when it's in the second arg?
+            // name?: string;
+          },
+        ]
+      | [pattern: RegExp, name: string]
+      | [pattern: RegExp, options: { invert?: boolean; name?: string }]
+      | [pattern: RegExp]
+  ) => RegexRule<Rule>;
+};
 
-export type StringDefinition<
+export interface StringDefinition<
   TStringValue extends string,
   TRequired extends boolean,
-> = MergeOld<
-  StringDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    TStringValue,
-    RewriteValue<
+>
+  extends
+    Omit<
+      StringDefinitionNative,
+      keyof DefinitionBase<any, any, any> | "options"
+    >,
+    DefinitionBase<
+      TRequired,
       TStringValue,
+      RewriteValue<
+        TStringValue,
+        // @ts-expect-error -- TODO not sure why RegexRule causes an error
+        RegexRule<StringRule>
+      >
+    > {
+  options?: Omit<StringOptions, "list"> & {
+    list?: MaybeTitledListValue<TStringValue>[];
+  };
+}
+
+export interface TextDefinition<TRequired extends boolean>
+  extends
+    Omit<TextDefinitionNative, keyof DefinitionBase<any, any, any>>,
+    DefinitionBase<
+      TRequired,
+      string,
       // @ts-expect-error -- TODO not sure why RegexRule causes an error
-      RegexRule<StringRule>
-    >
-  > & {
-    options?: MergeOld<
-      StringOptions,
-      { list?: MaybeTitledListValue<TStringValue>[] }
-    >;
-  }
->;
+      RegexRule<TextRule>
+    > {}
 
-export type TextDefinition<TRequired extends boolean> = MergeOld<
-  TextDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    string,
-    // @ts-expect-error -- TODO not sure why RegexRule causes an error
-    RegexRule<TextRule>
-  >
->;
-
-export type UrlDefinition<TRequired extends boolean> = MergeOld<
-  UrlDefinitionNative,
-  DefinitionBase<TRequired, string, UrlRule>
->;
+export interface UrlDefinition<TRequired extends boolean>
+  extends
+    Omit<UrlDefinitionNative, keyof DefinitionBase<any, any, any>>,
+    DefinitionBase<TRequired, string, UrlRule> {}
 
 type InferRawValue<Def extends DefinitionBase<any, any, any>> =
   Def extends DefinitionBase<any, infer Value, any> ? Value : never;
 
-export type ArrayDefinition<
+export interface ArrayDefinition<
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TRequired extends boolean,
-> = MergeOld<
-  ArrayDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    InferRawValue<TMemberDefinition>[],
-    ArrayRule<InferRawValue<TMemberDefinition>[]>
-  > & { of: TMemberDefinition[] }
->;
+>
+  extends
+    Omit<ArrayDefinitionNative, keyof DefinitionBase<any, any, any> | "of">,
+    DefinitionBase<
+      TRequired,
+      InferRawValue<TMemberDefinition>[],
+      ArrayRule<InferRawValue<TMemberDefinition>[]>
+    > {
+  of: TMemberDefinition[];
+}
 
-export type BlockStyleDefinition<Value extends string> = MergeOld<
+export interface BlockStyleDefinition<Value extends string> extends Omit<
   BlockStyleDefinitionNative,
-  { value: Value }
->;
+  "value"
+> {
+  value: Value;
+}
 
-export type BlockListDefinition<Value extends string> = MergeOld<
+export interface BlockListDefinition<Value extends string> extends Omit<
   BlockListDefinitionNative,
-  { value: Value }
->;
+  "value"
+> {
+  value: Value;
+}
 
-export type BlockDecoratorDefinition<Value extends string> = MergeOld<
+export interface BlockDecoratorDefinition<Value extends string> extends Omit<
   BlockDecoratorDefinitionNative,
-  { value: Value }
->;
+  "value"
+> {
+  value: Value;
+}
 
-export type BlockDefinition<
+export interface BlockDefinition<
   TBlockStyle extends string,
   TBlockListItem extends string,
   TBlockMarkDecorator extends string,
@@ -399,18 +399,14 @@ export type BlockDefinition<
   },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TRequired extends boolean,
-> = MergeOld<
-  BlockDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    PortableTextBlock<
-      TBlockMarkDecorator,
-      InferRawValue<TBlockMarkAnnotation>,
-      InferRawValue<TMemberDefinition> | PortableTextSpan<TBlockMarkDecorator>,
-      TBlockStyle,
-      TBlockListItem
+>
+  extends
+    Omit<
+      BlockDefinitionNative,
+      keyof DefinitionBase<any, any, any> | "lists" | "marks" | "of" | "styles"
     >,
-    RewriteValue<
+    DefinitionBase<
+      TRequired,
       PortableTextBlock<
         TBlockMarkDecorator,
         InferRawValue<TBlockMarkAnnotation>,
@@ -419,18 +415,26 @@ export type BlockDefinition<
         TBlockStyle,
         TBlockListItem
       >,
-      BlockRule
-    >
-  > & {
-    lists?: ReadonlyArray<BlockListDefinition<TBlockListItem>>;
-    marks?: Omit<BlockMarksDefinition, "annotations" | "decorators"> & {
-      annotations?: TBlockMarkAnnotation[];
-      decorators?: ReadonlyArray<BlockDecoratorDefinition<TBlockMarkDecorator>>;
-    };
-    of?: TupleOfLength<TMemberDefinition, 1>;
-    styles?: ReadonlyArray<BlockStyleDefinition<TBlockStyle>>;
-  }
->;
+      RewriteValue<
+        PortableTextBlock<
+          TBlockMarkDecorator,
+          InferRawValue<TBlockMarkAnnotation>,
+          | InferRawValue<TMemberDefinition>
+          | PortableTextSpan<TBlockMarkDecorator>,
+          TBlockStyle,
+          TBlockListItem
+        >,
+        BlockRule
+      >
+    > {
+  lists?: ReadonlyArray<BlockListDefinition<TBlockListItem>>;
+  marks?: Omit<BlockMarksDefinition, "annotations" | "decorators"> & {
+    annotations?: TBlockMarkAnnotation[];
+    decorators?: ReadonlyArray<BlockDecoratorDefinition<TBlockMarkDecorator>>;
+  };
+  of?: TupleOfLength<TMemberDefinition, 1>;
+  styles?: ReadonlyArray<BlockStyleDefinition<TBlockStyle>>;
+}
 
 type ObjectValue<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
@@ -451,20 +455,25 @@ type ObjectValue<
   }
 >;
 
-export type ObjectDefinition<
+export interface ObjectDefinition<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   },
   TRequired extends boolean,
-> = MergeOld<
-  ObjectDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    ObjectValue<TFieldDefinition>,
-    RewriteValue<ObjectValue<TFieldDefinition>, ObjectRule>
-  > & { fields: TFieldDefinition[] }
->;
+>
+  extends
+    Omit<
+      ObjectDefinitionNative,
+      keyof DefinitionBase<any, any, any> | "fields"
+    >,
+    DefinitionBase<
+      TRequired,
+      ObjectValue<TFieldDefinition>,
+      RewriteValue<ObjectValue<TFieldDefinition>, ObjectRule>
+    > {
+  fields: TFieldDefinition[];
+}
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
 interface SanityDocumentBase {
@@ -480,31 +489,39 @@ export type SanityDocument<
     name: string;
     [required]?: boolean;
   } = never,
-> = Simplify<ObjectValue<TFieldDefinition> & SanityDocumentBase>;
+> = ObjectValue<TFieldDefinition> & SanityDocumentBase;
 
-export type AnySanityDocument = Merge<SanityDocument, { _type: string }>;
+export interface AnySanityDocument extends OmitIndexSignature<SanityDocumentNative> {}
 
-export type DocumentRule<
+export interface DocumentRule<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   },
-> = RuleDef<DocumentRule<TFieldDefinition>, SanityDocument<TFieldDefinition>>;
+> extends RuleDef<
+  DocumentRule<TFieldDefinition>,
+  SanityDocument<TFieldDefinition>
+> {}
 
-export type DocumentDefinition<
+export interface DocumentDefinition<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   },
   TRequired extends boolean,
-> = MergeOld<
-  DocumentDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    SanityDocument<TFieldDefinition>,
-    DocumentRule<TFieldDefinition>
-  > & { fields: TFieldDefinition[] }
->;
+>
+  extends
+    Omit<
+      DocumentDefinitionNative,
+      keyof DefinitionBase<any, any, any> | "fields"
+    >,
+    DefinitionBase<
+      TRequired,
+      SanityDocument<TFieldDefinition>,
+      DocumentRule<TFieldDefinition>
+    > {
+  fields: TFieldDefinition[];
+}
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
 interface FileValueBase {
@@ -517,22 +534,24 @@ export type FileValue<
     name: string;
     [required]?: boolean;
   } = never,
-> = Simplify<FileValueBase & ObjectValue<TFieldDefinition>>;
+> = FileValueBase & ObjectValue<TFieldDefinition>;
 
-export type FileDefinition<
+export interface FileDefinition<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   },
   TRequired extends boolean,
-> = MergeOld<
-  FileDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    FileValue<TFieldDefinition>,
-    RewriteValue<FileValue<TFieldDefinition>, FileRule>
-  > & { fields?: TFieldDefinition[] }
->;
+>
+  extends
+    Omit<FileDefinitionNative, keyof DefinitionBase<any, any, any> | "fields">,
+    DefinitionBase<
+      TRequired,
+      FileValue<TFieldDefinition>,
+      RewriteValue<FileValue<TFieldDefinition>, FileRule>
+    > {
+  fields?: TFieldDefinition[];
+}
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
 interface ImageValueBase {
@@ -551,30 +570,31 @@ export type ImageValue<
     name: string;
     [required]?: boolean;
   } = never,
-> = Simplify<
-  ImageValueBase
-    & ObjectValue<TFieldDefinition>
-    & (THotspot extends true ? ImageValueExtra : unknown)
->;
+> = ImageValueBase
+  & ObjectValue<TFieldDefinition>
+  & (THotspot extends true ? ImageValueExtra : unknown);
 
-export type ImageDefinition<
+export interface ImageDefinition<
   THotspot extends boolean,
   TFieldDefinition extends DefinitionBase<any, any, any> & {
     name: string;
     [required]?: boolean;
   },
   TRequired extends boolean,
-> = MergeOld<
-  ImageDefinitionNative,
-  DefinitionBase<
-    TRequired,
-    ImageValue<THotspot, TFieldDefinition>,
-    RewriteValue<ImageValue<THotspot, TFieldDefinition>, ImageRule>
-  > & {
-    fields?: TFieldDefinition[];
-    options?: MergeOld<ImageOptions, { hotspot?: THotspot }>;
-  }
->;
+>
+  extends
+    Omit<
+      ImageDefinitionNative,
+      keyof DefinitionBase<any, any, any> | "fields" | "options"
+    >,
+    DefinitionBase<
+      TRequired,
+      ImageValue<THotspot, TFieldDefinition>,
+      RewriteValue<ImageValue<THotspot, TFieldDefinition>, ImageRule>
+    > {
+  fields?: TFieldDefinition[];
+  options?: Omit<ImageOptions, "hotspot"> & { hotspot?: THotspot };
+}
 
 interface IntrinsicDefinitions<
   TNumberValue extends number,
@@ -645,7 +665,7 @@ interface AliasValue<TType extends string> {
   [aliasedType]: TType;
 }
 
-export type TypeAliasDefinition<
+export interface TypeAliasDefinition<
   TType extends string,
   TAlias extends IntrinsicTypeName,
   TNumberValue extends number,
@@ -665,27 +685,30 @@ export type TypeAliasDefinition<
   },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TRequired extends boolean,
-> = MergeOld<
-  TypeAliasDefinitionNative<TType, TAlias>,
-  DefinitionBase<TRequired, AliasValue<TType>, any> & {
-    options?: TAlias extends IntrinsicTypeName
-      ? IntrinsicDefinitions<
-          TNumberValue,
-          TStringValue,
-          TReferenced,
-          TReferenceWeak,
-          TBlockStyle,
-          TBlockListItem,
-          TBlockMarkDecorator,
-          TBlockMarkAnnotation,
-          THotspot,
-          TFieldDefinition,
-          TMemberDefinition,
-          TRequired
-        >[TAlias]["options"]
-      : unknown;
-  }
->;
+>
+  extends
+    Omit<
+      TypeAliasDefinitionNative<TType, TAlias>,
+      keyof DefinitionBase<any, any, any> | "options"
+    >,
+    DefinitionBase<TRequired, AliasValue<TType>, any> {
+  options?: TAlias extends IntrinsicTypeName
+    ? IntrinsicDefinitions<
+        TNumberValue,
+        TStringValue,
+        TReferenced,
+        TReferenceWeak,
+        TBlockStyle,
+        TBlockListItem,
+        TBlockMarkDecorator,
+        TBlockMarkAnnotation,
+        THotspot,
+        TFieldDefinition,
+        TMemberDefinition,
+        TRequired
+      >[TAlias]["options"]
+    : unknown;
+}
 
 declare const type: unique symbol;
 
@@ -733,39 +756,40 @@ export type ArrayMemberDefinition<
                 TMemberDefinition,
                 any
               >[type] extends DefinitionBase<any, infer Value, infer Rule>
-                ? MergeOld<
-                    IntrinsicDefinitions<
-                      TNumberValue,
-                      TStringValue,
-                      TReferenced,
-                      TReferenceWeak,
-                      TBlockStyle,
-                      TBlockListItem,
-                      TBlockMarkDecorator,
-                      TBlockMarkAnnotation,
-                      THotspot,
-                      TFieldDefinition,
-                      TMemberDefinition,
-                      any
-                    >[type],
-                    DefinitionBase<
-                      any,
+                ? DefinitionBase<
+                    any,
+                    IsPlainObject<Value> extends false
+                      ? Value
+                      : IsStringLiteral<TName> extends false
+                        ? Value
+                        : Omit<Value, "_type"> & { _type: TName },
+                    // @ts-expect-error -- TODO Doesn't match the rule for some reason
+                    RewriteValue<
                       IsPlainObject<Value> extends false
                         ? Value
                         : IsStringLiteral<TName> extends false
                           ? Value
                           : Omit<Value, "_type"> & { _type: TName },
-                      // @ts-expect-error -- TODO Doesn't match the rule for some reason
-                      RewriteValue<
-                        IsPlainObject<Value> extends false
-                          ? Value
-                          : IsStringLiteral<TName> extends false
-                            ? Value
-                            : Omit<Value, "_type"> & { _type: TName },
-                        Rule
-                      >
+                      Rule
                     >
                   >
+                    & Omit<
+                      IntrinsicDefinitions<
+                        TNumberValue,
+                        TStringValue,
+                        TReferenced,
+                        TReferenceWeak,
+                        TBlockStyle,
+                        TBlockListItem,
+                        TBlockMarkDecorator,
+                        TBlockMarkAnnotation,
+                        THotspot,
+                        TFieldDefinition,
+                        TMemberDefinition,
+                        any
+                      >[type],
+                      keyof DefinitionBase<any, any, any>
+                    >
                 : IntrinsicDefinitions<
                     TNumberValue,
                     TStringValue,
@@ -786,32 +810,33 @@ export type ArrayMemberDefinition<
           { type: TType }
         >
       : Omit<
-          MergeOld<
-            TypeAliasDefinition<
-              TType,
-              TAlias,
-              TNumberValue,
-              TStringValue,
-              TReferenced,
-              TReferenceWeak,
-              TBlockStyle,
-              TBlockListItem,
-              TBlockMarkDecorator,
-              TBlockMarkAnnotation,
-              THotspot,
-              TFieldDefinition,
-              TMemberDefinition,
-              any
+          DefinitionBase<
+            any,
+            AliasValue<TType>
+              & (IsStringLiteral<TName> extends false
+                ? unknown
+                : { _type: TName }),
+            any
+          >
+            & Omit<
+              TypeAliasDefinition<
+                TType,
+                TAlias,
+                TNumberValue,
+                TStringValue,
+                TReferenced,
+                TReferenceWeak,
+                TBlockStyle,
+                TBlockListItem,
+                TBlockMarkDecorator,
+                TBlockMarkAnnotation,
+                THotspot,
+                TFieldDefinition,
+                TMemberDefinition,
+                any
+              >,
+              keyof DefinitionBase<any, any, any>
             >,
-            DefinitionBase<
-              any,
-              AliasValue<TType>
-                & (IsStringLiteral<TName> extends false
-                  ? unknown
-                  : { _type: TName }),
-              any
-            >
-          >,
           "name"
         >)
   & (IsStringLiteral<TName> extends false ? unknown : { name: TName }) & {
@@ -1130,25 +1155,22 @@ export interface ConfigBase<
   TPluginOptions extends PluginOptions<any, any>,
 > {
   plugins?: (PluginOptionsNative | TPluginOptions)[];
-  schema?: MergeOld<
-    SchemaPluginOptionsNative,
-    {
-      types?:
-        | TTypeDefinition[]
-        | (TTypeDefinition extends never
-            ? never
-            : ComposableOption<
-                TTypeDefinition[],
-                Omit<
-                  ConfigContext,
-                  "client" | "currentUser" | "getClient" | "schema"
-                >
-              >);
-    }
-  >;
+  schema?: Omit<SchemaPluginOptionsNative, "types"> & {
+    types?:
+      | TTypeDefinition[]
+      | (TTypeDefinition extends never
+          ? never
+          : ComposableOption<
+              TTypeDefinition[],
+              Omit<
+                ConfigContext,
+                "client" | "currentUser" | "getClient" | "schema"
+              >
+            >);
+  };
 }
 
-export type PluginOptions<
+export interface PluginOptions<
   TTypeDefinition extends TypeDefinition<
     any,
     any,
@@ -1167,10 +1189,12 @@ export type PluginOptions<
     any
   >,
   TPluginOptions extends PluginOptions<any, any>,
-> = ConfigBase<TTypeDefinition, TPluginOptions>
-  & Omit<PluginOptionsNative, "beta" | "plugins" | "schema"> & {
-    beta?: BetaFeatures;
-  };
+>
+  extends
+    ConfigBase<TTypeDefinition, TPluginOptions>,
+    Omit<PluginOptionsNative, "beta" | "plugins" | "schema"> {
+  beta?: BetaFeatures;
+}
 
 export const definePlugin = <
   TTypeDefinition extends TypeDefinition<
@@ -1201,7 +1225,7 @@ export const definePlugin = <
     options: TOptions
   ) => PluginOptions<TTypeDefinition, TPluginOptions>;
 
-type WorkspaceOptions<
+interface WorkspaceOptions<
   TTypeDefinition extends TypeDefinition<
     any,
     any,
@@ -1220,13 +1244,18 @@ type WorkspaceOptions<
     any
   >,
   TPluginOptions extends PluginOptions<any, any>,
-> = MergeOld<
-  Omit<WorkspaceOptionsNative, "beta">,
-  ConfigBase<TTypeDefinition, TPluginOptions> & {
-    beta?: BetaFeatures;
-    scheduledPublishing?: ScheduledPublishingPluginOptions;
-  }
->;
+>
+  extends
+    Omit<
+      WorkspaceOptionsNative,
+      | keyof ConfigBase<TTypeDefinition, TPluginOptions>
+      | "beta"
+      | "scheduledPublishing"
+    >,
+    ConfigBase<TTypeDefinition, TPluginOptions> {
+  beta?: BetaFeatures;
+  scheduledPublishing?: ScheduledPublishingPluginOptions;
+}
 
 export type Config<
   TTypeDefinition extends TypeDefinition<
@@ -1280,28 +1309,24 @@ export const defineConfig = <
     ? Extract<typeof config, any[]>
     : Exclude<typeof config, any[]>;
 
-export type FileAsset = OmitIndexSignature<FileAssetNative>;
+export interface FileAsset extends OmitIndexSignature<FileAssetNative> {}
 
-export type ImageAsset = MergeOld<
+export interface ImageAsset extends Omit<
   OmitIndexSignature<ImageAssetNative>,
-  {
-    metadata: MergeOld<
-      ImageAssetNative["metadata"],
-      {
-        // https://www.sanity.io/docs/image-metadata#3e05db6e3c80
-        exif?: { [key: string]: unknown; _type: "sanity.imageExifMetadata" };
-        // https://www.sanity.io/docs/image-metadata#df19f6f51379
-        location?: GeopointValue;
-      }
-    >;
-  }
->;
+  "metadata"
+> {
+  metadata: Omit<ImageAssetNative["metadata"], "exif" | "location"> & {
+    // https://www.sanity.io/docs/image-metadata#3e05db6e3c80
+    exif?: { [key: string]: unknown; _type: "sanity.imageExifMetadata" };
+    // https://www.sanity.io/docs/image-metadata#df19f6f51379
+    location?: GeopointValue;
+  };
+}
 
-export type ImplicitDocuments = {
-  [TImplicitDoc in
-    | FileAsset
-    | ImageAsset as TImplicitDoc["_type"]]: TImplicitDoc;
-};
+export interface ImplicitDocuments {
+  "sanity.fileAsset": FileAsset;
+  "sanity.imageAsset": ImageAsset;
+}
 
 type ExpandAliasValues<Value, AliasedValues extends { [name: string]: any }> =
   Value extends AliasValue<infer TType>
