@@ -137,14 +137,14 @@ type ValidationBuilder<
   rule: WithRequired<false, Rule>
 ) => MaybeArray<WithRequired<TRequired | false, Rule>>;
 
-export type DefinitionBase<
+export interface DefinitionBase<
   TRequired extends boolean,
   Value,
   Rule extends RuleDef<Rule, Value>,
-> = {
+> {
   preview?: PreviewConfig;
   validation?: ValidationBuilder<TRequired, Value, Rule>;
-};
+}
 
 export type GetOriginalRule<
   TDefinitionBase extends DefinitionBase<any, any, any>,
@@ -169,13 +169,13 @@ export type BooleanDefinition<TRequired extends boolean> = MergeOld<
 >;
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
-export type CrossDatasetReferenceValue = {
+export interface CrossDatasetReferenceValue {
   _dataset: string;
   _projectId: string;
   _ref: string;
   _type: "crossDatasetReference";
   _weak?: boolean;
-};
+}
 
 type CrossDatasetReferenceRule = RuleDef<
   CrossDatasetReferenceRule,
@@ -212,7 +212,11 @@ export type GeopointDefinition<TRequired extends boolean> = MergeOld<
   DefinitionBase<TRequired, GeopointValue, GeopointRule>
 >;
 
-export type TitledListValue<T> = { _key?: string; title: string; value: T };
+export interface TitledListValue<T> {
+  _key?: string;
+  title: string;
+  value: T;
+}
 
 export type MaybeTitledListValue<T> = T | TitledListValue<T>;
 
@@ -463,13 +467,13 @@ export type ObjectDefinition<
 >;
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
-type SanityDocumentBase = {
+interface SanityDocumentBase {
   _createdAt: string;
   _id: string;
   _rev: string;
   _type: "document";
   _updatedAt: string;
-};
+}
 
 export type SanityDocument<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
@@ -503,10 +507,10 @@ export type DocumentDefinition<
 >;
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
-type FileValueBase = {
+interface FileValueBase {
   _type: "file";
   asset: ReferenceValue<"sanity.fileAsset", false>;
-};
+}
 
 export type FileValue<
   TFieldDefinition extends DefinitionBase<any, any, any> & {
@@ -531,12 +535,15 @@ export type FileDefinition<
 >;
 
 // HACK For whatever reason, typescript reduces complexity when "static" types are split out 🤷 https://github.com/saiichihashimoto/sanity-typed/issues/108
-type ImageValueBase = {
+interface ImageValueBase {
   _type: "image";
   asset: ReferenceValue<"sanity.imageAsset", false>;
-};
+}
 
-type ImageValueExtra = { crop: ImageCrop; hotspot: ImageHotspot };
+interface ImageValueExtra {
+  crop: ImageCrop;
+  hotspot: ImageHotspot;
+}
 
 export type ImageValue<
   THotspot extends boolean = false,
@@ -569,7 +576,7 @@ export type ImageDefinition<
   }
 >;
 
-type IntrinsicDefinitions<
+interface IntrinsicDefinitions<
   TNumberValue extends number,
   TStringValue extends string,
   TReferenced extends string,
@@ -587,7 +594,7 @@ type IntrinsicDefinitions<
   },
   TMemberDefinition extends DefinitionBase<any, any, any> & { name?: string },
   TRequired extends boolean,
-> = {
+> {
   array: ArrayDefinition<TMemberDefinition, TRequired>;
   block: BlockDefinition<
     TBlockStyle,
@@ -613,7 +620,7 @@ type IntrinsicDefinitions<
   string: StringDefinition<TStringValue, TRequired>;
   text: TextDefinition<TRequired>;
   url: UrlDefinition<TRequired>;
-};
+}
 
 export type IntrinsicTypeName = Simplify<
   keyof IntrinsicDefinitions<
@@ -634,7 +641,9 @@ export type IntrinsicTypeName = Simplify<
 
 declare const aliasedType: unique symbol;
 
-type AliasValue<TType extends string> = { [aliasedType]: TType };
+interface AliasValue<TType extends string> {
+  [aliasedType]: TType;
+}
 
 export type TypeAliasDefinition<
   TType extends string,
@@ -1099,7 +1108,7 @@ export const defineType = <
     defineOptions
   ) as typeof schemaDefinition;
 
-export type ConfigBase<
+export interface ConfigBase<
   TTypeDefinition extends TypeDefinition<
     any,
     any,
@@ -1119,7 +1128,7 @@ export type ConfigBase<
   >,
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- recursive type
   TPluginOptions extends PluginOptions<any, any>,
-> = {
+> {
   plugins?: (PluginOptionsNative | TPluginOptions)[];
   schema?: MergeOld<
     SchemaPluginOptionsNative,
@@ -1137,7 +1146,7 @@ export type ConfigBase<
               >);
     }
   >;
-};
+}
 
 export type PluginOptions<
   TTypeDefinition extends TypeDefinition<
