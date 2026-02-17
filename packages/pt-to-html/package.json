@@ -61,7 +61,7 @@
     "ts-jest": "29.2.5"
   },
   "peerDependencies": {
-    "@portabletext/to-html": "^2.0.5",
+    "@portabletext/to-html": "^5.0.1",
     "typescript": "5.7.2 || 5.7.3"
   }
 }

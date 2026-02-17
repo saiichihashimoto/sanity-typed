@@ -71,31 +71,31 @@ type Simplify<AnyType> =
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Query-context
  */
-type Context<Dataset extends any[], DeltaElement extends Dataset[number]> = {
+interface Context<Dataset extends any[], DeltaElement extends Dataset[number]> {
   client: ClientConfig;
   dataset: Dataset;
   delta: { after: DeltaElement | null; before: DeltaElement | null };
   identity: string;
   parameters: { [param: string]: any };
-};
+}
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Scope
  */
-type Scope<TContext extends Context<any[], any>> = {
+interface Scope<TContext extends Context<any[], any>> {
   context: TContext;
   parent: Scope<TContext> | null;
   this: any;
-};
+}
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#NewNestedScope()
  */
-type NestedScope<Value, TScope extends Scope<Context<any[], any>>> = {
+interface NestedScope<Value, TScope extends Scope<Context<any[], any>>> {
   context: TScope["context"];
   parent: TScope;
   this: Value;
-};
+}
 
 type EscapedDoubleQuote = "__ESCAPED__DOUBLE__QUOTE___";
 
@@ -508,10 +508,10 @@ export type Geo =
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- EXPECTED Used for it's type
 declare const ArbitrarySelectorValue: unique symbol;
 
-type Functions<
+interface Functions<
   TArgs extends any[],
   TScope extends Scope<Context<any[], any>>,
-> = {
+> {
   /**
    * @link https://spec.groq.dev/GROQ-1.revision1/#sec-Array-namespace
    */
@@ -901,7 +901,7 @@ type Functions<
         : null
       : never;
   };
-};
+}
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#Asc
@@ -986,10 +986,10 @@ type Selector<TExpression extends string> =
       : never)
   | (ThisAttribute<TExpression> extends never ? never : { type: "Selector" });
 
-type FuncArgCustomParse<
+interface FuncArgCustomParse<
   TExpression extends string,
   TFuncLastArg extends boolean,
-> = {
+> {
   delta: {
     changedAny: TFuncLastArg extends true
       ? Selector<TExpression>
@@ -1012,7 +1012,7 @@ type FuncArgCustomParse<
       | Pair<TExpression>
       | (TFuncLastArg extends true ? ParseInner<TExpression> : never);
   };
-};
+}
 
 type FuncArgParse<
   TExpression extends string,
@@ -1440,7 +1440,7 @@ type TupleToUnionArray<TArray extends any[]> = {
   [Index in keyof TArray]: TArray[number];
 };
 
-type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
+interface PipeFunctions<TBase extends any[], TArgs extends any[]> {
   global: {
     /**
      * @link https://spec.groq.dev/GROQ-1.revision1/#order()
@@ -1458,7 +1458,7 @@ type PipeFunctions<TBase extends any[], TArgs extends any[]> = {
             : Element & { _score: number })[]
         : never;
   };
-};
+}
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#PipeFuncCall
@@ -1508,7 +1508,7 @@ type CompoundExpression<TExpression extends string> =
   | PipeFuncCall<TExpression>
   | TraversalExpression<TExpression>;
 
-type BooleanOperators = {
+interface BooleanOperators {
   "&&": {
     leftLevel: Level2;
     rightLevel: Level3;
@@ -1523,7 +1523,7 @@ type BooleanOperators = {
     type: "Or";
     weaker: false;
   };
-};
+}
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#And
@@ -1563,11 +1563,11 @@ type BooleanOperator<
                 })
     : never;
 
-type PrefixOperators = {
+interface PrefixOperators {
   "!": { level: Exclude<Level9, NegNode>; type: "Not" };
   "+": { level: Exclude<Level9, NegNode>; type: "Pos" };
   "-": { level: Level7; type: "Neg" };
-};
+}
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#Not
@@ -1596,7 +1596,7 @@ type PrefixOperator<
         }
     : never;
 
-type Operators = {
+interface Operators {
   "!=": { leftLevel: Level4; rightLevel: Level4 };
   "%": { leftLevel: Level6; rightLevel: Level7 };
   "*": {
@@ -1617,7 +1617,7 @@ type Operators = {
   ">": { leftLevel: Level4; rightLevel: Level4 };
   ">=": { leftLevel: Level4; rightLevel: Level4 };
   "match": { leftLevel: Level4; rightLevel: Level4; withSpaces: true };
-};
+}
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#Equality
@@ -2025,7 +2025,9 @@ type EvaluateInRange<TNode extends ExprNode> = TNode extends InRangeNode
   ? boolean
   : never;
 
-type EmptyObject = { [key: string]: never };
+interface EmptyObject {
+  [key: string]: never;
+}
 
 type EvaluateMapElements<
   TBases extends any[],
@@ -2429,11 +2431,11 @@ type EvaluateExpression<
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#NewRootScope()
  */
-export type RootScope<TContext extends Context<any[], any>> = {
+export interface RootScope<TContext extends Context<any[], any>> {
   context: TContext;
   parent: null;
   this: null;
-};
+}
 
 /**
  * @link https://spec.groq.dev/GROQ-1.revision1/#ExecuteQuery()

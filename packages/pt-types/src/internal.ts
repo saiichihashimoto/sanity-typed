@@ -1,4 +1,5 @@
 import type {
+  PortableTextBlock as PortableTextBlockNative,
   PortableTextMarkDefinition,
   PortableTextSpan as PortableTextSpanNative,
 } from "@portabletext/types";
@@ -47,28 +48,18 @@ export type BlockStyleDefault =
 
 export type BlockListItemDefault = "bullet" | "number";
 
-export type PortableTextBlock<
+export interface PortableTextBlock<
   TBlockMarkDecorator extends string = BlockMarkDecoratorDefault,
   TMarkDef extends PortableTextMarkDefinition = PortableTextMarkDefinition,
   TChild extends { _type: string } = PortableTextSpan<TBlockMarkDecorator>,
   TBlockStyle extends string = BlockStyleDefault,
   TBlockListItem extends string = BlockListItemDefault,
-> =
-  // TODO PortableTextBlock is too complex for some reason https://github.com/saiichihashimoto/sanity-typed/issues/415
-  // Omit<
-  //   SetRequired<
-  //     PortableTextBlockNative<TMarkDef, TChild, TBlockStyle, TBlockListItem>,
-  //     "markDefs" | "style"
-  //   >,
-  //   "_key"
-  // > & {
-  //   _type: "block";
-  // };
-  {
-    _type: "block";
-    children: TChild[];
-    level?: number;
-    listItem?: TBlockListItem;
-    markDefs: TMarkDef[];
-    style: TBlockStyle;
-  };
+> extends Omit<
+  SetRequired<
+    PortableTextBlockNative<TMarkDef, TChild, TBlockStyle, TBlockListItem>,
+    "markDefs" | "style"
+  >,
+  "_key"
+> {
+  _type: "block";
+}

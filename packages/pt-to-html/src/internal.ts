@@ -53,18 +53,18 @@ type BlockStyleDefault =
 // https://github.com/portabletext/to-html/blob/6772048290f2d31d32908ee17a26eac499af89e9/src/components/list.ts#L3
 type BlockListItemDefault = "bullet" | "number";
 
-export type PortableTextMarkComponentOptions<
+export interface PortableTextMarkComponentOptions<
   Value,
   TMarkKey extends string,
   TMarkType extends string,
-> = {
+> {
   children: string;
   markKey: TMarkKey;
   markType: TMarkType;
   renderNode: NodeRenderer;
   text: string;
   value: Value;
-};
+}
 
 export type PortableTextHtmlComponents<
   TItem extends { _type: string },
