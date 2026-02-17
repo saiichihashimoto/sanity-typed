@@ -59,14 +59,9 @@ type PromiseOrObservable<
   T,
 > = TIsPromise extends true ? Promise<T> : Observable<T>;
 
-export type MutationOptions = BaseMutationOptions & {
-  returnDocuments?: boolean;
-  returnFirst?: boolean;
-};
-
 type MutationResult<
   Value,
-  TOptions extends MutationOptions | undefined,
+  TOptions extends BaseMutationOptions | undefined,
 > = TOptions extends { returnDocuments: false; returnFirst: false }
   ? MultipleMutationResult
   : TOptions extends { returnFirst: false }
@@ -115,7 +110,7 @@ export type PatchType<
     clone: () => PatchType<TDocument, TOriginalDocument, TIsPromise, TIsScoped>;
     commit: TIsScoped extends false
       ? never
-      : <const TOptions extends MutationOptions = BaseMutationOptions>(
+      : <const TOptions extends BaseMutationOptions = BaseMutationOptions>(
           options?: TOptions
         ) => PromiseOrObservable<
           TIsPromise,
@@ -289,7 +284,7 @@ export type TransactionType<
   {
     commit: TIsScoped extends false
       ? never
-      : <const TOptions extends MutationOptions = BaseMutationOptions>(
+      : <const TOptions extends BaseMutationOptions = BaseMutationOptions>(
           options?: TOptions
         ) => PromiseOrObservable<
           TIsPromise,
@@ -518,7 +513,7 @@ export type OverrideSanityClient<
             SetOptional<TDocument, "_id">,
             "_createdAt" | "_rev" | "_updatedAt"
           >,
-      const TOptions extends MutationOptions = BaseMutationOptions,
+      const TOptions extends BaseMutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
@@ -530,7 +525,7 @@ export type OverrideSanityClient<
       Doc extends TDocument extends never
         ? never
         : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt">,
-      const TOptions extends MutationOptions = BaseMutationOptions,
+      const TOptions extends BaseMutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
@@ -542,7 +537,7 @@ export type OverrideSanityClient<
       Doc extends TDocument extends never
         ? never
         : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt">,
-      const TOptions extends MutationOptions = BaseMutationOptions,
+      const TOptions extends BaseMutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
@@ -550,7 +545,7 @@ export type OverrideSanityClient<
       TIsPromise,
       MutationResult<Extract<TDocument, { _type: Doc["_type"] }>, TOptions>
     >;
-    delete: <const TOptions extends MutationOptions = BaseMutationOptions>(
+    delete: <const TOptions extends BaseMutationOptions = BaseMutationOptions>(
       idOrSelection: MutationSelection | string,
       options?: TOptions
     ) => PromiseOrObservable<
@@ -652,7 +647,7 @@ export type OverrideSanityClient<
     >;
     mutate: <
       Doc extends AnySanityDocument,
-      const TOptions extends MutationOptions = BaseMutationOptions,
+      const TOptions extends BaseMutationOptions = BaseMutationOptions,
     >(
       operations:
         | Mutation<
