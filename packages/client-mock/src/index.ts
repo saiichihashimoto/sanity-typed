@@ -31,7 +31,6 @@ import type {
 import type {
   GetDocuments,
   MutationDoc,
-  MutationOptions,
 } from "@sanity-typed/client/src/internal";
 import { evaluate, parse } from "@sanity-typed/groq-js";
 import type { DocumentValues, referenced } from "@sanity-typed/types";
@@ -228,7 +227,7 @@ export const createClient = <
             SetOptional<TDocument, "_id">,
             "_createdAt" | "_rev" | "_updatedAt"
           >,
-      const TOptions extends MutationOptions = BaseMutationOptions,
+      const TOptions extends BaseMutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
@@ -237,7 +236,7 @@ export const createClient = <
       Doc extends TDocument extends never
         ? never
         : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt">,
-      const TOptions extends MutationOptions = BaseMutationOptions,
+      const TOptions extends BaseMutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
@@ -246,13 +245,13 @@ export const createClient = <
       Doc extends TDocument extends never
         ? never
         : Omit<TDocument, "_createdAt" | "_rev" | "_updatedAt">,
-      const TOptions extends MutationOptions = BaseMutationOptions,
+      const TOptions extends BaseMutationOptions = BaseMutationOptions,
     >(
       document: Doc,
       options?: TOptions
     ) => client.mutate({ createIfNotExists: document } as any, options) as any,
     delete: async <
-      const TOptions extends MutationOptions = BaseMutationOptions,
+      const TOptions extends BaseMutationOptions = BaseMutationOptions,
     >(
       idOrSelection: MutationSelection | string,
       options?: TOptions
@@ -309,7 +308,7 @@ export const createClient = <
       >,
     mutate: (async <
       Doc extends AnySanityDocument,
-      const TOptions extends MutationOptions = BaseMutationOptions,
+      const TOptions extends BaseMutationOptions = BaseMutationOptions,
     >(
       operations:
         | Mutation<
