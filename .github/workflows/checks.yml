@@ -384,7 +384,7 @@ jobs:
           key: turbo-cache-test-${{ matrix.typescript-version }}-${{ env.HASH }}
 
       - id: cpu-cores
-        uses: SimenB/github-actions-cpu-cores@v2
+        uses: SimenB/github-actions-cpu-cores@v3
       - run: npm test -- --filter=${{ matrix.package }}
 
       # Whether or not npm run test fails, we want to save the cache when we can
