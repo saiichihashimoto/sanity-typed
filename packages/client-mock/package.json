@@ -50,7 +50,7 @@
     "@sanity-typed/client": "0.0.0-development",
     "@sanity-typed/groq-js": "0.0.0-development",
     "@sanity-typed/types": "0.0.0-development",
-    "@sanity/diff-match-patch": "3.2.0",
+    "@sanity/diff-match-patch": "3.2.1",
     "lodash": "4.17.21",
     "type-fest": "4.30.2"
   },
@@ -60,7 +60,7 @@
     "@saiichihashimoto/test-utils": "1.1.0",
     "@sanity-typed/tsconfig": "0.0.0-development",
     "@sanity-typed/utils": "0.0.0-development",
-    "@sanity/client": "7.14.0",
+    "@sanity/client": "8.9.0",
     "groq-builder": "0.9.1",
     "jest": "29.7.0",
     "ts-jest": "29.2.5"
